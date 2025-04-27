@@ -502,5 +502,8 @@
   },
   "blog-unpublished/flavors-prop-score-methods.qmd": {
     "flavors-prop-score-methods.html": "3241756c"
+  },
+  "blog-unpublished/interpret-OLS-causal-inference.qmd": {
+    "interpret-OLS-causal-inference.html": "dfa7ff85"
   }
 }

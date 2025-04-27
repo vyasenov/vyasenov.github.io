@@ -1,10 +1,11 @@
 
 project:
   type: website
+  output-dir: docs
 
 website:
   title: "Vasco Yasenov"
-  site-url: https://yourusername.github.io/your-site
+  site-url: https://vyasenov.github.io/website
   description: "Personal academic website of Dr. Your Name"
   navbar:
     right:
