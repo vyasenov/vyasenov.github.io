@@ -1,1 +1,11 @@
-/.quarto/
+# Quarto cache folders
+.quarto/
+
+# Site output (if using _site instead of docs/)
+_site/
+
+# Mac system file
+.DS_Store
+
+# Drafts or private notes (choose your folder name)
+_drafts/
