@@ -1,1 +1,1 @@
-Sitemap: https://vyasenov.github.io/website/sitemap.xml
+Sitemap: https://vyasenov.github.io/sitemap.xml

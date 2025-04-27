@@ -9,3 +9,7 @@ _site/
 
 # Drafts or private notes (choose your folder name)
 _drafts/
+
+# prompt files
+prompts.txt
+/.quarto/

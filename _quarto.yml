@@ -5,7 +5,7 @@ project:
 
 website:
   title: "Vasco Yasenov"
-  site-url: https://vyasenov.github.io/website
+  site-url: "https://vyasenov.github.io/"
   description: "Personal academic website of Dr. Your Name"
   navbar:
     right:
