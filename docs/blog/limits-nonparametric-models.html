@@ -464,7 +464,7 @@ window.Quarto = {
 <ul>
 <li>Small bandwidth (“overfitting”): Captures fine details but also noise, leading to high variance and low bias.</li>
 <li>Large bandwidth (“underfitting”): Smoothes over the noise but can miss important structure, leading to high bias and low variance.</li>
-<li>For nonparmetric curve estimation, the mean integrated squared error (MISE) is a common loss function for evaluating performance:</li>
+<li>For nonparametric curve estimation, the mean integrated squared error (MISE) is a common loss function for evaluating performance:</li>
 </ul>
 <p><span class="math display">\[\text{MISE}(h) = \mathbb{E}\left[ \int \left( \hat{f}_h(x) - f(x) \right)^2 dx \right].\]</span></p>
 <p>This decomposes into bias and variance terms:</p>
@@ -481,7 +481,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="optimal-h-for-kernel-regression">Optimal <span class="math inline">\(h\)</span> for Kernel Regression</h3>
 <p>For Nadaraya-Watson regression, several methods exist for selecting the bandwidth h. Cross-validation provides reliable results but can be computationally demanding. Theoretical analysis based on MISE minimization for common kernel functions suggests that the optimal bandwidth follows the relationship:</p>
 <p><span class="math display">\[h^* \propto n^{-1/5}.\]</span></p>
-<p>This expressiom highlights a fundamental characteristic of nonparametric methods: their convergence rate is slower than that of parametric methods. This represents one manifestation of the curse of dimensionality in nonparametric estimation. Furthermore, this relationship only specifies the rate at which the optimal bandwidth should decrease with sample size (proportionality to <span class="math inline">\(n^{-1/5}\)</span>), rather than providing an exact value. Without the proportionality constant, its direct practical application is limited.</p>
+<p>This expression highlights a fundamental characteristic of nonparametric methods: their convergence rate is slower than that of parametric methods. This represents one manifestation of the curse of dimensionality in nonparametric estimation. Furthermore, this relationship only specifies the rate at which the optimal bandwidth should decrease with sample size (proportionality to <span class="math inline">\(n^{-1/5}\)</span>), rather than providing an exact value. Without the proportionality constant, its direct practical application is limited.</p>
 </section>
 </section>
 <section id="an-example" class="level2">
@@ -496,7 +496,7 @@ window.Quarto = {
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This yields a simplified version of the following figure:</p>
 <p><img src="../images/nonparametric.png" class="img-fluid"></p>
-<p>The green line corresponds to the Nadaraya-Watson regression with an optimal bandwidth and features some degree of curveture. The red line has a smaller bandwidth (higher variance, lower bias), and the blue line is undersmoothed (higher bandwidth).</p>
+<p>The green line corresponds to the Nadaraya-Watson regression with an optimal bandwidth and features some degree of curvature. The red line has a smaller bandwidth (higher variance, lower bias), and the blue line is undersmoothed (higher bandwidth).</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>

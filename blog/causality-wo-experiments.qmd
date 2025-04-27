@@ -115,7 +115,7 @@ That’s it. You are now equipped with a set of new methods designed to identify
 
 ## Bottom Line
 
-- Conventional methods used to tease causality rely on experiments or ambitious assumptions such as unconfoudedness or the access to valid instrumental variables.
+- Conventional methods used to tease causality rely on experiments or ambitious assumptions such as unconfoundedness or the access to valid instrumental variables.
 
 - Researchers have developed methods aimed at measuring causality without relying on these frameworks.
 

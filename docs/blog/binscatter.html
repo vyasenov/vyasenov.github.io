@@ -456,7 +456,7 @@ window.Quarto = {
 </section>
 <section id="the-algorithm" class="level3">
 <h3 class="anchored" data-anchor-id="the-algorithm">The Algorithm</h3>
-<p>Here is the step-by-step recipe for construcing a binscatter plot.</p>
+<p>Here is the step-by-step recipe for constructing a binscatter plot.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -468,7 +468,7 @@ Algorithm:
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><p><strong>Bin construction</strong>: Divide the range of <span class="math inline">\(X\)</span> into <span class="math inline">\(K\)</span> equal-width bins, or use quantile-based bins for equal sample sizes within bins. For example, with <span class="math inline">\(K=10\)</span>, the observations in <span class="math inline">\(B_1\)</span> would be those between the minimimum value of <span class="math inline">\(X\)</span> and that of its tenth percentile.</p></li>
+<li><p><strong>Bin construction</strong>: Divide the range of <span class="math inline">\(X\)</span> into <span class="math inline">\(K\)</span> equal-width bins, or use quantile-based bins for equal sample sizes within bins. For example, with <span class="math inline">\(K=10\)</span>, the observations in <span class="math inline">\(B_1\)</span> would be those between the minimum value of <span class="math inline">\(X\)</span> and that of its tenth percentile.</p></li>
 <li><p><strong>Mean calculation</strong>: Compute the mean of <span class="math inline">\(Y\)</span> within each bin:</p></li>
 </ol>
 <p><span class="math display">\[\bar{Y}_k= \frac{1}{|B_k|} \sum_{i \in B_k} Y_i,\]</span></p>
@@ -483,7 +483,7 @@ Algorithm:
 </section>
 <section id="adjusting-for-covariates-the-wrong-way" class="level3">
 <h3 class="anchored" data-anchor-id="adjusting-for-covariates-the-wrong-way">Adjusting for Covariates: The Wrong Way</h3>
-<p>In many applications, it is essential to control for additional covariates <span class="math inline">\(W\)</span> to isolate the relationship between the primary variables of interest. The object of interest then becomes the conditional mean <span class="math inline">\(E[Y\mid W,X]\)</span>. An example would be focusing on the relationship between income (<span class="math inline">\(Y\)</span>) and education level (<span class="math inline">\(X\)</span>) when controling for parental education (<span class="math inline">\(W\)</span>).</p>
+<p>In many applications, it is essential to control for additional covariates <span class="math inline">\(W\)</span> to isolate the relationship between the primary variables of interest. The object of interest then becomes the conditional mean <span class="math inline">\(E[Y\mid W,X]\)</span>. An example would be focusing on the relationship between income (<span class="math inline">\(Y\)</span>) and education level (<span class="math inline">\(X\)</span>) when controlling for parental education (<span class="math inline">\(W\)</span>).</p>
 <p>A common but flawed approach to incorporating covariates in binscatter is residualized binscatter. This method involves first regressing separately both <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span> on the covariates <span class="math inline">\(W\)</span> to obtain residuals <span class="math inline">\(\hat{u}_Y\)</span>​ and <span class="math inline">\(\hat{u}_X\)</span>​, and then applying the binscatter method to these residuals:</p>
 <p><span class="math display">\[\bar{\hat{u}}_{Y,k} = \frac{1}{|B_k|} \sum_{i \in B_k} \hat{u}_{X,i}.\]</span></p>
 <p>While this approach is motivated by the <a href="https://en.wikipedia.org/wiki/Frisch%E2%80%93Waugh%E2%80%93Lovell_theorem">Frisch-Waugh-Lovell</a> theorem in linear regression, it can lead to incorrect conclusions in more general settings. The residualized binscatter may not accurately reflect the true conditional mean function, especially if the underlying relationship is nonlinear. Therefore, it is generally not recommended for empirical work.</p>
@@ -506,7 +506,7 @@ Algorithm:
 </section>
 <section id="an-example" class="level2">
 <h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<p>As an example let’s examine the relationship between the variables <code>Sepal.Length</code> and <code>Petal.Length</code> in the popular iris dataset. We will use a fixed number of ten bins. Alternatively, the package binsreg will automatically calculate the optimal <span class="math inline">\(K\)</span>.</p>
+<p>As an example let’s examine the relationship between the variables <code>Sepal.Length</code> and <code>Petal.Length</code> in the popular iris dataset. We will use a fixed number of ten bins. Alternatively, the package <code>binsreg</code> will automatically calculate the optimal <span class="math inline">\(K\)</span>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">

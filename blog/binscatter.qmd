@@ -38,11 +38,11 @@ In technical jargon binscatter provides a nonparametric estimate of the conditio
 
 ### The Algorithm
 
-Here is the step-by-step recipe for construcing a binscatter plot.
+Here is the step-by-step recipe for constructing a binscatter plot.
 
 ::: {.callout-note title="Algorithm:"}
 
-1. **Bin construction**: Divide the range of $X$ into $K$ equal-width bins, or use quantile-based bins for equal sample sizes within bins. For example, with $K=10$, the observations in $B_1$ would be those between the minimimum value of $X$ and that of its tenth percentile.
+1. **Bin construction**: Divide the range of $X$ into $K$ equal-width bins, or use quantile-based bins for equal sample sizes within bins. For example, with $K=10$, the observations in $B_1$ would be those between the minimum value of $X$ and that of its tenth percentile.
 
 2. **Mean calculation**: Compute the mean of $Y$ within each bin:
 
@@ -59,7 +59,7 @@ Quite simple, right? Let’s explore certain useful extensions of this idea.
 
 ### Adjusting for Covariates: The Wrong Way
 
-In many applications, it is essential to control for additional covariates $W$ to isolate the relationship between the primary variables of interest. The object of interest then becomes the conditional mean $E[Y\mid W,X]$. An example would be focusing on the relationship between income ($Y$) and education level ($X$) when controling for parental education ($W$).
+In many applications, it is essential to control for additional covariates $W$ to isolate the relationship between the primary variables of interest. The object of interest then becomes the conditional mean $E[Y\mid W,X]$. An example would be focusing on the relationship between income ($Y$) and education level ($X$) when controlling for parental education ($W$).
 
 A common but flawed approach to incorporating covariates in binscatter is residualized binscatter. This method involves first regressing separately both $Y$ and $X$ on the covariates $W$ to obtain residuals $\hat{u}_Y$​ and $\hat{u}_X$​, and then applying the binscatter method to these residuals:
 
@@ -91,7 +91,7 @@ Thoughtful data scientist always have variance in their mind. If, for instance, 
 
 ## An Example
 
-As an example let’s examine the relationship between the variables `Sepal.Length` and `Petal.Length` in the popular iris dataset. We will use a fixed number of ten bins. Alternatively, the package binsreg will automatically calculate the optimal $K$.
+As an example let’s examine the relationship between the variables `Sepal.Length` and `Petal.Length` in the popular iris dataset. We will use a fixed number of ten bins. Alternatively, the package `binsreg` will automatically calculate the optimal $K$.
 
 ::: {.panel-tabset}
 

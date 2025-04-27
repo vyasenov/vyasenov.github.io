@@ -26,7 +26,7 @@ Remember that we estimate the standard error of $\bar{X}$ as:
 
 $$ SE(\bar{X})=\frac{s}{\sqrt{n}}, \hspace{.3cm} \text{where} \hspace{.3cm} s=\sqrt{\frac{1}{N-1}\sum_i(X-\bar{X})^2} $$
 
-is an estimate of the standard deviation of $X$. I will explain below how estimation of $SE(\bar{X})$ differs for sampling and frequency weights. Imporantly, s_w will denote the weighted version of this standard error.
+is an estimate of the standard deviation of $X$. I will explain below how estimation of $SE(\bar{X})$ differs for sampling and frequency weights. Importantly, s_w will denote the weighted version of this standard error.
 
 ### Sampling Weights
 
@@ -168,7 +168,7 @@ The unweighted and frequency-weighted means match exactly, (I am not sure why th
 
 ## Where to Learn More
 
-Google is a great starting place. [Lumley’s blog post](http://notstatschat.rbind.io/2020/08/04/weights-in-statistics/) titled Weights in Statistics was incredibly helpful in preparing this article. Stata’s manuals which are publically available contain more detailed information on various types of weighting schemes. See also Solon et al. (2015) for using weights in causal inference.
+Google is a great starting place. [Lumley’s blog post](http://notstatschat.rbind.io/2020/08/04/weights-in-statistics/) titled Weights in Statistics was incredibly helpful in preparing this article. Stata’s manuals which are publicly available contain more detailed information on various types of weighting schemes. See also Solon et al. (2015) for using weights in causal inference.
 
 ## References
 

@@ -217,7 +217,7 @@ Here are the two posterior distributions.
 
 ![](../images/bayesAB_posteriors.png)
 
-There is also a specalized `bayesAB` package in `R`. It produces some cool charts, so I definitely recommend giving it a try.
+There is also a specialized `bayesAB` package in `R`. It produces some cool charts, so I definitely recommend giving it a try.
 
 *Software Package*: [bayesAB](https://www.rdocumentation.org/packages/bayesAB/).
 

@@ -455,9 +455,9 @@ window.Quarto = {
 </section>
 <section id="mathematical-definitions-of-mi" class="level3">
 <h3 class="anchored" data-anchor-id="mathematical-definitions-of-mi">Mathematical Definitions of MI</h3>
-<p>MI can be defined in mulitple ways. Perhaps the most intiuitive definition of MI between two random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is that it measures the difference between the joint distribution and the product of their marginals. If two random variables are independent, their joint distribution is the product of their marginals <span class="math inline">\(p(x,y)=p(x)p(y)\)</span>. In some sense, the discrepancy between these two objects (i.e., the two sides of the equality) measures the strength of association between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> (i.e., their “independence”).</p>
+<p>MI can be defined in multiple ways. Perhaps the most intuitive definition of MI between two random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is that it measures the difference between the joint distribution and the product of their marginals. If two random variables are independent, their joint distribution is the product of their marginals <span class="math inline">\(p(x,y)=p(x)p(y)\)</span>. In some sense, the discrepancy between these two objects (i.e., the two sides of the equality) measures the strength of association between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> (i.e., their “independence”).</p>
 <p>Formally, MI is the <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> between the joint distribution and the product of the two marginals:</p>
-<p><span class="math display">\[ MI(X,Y) = D_{KL}(p(X,Y) || p(X)p(Y). \]</span></p>
+<p><span class="math display">\[ MI(X,Y) = D_{KL} (p(X,Y) || p(X)p(Y)). \]</span></p>
 <p>Let’s now examine MI from a different angle. We can express mutual information as follows:</p>
 <p><span class="math display">\[ MI(X,Y) = \sum_{x \in X} \sum_{y \in Y} p(x,y) \log \left(\frac{p(x,y)}{p(x)p(y)}\right)\]</span></p>
 <p>Again, for continuous variables, the sums become integrals.</p>
@@ -484,7 +484,7 @@ window.Quarto = {
 </section>
 <section id="feature-selection-with-mi" class="level3">
 <h3 class="anchored" data-anchor-id="feature-selection-with-mi">Feature Selection with MI</h3>
-<p>In machine learning, MI serves as a useful metric for feature selection (Brown et al.&nbsp;2012, Vergara and Estévez 2014). Consider an outcome variable <span class="math inline">\(Y\)</span> and a set of features <span class="math inline">\(X\in\mathbb{R}^p\)</span> with n i.i.d. observations. By evaluating the MI between each feature and the target variable, one can retain features with the highest information content, passing a certain threshold. This is somewhat primitive since it assumes independence across features. More sophisticated approaches take feature dependency into acount.</p>
+<p>In machine learning, MI serves as a useful metric for feature selection (Brown et al.&nbsp;2012, Vergara and Estévez 2014). Consider an outcome variable <span class="math inline">\(Y\)</span> and a set of features <span class="math inline">\(X\in\mathbb{R}^p\)</span> with n i.i.d. observations. By evaluating the MI between each feature and the target variable, one can retain features with the highest information content, passing a certain threshold. This is somewhat primitive since it assumes independence across features. More sophisticated approaches take feature dependency into account.</p>
 <p>For instance, methods like Minimum Redundancy Maximum Relevance (mRMR, Peng et al.&nbsp;2005) aim to maximize the relevance of features to the target while minimizing redundancy among features. Here is a concise version of the mRMR algorithm:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
@@ -592,7 +592,7 @@ Algorithm:
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p><a href="https://en.wikipedia.org/wiki/Mutual_information">Wikipedia</a> is a great place to start and learng the basics. Brown et al.&nbsp;(2012) and Vergara and Estévez (2014) are the go-to resources for conditional MI and using MI for feature selection.</p>
+<p><a href="https://en.wikipedia.org/wiki/Mutual_information">Wikipedia</a> is a great place to start and learning the basics. Brown et al.&nbsp;(2012) and Vergara and Estévez (2014) are the go-to resources for conditional MI and using MI for feature selection.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>

@@ -57,7 +57,7 @@ Imagine you are estimating the mean \mu of a normal distribution, where $X \sim 
 
 $$f(x_i;\mu) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{(x_i-\mu)^2}{2 \sigma^2}}.$$
 
-Using the Fisher information defintion given above, taking the derivative and simplifying, we find:
+Using the Fisher information definition given above, taking the derivative and simplifying, we find:
 
 $$I(\mu)=  \left( \frac{\partial}{\partial \theta} \log f(x; \theta) \right)^2 = \frac{1}{\sigma^2}.$$
 

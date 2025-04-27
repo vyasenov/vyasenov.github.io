@@ -121,7 +121,7 @@ Multiplying the independent variables $X$ by the transpose of $L$ ensures the ou
 
 The `cor` function checks whether the generated data conforms to the target correlation matrix.
 
-The two matrices match almost exactly. We can also visualize the three variables in a scatterplot matrix. Notice that higher correlation values (e.g., b/w $y_1$ and $y_2$) correspond to stronger linear associations between.
+The two matrices match almost exactly. We can also visualize the three variables in a scatter plot matrix. Notice that higher correlation values (e.g., b/w $y_1$ and $y_2$) correspond to stronger linear associations between.
 
 ![](../images/scatterplot_matrix.png)
 

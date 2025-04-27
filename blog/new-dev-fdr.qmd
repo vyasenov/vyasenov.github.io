@@ -43,7 +43,7 @@ The mirror statistics $M_j$ take the following general form:
 
   $$M_j = sign(\tilde{\beta}_j^1, \tilde{\beta}_j^2) f(|\tilde{\beta}_j^1|, |\tilde{\beta}_j^2|),$$
 
-where the $\tilde{\beta}$ denote (standardized) estimates of the true coefficient $\beta$ and $f(\cdot)$ is a nonnegative, exchangeable and monotically increasing function. For instance, convenient choices for $f(\cdot)$ include $f(a,b) = 2min(a,b)$ (Xing et al. 2019), $f(a,b) = ab$, and $f(a,b) = a+b$ (Dai et al. 2022).
+where the $\tilde{\beta}$ denote (standardized) estimates of the true coefficient $\beta$ and $f(\cdot)$ is a nonnegative, exchangeable and monotonically increasing function. For instance, convenient choices for $f(\cdot)$ include $f(a,b) = 2min(a,b)$ (Xing et al. 2019), $f(a,b) = ab$, and $f(a,b) = a+b$ (Dai et al. 2022).
 
 Let’s now turn to calculating the $\tilde{\beta}$'s.
 

@@ -1,5 +1,5 @@
 ---
-title: "Multiple Testing: Methods Overview (Part 1)"
+title: "Multiple Testing: Methods Overview"
 date: "2022-10-22"
 categories: [multiple testing, statistical inference]
 ---

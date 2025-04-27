@@ -46,7 +46,7 @@ One can also imagine a hybrid approach. Begin with a dimensionality reduction me
 
 ## An Example
 
-Here is `R` and `python` code illustrating both types of approaches on the popular `iris` dataset. We are interested in creating strata based on the SepalLenght variable. We begin with the traditional binning approach.
+Here is `R` and `python` code illustrating both types of approaches on the popular `iris` dataset. We are interested in creating strata based on the `SepalLenght` variable. We begin with the traditional binning approach.
 
 :::: {.panel-tabset}
 

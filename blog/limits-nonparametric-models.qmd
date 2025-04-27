@@ -52,7 +52,7 @@ At the heart of bandwidth selection is the bias-variance tradeoff. Intuitively:
 
 - Small bandwidth (“overfitting”): Captures fine details but also noise, leading to high variance and low bias.
 - Large bandwidth (“underfitting”): Smoothes over the noise but can miss important structure, leading to high bias and low variance.
-- For nonparmetric curve estimation, the mean integrated squared error (MISE) is a common loss function for evaluating performance:
+- For nonparametric curve estimation, the mean integrated squared error (MISE) is a common loss function for evaluating performance:
 
 $$\text{MISE}(h) = \mathbb{E}\left[ \int \left( \hat{f}_h(x) - f(x) \right)^2 dx \right].$$
 
@@ -76,7 +76,7 @@ For Nadaraya-Watson regression, several methods exist for selecting the bandwidt
 
 $$h^* \propto n^{-1/5}.$$
 
-This expressiom highlights a fundamental characteristic of nonparametric methods: their convergence rate is slower than that of parametric methods. This represents one manifestation of the curse of dimensionality in nonparametric estimation. Furthermore, this relationship only specifies the rate at which the optimal bandwidth should decrease with sample size (proportionality to $n^{-1/5}$), rather than providing an exact value. Without the proportionality constant, its direct practical application is limited.
+This expression highlights a fundamental characteristic of nonparametric methods: their convergence rate is slower than that of parametric methods. This represents one manifestation of the curse of dimensionality in nonparametric estimation. Furthermore, this relationship only specifies the rate at which the optimal bandwidth should decrease with sample size (proportionality to $n^{-1/5}$), rather than providing an exact value. Without the proportionality constant, its direct practical application is limited.
 
 ## An Example
 
@@ -96,7 +96,7 @@ This yields a simplified version of the following figure:
 
 ![](../images/nonparametric.png)
 
-The green line corresponds to the Nadaraya-Watson regression with an optimal bandwidth and features some degree of curveture. The red line has a smaller bandwidth (higher variance, lower bias), and the blue line is undersmoothed (higher bandwidth).
+The green line corresponds to the Nadaraya-Watson regression with an optimal bandwidth and features some degree of curvature. The red line has a smaller bandwidth (higher variance, lower bias), and the blue line is undersmoothed (higher bandwidth).
 
 ## Bottom Line
 

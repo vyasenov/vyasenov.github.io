@@ -60,7 +60,7 @@ The next piece of the puzzle is the **Efficient Score** $S^*_{\theta}$, the proj
 
 $$S^*_{\theta}(X) = S_\theta(X)  - \Pi( S_\theta(X) \mid \mathcal{T}_\eta),$$
 
-where $\Pi(\cdot)$ is the projection operator. Here $\mathcal{T}_\eta$ is simply the linear subspace spanned by $S_\eta(X)$. The Efficient Score is the part of the score vector that is “free” from the influence of nuisance parameters. It represents the best possible score function for estimating $\theta$ in the presence of $\eta$. (A similar technique underlies the so-called Neyman orthogonality principle in dobule/debiased machine learning.) We can construct the efficient influence function by appropriately scaling the efficient score to get to the optimal EIF.
+where $\Pi(\cdot)$ is the projection operator. Here $\mathcal{T}_\eta$ is simply the linear subspace spanned by $S_\eta(X)$. The Efficient Score is the part of the score vector that is “free” from the influence of nuisance parameters. It represents the best possible score function for estimating $\theta$ in the presence of $\eta$. (A similar technique underlies the so-called Neyman orthogonality principle in double/debiased machine learning.) We can construct the efficient influence function by appropriately scaling the efficient score to get to the optimal EIF.
 
 ### The Semiparametric Efficiency Bound
 

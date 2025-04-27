@@ -1,7 +1,7 @@
 ---
 title: "Filling in Missing Data with MCMC"
 date: "2025-01-31"
-categories: [missing data, MCMC]
+categories: [missing data]
 ---
 
 ## Background
@@ -16,7 +16,7 @@ Let’s break this down step by step, explore the underlying intuition, as well 
 
 To keep things precise, let’s set up some notation. Let Y be the complete dataset, which we wish we had. We observe some, but not all observations of Y. Let’s split it into observed data $Y_{\text{obs}}$, and missing (or incomplete) data $Y_{\text{miss}}$, so that $Y = \left( Y_{\text{obs}}, Y_{\text{miss}} \right)$.
 
-Assume a model for the data parameterized by $\theta$, that is $Y \sim f(Y \mid \theta)$. A simple example would be that a univaraite $Y$ is Gaussian with some unspecified mean and variance. Our goal is to estimate and fill in $Y_{\text{miss}}$ by sampling from the posterior distribution
+Assume a model for the data parameterized by $\theta$, that is $Y \sim f(Y \mid \theta)$. A simple example would be that a univariate $Y$ is Gaussian with some unspecified mean and variance. Our goal is to estimate and fill in $Y_{\text{miss}}$ by sampling from the posterior distribution
 
   $$P(Y_{\text{miss}} \mid Y_{\text{obs}}, \theta).$$
 
@@ -51,7 +51,7 @@ Let’s walk through an example using a simple dataset with missing values. Supp
 
   $$Y = \beta_0 + \beta_1 X + \epsilon,$$
 
-where $\epsilon$ is an error term. We impose priors on $\beta_0$, $\beta_1$, and $\sigma^2$ (which collectively comprise $\theta$ in this exampe).
+where $\epsilon$ is an error term. We impose priors on $\beta_0$, $\beta_1$, and $\sigma^2$ (which collectively comprise $\theta$ in this example).
 
 We begin with generating some fake data and introduce missingness in $Y$.
 
@@ -100,7 +100,7 @@ Both coefficients fall in the expected respective regions.
 
 ## Where to Learn More
 
-Following some computational innovations, Bayesian methods have experienced somewhat of a revival in the last fiveteen years. Consequently, there are plenty of high-quality materials online. [Takahashi (2017)](https://account.datascience.codata.org/index.php/up-j-dsj/article/view/dsj-2017-037) is an accessible resource on MCMC and Multiple Imputation which I used extensively.
+Following some computational innovations, Bayesian methods have experienced somewhat of a revival in the last fifteen years. Consequently, there are plenty of high-quality materials online. [Takahashi (2017)](https://account.datascience.codata.org/index.php/up-j-dsj/article/view/dsj-2017-037) is an accessible resource on MCMC and Multiple Imputation which I used extensively.
 
 ## Bottom Line
 

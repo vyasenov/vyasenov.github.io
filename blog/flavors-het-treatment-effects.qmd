@@ -10,7 +10,7 @@ Numerous tales illustrate the inadequacy of the average to capture meaningful qu
 
 This is especially salient in policy evaluation where we design interventions, programs or product features aimed at improving the outcomes for specific groups of students, voters, users, etc. Heterogeneous treatment effects in these cases might be even more important than the overall average one.
 
-The Machine Learning (ML) toolbox offers among the most powerful methods to detect such heterogeneity in formalized, data-driven ways. Today I will describe four model-agnostic methods – the so-called $S$-, $T$-, $X$- and $R$-learners (i.e., estimators). By model-free I mean that these methods work with any predictive models such as [the lasso](https://yasenov.com/2023/06/using-lasso-to-estimate-heterogeneous-treatment-effects/), gradient boosting, or even neural networks. In some clever sense, $STXR$ is the $ABC$ of heterogeneous treatment effect estimation.
+The Machine Learning (ML) toolbox offers among the most powerful methods to detect such heterogeneity in formalized, data-driven ways. Today I will describe four model-agnostic methods – the so-called $S$-, $T$-, $X$- and $R$-learners (i.e., estimators). By model-free I mean that these methods work with any predictive models such as [the lasso](https://yasenov.com/2023/06/using-lasso-to-estimate-heterogeneous-treatment-effects/), gradient boosting, or even neural networks. In some clever sense, $S-T-X-R$ is the $A-B-C$ of heterogeneous treatment effect estimation.
 
 My goal is to give a high-level overview, without getting lost in technical details. Enthusiastic data scientists can jump to the Where to Learn More section below to dive deep into the theory when needed. The [CausalML](https://causalml.readthedocs.io/en/latest/index.html) Python package implements many of these methods, so I encourage everyone who has never used it to go ahead and try them.
 
@@ -88,7 +88,7 @@ To avoid getting too deep into technical details, I will not be describing the e
 
 ## Where to Learn More
 
-I have previously written on how ML can be useful in causal inference, more generally and how we can use the Lasso to estimate heterogeneous treatment effects. [Hu (2022)](https://www.sciencedirect.com/science/article/pii/S0049089X22001211) offers a detailed summary of a bunch of ML methods for HTE estimation. A Statistical Odds and Ends [blog post](https://statisticaloddsandends.wordpress.com/2022/05/20/t-learners-s-learners-and-x-learners/) describes the $S$-, $T$- and $X$-learners and contains useful advice on when each of them is preferrable. Chapter 21 of [Causal Inference for the Brave and True](https://matheusfacure.github.io/python-causality-handbook/21-Meta-Learners.html) also discusses this material and provides useful examples.
+I have previously written on how ML can be useful in causal inference, more generally and how we can use the Lasso to estimate heterogeneous treatment effects. [Hu (2022)](https://www.sciencedirect.com/science/article/pii/S0049089X22001211) offers a detailed summary of a bunch of ML methods for HTE estimation. A Statistical Odds and Ends [blog post](https://statisticaloddsandends.wordpress.com/2022/05/20/t-learners-s-learners-and-x-learners/) describes the $S$-, $T$- and $X$-learners and contains useful advice on when each of them is preferable. Chapter 21 of [Causal Inference for the Brave and True](https://matheusfacure.github.io/python-causality-handbook/21-Meta-Learners.html) also discusses this material and provides useful examples.
 
 ## References
 

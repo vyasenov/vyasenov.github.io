@@ -10,7 +10,7 @@ Statistical modeling is among the most exciting elements of working with data. W
 
 A major goal in the craft of statistical modeling is extracting the most information from the data at hand. Statisticians and econometricians call this efficiency or precision. In simple terms, this means achieving the lowest possible variance from a class of available estimators. As an example, imagine two findings—both centered at $3\%$ (e.g., the treatment effect of an intervention of interest)—but one with a $95\%$ confidence interval of $[2\%, 4\%]$, and the other with $[-7\%, 13\%]$. The former is clearly more informative and useful than the latter.
 
-In a series of four articles, I will dive deeper into the topic of efficiency with a varying degree of detail and complexity. As a first step in this exploration, I want to demystify the distinction between the three classes of statistcal models: parametric, semiparametric, and nonparametric. The goal of this article is to explore in depth the concepts of parameterizing a model and the distinctions between these three groups.
+In a series of four articles, I will dive deeper into the topic of efficiency with a varying degree of detail and complexity. As a first step in this exploration, I want to demystify the distinction between the three classes of statistical models: parametric, semiparametric, and nonparametric. The goal of this article is to explore in depth the concepts of parameterizing a model and the distinctions between these three groups.
 
 ## A Closer Look
 
@@ -62,7 +62,7 @@ $$Y=m(X)+\epsilon,$$
 
 where $m(X)$ is an unknown function estimated directly from the data using methods like local polynomial regression, splines. Unlike the linearity assumption in parametric models, nonparametric regression allows $m(X)$ to capture complex, nonlinear relationships. A commonly used variant of this is [LOESS regression](https://en.wikipedia.org/wiki/Local_regression) often overlayed in bivariate scatterplots.
 
-Many popular machine learning (ML) methods are also nonparametric. In this context it is important to distinguis between parameters which impose assumptions on the data and hyperparameters which serve to tune the algorithm. Tree-based techniques exemplify the nonparametric nature of ML: gradient boosting machines, random forests, and individual decision trees can all grow more complex as they encounter more data, creating flexible models that capture intricate patterns. Think even of unsupervised clustering models including $k$-means and hierarchical clustering.
+Many popular machine learning (ML) methods are also nonparametric. In this context it is important to distinguish between parameters which impose assumptions on the data and hyperparameters which serve to tune the algorithm. Tree-based techniques exemplify the nonparametric nature of ML: gradient boosting machines, random forests, and individual decision trees can all grow more complex as they encounter more data, creating flexible models that capture intricate patterns. Think even of unsupervised clustering models including $k$-means and hierarchical clustering.
 
 While nonparametric models are powerful, their flexibility comes at a cost: they can overfit small datasets and often require careful tuning (e.g., choosing the kernel bandwidth) to balance bias and variance. Nonetheless, they are invaluable for exploratory analysis and applications where minimal assumptions are desired.
 

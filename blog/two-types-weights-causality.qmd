@@ -45,7 +45,7 @@ This equality is particularly useful in the next step, when estimating the treat
 
 Third, these IPS weights are generally unknown and have to be estimated from the data. A leading exception is controlled randomized experiments where the researcher determines the probability of treatment. This is, however, uncommon. Traditionally, practitioners rely on methods like logistic regression to first obtain $\hat{e}(X)$ and then take its reciprocal to construct the weights.
 
-Using IPS weights entails two primary challenges. When $\hat{e}(X)$ is close to $0$ or $1$, weights can become excessively large, leading to high variance in estimates. Practitioners then turn to trim observations with “too large” or “too small” $\hat{e}(X)$ values. Moreover, model misspecification in $\hat{e}(X)$ can lead to poor covariate balance, introducing bias. More flexible methods such as machin learning models can alleviate this problem.
+Using IPS weights entails two primary challenges. When $\hat{e}(X)$ is close to $0$ or $1$, weights can become excessively large, leading to high variance in estimates. Practitioners then turn to trim observations with “too large” or “too small” $\hat{e}(X)$ values. Moreover, model misspecification in $\hat{e}(X)$ can lead to poor covariate balance, introducing bias. More flexible methods such as machine learning models can alleviate this problem.
 
 *Software Packages*: [MatchIt](https://www.rdocumentation.org/packages/MatchIt), [Matching](https://www.rdocumentation.org/packages/Matching).
 

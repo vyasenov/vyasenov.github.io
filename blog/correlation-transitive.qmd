@@ -38,9 +38,17 @@ $$-.28 \leq cor(X,Z) \leq 1.$$
 
 That is, $cor(X,Z)$ can be negative.
 
-### An (Extremely Simple) Example
+### Examples
 
-Perhaps the simplest example to illustrate this is:
+### Example: City Lifestyle
+
+Let's go through three examples of non-transitive correlations.
+
+Let $X$ represent the number of hours a person spends commuting daily in a city, $Y$ represent their monthly public transit expenses, and $Z$ represent their daily step count. $X$ and $Y$ are correlated because longer commutes ($X$) typically involve more frequent or longer public transit use, increasing transit expenses ($Y$). Similarly, $X$ and $Z$ are correlated since longer commutes ($X$) often involve more walking to and from transit stops, boosting step count ($Z$). However, $Y$ and $Z$ are not correlated because transit expenses ($Y$) depend on fare structures and trip frequency, while step count ($Z$) is influenced by walking habits unrelated to cost, such as choosing to walk shorter distances or using different transit routes, resulting in no direct relationship between the two.
+
+Consider $X$ as the number of hours a person exercises per week, $Y$ as their muscle mass, and $Z$ as their resting heart rate. $X$ and $Y$ are correlated because more exercise ($X$) typically increases muscle mass ($Y$). Likewise, $X$ and $Z$ are correlated since regular exercise ($X$) tends to lower resting heart rate ($Z$). However, $Y$ and $Z$ are not correlated because muscle mass ($Y$) and resting heart rate ($Z$) are influenced by different physiological mechanisms—muscle mass depends on strength training, while heart rate is more tied to cardiovascular fitness—and thus show no direct relationship.
+
+Perhaps the simplest example to illustrate this mathematically is:
 
 - $X$ and $Z$ are independent random variables,
 - $Y=X+Z$.

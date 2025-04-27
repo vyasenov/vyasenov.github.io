@@ -84,7 +84,6 @@ spearman_corr, spearman_pval = spearmanr(x, y)
 
 :::
 
-
 Spearman correlation is not the only rank correlation coefficient out there. А popular alternative is the Kendall rank coefficient which is computed slightly differently. Let’s define a pair of observations $(X_i, Y_i)$ and $(X_j, Y_j)$ to be agreeing (the technical term is concordant) if the differences $(X_i - X_j)$ and $(Y_i - Y_j)$ have the same sign (i.e., either both $X_i > X_j$ and $Y_i > Y_j $or both $X_i < X_j$ and $Y_i < Y_j$ ).
 
 Then, Kendall’s coefficient is expressed as:
@@ -135,7 +134,7 @@ where n is the sample size. This looks complicated, so let’s try to simplify t
 
 So, this new coefficient is a scaled version of the sum of the absolute differences in the consecutive ranks of $Y$ when ordered by $X$. It is perhaps best to think about Chatterjee’s method as a measure of dependence and not strictly a correlation coefficient.
 
-There are some major difference comapred to the previous correlation measures. Chatterjee’s correlation coefficient lies in the $[0,1]$ interval. It is equal to zero if and only if $X$ and $Y$ are independent and to one if one of them is a function of the other. Unlike the coefficients descibed above, it is not symmetric in $X$ and $Y$, meaning $corr^{C}(X,Y) \neq corr^{C}(Y,X)$. This is understandable since we are interested in whether $X$ is a function of $Y$, which does not imply the opposite. The author also develops asymptotic theory for calculating p-values although some researchers have [raised concerns](https://academic.oup.com/biomet/article-abstract/109/2/317/6259083) about the coefficient’s power.
+There are some major difference compared to the previous correlation measures. Chatterjee’s correlation coefficient lies in the $[0,1]$ interval. It is equal to zero if and only if $X$ and $Y$ are independent and to one if one of them is a function of the other. Unlike the coefficients described above, it is not symmetric in $X$ and $Y$, meaning $corr^{C}(X,Y) \neq corr^{C}(Y,X)$. This is understandable since we are interested in whether $X$ is a function of $Y$, which does not imply the opposite. The author also develops asymptotic theory for calculating p-values although some researchers have [raised concerns](https://academic.oup.com/biomet/article-abstract/109/2/317/6259083) about the coefficient’s power.
 
 Here is a sample code to calculate its value:
 
@@ -188,7 +187,7 @@ There you have it. You are now well-equipped to dive deeper into your datasets a
 
 - The most common methods measure only linear or monotonic relationships. These are often useful but do not capture more complex, non-linear associations.
 
-- A new correlation measure, Chatterjee’s coeffient, is designed to go beyond monotonicty and assess more general bivariate relationships.
+- A new correlation measure, Chatterjee’s coefficient, is designed to go beyond monotonicity and assess more general bivariate relationships.
 
 ## Where to Learn More
 

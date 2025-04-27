@@ -397,7 +397,6 @@ window.Quarto = {
 <h1 class="title">Filling in Missing Data with MCMC</h1>
   <div class="quarto-categories">
     <div class="quarto-category">missing data</div>
-    <div class="quarto-category">MCMC</div>
   </div>
   </div>
 
@@ -430,7 +429,7 @@ window.Quarto = {
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
 <p>To keep things precise, let’s set up some notation. Let Y be the complete dataset, which we wish we had. We observe some, but not all observations of Y. Let’s split it into observed data <span class="math inline">\(Y_{\text{obs}}\)</span>, and missing (or incomplete) data <span class="math inline">\(Y_{\text{miss}}\)</span>, so that <span class="math inline">\(Y = \left( Y_{\text{obs}}, Y_{\text{miss}} \right)\)</span>.</p>
-<p>Assume a model for the data parameterized by <span class="math inline">\(\theta\)</span>, that is <span class="math inline">\(Y \sim f(Y \mid \theta)\)</span>. A simple example would be that a univaraite <span class="math inline">\(Y\)</span> is Gaussian with some unspecified mean and variance. Our goal is to estimate and fill in <span class="math inline">\(Y_{\text{miss}}\)</span> by sampling from the posterior distribution</p>
+<p>Assume a model for the data parameterized by <span class="math inline">\(\theta\)</span>, that is <span class="math inline">\(Y \sim f(Y \mid \theta)\)</span>. A simple example would be that a univariate <span class="math inline">\(Y\)</span> is Gaussian with some unspecified mean and variance. Our goal is to estimate and fill in <span class="math inline">\(Y_{\text{miss}}\)</span> by sampling from the posterior distribution</p>
 <p><span class="math display">\[P(Y_{\text{miss}} \mid Y_{\text{obs}}, \theta).\]</span></p>
 <p>The results and intuition hold also conditional on some covariates <span class="math inline">\(X\)</span>, but for simplicity’s sake, I will keep that out of the notation for now.</p>
 </section>
@@ -469,7 +468,7 @@ Algorithm:
 <h2 class="anchored" data-anchor-id="an-example">An Example</h2>
 <p>Let’s walk through an example using a simple dataset with missing values. Suppose you have a dataset with two variables, <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, where <span class="math inline">\(Y \sim N(\beta_0 + \beta_1 X, \sigma^2)\)</span>, and some values of <span class="math inline">\(Y\)</span> are missing. We assume the following relationship:</p>
 <p><span class="math display">\[Y = \beta_0 + \beta_1 X + \epsilon,\]</span></p>
-<p>where <span class="math inline">\(\epsilon\)</span> is an error term. We impose priors on <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, and <span class="math inline">\(\sigma^2\)</span> (which collectively comprise <span class="math inline">\(\theta\)</span> in this exampe).</p>
+<p>where <span class="math inline">\(\epsilon\)</span> is an error term. We impose priors on <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, and <span class="math inline">\(\sigma^2\)</span> (which collectively comprise <span class="math inline">\(\theta\)</span> in this example).</p>
 <p>We begin with generating some fake data and introduce missingness in <span class="math inline">\(Y\)</span>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
@@ -511,7 +510,7 @@ Algorithm:
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Following some computational innovations, Bayesian methods have experienced somewhat of a revival in the last fiveteen years. Consequently, there are plenty of high-quality materials online. <a href="https://account.datascience.codata.org/index.php/up-j-dsj/article/view/dsj-2017-037">Takahashi (2017)</a> is an accessible resource on MCMC and Multiple Imputation which I used extensively.</p>
+<p>Following some computational innovations, Bayesian methods have experienced somewhat of a revival in the last fifteen years. Consequently, there are plenty of high-quality materials online. <a href="https://account.datascience.codata.org/index.php/up-j-dsj/article/view/dsj-2017-037">Takahashi (2017)</a> is an accessible resource on MCMC and Multiple Imputation which I used extensively.</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>

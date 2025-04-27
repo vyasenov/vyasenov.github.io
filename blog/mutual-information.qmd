@@ -41,11 +41,11 @@ Entropy equals $0$ when there’s no uncertainty, such as when $X$ always takes 
 
 ### Mathematical Definitions of MI
 
-MI can be defined in mulitple ways. Perhaps the most intiuitive definition of MI between two random variables $X$ and $Y$ is that it measures the difference between the joint distribution and the product of their marginals. If two random variables are independent, their joint distribution is the product of their marginals $p(x,y)=p(x)p(y)$. In some sense, the discrepancy between these two objects (i.e., the two sides of the equality) measures the strength of association between $X$ and $Y$ (i.e., their “independence”).
+MI can be defined in multiple ways. Perhaps the most intuitive definition of MI between two random variables $X$ and $Y$ is that it measures the difference between the joint distribution and the product of their marginals. If two random variables are independent, their joint distribution is the product of their marginals $p(x,y)=p(x)p(y)$. In some sense, the discrepancy between these two objects (i.e., the two sides of the equality) measures the strength of association between $X$ and $Y$ (i.e., their “independence”).
 
 Formally, MI is the [Kullback-Leibler divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence) between the joint distribution and the product of the two marginals:
 
-  $$ MI(X,Y) = D_{KL}(p(X,Y) || p(X)p(Y). $$
+  $$ MI(X,Y) = D_{KL} (p(X,Y) || p(X)p(Y)). $$
 
 Let’s now examine MI from a different angle. We can express mutual information as follows:
 
@@ -80,7 +80,7 @@ This can be valuable in causal inference, where understanding dependencies condi
 
 ### Feature Selection with MI
 
-In machine learning, MI serves as a useful metric for feature selection (Brown et al. 2012, Vergara and Estévez 2014). Consider an outcome variable $Y$ and a set of features $X\in\mathbb{R}^p$ with n i.i.d. observations. By evaluating the MI between each feature and the target variable, one can retain features with the highest information content, passing a certain threshold. This is somewhat primitive since it assumes independence across features. More sophisticated approaches take feature dependency into acount.
+In machine learning, MI serves as a useful metric for feature selection (Brown et al. 2012, Vergara and Estévez 2014). Consider an outcome variable $Y$ and a set of features $X\in\mathbb{R}^p$ with n i.i.d. observations. By evaluating the MI between each feature and the target variable, one can retain features with the highest information content, passing a certain threshold. This is somewhat primitive since it assumes independence across features. More sophisticated approaches take feature dependency into account.
 
 For instance, methods like Minimum Redundancy Maximum Relevance (mRMR, Peng et al. 2005) aim to maximize the relevance of features to the target while minimizing redundancy among features. Here is a concise version of the mRMR algorithm:
 
@@ -187,7 +187,7 @@ This example demonstrates how MI can capture nonlinear relationships that might 
 
 ## Where to Learn More
 
-[Wikipedia](https://en.wikipedia.org/wiki/Mutual_information) is a great place to start and learng the basics. Brown et al. (2012) and Vergara and Estévez (2014) are the go-to resources for conditional MI and using MI for feature selection.
+[Wikipedia](https://en.wikipedia.org/wiki/Mutual_information) is a great place to start and learning the basics. Brown et al. (2012) and Vergara and Estévez (2014) are the go-to resources for conditional MI and using MI for feature selection.
 
 ## References
 

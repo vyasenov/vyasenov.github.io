@@ -360,7 +360,6 @@ window.Quarto = {
 <div class="quarto-title">
 <h1 class="title">Using Conformal Inference for Variable Importance in Machine Learning</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">conformal inference</div>
     <div class="quarto-category">machine learning</div>
   </div>
   </div>
@@ -418,7 +417,7 @@ window.Quarto = {
 <p><span class="math display">\[ P(\Delta_j^{n+1} \in S_j(X_{n+1})) \geq 1-\alpha, \]</span></p>
 <p>where <span class="math inline">\(\alpha\)</span> is a pre-specified significance level. This holds for all <span class="math inline">\(j\)</span>.</p>
 <p>We can plot the confidence intervals <span class="math inline">\(S_j(X_i)\)</span> for <span class="math inline">\(i=1 \dots n\)</span> and roughly interpret them as measuring variable importance. The closer the intervals are to zero, the less important the variable is for predicting new outcomes. The opposite is true as well. The further and more often it is away from zero, the more important the variable.</p>
-<p>Another, more global, approach to using conformal inference for variable importance focuses on the distribution of <span class="math inline">\(\Delta_j(X_{n+1}, Y_{n+1})\)</span> and conducts hypothesis testing on its median or mean. Intuitively, failing to reject a hyptohesis that these statistics are non-zero is evidence that variable <span class="math inline">\(j\)</span> does not play a significant role in predicting <span class="math inline">\(Y\)</span>.</p>
+<p>Another, more global, approach to using conformal inference for variable importance focuses on the distribution of <span class="math inline">\(\Delta_j(X_{n+1}, Y_{n+1})\)</span> and conducts hypothesis testing on its median or mean. Intuitively, failing to reject a hypothesis that these statistics are non-zero is evidence that variable <span class="math inline">\(j\)</span> does not play a significant role in predicting <span class="math inline">\(Y\)</span>.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">

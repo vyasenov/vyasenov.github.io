@@ -6,7 +6,7 @@ categories: [variable selection, machine learning]
 
 ## Background
 
-In our data-abundant world, we often have access to tens, hundreds, or even thousands of variables. Most of these features are usually irrelevant or redundant, leading to increased computational complexity and potentially overfitted models. Variable selection algorithms are designed to mitigate these challenges by selecting the subset of columns that is most relevant to the problem at hand. This, in turn, can result in simplified, more efficient, and interpretable machine learning (ML) models. Examples of such methods abound—lasso, ridge, elastic net utilizing $L1$ and $L2$ regularization or a linear combination of both; forward/backward stepwise regression algorithms, etc.
+In our data-abundant world, we often have access to tens, hundreds, or even thousands of variables. Most of these features are usually irrelevant or redundant, leading to increased computational complexity and potentially overfit models. Variable selection algorithms are designed to mitigate these challenges by selecting the subset of columns that is most relevant to the problem at hand. This, in turn, can result in simplified, more efficient, and interpretable machine learning (ML) models. Examples of such methods abound—lasso, ridge, elastic net utilizing $L1$ and $L2$ regularization or a linear combination of both; forward/backward stepwise regression algorithms, etc.
 
 In this article, I will describe a new variable selection method built on the idea of Chatterjee’s correlation coefficient, which has been a hot topic of discussion among statisticians. The new method goes by the abbreviation FOCI, which stands for Feature Ordering by Conditional Independence. It is somewhat similar to forward stepwise regression but overcomes some of the critiques most often associated with it.
 
@@ -35,7 +35,6 @@ To answer my own question above, it’s difficult to say that one is always bett
 [Quantile regression](https://doi.org/10.1146/annurev-economics-063016-103651) is another setting where most often people confuse conditional and [unconditional statistical inference](https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6822). Interestingly, though, the situation is flipped. The classical quantile regression estimator, which most people utilize, measures the impact of $X$ on the *conditional* quantile of $Y$, but there results are [commonly](https://doi.org/10.1002/hec.2927) [interpreted](interpreted) as having unconditional interpretation.
 
 :::
-
 
 ### New Coefficient of Conditional Independence
 

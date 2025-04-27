@@ -478,7 +478,7 @@ Algorithm:
 </section>
 <section id="adaboost" class="level3">
 <h3 class="anchored" data-anchor-id="adaboost">AdaBoost</h3>
-<p><code>AdaBoost</code>, short for Adaptive Boosting, is one of the earliest boosting algorithms. It adjusts the weights of incorrectly classified observations so that subsequent learners focus more on difficult ones. In other words, it works by learning from its mistakes – after each round of predictions, it identifies which observartions it got wrong and pays special attention to them (i.e., gives them a higher weight) in the next round. Thus, <code>AdaBoost</code> is not strictly speaking a gradient boosting algorithm, in the modern sense of the term.</p>
+<p><code>AdaBoost</code>, short for Adaptive Boosting, is one of the earliest boosting algorithms. It adjusts the weights of incorrectly classified observations so that subsequent learners focus more on difficult ones. In other words, it works by learning from its mistakes – after each round of predictions, it identifies which observations it got wrong and pays special attention to them (i.e., gives them a higher weight) in the next round. Thus, <code>AdaBoost</code> is not strictly speaking a gradient boosting algorithm, in the modern sense of the term.</p>
 <p>Let’s consider a binary classification problem where the outcome variable takes values in <span class="math inline">\(\{ -1, 1\}\)</span>. Here is the general <code>AdaBoost</code> algorithm:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
@@ -543,13 +543,13 @@ Algorithm:
 </section>
 <section id="lightgbm" class="level3">
 <h3 class="anchored" data-anchor-id="lightgbm">LightGBM</h3>
-<p><code>LightGBM</code> shares many of <code>XGBoost’s</code> benefits, such as support for sparse data, parallel training, multiple loss functions, regularization, and early stopping, but it also introduces a bunc of new features and improvements.</p>
+<p><code>LightGBM</code> shares many of <code>XGBoost’s</code> benefits, such as support for sparse data, parallel training, multiple loss functions, regularization, and early stopping, but it also introduces a bunch of new features and improvements.</p>
 <p>First, rather than growing trees level-wise (row by row) as in most implementations, <code>LightGBM</code> grows trees leaf-wise, selecting the leaf that provides the greatest reduction in loss. Second, it does not use the typical sorted-based approach for finding split points, which sorts feature values to locate the best split. Instead, it relies on an efficient histogram-based method that significantly improves both speed and memory efficiency. Third, <code>LightGBM</code> incorporates the so-called Gradient-Based One-Side Sampling, which speeds up training by focusing on the most informative samples. Lastly, the algorithm uses Exclusive Feature Bundling which can group features to reduce dimensionality, enabling faster and more accurate model training.</p>
 <p><em>Software Packages</em>: <a href="https://lightgbm.readthedocs.io/en/latest/index.html">lightgbm</a>.</p>
 </section>
 <section id="challenges" class="level3">
 <h3 class="anchored" data-anchor-id="challenges">Challenges</h3>
-<p>Gradinet boosting methods comes with a few common practical challenges. When a predicitve model learns the training data too precisely, it may perform poorly on new, unseen data – a problem called overfitting. To combat this, various regularization methods are used to add helpful constraints to the learning process. A main parameter that regulates the model’s learning precision is the number of boosting rounds (<span class="math inline">\(M\)</span>), which determines how many base models are created. While using more rounds reduces training errors, it also increases overfitting risk. To find the optimal <span class="math inline">\(M\)</span> value, it’s common to use cross validation. The depth of decision trees is another important control parameter in tree boosting. Deeper trees can capture more complex patterns but are more prone to memorizing the training data rather than learning generalizable patterns.</p>
+<p>Gradient boosting methods comes with a few common practical challenges. When a predictive model learns the training data too precisely, it may perform poorly on new, unseen data – a problem called overfitting. To combat this, various regularization methods are used to add helpful constraints to the learning process. A main parameter that regulates the model’s learning precision is the number of boosting rounds (<span class="math inline">\(M\)</span>), which determines how many base models are created. While using more rounds reduces training errors, it also increases overfitting risk. To find the optimal <span class="math inline">\(M\)</span> value, it’s common to use cross validation. The depth of decision trees is another important control parameter in tree boosting. Deeper trees can capture more complex patterns but are more prone to memorizing the training data rather than learning generalizable patterns.</p>
 <p>The improved predictive performance of gradient boosting relative to simpler models comes at a cost of reduced model transparency. While a single decision tree’s reasoning can be easily traced and understood, tracking the decision-making process across numerous trees becomes extremely complex and challenging. Gradient boosting is an excellent example of the inherent tradeoff between model simplicity and performance.</p>
 <p>Let’s now look at how can we use these methods in practice.</p>
 </section>
@@ -599,7 +599,7 @@ Algorithm:
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>XGBoost: <span class="fl">0.9561</span></span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>LightGBM: <span class="fl">0.9649</span></span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>CatBoost: <span class="fl">0.9649</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Overall each method performed reasonably well, with acuracy ranging from <span class="math inline">\(95.6\)</span>% to <span class="math inline">\(97.4\)</span>%. Interestingly, <code>Adaboost</code> outperformed the other more complex algorithms, at least in the in terms of accuracy.</p>
+<p>Overall each method performed reasonably well, with accuracy ranging from <span class="math inline">\(95.6\)</span>% to <span class="math inline">\(97.4\)</span>%. Interestingly, <code>Adaboost</code> outperformed the other more complex algorithms, at least in the in terms of accuracy.</p>
 <p>And that’s it. You are now familiar with the most popular implementations of gradient boosting along with their advantages and weaknesses. You also know how to employ them in practice. Have fun incorporating <code>XGboost</code> and the like into your predictive modeling tasks.</p>
 </section>
 <section id="bottom-line" class="level2">
@@ -609,13 +609,13 @@ Algorithm:
 <li><p><code>AdaBoost</code> focuses on misclassified instances by adjusting weights.</p></li>
 <li><p><code>XGBoost</code> introduces regularization and optimization for speed and performance.</p></li>
 <li><p><code>CatBoost</code> efficiently handles categorical features and reduces overfitting.</p></li>
-<li><p><code>LightGBM</code> enjoys many of <code>XGBoost’s</code> strenghts while introducing a few novelties including a different way of building the underlying weak learners.</p></li>
+<li><p><code>LightGBM</code> enjoys many of <code>XGBoost’s</code> strengths while introducing a few novelties including a different way of building the underlying weak learners.</p></li>
 <li><p>Common practical challenges when implementing gradient boosting include overfitting, decreased interpretability and computational costs.</p></li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Wikipedia is a great startint point, and it’s a resource I used extensively when preparing this article. “The Elements of Statistical Learning” by Hastie, Tibshirani, and Friedman is a comprehensive guide that covers the theoretical foundations of machine learning, including gradient boosting. It is the de facto bible for statistical ML. While this book is phenomenal, it can be challenging for less technical practitioners for which I recommend its lighther versions, “An Introduction to Statistical Learning” with R and <code>Python</code> code. All these books are available for free online. Lastly, if you want to dive even deeper into any of the algortihms descibe above, consider studying the papers in the References section below.</p>
+<p>Wikipedia is a great starting point, and it’s a resource I used extensively when preparing this article. “The Elements of Statistical Learning” by Hastie, Tibshirani, and Friedman is a comprehensive guide that covers the theoretical foundations of machine learning, including gradient boosting. It is the de facto bible for statistical ML. While this book is phenomenal, it can be challenging for less technical practitioners for which I recommend its lighter versions, “An Introduction to Statistical Learning” with R and <code>Python</code> code. All these books are available for free online. Lastly, if you want to dive even deeper into any of the algorithms describe above, consider studying the papers in the References section below.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>

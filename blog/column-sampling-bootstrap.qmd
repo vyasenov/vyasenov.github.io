@@ -111,7 +111,7 @@ The observed correlation is quite low and equal to $0.58$. Its associated p-valu
 
 ## Bottom Line
 
-- The column-sampling bootstrap is a thought-proviking twist on traditional resampling techniques that leverages the width of your dataset.
+- The column-sampling bootstrap is a thought-provoking twist on traditional resampling techniques that leverages the width of your dataset.
 
 - While it offers computational efficiency and flexibility, its reliance on the i.i.d. assumption and potential to overlook row-level dependencies highlight the need for careful application.
 
