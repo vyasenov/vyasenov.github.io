@@ -1,0 +1,167 @@
+---
+title: "Double/Debiased ML for Causal Inference"
+date: "2025-00-00"
+categories: [causal inference, machine learning]
+---
+
+## Background
+
+Causal inference meets machine learning — but with a twist. Many data scientists are eager to bring the power of flexible machine learning tools into their causal analyses. But here’s the catch: naïvely plugging ML estimates into your causal models can lead to biased results and invalid confidence intervals. Enter **Double/Debiased Machine Learning (DML)**, a framework designed to handle these problems systematically.
+
+DML, pioneered by Chernozhukov, Hansen, and colleagues, combines classical econometric insights with modern machine learning to estimate causal parameters like average treatment effects (ATE) in the presence of high-dimensional or complex nuisance components. The magic lies in two key ideas: **Neyman orthogonality** and **cross-fitting**.
+
+This article unpacks how DML works, what problems it solves, and how to implement it using modern tools in `R` and `Python`. Forget about functional form assumptions — DML lets your nuisance functions be estimated by any ML method you like (random forests, boosting, neural nets, etc.) while still guaranteeing valid inference on your treatment effects.
+
+## Notation
+
+Consider an independent and identically distributed (i.i.d.) sample $\{ W_i \}_{i=1}^n$, where each $W_i = (Y_i, D_i, X_i)$:
+- $Y_i$: outcome variable,
+- $D_i$: treatment variable (binary or continuous),
+- $X_i$: covariates or controls.
+
+The parameter of interest is a low-dimensional causal object $\theta_0$ (such as the ATE), identified through a moment condition:
+
+$$
+\mathbb{E}[m(W_i, \theta_0, \eta_0)] = 0,
+$$
+
+where:
+- $m(\cdot)$ is a score (moment) function,
+- $\eta_0$ is a high-dimensional or complex nuisance parameter (e.g., propensity score, outcome regression).
+
+Directly plugging in estimated $\hat{\eta}$ can cause bias if $\hat{\eta}$ is not perfectly estimated, especially with ML models prone to regularization or overfitting.
+
+## A Closer Look
+
+### The Problem: Nuisance Parameters Everywhere
+
+In causal inference, we often need to estimate nuisance functions like:
+- The **propensity score** $r(X) = \mathbb{E}[D | X]$,
+- The **outcome regression** $\mathbb{E}[Y | D, X]$.
+
+When we use flexible ML methods to estimate these, we risk **regularization bias** (from penalties or smoothing) and **overfitting bias** (if the same data is used both to estimate the nuisance functions and the causal parameter).
+
+DML solves this problem using two ideas.
+
+### Neyman Orthogonality: Guarding Against Small Mistakes
+
+The first ingredient is **Neyman orthogonality**. This property ensures that the score function $m(\cdot)$ is "locally insensitive" to small errors in the nuisance parameters. Formally, a score function $\psi(W_i; \theta, \eta)$ is Neyman orthogonal if:
+
+$$
+\frac{\partial}{\partial \lambda} \mathbb{E}[\psi(W_i; \theta_0, \eta_0 + \lambda (\eta - \eta_0))] \Big|_{\lambda=0} = 0.
+$$
+
+In other words, small perturbations in $\eta$ don't affect the identifying moment condition at first order.
+
+For the ATE, the **doubly robust score** satisfies Neyman orthogonality:
+
+$$
+\psi(W_i; \theta, \eta) = \alpha(D_i, X_i)(Y_i - \ell(D_i, X_i)) + \ell(1, X_i) - \ell(0, X_i) - \theta,
+$$
+
+where:
+- $\alpha(D, X) = \frac{D}{r(X)} - \frac{1 - D}{1 - r(X)}$,
+- $\ell(D, X) = \mathbb{E}[Y | D, X]$.
+
+This score remains stable even when $r(X)$ or $\ell(D, X)$ are estimated imperfectly.
+
+### Cross-Fitting: Outsmarting Overfitting Bias
+
+The second ingredient is **cross-fitting**, a clever form of sample splitting.
+
+1. Split the data into $K$ folds.
+2. Estimate nuisance functions $\hat{\eta}^{(-k)}$ on the data excluding fold $k$.
+3. Plug these estimates into the score function for observations in fold $k$.
+4. Cycle through all folds so that every observation is used for inference, but never for its own nuisance estimation.
+
+Cross-fitting reduces dependence between nuisance estimation and target parameter estimation — making overfitting bias negligible.
+
+### Estimation Algorithm for Average Treatment Effects
+
+The DML procedure for estimating the ATE proceeds as follows:
+
+::: {.callout-note title="Algorithm: DML for ATE Estimation"}
+1. Randomly partition the data into $K$ folds.
+2. For each fold $k$, estimate the propensity score $\hat{r}^{(-k)}(X)$ and outcome regressions $\hat{\ell}^{(-k)}(D, X)$ using the data excluding fold $k$.
+3. For each observation in fold $k$, compute the orthogonal score $\psi(W_i; \theta, \hat{\eta}^{(-k)})$.
+4. Solve for $\theta$ such that the sample average of $\psi$ equals zero.
+5. Estimate variance and construct confidence intervals using standard errors based on the orthogonal scores.
+:::
+
+## An Example
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+library(DoubleML)
+library(mlr3)
+library(mlr3learners)
+
+set.seed(42)
+n <- 1000
+x <- matrix(rnorm(n * 5), n, 5)
+d <- rbinom(n, 1, plogis(x[,1]))
+y <- 0.5 * d + x[,1] + rnorm(n)
+
+data <- data.frame(y = y, d = d, x)
+ml_g <- lrn("regr.rpart")
+ml_m <- lrn("classif.rpart", predict_type = "prob")
+
+dml_data <- DoubleMLData$new(data, y_col = "y", d_cols = "d", x_cols = paste0("x", 1:5))
+dml_plr <- DoubleMLPLR$new(dml_data, ml_g, ml_m)
+dml_plr$fit()
+dml_plr$summary()
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+from doubleml import DoubleMLData, DoubleMLPLR
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+
+np.random.seed(42)
+n = 1000
+X = np.random.randn(n, 5)
+D = np.random.binomial(1, p=1/(1 + np.exp(-X[:, 0])))
+Y = 0.5 * D + X[:, 0] + np.random.randn(n)
+
+data = pd.DataFrame(X, columns=[f'x{i+1}' for i in range(5)])
+data['d'] = D
+data['y'] = Y
+
+dml_data = DoubleMLData.from_arrays(X=data[[f'x{i+1}' for i in range(5)]].values,
+                                    y=data['y'].values,
+                                    d=data['d'].values)
+
+ml_g = RandomForestRegressor()
+ml_m = RandomForestClassifier()
+
+dml_plr = DoubleMLPLR(dml_data, ml_g, ml_m)
+dml_plr.fit()
+print(dml_plr.summary)
+```
+
+::::
+
+## Bottom Line
+
+- DML enables valid causal inference even when nuisance functions are estimated with machine learning.
+
+- Neyman orthogonality reduces sensitivity to small errors in nuisance estimation.
+
+- Cross-fitting prevents overfitting bias and stabilizes inference.
+
+- DML offers a plug-and-play approach compatible with any ML method for nuisance functions.
+
+## Where to Learn More
+
+The excellent review by Ahrens, Chernozhukov, Hansen, and others (2025) provides a clear and thorough introduction to DML. For implementation, the `DoubleML` package in R and Python offers flexible tools with built-in orthogonal scores and cross-fitting. Chernozhukov et al. (2018) remains the foundational paper in this area.
+
+## References
+
+- Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. *Econometrics Journal*, 21(1), C1–C68.
+- Ahrens, A., Chernozhukov, V., Hansen, C., et al. (2025). An Introduction to Double/Debiased Machine Learning.

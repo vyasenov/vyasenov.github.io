@@ -1,0 +1,17 @@
+---
+title: "Hi there!"
+format: html
+---
+
+
+::: {.grid}
+::: {.g-col-6}
+<div style="text-align: left; font-size: 1.5em;">
+  While my real name is Vasil, most people call me Vasco. I am an applied statistician.
+</div>
+:::
+
+::: {.g-col-6}
+![](images/vas.png){style="max-width: 250px; border-radius: 8px;"}
+:::
+:::

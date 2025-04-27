@@ -1,0 +1,109 @@
+---
+title: "Overlapping Confidence Intervals and Statistical (In)Significance"
+date: "2022-08-12"
+categories: [statistical inference, hypothesis testing]
+---
+
+## Background
+
+This is a mistake I’ve made myself—more times than I’d like to admit. Even seasoned professors and expert data scientists sometimes fall into the same trap.
+
+It typically begins with a bar graph showing two sample means side by side, each accompanied by error bars representing 95% confidence intervals. The side-by-side placement suggests a comparison is imminent. Naturally, we check whether the confidence intervals overlap. If they don’t, we may quickly (and incorrectly) conclude that the difference between the means is statistically significant—and therefore meaningful.
+
+This intuitive but flawed approach to evaluating significance is surprisingly common. Here's why it doesn’t hold up.
+
+## Diving Deeper 
+
+### The Basics of Confidence Intervals
+
+Let’s use a simplified example adapted from Schenker and Gentleman (2001). Suppose we are comparing two quantities—$Y_1$ and $Y_2$—such as average user engagement on Android vs. iOS or sales in two different regions. We assume ideal conditions: large, random samples; well-behaved distributions; and reliable estimators.
+
+We’re testing the null hypothesis:
+
+$$H_0: Y_1 = Y_2.$$
+
+We denote our sample estimates as $\hat{Y}_1$ and $\hat{Y}_2$, with corresponding standard errors $\hat{SE}(Y_1)$ and $\hat{SE}(Y_2)$. The $95\%$ confidence intervals for these estimates are:
+
+$$ \hat{Y_1} \pm 1.96 \times \hat{SE}(Y_1) $$
+
+and
+$$ \hat{Y_2} \pm 1.96 \times \hat{SE}(Y_2). $$
+
+Crucially, we can also construct a confidence interval for the difference:
+
+$$ (\hat{Y_1} - \hat{Y_2}) \pm 1.96 \times \sqrt{ \hat{SE}(Y_1)^2+ \hat{SE}(Y_2)^2}. $$
+
+This is the interval we should be analyzing when testing whether $Y_1$ and $Y_2$ differ significantly.
+
+
+### Two Approaches, One Mistake
+
+*The Naïve Approach:*
+
+::: {.callout-note title="Algorithm:"}
+1. Look at whether the confidence intervals for $Y_1$ and $Y_2$ overlap.
+2. Reject $H_0$ if they do not overlap; otherwise, do not reject.
+:::
+
+*The Correct Approach:*
+
+::: {.callout-note title="Algorithm:"}
+1. Compute the confidence interval for the difference $Y_1 - Y_2$.
+2. Reject $H_0$ if this interval does not contain 0; otherwise, do not reject.
+:::
+
+### Why the Naïve Method Fails
+
+To understand the error, consider the following: under the naïve method, we’re implicitly relying on the interval:
+
+$$ (\hat{Y_1} - \hat{Y_2}) \pm 1.96 \times (\hat{SE}(Y_1) + \hat{SE}(Y_2)). $$
+
+Compare this to the statistically correct confidence interval for the difference:
+
+$$ \frac{\hat{SE}(Y_1)+ \hat{SE}(Y_2)}{\sqrt{\hat{SE}(Y_1)^2 + \hat{SE}(Y_2)^2}} $$
+
+The ratio of the widths of these intervals is:
+
+$$ \frac{\hat{SE}(Y_1)+ \hat{SE}(Y_2)}{\sqrt{\hat{SE}(Y_1)^2 + \hat{SE}(Y_2)^2}} $$
+
+This ratio is always greater than 1, meaning the naïve method uses a wider interval. It is more conservative when the null hypothesis is true (i.e., less likely to reject it), and less conservative when the null is false (i.e., more prone to false positives).
+
+The discrepancy is largest when the standard errors are similar, and smallest when one standard error dominates.
+
+## An Example
+
+Schenker and Gentleman (2001) offer a helpful illustration using proportions:
+
+- $\hat{Y}_1 = 0.56$, $\hat{Y}_2 = 0.44$
+- $\hat{SE}(Y_1) = \hat{SE}(Y_2) = 0.0351$
+
+The individual $95\%$ confidence intervals are:
+
+- For $Y_1$: $[0.49, 0.63]$
+- For $Y_2$: $[0.37, 0.51]$
+
+These intervals do overlap. Under the naïve method, we would not reject the null hypothesis.
+
+However, the confidence interval for the difference is:
+
+$$[0.02,0.22]$$
+
+This interval does not contain $0$, meaning we would reject the null hypothesis using the correct method. The difference is statistically significant.
+
+## Bottom Line
+
+- Visual overlap of confidence intervals is an intuitive—but unreliable—method for assessing statistical significance.
+
+- This rule of thumb often misleads, particularly when standard errors are similar.
+
+- Always test for significance by examining the confidence interval for the difference between two estimates.
+
+## Where to Learn More
+
+For a deeper exploration of this topic, including simulation results and discussion of error rates, see the two papers cited below.
+
+## References
+
+Cole, S. R., & Blair, R. C. (1999). Overlapping confidence intervals. Journal of the American Academy of Dermatology, 41(6), 1051-1052.
+
+Schenker, N., & Gentleman, J. F. (2001). On judging the significance of differences by examining the overlap between confidence intervals. The American Statistician, 55(3), 182-186.

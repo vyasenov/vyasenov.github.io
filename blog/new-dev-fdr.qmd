@@ -1,0 +1,116 @@
+---
+title: "New Developments in False Discovery Rate"
+date: "2023-10-27"
+categories: [multiple testing, statistical inference]
+---
+
+## Background
+
+A while back I wrote an article summarizing various approaches to correcting for multiple hypothesis testing. The dominant framework, False Discovery Rate (FDR), controls the share of hypotheses that are incorrectly rejected at a pre-specified level \alpha. Its foundations were laid out in 1995 by Benjamini and Hochberg (BH) and to date, their method remains the most popular approach for controlling FDR. Since then, the literature has gone in a few directions.
+
+One [strand of research](https://www.jstor.org/stable/2674075) generalizes the BH procedure to accommodate cases in which there is a dependency (i.e., correlation) among the hypotheses being tested. Another [group of papers](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1716-1?ref=https://githubhelp.com) makes use of covariates that carry information about whether a given hypothesis is likely to be false. While intuitive in theory, in practice this idea is of limited use as such covariates are not often available.
+
+Finally, a relatively new class of methods builds on the notion of “[knockoff](https://projecteuclid.org/journals/annals-of-statistics/volume-43/issue-5/Controlling-the-false-discovery-rate-via-knockoffs/10.1214/15-AOS1337.full)” (or fake) variables and performs variable selection while controlling FDR. The underlying idea is based on creating a fake variable and comparing its test statistics to that of the original variable. Since the fake one is, by definition, null, a small discrepancy between the two test statistics signals the original variable does not belong in the model. The baseline model-X knockoff method requires knowledge of the joint distribution of all covariates. Recent simulations show if this distribution is unknown and misspecified (which in practice it almost always is) there is a loss of statistical power and FDR increase.
+
+In this article I will discuss a few new papers which aim to build on and improve the knockoff method. Like knockoffs, they are based on “mirror statistics”, but unlike them they do not require exact knowledge or consistent estimation of any distribution. Specifically, I will discuss [Gaussian Mirrors](https://www.tandfonline.com/doi/abs/10.1080/01621459.2021.1923510) and [Data Splitting](https://www.tandfonline.com/doi/abs/10.1080/01621459.2022.2060113) for FDR control.
+
+## Notation
+
+Although many of the results generalize to more complex settings, I will work with the simple linear model:
+
+$$Y = X\beta + \epsilon.$$
+
+We have n observations of an outcome $Y$, and a covariate vector $X\in \mathbb{R}^p$ with $p < n$. (Again, some of these results generalize to high-dimensional settings, but let’s keep it simple here.) I will index the variables in $X$ by $j$. My goal is to find a subset of relevant features from $ X$ while controlling the FDR at some level $\alpha$. In other words, I wil be testing the series of $p$ null hypotheses of the kind $\beta_j=0$.
+
+## A Closer Look
+
+### FDR Control with Mirror Statistics
+
+The building block of these methods are the so-called mirror statistics, $M_j$. They have the following two properties:
+
+- Variables with larger mirror statistics ($M_j$‘s) are more likely to be relevant.
+- Their distribution under the null hypothesis is (asymptotically) symmetric around $0$.
+
+These properties are simple and intuitive. For instance, the commonly used t-statistic for hypothesis testing in the linear model satisfies both. The first property suggests we can order the features and select ones with a mirror statistic exceeding some pre-defined threshold. The second one leads to an approximate upper bound on the number of false positives for any cutoff $t$:
+
+  $$FDP(t) = \frac{\#\{j: \text{j is irrelevant, but } M_j > t\}}{\# \{j:M_j > t\}} \leq \frac{\# \{j:M_j <- t\}}{\# \{j:M_j > t\}}. $$
+
+Now that we know the mirror statistics’ properties, I will discuss various ways of calculating them.
+
+### Constructing the Mirror Statistics
+
+The mirror statistics $M_j$ take the following general form:
+
+  $$M_j = sign(\tilde{\beta}_j^1, \tilde{\beta}_j^2) f(|\tilde{\beta}_j^1|, |\tilde{\beta}_j^2|),$$
+
+where the $\tilde{\beta}$ denote (standardized) estimates of the true coefficient $\beta$ and $f(\cdot)$ is a nonnegative, exchangeable and monotically increasing function. For instance, convenient choices for $f(\cdot)$ include $f(a,b) = 2min(a,b)$ (Xing et al. 2019), $f(a,b) = ab$, and $f(a,b) = a+b$ (Dai et al. 2022).
+
+Let’s now turn to calculating the $\tilde{\beta}$'s.
+
+### Constructing the Regression Coefficients
+
+The coefficients $\tilde{\beta}$ ought to satisfy the following two conditions:
+
+- **Independence** – The two regression coefficients are (asymptotically) independent.
+- **Symmetry** – Under the null hypothesis, the (marginal) distribution of either of the two coefficients is (asymptotically) symmetric around zero.
+
+I will now describe two approaches in constructing them.
+
+#### Method #1 – Gaussian Mirrors
+
+*Software Package*: [GM](https://github.com/BioAlgs/GM).
+
+The main idea is to create a set of two perturbed mirror features for each variable $X_j$. Namely,
+
+  $$X_j^+ = X_j + a_jZ_j, \text{      and      } X_j^-=X_j -a_jZ_j,$$
+
+where $a_j$ is a scalar and $Z_j \approx N(0,1)$. The authors provide some guidance on how to select $a_j$, but I will not get into that here.
+
+While it is possible to generate the mirror features for all columns in $X$ simultaneously, the one-fit-per-feature approach shows better performance in simulations. So, the $\tilde{\beta}$ are the estimates of $\beta$ in the following model:
+
+  $$ y = \frac{\beta_j}{2}X_j^+ +\frac{\beta_j}{2}X_j^- + X_{\text{non-j}}\beta_{\text{non-j}} + \epsilon. $$
+
+#### Method #2 – Data Splitting
+
+An alternative approach for getting two independent coefficient estimates $\tilde{\beta}$ is through data splitting. When estimating the linear model, we can get $\tilde{\beta}^1$ from one half of the data and $ \tilde{\beta}^2$ from the other half of the data. While this is simple and intuitive it can result in loss of statistical power. To alleviate this concern, we can do repeated data splitting and aggregate the results in the end. This is reminiscent of the procedure suggested by [Meinheusen et al. (2012)](https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.tm08647) in the context of hypothesis testing in for high-dimensional regression. We can then determine the feature importance based on the share of data splits in which it ends up being included. I will omit the technical details here.
+
+There is a technical wrinkle I have omitted – the regression coefficients have to be standardized so that the $M_j$'s have comparable variances across variables. Check the original papers for details on exactly how to do that. Instead, I will now turn to the final algorithm for variable selection with FDR control using the approaches outlined above.
+
+### Putting it All Together
+
+This framework sets the stage for the following general algorithm for variable selection with FDR control:
+
+::: {.callout-note title="Algorithm:"}
+1. Calculate the $j$ mirror statistics, $M_j$.
+2. Given a FDR level $\alpha$, set a threshold $\tau(\alpha)$ such that
+  $$\tau(\alpha)= min\{t > 0 : \hat{FDP}(t) \leq \alpha\}.$$
+3. Select the features $\{ j : M_j >  \tau(\alpha) \}$.
+:::
+
+In words, given $\alpha$ calculate the $M_j$‘s, find the magical threshold $\tau(\alpha)$ and include the variables with $M_j > \tau(\alpha)$.
+
+## Bottom Line
+
+- The Benjamini-Hochberg approach is still the most popular way to control FDR.
+
+- I discuss two novel approaches for variable selection and FDR control aimed at improving the knockoff filter.
+
+## References
+
+Barber, R. F., & Candès, E. J. (2018). Controlling the false discovery rate via knockoffs. Annals of Statistics
+
+Benjamini, Y., & Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological), 57(1), 289-300.
+
+Benjamini, Y., & Yekutieli, D. (2001). The control of the false discovery rate in multiple testing under dependency. Annals of statistics, 1165-1188.
+
+Dai, C., Lin, B., Xing, X., & Liu, J. S. (2022). False discovery rate control via data splitting. Journal of the American Statistical Association, 1-18.
+
+Dai, C., Lin, B., Xing, X., & Liu, J. S. (2023). A scale-free approach for false discovery rate control in generalized linear models. Journal of the American Statistical Association, 1-15.
+
+Ignatiadis, N., Klaus, B., Zaugg, J. B., & Huber, W. (2016). Data-driven hypothesis weighting increases detection power in genome-scale multiple testing. Nature methods, 13(7), 577-580.
+
+Korthauer, K., Kimes, P. K., Duvallet, C., Reyes, A., Subramanian, A., Teng, M., … & Hicks, S. C. (2019). A practical guide to methods controlling false discoveries in computational biology. Genome biology, 20(1), 1-21.
+
+Scott, J. G., Kelly, R. C., Smith, M. A., Zhou, P., & Kass, R. E. (2015). False discovery rate regression: an application to neural synchrony detection in primary visual cortex. Journal of the American Statistical Association, 110(510), 459-471.
+
+Xing, X., Zhao, Z., & Liu, J. S. (2023). Controlling false discovery rate using gaussian mirrors. Journal of the American Statistical Association, 118(541), 222-241.

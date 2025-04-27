@@ -1,0 +1,14 @@
+---
+title: "Blog"
+listing:
+  type: default
+  sort: date desc
+  categories: true 
+  contents: .
+---
+
+<div style="text-align: center; font-size: 2em; font-weight: bold;">
+  Advanced Topics in Statistical Data Science
+</div>
+
+---

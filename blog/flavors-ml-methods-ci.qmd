@@ -1,0 +1,200 @@
+---
+title: "An Overview of Machine Learning Methods in Causal Inference"
+date: "2023-04-30"
+categories: [machine learning, causal inference]
+---
+
+## Background
+
+The most exciting trend in causal inference over the last decade has been the infusion of machine learning (ML) techniques. Supervised machine learning is designed to find complex patterns in data and as such, it is merely occupied with prediction.  Causal inference, on the other hand, pays close attention to statistical precision and inference based on asymptotic properties like consistency and normality. The two worlds are, thus, fundamentally different.
+
+It should be no surprise then that machine learning and causal inference do not naturally speak to each other, and some modifications are required to marry them.  The good news is recent innovations have led to a bunch of ways in which ML models can be used in isolating causal effects especially in settings with many covariates (also called “high dimensional” settings).
+
+In this article, I will briefly describe the ways in which we can use ML when looking for causal relationships. I will indeed be concise, and I will avoid diving deeper into technical details. This blog post will look more like a laundry list with references to papers and software packages than a tutorial.
+
+## Notation
+
+It is helpful to quickly summarize some features of the potential outcome framework. Imagine we have a i.i.d. random sample of a binary treatment indicator $D$, outcome variable $Y$ and a vector of covariates $X$. Assume the potential outcomes $Y(0)$ and $Y(1)$ are unrelated to the binary treatment status $D$ which is often referred to as the unconfoundedness or ignorability.
+
+A common estimand of interest is the Average Treatment Effect (ATE)
+
+  $$ATE = E[Y(1) - Y(0)],$$
+
+where $Y(d)$ is the potential outcome under treatment regime $D=d$. Another popular estimand is the Conditional ATE (CATE),
+
+  $$CATE(X) = E[Y(1) - Y(0) | X],$$
+
+which is the ATE for a particular group of units with a fixed covariates level (e.g., women, men, new users, etc.).
+
+The ATE can be expressed in at least three useful ways:
+
+  \begin{align*} ATE & = \mathbf{E} \left[ \mu(1, X) - \mu(0,X) \right] \hspace{1cm} \text{(outcome model only)} \\ & = \mathbf{E}\left[ \frac{YD}{e(X)} - \frac{Y(1-D)}{1-e(X)} \right] \hspace{1cm} \text{(prop. score model only)} \\ & = \mathbf{E} \left[ \frac{[Y-\mu(1,X)D]}{e(X)} - \frac{[Y-\mu(0,X)](1-D)}{1-e(X)} \right] \\ & + \mathbf{E} \left[\mu(1, X) - \mu(0,X) \right] \hspace{1cm} \text{(both models)} \end{align*}
+
+where
+
+  $$\mu(D,X) = \mathbf{E}[Y|D,X]$$
+
+is the outcome model and
+
+  $$e(x)=\mathbf{E}[D|X]$$
+
+is the propensity score.
+
+This formulation is helpful because it naturally splits the types of treatment effect estimation methods into three separate categories – (*i*) those that require only estimation of $\mu(D,X)$, (*ii*) those that use only $e(X)$, and (*iii*) those that need both.
+
+One can think of the propensity score (PS) and the outcome models as nuisance functions – ones that are not of direct interest but play a part in treatment effect estimation. ML methods are attractive candidates for estimating these nuisance functions flexibly.
+
+## A Closer Look
+
+### Covariate Balancing Methods
+
+Under the ignorability assumption, all confounding bias comes from differences in the covariates $X$ between the treatment and the control groups. Intuitively, balancing these is enough to guarantee unbiasedness. One line of research develops methods to do exactly that – directly equate covariates between the two groups of interest. These approaches circumvent estimation of the two nuisance functions mentioned above.
+
+These are inspired by the ML view of data analysis framed as an optimization problem. Examples include [Entropy Balancing](https://www.cambridge.org/core/journals/political-analysis/article/abs/entropy-balancing-for-causal-effects-a-multivariate-reweighting-method-to-produce-balanced-samples-in-observational-studies/220E4FC838066552B53128E647E4FAA7), [Genetic Matching](https://direct.mit.edu/rest/article-abstract/95/3/932/58101/Genetic-Matching-for-Estimating-Causal-Effects-A), [Stable Weights](https://www.tandfonline.com/doi/abs/10.1080/01621459.2015.1023805), and [Residual Balancing](https://www.jstor.org/stable/26773172). The last approach combines balancing with a regression adjustment to reduce extrapolation when estimating the counterfactuals for the treatment group. Some of these methods were designed with a low dimensional setting in mind, but they still carry the spirit of ML type of thinking.
+
+*Software Packages*: [MatchIt](https://www.rdocumentation.org/packages/MatchIt), [Ebal](https://github.com/apoorvalal/ebal), [BalanceHD](https://rdrr.io/github/swager/balanceHD/man/).
+
+### ML Methods for the Propensity Score Model
+
+Propensity score methods rely on correctly specifying the PS model. In low-dimensional settings, it is possible to estimate it nonparametrically. In practice, however, this is unrealistic when data scientists have access to continuous or even bunch of discrete covariates. Can ML methods come to the rescue?
+
+In principle, yes. A major challenge in this context, however, is the choice of a loss function. In the ML world loss functions target measures of fit (e.g., Root Mean Squared Error, log likelihood, etc.) but these would be problematic here as they do not aim at balancing covariates important to reduce bias. Thus, these methods do not perform very well unless used with much caution.
+
+[Imai and Ratkovic (2014)](https://www.jstor.org/stable/24772753) propose a PS method that directly balances covariates. Another choice is the [Boosted CART](https://psycnet.apa.org/doiLanding?doi=10.1037%2F1082-989X.9.4.403) implementation. As its name suggests, it iteratively forms a bunch of tree models and averages them, but with an appropriately chosen loss function. A [series](https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.3782) of [simulation](https://academic.oup.com/aje/article/180/6/645/2739255) [studies](https://onlinelibrary.wiley.com/doi/abs/10.1002/pds.1555) [analyze](https://www.sciencedirect.com/science/article/abs/pii/S0895435610001022) the performance of various ML algorithms used to estimate the PS, but overall, these methods are nowadays dominated by some of the doubly robust approaches described below.
+
+*Software Packages*: [TWANG](https://www.rand.org/statistics/twang/tutorials.html), [CBPS](https://github.com/kosukeimai/CBPS).
+
+### ML Methods for the Outcome Model
+
+We can also estimate treatment effects directly by modelling the outcome variable. This also requires correct model specification, and even then, it is prone to extrapolation in finite samples.  Examples include [Bayesian Additive](https://www.tandfonline.com/doi/abs/10.1198/jcgs.2010.08162) [Regression Trees](https://projecteuclid.org/journals/bayesian-analysis/volume-15/issue-3/Bayesian-Regression-Tree-Models-for-Causal-Inference--Regularization-Confounding/10.1214/19-BA1195.full) (BART) and other [ensemble methods](https://www.tandfonline.com/doi/full/10.1080/00273171.2012.640600).
+
+[Belloni et al. (2014)](https://academic.oup.com/restud/article-abstract/81/2/608/1523757) show that the set of features optimal when estimating the outcome model, is not necessarily optimal for estimating treatment effects. The issue is omitting a variable that is correlated with the treatment even if its correlation with the outcome is only modest, can introduce considerable bias. Moreover, typically, the rate of convergence in this context when using ML models will be slower than $\sqrt{n}$, meaning that you will need much more data to get a good treatment effect estimate.
+
+Overall, there is no statistical theory of why ML methods should work well here, but some methods tend to perform well empirically. This brings us to the doubly robust approach.
+
+*Software Packages*: [BART](https://rdrr.io/cran/BART/), [rBART](https://www.rdocumentation.org/packages/rbart), [BayesTree](https://www.rdocumentation.org/packages/BayesTree).
+
+### ML Methods for Both Models & Doubly Robust Methods
+
+Methods combining models for both the propensity score and the outcome have long been advocated. Intuitively, the propensity score can be seen as a balancing step after which regression adjustment can remove any remaining bias. [Imbens (2015)](https://jhr.uwpress.org/content/50/2/373.short), for instance, promotes this type of thinking in matching methods specifically.
+
+[Doubly robust (DR)](https://www.tandfonline.com/doi/abs/10.1080/01621459.1994.10476818) estimators use both nuisance models and have the amazing property of being consistent even if only one of the two models is correctly specified. You can think of the bias term as a product of the biases in the two nuisance models – if one of them is equal to zero, the entire term vanishes.  Additionally, if both models are correctly specified, some methods are semiparametrically efficient, (i.e., “the best” in a large class of flexible models). A simple DR method is the Augmented Inverse Probability Weighting (AIPW) estimator which in linear models comes down to running weighted OLS regression of $Y$ on $D$ and $X$ with the estimated (inverse) propensity score as weights.
+
+There is more good news. Amazingly, DR methods can still converge at a rate $\sqrt{N}$ even if the underlying nuisance models converge at slower rates. The formal requirement is that the nuisance models must belong to something called a Donsker class. In simple words, they should not be too complex and prone to overfit.
+
+One line of research has developed the [Double ML](https://academic.oup.com/ectj/article/21/1/C1/5056401) framework. This work has been so influential that it deserves a blog post of its own. Without going into technical details, the authors of the original paper show that naïve application of ML methods when estimating both nuisance functions results in two types of biases – regularization and overfitting. DoubleML makes use of something called Neyman orthogonalization (think of the [Frisch–Waugh–Lovell theorem](https://en.wikipedia.org/wiki/Frisch%E2%80%93Waugh%E2%80%93Lovell_theorem)) to remove the former, and sample splitting to avoid the latter. In simple settings, this method combines the residuals from regressions of $Y$ on $X$ and $Y$ on $D$, but in general it can take more complicated forms.
+
+Another line of research has developed the [Double Post Lasso](https://academic.oup.com/restud/article-abstract/81/2/608/1523757) approach. The idea here is simpler – use Lasso to select covariates relevant to the outcome regression and then again to select ones relevant to the propensity score. Lastly, use OLS to regress $Y$ on the union of the covariates selected previously. This procedure removes confounding or regularization bias that might be present in methods using ML models to estimate only one of the nuisance models.
+
+*Software Packages*: [DoubleML](https://docs.doubleml.org/stable/index.html), [hdm](https://www.rdocumentation.org/packages/hdm), [dlsr](https://github.com/ChihYuChiang/dlsr).
+
+### Heterogeneous Treatment Effect Estimation
+
+Mining for heterogeneous treatment effects has been a particularly fruitful field for ML methods. A leading example is the causal tree method developed by [Athey and Imbens (2016)](https://www.pnas.org/doi/abs/10.1073/pnas.1510489113). It resembles the traditional CART algorithm, but it uses a different criterion for splitting the data: instead of focusing on Mean Squared Error (MSE) for the outcome, it uses MSE for treatment effect. The result is a decision tree, in which units in each leaf have similar treatment effects. The method also features “honest” sample splitting for obtaining variance estimates – one half of the data is used to determine the optimal tree, and the other half to estimate the treatment effects.
+
+Building on this idea, [Wager and Athey (2018)](https://www.tandfonline.com/doi/abs/10.1080/01621459.2017.1319839) propose a random forest-based method which generates a bunch of causal trees and averages the results to induce smoothness in the treatment effect’s function. Magically, the authors show the predictions are asymptotically normal and centered around the true value for each unit! This is exciting as it allows for standard methods for statistical inference.
+
+Other methods include BART, a Bayesian version of random forests mentioned above, [Imai and Ratkovic (2013)](https://projecteuclid.org/journals/annals-of-applied-statistics/volume-7/issue-1/Estimating-treatment-effect-heterogeneity-in-randomized-program-evaluation/10.1214/12-AOAS593.full) who propose adding treatment indicators interacted with covariates in a LASSO regression to determine which variables are important for treatment effect heterogeneity. Similarly, [Tian et al. (2014)](https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.951443) suggest modifying the covariates in a straightforward way and running a regression of the outcome on the modified variables without an intercept. Other methods include the $R$-learner of [Nie and Wager (2021)](https://academic.oup.com/biomet/article-abstract/108/2/299/5911092) which relies on estimating the two nuisance models described above and using a special loss function. [Künzel et al. (2019)](https://www.pnas.org/doi/abs/10.1073/pnas.1804597116) propose a $X$-learner metaalogrithm.
+
+*Software Packages*: [FindIt](https://github.com/kosukeimai/FindIt), [rlearner](https://github.com/xnie/rlearner), [grf](https://grf-labs.github.io/grf/), [causalToolbox](https://github.com/soerenkuenzel/causalToolbox).
+
+### Others
+
+A by-product of estimating treatment effect heterogeneity is that we can determine which units should be treated. Intuitively, if the treatment effect is close to zero (or even negative) for some users, there is not much to be gained from the exposure. [Kitagawa and Tetenov (2018)](https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA13288) analyze a setting with limited complexity, and Athey and Wager (2021) develop the DoubleML framework discussed above for choosing whom to treat. ML has also been used for variance reduction in randomized experiments via regression adjustments. See, for instance, [Wager et al. (2016)](https://www.pnas.org/doi/abs/10.1073/pnas.1614732113), [Bloniarz et al. (2016)](https://www.pnas.org/doi/abs/10.1073/pnas.1510506113), and [List et al. (2022)](https://www.nber.org/papers/w30756).
+
+## Bottom Line
+
+- Machine learning methods are slowly becoming an indispensable part of data scientists’ toolkit for estimating causal relationships. There is an abundance of methods aiding practitioners in both ATE and CATE estimation.
+
+- Doubly robust approaches offer better theoretical guarantees than methods relying on estimating either the outcome or the propensity score models.
+
+- The leading approaches for estimating ATEs are Double ML and Double Post Lasso.
+
+- The leading approach for estimating CATEs is the causal forest method.
+
+## Where to Learn More
+
+More technical data scientists will find the following review papers useful:
+
+- Athey and Imbens (2019)
+- Athey and Imbens (2017)
+- Varian (2014)
+- Kreif and DiazOrdaz (2019)
+- Mullainathan and Spiess (2017)
+- Hu (2023)
+
+There are a few major Python frameworks for using ML in causal inference estimation. More practically-oriented folks might like their documentation:
+
+- [CausalML](https://github.com/uber/causalml)
+- [EconML](https://www.microsoft.com/en-us/research/project/econml/)
+- [DoubleML](https://docs.doubleml.org/stable/index.html)
+
+## References
+
+Athey, S., & Imbens, G. (2016). Recursive partitioning for heterogeneous causal effects. Proceedings of the National Academy of Sciences, 113(27), 7353-7360.
+
+Athey, S., & Imbens, G. W. (2017). The state of applied econometrics: Causality and policy evaluation. Journal of Economic perspectives, 31(2), 3-32.
+
+Athey, S., & Imbens, G. W. (2019). Machine learning methods that economists should know about. Annual Review of Economics, 11, 685-725.
+
+Athey, S., Imbens, G. W., & Wager, S. (2018). Approximate residual balancing. Journal of the Royal Statistical Society. Series B (Statistical Methodology), 80(4), 597-623.
+
+Athey, S., & Wager, S. (2021). Policy learning with observational data. Econometrica, 89(1), 133-161.
+
+Austin, P. C. (2012). Using ensemble-based methods for directly estimating causal effects: an investigation of tree-based G-computation. Multivariate behavioral research, 47(1), 115-135.
+
+Belloni, A., Chernozhukov, V., & Hansen, C. (2014). Inference on treatment effects after selection among high-dimensional controls. The Review of Economic Studies, 81(2), 608-650.
+
+Bloniarz, A., Liu, H., Zhang, C. H., Sekhon, J. S., & Yu, B. (2016). Lasso adjustments of treatment effect estimates in randomized experiments. Proceedings of the National Academy of Sciences, 113(27), 7383-7390.
+
+Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., & Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. The Econometrics Journal.
+
+Diamond, A., & Sekhon, J. S. (2013). Genetic matching for estimating causal effects: A general multivariate matching method for achieving balance in observational studies. Review of Economics and Statistics, 95(3), 932-945.
+
+Hahn, P. R., Murray, J. S., & Carvalho, C. M. (2020). Bayesian regression tree models for causal inference: Regularization, confounding, and heterogeneous effects (with discussion). Bayesian Analysis, 15(3), 965-1056.
+
+Hainmueller, J. (2012). Entropy balancing for causal effects: A multivariate reweighting method to produce balanced samples in observational studies. Political analysis, 20(1), 25-46.
+
+Hill, J. L. (2011). Bayesian nonparametric modeling for causal inference. Journal of Computational and Graphical Statistics, 20(1), 217-240.
+
+Imai, K., & Ratkovic, M. (2013). Estimating treatment effect heterogeneity in randomized program evaluation. Annals of Applied Statistics
+
+Imai, K., & Ratkovic, M. (2014). Covariate balancing propensity score. Journal of the Royal Statistical Society: Series B: Statistical Methodology, 243-263.
+
+Imbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.
+
+Kitagawa, T., & Tetenov, A. (2018). Who should be treated? empirical welfare maximization methods for treatment choice. Econometrica, 86(2), 591-616.
+
+Kreif, N., & DiazOrdaz, K. (2019). Machine learning in policy evaluation: new tools for causal inference. arXiv preprint arXiv:1903.00402.
+
+Künzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the national academy of sciences, 116(10), 4156-4165.
+
+Lee, B. K., Lessler, J., & Stuart, E. A. (2010). Improving propensity score weighting using machine learning. Statistics in medicine, 29(3), 337-346.
+
+List, J. A., Muir, I., & Sun, G. K. (2022). Using Machine Learning for Efficient Flexible Regression Adjustment in Economic Experiments (No. w30756). National Bureau of Economic Research.
+
+McCaffrey, D. F., Ridgeway, G., & Morral, A. R. (2004). Propensity score estimation with boosted regression for evaluating causal effects in observational studies. Psychological methods, 9(4), 403.
+
+Mullainathan, S., & Spiess, J. (2017). Machine learning: an applied econometric approach. Journal of Economic Perspectives, 31(2), 87-106.
+
+Nie, X., & Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319.
+
+Robins, J. M., Rotnitzky, A., & Zhao, L. P. (1994). Estimation of regression coefficients when some regressors are not always observed. Journal of the American statistical Association, 89(427), 846-866.
+
+Setoguchi, S., Schneeweiss, S., Brookhart, M. A., Glynn, R. J., & Cook, E. F. (2008). Evaluating uses of data mining techniques in propensity score estimation: a simulation study. Pharmacoepidemiology and drug safety, 17(6), 546-555.
+
+Tian, L., Alizadeh, A. A., Gentles, A. J., & Tibshirani, R. (2014). A simple method for estimating interactions between a treatment and a large number of covariates. Journal of the American Statistical Association, 109(508), 1517-1532.
+
+Varian, H. R. (2014). Big data: New tricks for econometrics. Journal of Economic Perspectives, 28(2), 3-28.
+
+Wager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228-1242.
+
+Wager, S., Du, W., Taylor, J., & Tibshirani, R. J. (2016). High-dimensional regression adjustments in randomized experiments. Proceedings of the National Academy of Sciences, 113(45), 12673-12678.
+
+Westreich, D., Lessler, J., & Funk, M. J. (2010). Propensity score estimation: neural networks, support vector machines, decision trees (CART), and meta-classifiers as alternatives to logistic regression. Journal of clinical epidemiology, 63(8), 826-833.
+
+Wyss, R., Ellis, A. R., Brookhart, M. A., Girman, C. J., Jonsson Funk, M., LoCasale, R., & Stürmer, T. (2014). The role of prediction modeling in propensity score estimation: an evaluation of logistic regression, bCART, and the covariate-balancing propensity score. American journal of epidemiology, 180(6), 645-655.
+
+Zivich, P. N., & Breskin, A. (2021). Machine learning for causal inference: on the use of cross-fit estimators. Epidemiology (Cambridge, Mass.), 32(3), 393.
+
+Zubizarreta, J. R. (2015). Stable weights that balance covariates for estimation with incomplete outcome data. Journal of the American Statistical Association, 110(511), 910-922.

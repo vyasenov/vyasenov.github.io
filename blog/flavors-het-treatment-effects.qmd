@@ -1,0 +1,99 @@
+---
+title: "The Alphabet of Learners for Heterogeneous Treatment Effects"
+date: "2023-07-28"
+categories: [machine learning, randomized experiments, heterogeneous treatment effects]
+---
+
+## Background
+
+Numerous tales illustrate the inadequacy of the average to capture meaningful quantities. Statisticians love these. In my favorite one the protagonist places her head in a burning oven and her feet in an ice bucket before declaring she is fine on average. Looking beyond the average is often quite important.
+
+This is especially salient in policy evaluation where we design interventions, programs or product features aimed at improving the outcomes for specific groups of students, voters, users, etc. Heterogeneous treatment effects in these cases might be even more important than the overall average one.
+
+The Machine Learning (ML) toolbox offers among the most powerful methods to detect such heterogeneity in formalized, data-driven ways. Today I will describe four model-agnostic methods – the so-called $S$-, $T$-, $X$- and $R$-learners (i.e., estimators). By model-free I mean that these methods work with any predictive models such as [the lasso](https://yasenov.com/2023/06/using-lasso-to-estimate-heterogeneous-treatment-effects/), gradient boosting, or even neural networks. In some clever sense, $STXR$ is the $ABC$ of heterogeneous treatment effect estimation.
+
+My goal is to give a high-level overview, without getting lost in technical details. Enthusiastic data scientists can jump to the Where to Learn More section below to dive deep into the theory when needed. The [CausalML](https://causalml.readthedocs.io/en/latest/index.html) Python package implements many of these methods, so I encourage everyone who has never used it to go ahead and try them.
+
+## Notation
+
+As usual, let’s begin by setting some mathematical notation. I use D to denote a binary treatment indicator, $Y$ is the observed outcome and $X$ is a covariate of interest. The potential outcomes under each treatment state are $Y(0)$ and $Y(1)$, and $p$ is the (conditional) probability of assignment into the treatment (i.e., the propensity score).
+
+The average treatment effect is then the mean difference in potential outcomes across all units:
+
+  $$ATE = E[Y(1)-E(0)].$$
+
+Interest is, instead, in the ATE for units with values $X=x$ which I refer to as the heterogeneous treatment effect, $HTE(X)$:
+
+  $$HTE(X) = E[Y(1)-E(0)|X].$$
+
+It is also helpful to define the conditional outcome functions under each treatment state:
+
+  $$\mu(X,d) = E[Y(d)|X].$$
+
+It then follows that $HTE(X)$ can also be expressed as:
+
+  $$HTE(X) = \mu(X,1) - \mu(X,0).$$
+
+## A Closer Look
+
+I will now briefly describe the four learners for heterogeneous treatment effects in ascending order of complexity.
+
+### $S$(ingle) Learner
+
+The idea behind the $S$-learner is to estimate a single outcome function $\mu(X,D)$ and then calculate $HTE(X)$ by taking the difference in the predicted values between the units in the treatment and control groups.
+
+::: {.callout-note title="Algorithm:"}
+1. Use the entire sample to estimate $\hat{\mu}(X,D)$.
+2. Compute $\hat{HTE}(X)=\hat{\mu}(X,1)-\hat{\mu}(X,0)$.
+:::
+
+
+This is intuitive and fine. But the problem is that the treatment variable D might be excluded in step 1 when it is not highly correlated with the outcome. (Note that in observational data this does not necessarily imply a null treatment effect.) In this case, we cannot even move to step 2.
+
+### $T$(wo) Learner
+
+The $T$-learner solves the above problem by forcing the response models to include $D$. The idea is to first estimate two separate (conditional) outcome functions – one for the treatment and one for the control and proceed similarly.
+
+::: {.callout-note title="Algorithm:"}
+1. Use the observations in the control group to estimate $\hat{\mu}(X,0)$ and the ones in the treatment effect for $\hat{\mu}(X,1)$.
+2. Then $\hat{HTE}(X)=\hat{\mu}(X,1)- \hat{\mu}(X,0)$
+:::
+
+This is better, but still not great. A potential problem is when there are different number of observations in the treatment and control groups. For instance, in the common case where the treatment group is much smaller, their $HTE(X)$ will be estimated much less precisely than the that of the control group. When combining the two to arrive at a final estimate of $HTE(X)$ the former should get a smaller weight than the latter. This is because the ML algorithms optimize for learning the $\mu(\cdot)$ functions, and not the $HTE(X)$ function directly.
+
+### $X$ Learner
+
+The [$X$-learner](https://www.pnas.org/doi/abs/10.1073/pnas.1804597116) is designed to overcome the above concern. The procedure starts similarly to the $T$-learner but then weighs differently the $HTE(X)$’s for the treatment and control groups.
+
+::: {.callout-note title="Algorithm:"}
+1. Use the observations in the control group to estimate $\hat{\mu}(X,0)$ and the ones in the treatment effect for $\hat{\mu}(X,1)$.
+2. Estimate the unit-level treatment effect for the observations in the control group, $\hat{\mu}(X,1)-Y$, and for the treatment group, $Y-\hat{\mu}(X,0)$.
+3. Combine both estimates by weighing them using the predicted propensity score, $\hat{p}$:
+  $$HTE(X)=\hat{p} \times HTE(X|D=1) + (1-\hat{p})\times HTE(X|D=0).$$
+:::
+
+Here $\hat{p}$ balances the uncertainty associated with the $HTE(X)$‘s in each group and hence, this approach is particularly effective when there is a significant difference in the number of units between the two groups.
+
+### $R$(obinson) Learner
+
+To avoid getting too deep into technical details, I will not be describing the entire algorithm. The $R$-learner models both the outcome, and the propensity score and begins by computing unit-level predicted outcomes and treatment probabilities using cross-fitting and leave-one-out estimation. The key innovation is plugging these into a novel loss function featuring squared deviations of these predictions as well as a regularization term. This ensures “optimality” in learning the treatment effect heterogeneity.
+
+## Bottom Line
+
+- ML methods offer a promising way of determining which groups of units experience differential response to treatments.
+
+- I summarized four such model-agnostic methods – the $S$-, $T$-, $X$-, and $R$-learners.
+
+- Compared to the simpler $S$- and $T$- learners, the $X$- and $R$-learners solve some common issues and are more attractive options in most settings.
+
+## Where to Learn More
+
+I have previously written on how ML can be useful in causal inference, more generally and how we can use the Lasso to estimate heterogeneous treatment effects. [Hu (2022)](https://www.sciencedirect.com/science/article/pii/S0049089X22001211) offers a detailed summary of a bunch of ML methods for HTE estimation. A Statistical Odds and Ends [blog post](https://statisticaloddsandends.wordpress.com/2022/05/20/t-learners-s-learners-and-x-learners/) describes the $S$-, $T$- and $X$-learners and contains useful advice on when each of them is preferrable. Chapter 21 of [Causal Inference for the Brave and True](https://matheusfacure.github.io/python-causality-handbook/21-Meta-Learners.html) also discusses this material and provides useful examples.
+
+## References
+
+Hu, A. (2022). Heterogeneous treatment effects analysis for social scientists: A review. Social Science Research, 102810.
+
+Künzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the national academy of sciences, 116(10), 4156-4165. Nie,
+
+Xie, N., & Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319.

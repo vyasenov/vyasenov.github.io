@@ -1,0 +1,261 @@
+---
+title: "Principal Components Analysis (PCA) and Its Variants"
+date: "2025-00-00"
+categories: [PCA]
+---
+
+## Background
+
+Principal Components Analysis (PCA) is one of the most widely used techniques for **dimensionality reduction** and **unsupervised learning**. Originally introduced by Karl Pearson in 1901 and later formalized by Harold Hotelling in 1933, PCA aims to find new, uncorrelated variables (the *principal components*) that successively maximize the variance in the data. It provides a systematic way to summarize high-dimensional datasets with fewer dimensions, making it easier to visualize, compress, or preprocess data for further modeling.
+
+Beyond standard PCA, many **variants and extensions** have been developed to handle specific challenges like sparsity, robustness to outliers, missing data, and non-linear structures. These PCA flavors extend the core idea to different contexts, making PCA a versatile workhorse in both theory and practice.
+
+In this article, we’ll explain the classical PCA approach thoroughly and then introduce several important PCA variants, providing their mathematical formulations and discussing when and why they are useful.
+
+## Notation
+
+Let $X \in \mathbb{R}^{n \times p}$ be a data matrix with:
+- $n$ observations (rows),
+- $p$ variables (columns).
+
+Assume that each column of $X$ has been **centered** (mean zero):
+$$
+\frac{1}{n} \sum_{i=1}^n X_{ij} = 0 \quad \text{for all} \ j = 1, \dots, p.
+$$
+
+The **empirical covariance matrix** of $X$ is:
+$$
+\Sigma = \frac{1}{n} X^T X.
+$$
+
+Our goal is to find new orthogonal directions (principal components) $u_1, \dots, u_p \in \mathbb{R}^p$, such that projecting the data onto these directions captures the maximum variance.
+
+## A Closer Look
+
+### Classical PCA: Variance Maximization and Eigen Decomposition
+
+The principal components are obtained by solving the following optimization problem:
+$$
+\max_{u \in \mathbb{R}^p} u^T \Sigma u \quad \text{subject to} \quad \| u \|_2 = 1.
+$$
+
+This is a **Rayleigh quotient maximization problem**, whose solution is the eigenvector of $\Sigma$ corresponding to the largest eigenvalue. The eigenvalues $\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_p \geq 0$ represent the variances explained by each principal component.
+
+#### Sequential Extraction
+
+The $k$-th principal component direction $u_k$ is obtained by solving:
+$$
+\max_{u} u^T \Sigma u, \quad \text{subject to} \quad \| u \|_2 = 1, \quad u^T u_j = 0 \quad \text{for} \ j = 1, \dots, k-1.
+$$
+
+The principal components themselves (the transformed data) are:
+$$
+Z = X U,
+$$
+where $U = [u_1, u_2, \dots, u_p]$ is the matrix of eigenvectors.
+
+#### Singular Value Decomposition (SVD) Formulation
+
+PCA can also be performed via **Singular Value Decomposition (SVD)** of the centered data matrix $X$:
+$$
+X = U D V^T,
+$$
+where:
+- $U \in \mathbb{R}^{n \times p}$ contains the left singular vectors,
+- $D \in \mathbb{R}^{p \times p}$ is diagonal with singular values,
+- $V \in \mathbb{R}^{p \times p}$ contains the right singular vectors (principal component directions).
+
+The columns of $V$ are the eigenvectors of $\Sigma$, and the squared singular values $D^2 / n$ are the eigenvalues.
+
+#### Variance Explained
+
+The **proportion of variance explained** by the first $k$ components is:
+$$
+\frac{\sum_{j=1}^k \lambda_j}{\sum_{j=1}^p \lambda_j}.
+$$
+
+PCA allows data compression by projecting onto the first $k$ components while retaining most of the variance.
+
+While classical PCA provides a powerful linear dimensionality reduction tool, it has several limitations: it does not handle sparsity well, it is sensitive to outliers, and it only captures linear relationships. Over the years, many extensions of PCA have been developed to address these challenges. Below we discuss several of the most popular PCA variants.
+
+### Sparse PCA (Zou, Hastie, Tibshirani, 2006)
+
+**Key Idea:**  
+Encourage sparsity in the principal component loading vectors to improve interpretability.
+
+**Objective Function (simplified):**
+$$
+\max_{u} \quad u^T \Sigma u - \lambda \| u \|_1 \quad \text{subject to} \quad \| u \|_2 = 1.
+$$
+
+**When to Use:**  
+
+- When you expect only a subset of variables to be important in each component.
+- Useful in high-dimensional settings like genomics, image processing, and text analysis.
+
+**Characteristics:**  
+
+- Enhances interpretability by producing sparse loadings.
+- Retains much of the variance while simplifying the component structure.
+
+---
+
+### Kernel PCA (Schölkopf et al., 1998)
+
+**Key Idea:**  
+
+Map the data into a higher-dimensional feature space using a nonlinear kernel and then apply PCA in that space.
+
+**Objective Function:**  
+
+Standard PCA applied to the kernel matrix:
+$$
+K_{ij} = k(x_i, x_j),
+$$
+where $k(\cdot, \cdot)$ is a positive-definite kernel function (e.g., RBF, polynomial).
+
+**When to Use:**  
+
+- When the data exhibit nonlinear structures that linear PCA cannot capture.
+- Popular in pattern recognition, computer vision, and bioinformatics.
+
+**Characteristics:**  
+
+- Captures nonlinear relationships between variables.
+- Choice of kernel critically affects performance.
+
+---
+
+### Robust PCA (Candes et al., 2011)
+
+**Key Idea:**  
+Decompose the data matrix $X$ into a low-rank component $L$ and a sparse outlier component $S$:
+$$
+\min_{L, S} \| L \|_* + \lambda \| S \|_1 \quad \text{subject to} \quad X = L + S.
+$$
+where $\| L \|_*$ is the nuclear norm (sum of singular values).
+
+**When to Use:**  
+
+- When the data contain gross outliers or corruptions.
+- Common in computer vision (background subtraction), video surveillance, and recommender systems.
+
+**Characteristics:**  
+
+- More robust to outliers than classical PCA.
+- Separates structured low-rank signals from sparse noise.
+
+---
+
+### Probabilistic PCA (Tipping and Bishop, 1999)
+
+**Key Idea:**  
+Reformulate PCA as a latent variable model with Gaussian noise:
+$$
+x_i = W z_i + \mu + \varepsilon_i, \quad \varepsilon_i \sim N(0, \sigma^2 I),
+$$
+where $z_i$ are latent factors.
+
+**When to Use:**  
+
+- When modeling uncertainty and likelihood is important.
+- Allows probabilistic interpretation and missing data handling.
+
+**Characteristics:**  
+
+- Maximum likelihood estimation provides the same solution as classical PCA in the limit.
+- Naturally extends to mixture models and Bayesian frameworks.
+
+---
+
+### Truncated SVD (a Computational Variant)
+
+**Key Idea:**  
+Use the first $k$ singular vectors from the SVD of $X$ without computing the full decomposition:
+$$
+X \approx U_k D_k V_k^T.
+$$
+
+**When to Use:**  
+
+- Very large-scale data (e.g., text mining, collaborative filtering).
+- When speed and memory efficiency are critical.
+
+**Characteristics:**  
+
+- Often implemented using randomized algorithms.
+- Computationally efficient for sparse or massive datasets.
+
+---
+
+### Nonnegative Matrix Factorization (NMF) (Lee and Seung, 1999)
+
+**Key Idea:**  
+Decompose the data into nonnegative factors:
+$$
+X \approx WH, \quad W, H \geq 0.
+$$
+
+**When to Use:**  
+
+- Nonnegative data (e.g., image pixels, word counts).
+- When parts-based or additive decompositions are meaningful.
+
+**Characteristics:**  
+
+- Unlike PCA, does not produce orthogonal components.
+- Often yields interpretable, parts-based representations.
+
+---
+
+### Independent Component Analysis (ICA)
+
+**Key Idea:**  
+Find components that are statistically independent, not just uncorrelated:
+$$
+X = A S,
+$$
+where $S$ contains independent components.
+
+**When to Use:**  
+
+- When underlying sources are assumed to be independent (e.g., EEG signal separation).
+- Suitable for blind source separation problems.
+
+**Characteristics:**  
+
+- Goes beyond PCA by removing higher-order dependencies.
+- Sensitive to scaling and noise.
+
+---
+
+These PCA variants allow the core idea of variance decomposition to be adapted to a wide variety of practical problems, whether by enforcing sparsity, allowing for nonlinearity, handling outliers, or modeling uncertainty.
+
+## Bottom Line
+
+- Classical PCA reduces dimensionality by projecting data onto orthogonal directions that maximize variance.
+
+- Many PCA variants exist to handle real-world challenges like sparsity (Sparse PCA), outliers (Robust PCA), nonlinearity (Kernel PCA), and uncertainty (Probabilistic PCA).
+
+- Choosing the right PCA flavor depends on the structure of your data and the goals of your analysis — interpretability, robustness, scalability, or flexibility.
+
+- Several of these extensions (e.g., Kernel PCA, NMF, ICA) relax key assumptions of traditional PCA, making them better suited for specialized applications like image analysis, genomics, and signal processing.
+
+- Understanding the mathematical foundation behind these methods helps avoid misapplication and improves the quality of insights from dimensionality reduction.
+
+## Where to Learn More
+
+For a comprehensive introduction to PCA, see *Principal Component Analysis* by Jolliffe (2002), which remains a classic reference. The review paper by Shlens (2014), *A Tutorial on Principal Component Analysis*, offers an accessible and intuitive explanation of the method and its geometric interpretation. For deeper dives into specific variants, refer to Zou, Hastie, and Tibshirani (2006)
+
+## References
+
+- Bishop, C. M. (1999). “Bayesian PCA.” *Advances in Neural Information Processing Systems*, 11.
+
+- Pearson, K. (1901). “On Lines and Planes of Closest Fit to Systems of Points in Space.” *Philosophical Magazine*, 2(11), 559–572.
+
+- Hotelling, H. (1933). “Analysis of a Complex of Statistical Variables into Principal Components.” *Journal of Educational Psychology*, 24(6), 417–441.
+
+- Jolliffe, I. T. (2002). *Principal Component Analysis*. Springer Series in Statistics.
+
+- Zou, H., Hastie, T., & Tibshirani, R. (2006). “Sparse Principal Component Analysis.” *Journal of Computational and Graphical Statistics*, 15(2), 265–286.
+

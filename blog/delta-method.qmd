@@ -1,0 +1,68 @@
+---
+title: "The Delta Method: Simplifying Confidence Intervals for Complex Estimators"
+date: "2025-01-10"
+categories: [statistical inference]
+---
+
+## Background
+
+You’ve likely encountered this scenario: you’ve calculated an estimate for a particular parameter, and now you require a confidence interval. Seems straightforward, doesn’t it? However, the task becomes considerably more challenging if your estimator is a nonlinear function of other random variables. Whether you’re dealing with ratios, transformations, or intricate functional relationships, directly deriving the variance for your estimator can feel incredibly daunting. In some instances, the bootstrap might offer a solution, but it can also be computationally demanding.
+
+Enter the Delta Method, a technique that harnesses the power of Taylor series approximations to assist in calculating confidence intervals within complex scenarios. By linearizing a function of random variables around their mean, the Delta Method provides a way to approximate their variance (and consequently, confidence intervals). This effectively transforms a convoluted problem into a more manageable one. Let’s delve deeper together, assuming you already have a foundational understanding of hypothesis testing.
+
+## Notation
+
+Before diving into the technical weeds, let’s set up some notation to keep things grounded. Let $X=(x_1, \dots, x_k)$ be a random vector of dimension $k$, with mean vector $\mu$ and covariance matrix $\Sigma$ (or simply a scalar $\sigma^2$ when $k=1$). Suppose you have a continuous, differentiable function $g(\cdot)$, and you’re interested in approximating the variance of $g(X)$, denoted as $\text{Var}(g(X))$.
+
+## A Closer Look
+
+The Delta Method builds on a simple premise: for a smooth function $g(\cdot)$, we can approximate $g(X)$ around its mean $\mu$ using a first-order Taylor expansion:
+
+  $$g(X) \approx g(\mu) + \nabla g(\mu)^T (X - \mu),$$
+
+where $\nabla g(\mu)$ is the gradient of $g(\cdot)$ evaluated at $\mu$, i.e., a $k\times1$ vector of partial derivatives:
+
+  $$\nabla g(\mu) = \left[ \frac{\partial g}{\partial x_1}, \frac{\partial g}{\partial x_2}, \dots, \frac{\partial g}{\partial x_k} \right]^T.$$
+
+By substituting this into the approximation, the variance of $g(X)$ becomes:
+
+  \begin{align*} \text{Var}(g(X)) & = \text{Var}(g(\mu) + \nabla g(\mu)^T (X - \mu)) \\ & = \text{Var}(g(\mu) + \nabla g(\mu)^T X -  \nabla g(\mu)^T  \mu) \\  &= \text{Var}(g(\mu)^T X)  \\ &=  \nabla g(\mu)^T \Sigma \nabla g(\mu).  \end{align*}
+
+In the univariate $k=1$ case, we have:
+
+  $$\text{Var}(g(X)) = \sigma^2 [g(\cdot)']^2.$$
+
+If $X$ is a sample-based estimator (e.g., sample mean, regression coefficients), then $\Sigma$ would be its estimated covariance matrix, and the Delta Method gives us an approximate standard error for $g(X)$. This approximation works well for large samples but may break down when variances are high or sample sizes are small.
+
+## An Example
+
+Let’s walk through an example to make this concrete. Suppose you’re studying the ratio of two independent random variables: $R = \frac{X_1}{X_2}$, where $X_1 \sim N(\mu_1, \sigma_1^2)$ and $X_2 \sim N(\mu_2, \sigma_2^2)$. I know some of you want specific numbers, so we can set $\mu_1 = 5$, $\mu_2 = 10$, $\sigma_1 = 2$, and $\sigma_2=1$.
+
+We want to approximate the variance of $R$ using the Delta Method. Here is the step-by-step procedure to get there.
+
+::: {.callout-note title="Algorithm:"}
+1. Define $g(X)$ and obtain its gradient. Here, $g(X) = \frac{X_1}{X_2}$ and the gradient is:
+  $$\nabla g(\mu) = \left[ \frac{1}{\mu_2}, -\frac{\mu_1}{\mu_2^2} \right]^T.$$
+
+2. Evaluate \nabla $g(\mu)$ at \mu_1 and \mu_2. In our example
+  $$\nabla g(\mu) = [0.1, -0.5]^T.$$
+
+3. Compute the variance approximation. We have $$\Sigma = \begin{bmatrix} \sigma_1^2 & 0 \\ 0 & \sigma_2^2 \end{bmatrix} = \begin{bmatrix} 4 & 0 \\ 0 & 1 \end{bmatrix}.$$ Thus, the approximate variance of $R$ is:
+  $$\text{Var}(R) \approx \nabla g(\mu)^T \Sigma \nabla g(\mu) = \frac{\sigma_1^2}{\mu_2^2} + \frac{\mu_1^2 \sigma_2^2}{\mu_2^4}=\frac{4}{100}+\frac{25}{625}=0.08.$$
+:::
+
+And that’s it. We used the Delta Method to compute the approximate variance of $R = \frac{X_1}{X_2}$.
+
+## Bottom Line
+
+- The Delta Method is a generic way of computing confidence intervals in non-standard situations.
+
+- It works by linearizing nonlinear functions to approximate variances and standard errors.
+
+- This technique works for any smooth function, making it a go-to tool in econometrics, biostatistics, and machine learning.
+
+## References
+
+Casella, G., & Berger, R. L. (2002). Statistical Inference.
+
+Greene, W. H. (2018). Econometric Analysis.

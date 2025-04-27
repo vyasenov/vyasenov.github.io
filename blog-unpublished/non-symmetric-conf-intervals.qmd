@@ -1,0 +1,171 @@
+---
+title: "Why Are Some Confidence Intervals Not Symmetric?"
+date: "2025-04-24"
+categories: [statistical inference, confidence intervals]
+---
+
+## Background
+
+If you’ve ever looked at a confidence interval and thought, “Huh, that’s weird—it’s not centered around the estimate,” you’re not alone. Many data scientists are used to the idea that a $95\%$ confidence interval looks like estimate $\pm$ margin of error. And that’s often true—especially for things like means from large samples, where the normal approximation kicks in. But it’s not always the case.
+
+In this post, we’ll look at why some confidence intervals are asymmetric, what causes the skew, and when to expect this behavior. We'll also see how different methods (and different data!) can lead to intervals that don't look like what we might expect from a simple $t$-test.
+
+## Notation
+
+Let’s say we have a parameter $\theta$ that we want to estimate, and we compute an estimator $\hat{\theta}$ from data. A $(1−\alpha)$ confidence interval is an interval $[L,U]$ such that:
+
+$$P(L\leq \theta \leq U) \geq 1-\alpha.$$
+
+If $\hat{\theta}$ is symmetric and normally distributed, this confidence interval will typically be of the form:
+
+$$ \hat{\theta} \pm z_{\frac{\alpha}{2}} \times SE(\hat{\theta}),$$
+
+where $z_{\frac{\alpha}{2}}$ is called "critical value" (often equal to $1.96$). But things get more interesting—and more asymmetric—when the distribution of  is skewed, bounded, or derived from a nonlinear transformation.
+
+## A Closer Look
+
+### Simple Example: Proportion Near 0 or 1
+
+Suppose you're estimating a proportion $p$, like the rate of success in a small sample. If $p$ is close to $0$, the distribution of $\hat{p}$  is skewed, and the Wald confidence interval (the usual $\pm$$ formula) can produce nonsense—like a lower bound less than $0$.
+
+Instead, intervals based on the logit or Wilson score can be asymmetric. This is because the underlying transformation (like log-odds) isn't symmetric in $p$.
+
+### Why Intervals Get Skewed
+
+Here are some reasons why confidence intervals might be asymmetric:
+
+- **Skewed sampling distribution**: Common when estimating quantities like variance or proportions near the boundaries.
+
+- **Nonlinear transformations**: If your estimator is transformed (like $log(\hat{\theta})$ or $\frac{1}{\hat{\theta}}$), the resulting CI will not be symmetric in $\hat{\theta}$.
+
+- **Boundary constraints**: If the parameter lies on $[0,1]$ or must be positive, then symmetric intervals may include impossible values.
+
+- **Bootstrap methods**: Percentile bootstrap intervals often yield asymmetric CIs because they use the empirical quantiles of a skewed sampling distribution.
+
+- **Maximum likelihood estimation**: Asymptotic normality applies, but in small samples or near boundaries, the intervals can be skewed.
+
+### Bootstrap Percentile Example
+
+Let’s illustrate this with a small example using a skewed distribution.
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+set.seed(1982)
+x <- rexp(50, rate = 1)  # Exponential distribution
+boot_means <- replicate(1000, mean(sample(x, replace = TRUE)))
+quantile(boot_means, c(0.025, 0.975))  # Asymmetric CI
+```
+
+### Python
+
+```python
+import numpy as np
+np.random.seed(42)
+x = np.random.exponential(scale=1.0, size=50)
+boot_means = [np.mean(np.random.choice(x, size=50, replace=True)) for _ in range(1000)]
+np.percentile(boot_means, [2.5, 97.5])  # Asymmetric CI
+```
+
+::::
+
+In both cases, you’ll likely see that the CI is skewed—because the sampling distribution of the mean is skewed, especially with small samples from an exponential distribution.
+
+Let's expand on the exponential distribution example to demonstrate exactly how much asymmetry can appear in confidence intervals. The exponential distribution is right-skewed, making it perfect for illustrating asymmetric intervals.
+
+:::: {.panel-tabset}
+
+
+### R
+
+```r
+# Set seed for reproducibility
+set.seed(1982)
+
+# Generate 50 observations from an exponential distribution
+x <- rexp(50, rate = 1)
+
+# Calculate the sample mean
+sample_mean <- mean(x)
+
+# Generate 10,000 bootstrap samples and calculate means
+boot_means <- replicate(10000, mean(sample(x, replace = TRUE)))
+
+# Calculate the percentile-based 95% confidence interval
+ci_percentile <- quantile(boot_means, c(0.025, 0.975))
+
+# Calculate how far each bound is from the point estimate
+lower_distance <- sample_mean - ci_percentile[1]
+upper_distance <- ci_percentile[2] - sample_mean
+
+# for comparison - Symmetric 95% CI using normal approximation
+se <- sd(x) / sqrt(length(x))
+ci_symmetric <- c(sample_mean - 1.96*se, sample_mean + 1.96*se)
+```
+
+### Python
+
+```python
+import numpy as np
+
+# Set seed for reproducibility
+np.random.seed(1982)
+
+# Generate 50 observations from an exponential distribution
+x = np.random.exponential(scale=1.0, size=50)
+
+# Calculate the sample mean
+sample_mean = np.mean(x)
+
+# Generate 10,000 bootstrap samples and calculate means
+boot_means = [np.mean(np.random.choice(x, size=50, replace=True)) for _ in range(10000)]
+
+# Calculate the percentile-based 95% confidence interval
+ci_percentile = np.percentile(boot_means, [2.5, 97.5])
+
+# Calculate how far each bound is from the point estimate
+lower_distance = sample_mean - ci_percentile[0]
+upper_distance = ci_percentile[1] - sample_mean
+
+# For comparison - Symmetric 95% CI using normal approximation
+se = np.std(x, ddof=1) / np.sqrt(len(x))
+ci_symmetric = [sample_mean - 1.96 * se, sample_mean + 1.96 * se]
+
+# Print results
+print("Sample Mean:", sample_mean)
+print("Percentile-based 95% CI:", ci_percentile)
+print("Lower Distance:", lower_distance)
+print("Upper Distance:", upper_distance)
+print("Symmetric 95% CI:", ci_symmetric)
+```
+
+::::
+
+As we can see, the confidence interval extends 0.23 units below the mean but 0.27 units above it - the upper bound is about 17% further from the mean than the lower bound. This asymmetry directly reflects the right-skewed nature of the exponential distribution's sampling distribution.
+
+This numerical example demonstrates that with skewed data, the distance from the point estimate to the lower bound can differ substantially from the distance to the upper bound. When reporting results, acknowledging this asymmetry provides a more accurate representation of the uncertainty in your estimate than simply reporting "estimate ± margin of error."
+The degree of asymmetry often depends on both the sample size and the underlying distribution - with smaller samples from more skewed distributions showing greater asymmetry in their confidence intervals.
+
+## Bottom Line
+
+- Symmetric confidence intervals come from symmetric distributions—don’t expect them when that’s not the case.
+
+- Asymmetric intervals are common with proportions, skewed data, nonlinear functions, and bootstrap methods.
+
+- Always check if your CI method makes assumptions about symmetry or normality.
+
+- Don’t blindly use $\pm$ formulas—there are better (and more honest) ways to quantify uncertainty.
+
+# Where to Learn More
+
+For an intuitive yet technical introduction, Statistical Inference by Casella and Berger covers the theory behind these intervals. For practical applications, especially bootstrap-based intervals, Efron and Tibshirani’s An Introduction to the Bootstrap is excellent. If you’re more into Bayesian approaches, check out Gelman et al.’s Bayesian Data Analysis—it shows how posterior distributions naturally yield asymmetric intervals when appropriate.
+
+## References
+
+Efron, B., & Tibshirani, R. J. (1993). An Introduction to the Bootstrap.
+
+Casella, G., & Berger, R. L. (2002). Statistical Inference.
+
+Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., & Rubin, D. B. (2013). Bayesian Data Analysis.

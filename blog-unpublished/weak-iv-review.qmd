@@ -1,0 +1,148 @@
+---
+title: "Weak Instruments in Causal Inference: A Data Scientist's Guide"
+date: "2025-00-00"
+categories: [causal inference, instrumental variables]
+---
+
+## Background
+
+Instrumental variables (IV) methods are a cornerstone of causal inference, especially when dealing with endogeneity. But IV’s strength is only as good as the quality of its instruments. If your instruments are weak — meaning they barely explain variation in the endogenous regressor — all the nice properties of IV break down, sometimes spectacularly so.
+
+This article provides a detailed, chronological walkthrough of the weak instruments literature, following the recent review by Keane and Neal (2024). Along the way, we’ll revisit some classics (Bound et al. 1995, Staiger & Stock 1997), discuss critical developments like the Anderson-Rubin (AR) and Conditional Likelihood Ratio (CLR) tests, and explain why many conventional practices can lead us astray. Whether you're doing causal inference in economics, health, or social science, understanding these pitfalls is crucial.
+
+## Notation
+
+Consider the structural equation:
+
+$$
+y = x \beta + u, \quad \text{with} \; \text{cov}(x, u) \neq 0.
+$$
+
+Here:
+- $y$ is the outcome.
+- $x$ is the endogenous regressor.
+- $u$ is the structural error term.
+
+We also have an instrument $z$ satisfying:
+- **Relevance**: $\text{cov}(z, x) \neq 0$,
+- **Exogeneity**: $\text{cov}(z, u) = 0$.
+
+The first-stage equation is:
+
+$$
+x = z \pi + e,
+$$
+
+where $e$ is the first-stage error.
+
+## A Closer Look
+
+### The Early Warnings: Bias and Size Distortion
+
+The weak instrument problem was first highlighted by Bound et al. (1995), who showed that when instruments are weak, the Two-Stage Least Squares (2SLS) estimator behaves badly:
+- The **bias** of 2SLS drifts toward the Ordinary Least Squares (OLS) bias.
+- The **size** of the 2SLS $t$-test inflates — the $5\%$ test rejects more than $5\%$ of the time.
+
+Staiger and Stock (1997) proposed the famous rule of thumb: **first-stage $F > 10$**. If your first-stage $F$-statistic is below 10, trouble looms.
+
+### Size Isn't Everything: The Power Asymmetry Problem
+
+Keane and Neal (2024) show that even with strong instruments (F well above 10), 2SLS suffers from **power asymmetry**:
+- Standard errors are spuriously small when the 2SLS estimate drifts toward OLS.
+- Estimates near OLS appear artificially precise, leading to inflated power to detect false positives.
+- Meanwhile, true effects far from OLS are harder to detect.
+
+This is not just a weak instrument problem — it affects 2SLS broadly.
+
+### The Anderson-Rubin (AR) and Conditional Likelihood Ratio (CLR) Tests
+
+The AR test, introduced in 1949 (!), avoids power asymmetry by focusing on the reduced-form relationship:
+
+$$
+y = z \gamma + \varepsilon.
+$$
+
+The AR test is valid even with weak instruments and does not suffer from the same distortion as the 2SLS $t$-test. When there are multiple instruments, the **CLR test** (Moreira 2003, Kleibergen 2005) generalizes this approach.
+
+::: {.callout-note title="Algorithm: Anderson-Rubin Test"}
+1. Estimate the first-stage regression of $x$ on $z$.
+2. Compute fitted values $\hat{x}$.
+3. Regress $y$ on $\hat{x}$ (ignoring standard errors).
+4. Use the residual variance from this regression to construct the AR test statistic.
+:::
+
+### When Is OLS Better Than 2SLS?
+
+A provocative insight from the recent literature is that when first-stage $F$ is between $10$ and $20$, **OLS may be closer to the truth than 2SLS**, unless endogeneity is very severe.
+
+The logic: If instruments barely move $x$, the small amount of exogenous variation they provide may not be enough to outweigh the imprecision of 2SLS.
+
+---
+
+## An Example
+
+::::{.panel-tabset}
+
+### R
+
+```r
+set.seed(123)
+n <- 1000
+z <- rnorm(n)
+x <- 0.1 * z + rnorm(n)
+y <- 0.5 * x + 0.5 * rnorm(n)
+
+first_stage <- lm(x ~ z)
+summary(first_stage)
+
+second_stage <- lm(y ~ fitted(first_stage))
+summary(second_stage)
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
+np.random.seed(123)
+n = 1000
+z = np.random.randn(n)
+x = 0.1 * z + np.random.randn(n)
+y = 0.5 * x + 0.5 * np.random.randn(n)
+
+X = sm.add_constant(z)
+first_stage = sm.OLS(x, X).fit()
+x_hat = first_stage.fittedvalues
+
+X2 = sm.add_constant(x_hat)
+second_stage = sm.OLS(y, X2).fit()
+print(second_stage.summary())
+```
+
+::::
+
+## Bottom Line
+
+- Weak instruments bias 2SLS toward OLS and inflate $t$-test size.
+
+- Power asymmetry causes 2SLS to favor false positives near OLS.
+
+- AR and CLR tests avoid these issues and should be preferred.
+
+- OLS may outperform 2SLS when instruments are weak, unless endogeneity is severe.
+
+## Where to Learn More
+
+The recent review by Keane and Neal (2024) provides a practical and readable guide to the weak instruments literature. For deeper theory, see Bound et al. (1995), Staiger & Stock (1997), and Stock & Yogo (2005). Modern software packages like `ivreg` in `R` and `linearmodels` in Python support these methods.
+
+## References
+
+- Bound, J., Jaeger, D. A., & Baker, R. M. (1995). Problems with Instrumental Variables Estimation When the Correlation Between the Instruments and the Endogenous Explanatory Variable Is Weak. *Journal of the American Statistical Association*, 90(430), 443–450.
+
+- Staiger, D., & Stock, J. H. (1997). Instrumental Variables Regression with Weak Instruments. *Econometrica*, 65(3), 557–586.
+
+- Stock, J. H., & Yogo, M. (2005). Testing for Weak Instruments in Linear IV Regression. *Identification and Inference for Econometric Models*.
+
+- Keane, M. P., & Neal, T. (2024). A Practical Guide to Weak Instruments. *Annual Review of Economics*, 16, 185–212.

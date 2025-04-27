@@ -1,0 +1,53 @@
+---
+title: "Causation without Correlation"
+date: "2024-11-21"
+categories: [causal inference, correlation]
+---
+
+## Background
+
+While most people understand that correlation doesn’t imply causation, it might surprise many to learn that causation doesn’t always result in correlation. In the absence of randomization, causal relationships do not require observable correlation. This counterintuitive concept challenges our natural tendency to expect that when one variable causes change in another, we should see a clear (linear) relationship between them. The core idea is that confounding variables or other statistical phenomena can obscure the causal link. Let’s explore this concept through a few examples.
+
+## A Closer Look
+
+In the popular book [Causal Inference: The Mixtape](https://mixtape.scunning.com/), Scott Cunningham gives an example of a sailor steering a boat in stormy waters. The wind may be so strong as to offset the boat’s natural moving direction. For instance, the sailor might steer (treatment, $T$) the boat north, while a southward wind (confounder, $Z$) causes the boat to move east (outcome, $Y$). An onlooker would not observe any direct relationship between $T$ and $Y$, even though $T$ causes $Y$.
+
+At first, this sounds counterintuitive. On second thought, such patterns are everywhere. Consider the following.
+
+### Example 1: Parenting Styles and Children’s Behavior
+
+A parent might adopt a stricter parenting style ($T$) in response to a child’s behavioral issues ($Y$). However, other influences, like peer pressure or school environment ($Z$), may also shape the child’s behavior, sometimes overriding the parent’s efforts. The net observable outcome could show no correlation between stricter parenting and improved behavior, even though the stricter parenting is causally effective in certain contexts.
+
+This idea can be taken one step further. An observable relationship might even appear positive when the causal relationship is negative.
+
+### Example 2: Ice Cream Sales and Shark Attacks
+
+Imagine two beaches with vastly different safety protocols ($Z$): one has lifeguards trained to prevent shark attacks, while the other does not. On the safer beach, higher ice cream sales ($T$) correlate positively with shark attacks ($Y$), because more people visit the beach when safety protocols are in place. This hides the fact that proper safety protocols causally reduce shark attacks. The observed positive correlation between $T$ and $Y$ masks the negative causal relationship.
+
+### Example 3: Nonlinearity
+
+A more trivial scenario leading to the lack of correlation in causal relationships is non-linearity. I do not find this scenario too insightful simply because it can be avoided by using more sophisticated measures of correlation. See my earlier post on the Chatterjee correlation coefficient.
+
+Examples of such relationships abound. Consider a parabolic relationship, where increasing a drug’s dosage initially improves patient outcomes but becomes harmful at higher doses. Despite a clear causal relationship, the (Pearson) correlation coefficient might be close to zero because the relationship is not linear.
+
+### Example 4: Threshold Effects and Phase Transitions
+
+Take the classic example of temperature and water’s state. Increasing temperature causes water to change state at exactly 100°C. Below and above this point, temperature changes cause minimal effects on the water’s state. Aggregating these observations leads to a weak correlation, despite the temperature being the direct cause of the phase transition.
+
+Other fascinating scenarios include Lord’s Paradox, and Simpson’s Paradox, where a causal relationship can appear to reverse or disappear when data is aggregated.
+
+### Example 5: Hospital Mortality Rates
+
+Suppose two hospitals treat patients with different levels of severity. Hospital $A$ specializes in high-risk patients, while Hospital $B$ treats mostly low-risk cases. When comparing raw mortality rates ($Y$), Hospital $A$ might appear worse, even though it provides superior care ($T$). Disaggregating the data by risk level reveals the causal effect of Hospital $A$’s superior treatment within each group.
+
+## Bottom Line
+
+- In observational data causation does not require correlation.
+
+- Correlation—or the lack thereof—can obscure our understanding of causal relationships.
+
+- With the right tools and frameworks, we can disentangle the true causal effects, even when correlation gives us a wrong answer.
+
+## References
+
+Cunningham, S. (2021). Causal inference: The mixtape. Yale university press.

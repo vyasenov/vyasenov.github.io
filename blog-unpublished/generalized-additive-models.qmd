@@ -1,0 +1,142 @@
+---
+title: "Generalized Additive Models: What You Need to Know"
+date: "2025-00-00"
+categories: [regression, statistical inference]
+---
+
+## Background
+
+Generalized Additive Models (GAMs) are one of the most powerful and flexible tools in a data scientist's toolbox for modeling complex, nonlinear relationships between covariates and an outcome. They generalize linear models by allowing smooth, nonparametric functions of the predictors while still maintaining interpretability and manageable computation. The core idea: instead of forcing relationships to be straight lines, let the data speak.
+
+This article explains what you really need to know about GAMs, following the excellent review by Simon Wood (2025). We’ll go over the basics of how GAMs work, how smoothness is controlled, the computational strategies involved, and key pitfalls to watch out for. We'll also walk through a code example in both R and Python to show how to fit and interpret these models in practice.
+
+## Notation
+
+Consider an outcome variable $y$ and predictors $x_1, x_2, \dots, x_p$. The simplest linear model is:
+
+$$
+y = \beta_0 + \sum_{j=1}^p \beta_j x_j + \varepsilon.
+$$
+
+The GAM replaces the linear terms $\beta_j x_j$ with smooth functions $f_j(x_j)$:
+
+$$
+y = \beta_0 + \sum_{j=1}^p f_j(x_j) + \varepsilon.
+$$
+
+More generally, for non-Gaussian outcomes, GAMs use a link function $g(\cdot)$:
+
+$$
+g(\mathbb{E}[y]) = \beta_0 + \sum_{j=1}^p f_j(x_j).
+$$
+
+Each $f_j$ is estimated from the data and constrained to be "smooth" through penalization.
+
+## A Closer Look
+
+### What Makes a GAM?
+
+The backbone of a GAM is its **smooth terms**. These are typically represented using **splines** — basis functions that piece together polynomials smoothly at specified knots. But not just any spline will do! In GAMs, smoothness is enforced through **penalty terms** that discourage excessive wiggliness.
+
+For example, for a cubic spline, the penalty is usually the integral of the squared second derivative:
+
+$$
+\int (f''(x))^2 \, dx.
+$$
+
+The balance between fitting the data and keeping the function smooth is controlled by **smoothing parameters** ($\lambda$). A higher $\lambda$ makes the function flatter; a lower $\lambda$ allows more flexibility.
+
+### How Smoothness Is Estimated
+
+There are two main strategies to estimate $\lambda$:
+
+1. **Cross-validation (CV)**: Minimize prediction error by holding out parts of the data.
+2. **Marginal likelihood (REML)**: An empirical Bayes approach that tends to perform well in practice.
+
+The marginal likelihood approach treats the smooth functions as random effects with Gaussian priors, leading to nice frequentist properties (good coverage, calibrated uncertainty estimates).
+
+### Why Rank Reduction Matters
+
+Full spline bases can be large and computationally expensive. To address this, GAMs often use **rank-reduced splines**: only the leading components of the basis (those with the smallest penalties) are retained. This keeps computation tractable without sacrificing much flexibility.
+
+The result: GAM fitting scales better to large datasets while preserving interpretability.
+
+### Beyond the Mean: Location-Scale and More
+
+GAMs aren’t limited to modeling the mean. They can handle **location, scale, and shape modeling** — meaning that the variance, skewness, or other distributional parameters can also depend on smooth functions of predictors. This generalization brings GAMs into the world of **generalized additive models for location, scale, and shape (GAMLSS)**.
+
+They can even be extended to **quantile regression** and **non-exponential family distributions**, making them incredibly versatile.
+
+### Model Selection and Hypothesis Testing
+
+Choosing the right model structure — which smooths to include, how many degrees of freedom to allow — is a key part of using GAMs effectively. Common tools include:
+
+- **Akaike Information Criterion (AIC)**: Trade-off between goodness of fit and model complexity.
+- **Hypothesis testing of smooth terms**: Check whether each $f_j$ is significantly different from zero.
+
+Wood (2025) warns against naive use of Wald tests for this purpose and recommends careful use of penalization-based tests or likelihood-ratio approaches.
+
+## An Example
+
+::::{.panel-tabset}
+
+### R
+
+```r
+library(mgcv)
+set.seed(42)
+n <- 200
+x <- runif(n, 0, 10)
+y <- sin(x) + rnorm(n, 0, 0.3)
+model <- gam(y ~ s(x), method = "REML")
+summary(model)
+plot(model, residuals = TRUE)
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+from pygam import LinearGAM, s
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+n = 200
+x = np.random.uniform(0, 10, n)
+y = np.sin(x) + np.random.normal(0, 0.3, n)
+
+X = x.reshape(-1, 1)
+gam = LinearGAM(s(0)).fit(X, y)
+gam.summary()
+
+plt.figure()
+XX = np.linspace(0, 10, 100)
+plt.plot(XX, gam.predict(XX), label="GAM fit")
+plt.scatter(x, y, alpha=0.3)
+plt.legend()
+plt.show()
+```
+
+::::
+
+## Bottom Line
+
+- GAMs allow flexible, nonlinear modeling while retaining interpretability.
+
+- Smoothness is controlled by penalties, estimated via CV or marginal likelihood (REML).
+
+- Rank reduction makes GAMs computationally feasible even with large datasets.
+
+- GAMs generalize beyond means to scale, shape, and quantile modeling.
+
+## Where to Learn More
+
+The recent review by Simon Wood (2025) is the most comprehensive and readable guide to modern GAMs. For practical hands-on work, Wood’s book *Generalized Additive Models: An Introduction with R* (2017) remains the go-to resource. For Bayesian extensions and Gaussian processes connections, see works by Rue et al. (2009) and Kammann & Wand (2003).
+
+## References
+
+- Wood, S. N. (2025). Generalized Additive Models. *Annual Review of Statistics and Its Application*, 12, 497–526.
+
+- Wood, S. N. (2017). *Generalized Additive Models: An Introduction with R*. CRC Press.

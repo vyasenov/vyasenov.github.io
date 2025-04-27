@@ -1,0 +1,227 @@
+---
+title: "Propensity Scores with a Continuous Twist: Estimating Treatment Effects Beyond Binary"
+date: "2025-00-00"
+categories: [causal inference, propensity score]
+---
+
+## Background
+
+Propensity scores are one of the most celebrated ideas in modern causal inference. They elegantly reduce a high-dimensional covariate adjustment problem into a one-dimensional balancing act. But here’s the catch: the canonical setup assumes a **binary treatment**. Treated or not. Drug or placebo. Exposed or unexposed. That’s great, but real-world interventions are rarely so black-and-white.
+
+What if your treatment is a dosage? Or a level of exposure? Or some index that varies continuously, like air pollution levels, advertising intensity, or participation hours in a program? That’s when we enter the more nuanced world of **continuous treatment** causal inference, and our trusty binary propensity score needs a serious upgrade.
+
+In this article, we'll journey from the classic binary case through discrete levels of treatment, and ultimately arrive at the continuous treatment setting. Along the way, we’ll unpack the intuition and math behind **generalized propensity scores**, **density estimation**, and what it really means to estimate a dose-response function. We'll arm you with the tools to think clearly and rigorously about treatment effects when there are more than just two treatment arms—or infinitely many.
+
+## Notation
+
+Let’s set up some notation that will help us keep our thoughts clean as we move through different levels of treatment granularity.
+
+Let:
+- $Y \in \mathbb{R}$: observed outcome.
+- $T \in \mathbb{R}$: treatment variable, which can be binary, discrete, or continuous.
+- $X \in \mathbb{R}^p$: vector of observed pre-treatment covariates.
+- $Y(t)$: potential outcome if the individual were assigned treatment level $t$.
+
+Our goal is to estimate a treatment effect function, like:
+- For binary: $\mathbb{E}[Y(1) - Y(0)]$,
+- For continuous: $\mathbb{E}[Y(t)]$ for all $t \in \mathbb{R}$, also known as the **dose-response function**.
+
+The key object of interest generalizes accordingly:
+- In the binary case: the **propensity score** is $e(X) = \Pr(T=1 \mid X)$.
+- In the continuous case: the **generalized propensity score (GPS)** is the conditional density $r(t, X) = f_{T|X}(t \mid X)$.
+
+## A Closer Look
+
+### Binary Treatment: The Classic Setup
+
+In the binary world, Rosenbaum and Rubin (1983) showed that adjusting for the propensity score $e(X)$ is sufficient to remove confounding, under the assumption of **strong ignorability**:
+$$
+Y(1), Y(0) \perp T \mid X.
+$$
+
+They also proved that $Y(1), Y(0) \perp T \mid e(X)$, which means we can reduce the dimensionality of covariate adjustment from $p$ to 1. Score!
+
+Propensity scores can be estimated via logistic regression or any predictive ML method, and treatment effects can be estimated via matching, inverse probability weighting (IPW), or regression adjustment using $e(X)$.
+
+### Discrete Treatment: More Than Two Levels
+
+What if treatment takes on three or more levels? Say, a low, medium, and high dose of a medication?
+
+In that case, we generalize the propensity score into a **vector**: one probability for each treatment level, conditional on covariates:
+$$
+e_j(X) = \Pr(T = j \mid X), \quad j = 1, \dots, K.
+$$
+
+The adjustment strategy is similar: match or weight across strata of these multinomial probabilities to balance covariates. Some methods treat this as a multi-class classification problem. But what if treatment isn’t just levels 1, 2, or 3, but a smooth continuum?
+
+### Continuous Treatment: The Generalized Propensity Score
+
+Now we hit the interesting case. Suppose $T \in \mathbb{R}$ and can take on many (even infinite) values. Instead of estimating a probability, we estimate a **density**. The generalized propensity score is defined as:
+
+$$
+r(t, X) = f_{T|X}(t \mid X),
+$$
+
+the **conditional density** of the treatment given covariates. This is a continuous analogue of the classic propensity score.
+
+Just like before, we assume **weak unconfoundedness** (Hirano and Imbens, 2004):
+
+$$
+Y(t) \perp T \mid X \quad \text{for all } t.
+$$
+
+And just like in the binary case, conditioning on the GPS balances covariates, but now at each level of $t$. Hirano and Imbens showed that adjusting for $r(T, X)$ is sufficient for identification of the dose-response function $\mu(t) = \mathbb{E}[Y(t)]$.
+
+### Estimating the Dose-Response Function
+
+The general workflow goes like this:
+
+::: {.callout-note title="Algorithm:"}
+1. **Estimate the GPS:** Fit a model for the conditional density $f_{T|X}(t \mid X)$. This could be a normal model, or a more flexible density estimator.
+2. **Model the outcome given treatment and GPS:** Fit a model for $\mathbb{E}[Y \mid T=t, R=r]$, where $R = r(t, X)$ is the estimated GPS.
+3. **Average over the population:** For a fixed value $t$, compute:
+   $$\hat{\mu}(t) = \frac{1}{n} \sum_{i=1}^n \hat{m}(t, \hat{r}(t, X_i)),$$
+where $\hat{m}$ is the estimated conditional expectation of $Y$ given $T$ and $R$.
+:::
+
+This approach estimates the full dose-response curve $t \mapsto \mu(t)$, giving you a complete picture of how outcomes evolve with different levels of treatment.
+
+### A Note on Density Estimation
+
+Density estimation is the crux of this whole approach. You’re estimating $f_{T|X}(t \mid X)$, which can be tricky. If you assume normality:
+
+$$T \mid X \sim \mathcal{N}(\mu(X), \sigma^2(X)),$$
+
+then you can fit a regression model for $T$ and use the residuals to compute the density. For more flexibility, kernel density estimation or machine learning methods like normalizing flows can be used to approximate the conditional distribution of $T \mid X$.
+
+Keep in mind: poor density estimation leads to poor GPS, which leads to biased treatment effect estimates. Garbage in, garbage out.
+
+While density estimation is the cornerstone of the GPS approach, it becomes increasingly challenging as the number of covariates grows—a phenomenon often called the "curse of dimensionality." In high-dimensional spaces issues include data sparistiy making local density estimation unreliable, parametric assumptions also become increasingly restircive.  To address these challenges, consider dimensionality reduction techniques before density estimation, semi-parametric approaches that make assumptions on the functional form but allow flexibility in other aspects, or Bayesian nonparametric methods that adapt to the complexity of the data.
+
+## Covariate Balancing Generalized Propensity Scores (CBGPS)
+
+CBGPS, introduced by Fong, Hazlett, and Imai (2018), directly optimizes covariate balance rather than focusing on accurately modeling the treatment mechanism. It estimates weights $w_i$ by solving a set of moment conditions that ensure covariates are uncorrelated with treatment after weighting:
+$$ \sum_{i=1}^n w_i(T_i - \bar{T})X_i = 0 $$
+
+This approach avoids sequential modeling and estimation, potentially reducing bias from model misspecification. It's particularly valuable when the treatment mechanism is complex or difficult to model accurately.
+
+### Diagnostics
+
+Assessing GPS quality requires thorough diagnostics focused on three key areas: covariate balance checks, model diagnostics, and sensitivity analysis. For covariate balance, practitioners should evaluate whether correlations between covariates and treatment approach zero after GPS adjustment, check balance within treatment strata, and create visual plots of standardized differences. GPS model quality can be verified through residual analysis against covariates and treatments, Q-Q plots to assess distributional assumptions, and cross-validation to evaluate predictive performance. Sensitivity testing should include trimming extreme GPS values, comparing results across different model specifications, and conducting placebo tests on outcomes that should be unaffected by treatment. While perfect balance may be unattainable, these diagnostics build confidence in causal estimates by revealing substantial improvements over unadjusted comparisons and identifying potential estimation issues.
+
+## An Example
+
+Let’s try estimating a dose-response function using simulated data.
+
+::::{.panel-tabset}
+
+### R
+
+```r
+library(MASS)
+library(np)
+
+# Simulate data
+set.seed(1988)
+n <- 500
+X <- matrix(rnorm(n * 3), n, 3)
+T <- 0.5 * X[,1] - 0.3 * X[,2] + rnorm(n)
+Y <- 2 + 3 * T - T^2 + 0.5 * X[,1] + rnorm(n)
+
+# Estimate GPS via kernel regression
+gps_model <- npcdensbw(xdat = data.frame(X), ydat = T)
+gps <- npcdens(bws = gps_model, xdat = data.frame(X), ydat = T)$condens
+
+# Estimate outcome model
+df <- data.frame(Y = Y, T = T, GPS = gps)
+fit <- lm(Y ~ poly(T, 2) + GPS + T*GPS, data = df)
+
+# Estimate dose-response
+t_vals <- seq(min(T), max(T), length.out = 100)
+gps_vals <- predict(np::npudens(~ T + X1 + X2 + X3, data = data.frame(T = t_vals, X1 = X[,1], X2 = X[,2], X3 = X[,3])))
+preds <- predict(fit, newdata = data.frame(T = t_vals, GPS = gps_vals))
+plot(t_vals, preds, type = 'l', lwd = 2)
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.neighbors import KernelDensity
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+
+# Simulate data
+np.random.seed(1988)
+n = 500
+X = np.random.randn(n, 3)
+T = 0.5 * X[:, 0] - 0.3 * X[:, 1] + np.random.randn(n)
+Y = 2 + 3 * T - T**2 + 0.5 * X[:, 0] + np.random.randn(n)
+
+# Estimate GPS: assume normality
+from sklearn.linear_model import LinearRegression
+gps_model = LinearRegression().fit(X, T)
+mu = gps_model.predict(X)
+resid = T - mu
+sigma = np.std(resid)
+gps = norm.pdf(T, loc=mu, scale=sigma)
+
+# Fit outcome model
+df = pd.DataFrame({'Y': Y, 'T': T, 'GPS': gps})
+df['T2'] = T**2
+df['T_GPS'] = T * gps
+X_outcome = df[['T', 'T2', 'GPS', 'T_GPS']]
+fit = LinearRegression().fit(X_outcome, df['Y'])
+
+# Estimate dose-response
+t_vals = np.linspace(T.min(), T.max(), 100)
+mu_vals = gps_model.predict(X)
+dose_response = []
+for t in t_vals:
+    gps_t = norm.pdf(t, loc=mu_vals, scale=sigma)
+    X_pred = np.column_stack((np.repeat(t, n), np.repeat(t**2, n), gps_t, t * gps_t))
+    preds = fit.predict(X_pred)
+    dose_response.append(np.mean(preds))
+
+plt.plot(t_vals, dose_response)
+plt.title("Estimated Dose-Response Function")
+plt.xlabel("Treatment (T)")
+plt.ylabel("Expected Outcome")
+plt.show()
+
+```
+
+::::
+
+## Bottom Line
+
+- Propensity score methods can be extended beyond binary treatments to continuous treatments using generalized propensity scores.
+
+- The GPS is the conditional density of treatment given covariates: $f_{T∣X}(t\mid X)$.
+
+- You estimate the dose-response function by modeling outcomes as a function of both treatment and GPS, then averaging.
+
+- Estimating the GPS well is crucial—garbage density estimates lead to poor causal conclusions.
+
+## Where to Learn More
+
+If you're interested in mastering this topic, I recommend starting with Hirano and Imbens' 2004 Econometrica paper, which formally introduces the generalized propensity score framework. From there, take a look at more recent work in causal machine learning and semiparametric methods (like those in the DoubleML or EconML libraries), which handle continuous treatments and flexible outcome models. Also, keep an eye on newer approaches using generative models and normalizing flows for high-quality density estimation—an exciting frontier for continuous causal inference.
+
+## References
+
+Brown, D. W., Greene, T. J., Swartz, M. D., Wilkinson, A. V., & DeSantis, S. M. (2021). Propensity score stratification methods for continuous treatments. Statistics in medicine, 40(5), 1189-1203.
+
+Hirano, K., & Imbens, G. W. (2004). The propensity score with continuous treatments. Econometrica, 73(2), 731–748.
+
+Imai, K., & van Dyk, D. A. (2004). Causal inference with general treatment regimes: Generalizing the propensity score. Journal of the American Statistical Association.
+
+Fong, C., Hazlett, C., & Imai, K. (2018). Covariate balancing propensity score for a continuous treatment: Application to the efficacy of political advertisements. The Annals of Applied Statistics, 12(1), 156-177.
+
+Kluve, J., Schneider, H., Uhlendorff, A., & Zhao, Z. (2012). Evaluating continuous training programmes by using the generalized propensity score. Journal of the Royal Statistical Society Series A: Statistics in Society, 175(2), 587-617.
+
+McCaffrey, D. F., Griffin, B. A., Almirall, D., Slaughter, M. E., Ramchand, R., & Burgette, L. F. (2013). A tutorial on propensity score estimation for multiple treatments using generalized boosted models. Statistics in medicine, 32(19), 3388-3414.
+
+Rosenbaum, P. R., & Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. Biometrika.

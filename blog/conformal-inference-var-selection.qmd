@@ -1,0 +1,72 @@
+---
+title: "Using Conformal Inference for Variable Importance in Machine Learning"
+date: "2023-12-20"
+categories: [conformal inference, machine learning]
+---
+
+## Background
+
+Many machine learning (ML) methods operate as opaque systems, generating predictions when given a dataset as input. Identifying which variables have the greatest impact on these predictions is often crucial. This adds a touch of interpretability and transparency and aids stakeholders in better understanding the relevant context. Examples abound. For instance, identifying the house attributes most important for predicting home prices, the school or hospital characteristics most strongly associated with better students’ and patients’ outcomes, etc. 
+
+[Conformal inference](https://www.tandfonline.com/doi/abs/10.1080/01621459.2017.1307116) offers a novel way of measuring variable importance in ML. In an earlier article I introduced conformal inference as a tool for generating confidence intervals when making predictions for new observations, and here I will describe how we can adapt it to the context of feature importance. The approach is thus similar in spirit to the Gini Importance-based methods mentioned above.
+
+## Notation
+
+Let’s begin by setting up some notation. We have a size $n$  i.i.d. random sample of a feature vector $X$ and an outcome $Y$. The focus of conformal inference is on constructing a “confidence interval” for predicting a new observation $Y_{n+1}$ given a new feature realization $X_{n+1}$. I denote the estimate of the mean function by $\hat{\mu}$ and the same estimate when removing feature $j$ from $X $ by $\hat{\mu}_{-j}$.
+
+Please refer to my previous article for more details on the conformal inference framework, methodology and its properties.
+
+## A Closer Look
+
+### Refresher on Variable Importance
+
+The idea of measuring which variables contribute most to a prediction model is not new. The data scientist’s toolbox contains some useful techniques designed to measure variable importance in ML models. Popular choices include:
+
+- **Gini Importance and Information Gain** in tree-based models (e.g., random forest, gradient boosting) measure the decrease in various within-leaf impurity indexes caused by excluding a certain variable.  The larger the loss, the more important the variable.
+- **SHAP Values** use a cooperative game-theoretic approach to measure each variable’s contribution to the final model’s prediction.
+- **Permutation Importance** assesses a variable’s significance by randomly shuffling its values and comparing the change in the model’s performance. The larger the drop, the more important the variable.
+- **Variable Coefficients** in linear ML models (e.g., Lasso, Ridge) can directly signal importance. This requires an appropriate standardization before fitting the model (to make sure all features are on a level playing field).
+
+### Variable Importance with Conformal Inference
+
+We can measure the prediction error associated with dropping a feature $j$ when predicting a new observation $Y_{n+1}$ by:
+
+  $$\Delta_j^{n+1} = |Y_{n+1} - \hat{\mu}_{-j}(X_{n+1})| - |Y_{n+1}-\hat{\mu}(X_{n+1})|.$$
+
+The main idea is to use conformal inference ideas to construct a confidence interval for this prediction loss, $\Delta_j^{n+1}$, as a signal whether that variable is relevant in predicting the outcome.
+
+Specifically, let $CI(\cdot)$ denote the conformal inference interval for $Y_{n+1}$ given $X_{n+1}$. Then, the interval
+
+  $$S_j(x)=\{ |y-\hat{\mu}_{-j}(x)|-|y-\hat{\mu}(x)| : y \in CI(x) \}.$$
+
+has a valid finite-sample coverage in the sense that:
+
+  $$ P(\Delta_j^{n+1} \in S_j(X_{n+1})) \geq 1-\alpha, $$
+
+where $\alpha$ is a pre-specified significance level. This holds for all $j$.
+
+We can plot the confidence intervals $S_j(X_i)$ for $i=1 \dots n$ and roughly interpret them as measuring variable importance. The closer the intervals are to zero, the less important the variable is for predicting new outcomes. The opposite is true as well. The further and more often it is away from zero, the more important the variable.
+
+Another, more global, approach to using conformal inference for variable importance focuses on the distribution of $\Delta_j(X_{n+1}, Y_{n+1})$ and conducts hypothesis testing on its median or mean. Intuitively, failing to reject a hyptohesis that these statistics are non-zero is evidence that variable $j$ does not play a significant role in predicting $Y$.
+
+## Bottom Line
+
+- While many ML methods act as black boxes, attention often falls on measuring individual variable importance.
+
+- Conformal inference offers a new way for data scientists to quantify the influence of each variable to the model performance.
+
+- The main idea is to use conformal inference to construct a confidence interval for the loss in prediction accuracy associated with removing a feature from the dataset.
+
+## Where to Learn More
+
+See Section 6 in [Lei et al. (2018)](https://www.tandfonline.com/doi/abs/10.1080/01621459.2017.1307116) and the references therein.
+
+## References
+
+Lei, J., G’Sell, M., Rinaldo, A., Tibshirani, R. J., & Wasserman, L. (2018). Distribution-free predictive inference for regression. Journal of the American Statistical Association, 113(523), 1094-1111.
+
+Lei, J., Rinaldo, A., & Wasserman, L. (2015). A conformal prediction approach to explore functional data. Annals of Mathematics and Artificial Intelligence, 74, 29-43.
+
+Shafer, G., & Vovk, V. (2008). A Tutorial on Conformal Prediction. Journal of Machine Learning Research, 9(3).
+
+Vovk, V., Gammerman, A., & Shafer, G. (2005). Algorithmic learning in a random world (Vol. 29). New York: Springer.

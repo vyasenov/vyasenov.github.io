@@ -1,0 +1,106 @@
+---
+title: "Causal vs. Predictive Modeling: Why the Difference Matters More Than You Think"
+date: "2025-04-24"
+categories: [causality, machine-learning]
+---
+
+## Background
+
+It’s one of the most common mix-ups I see among data scientists—especially those coming from a machine learning background: confusing causal modeling with predictive modeling. On the surface, they look similar. You build a model, you include some variables, you fit it, and then you do... something with the results. But under the hood, these two approaches serve fundamentally different goals and require very different mindsets.
+
+Predictive modeling is about building a machine that can forecast outcomes. Causal modeling is about understanding how the world works. And mixing them up can lead to some really bad decisions—like launching a product based on a spurious correlation or controlling for the wrong variables and wiping out your treatment effect.
+
+This post is for all the data scientists who’ve ever wondered, “Why can’t I just throw everything into my causal model like I do with my random forest?” Let’s unpack it.
+
+## Notation
+
+Let’s fix some notation for clarity. Suppose we have:
+
+- $Y$: the outcome
+- $T$: a treatment or exposure variable
+- $X$: a set of covariates (features)
+
+In **predictive modeling**, the goal is to estimate:
+
+$$
+\mathbb{E}[Y \mid X]
+$$
+
+In **causal modeling**, we care about quantities like:
+
+$$
+\mathbb{E}[Y(1) - Y(0)]
+$$
+
+where $Y(1)$ is the potential outcome under treatment, and $Y(0)$ is the outcome under control. This is the average treatment effect (ATE). The tricky part? We never observe both $Y(1)$ and $Y(0)$ for the same unit.
+
+So causal inference becomes a game of counterfactuals—and that’s where all the complexity comes in.
+
+## A Closer Look
+
+### Predictive Modeling: Just Give Me Accuracy
+
+Let’s start with what most machine learning folks are familiar with: predictive models.
+
+In predictive modeling, you’re judged by how well you can forecast $Y$. That’s it. You can (and often do) throw in everything and the kitchen sink—lagged outcomes, future values of other variables (careful though!), variables that are correlated with the outcome but not necessarily meaningful in a causal sense.
+
+It’s all good *as long as* it helps you reduce RMSE, increase AUC, or minimize cross-entropy loss. Data leakage is your main enemy, but otherwise, the bar for “what goes in the model” is pretty low.
+
+No one cares *why* your model works, only that it does.
+
+### Causal Modeling: Think Harder, Control Smarter
+
+Now, enter the world of causal inference. The rules are completely different.
+
+In causal modeling, the goal is not prediction, but isolation of the effect of $T$ on $Y$. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here's the catch: **not all variables should be controlled for**.
+
+This is where the concept of **bad controls** comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.
+
+In other words, in causal inference:
+
+- **Including the wrong variable can make things worse.**
+- **You must think hard about the causal structure of your data.**
+- **Domain knowledge is critical.**
+
+Throwing in “everything” like in a predictive model? That can completely destroy your estimate.
+
+### Propensity Scores: Where Predictive and Causal Worlds Collide
+
+One place where this confusion often plays out is in propensity score modeling.
+
+To recap, the propensity score $e(X) = P(T = 1 \mid X)$ is the probability of receiving treatment given covariates. It’s often estimated via a logistic regression or ML model. Then, you use this score to adjust for differences between treated and control groups (e.g., via weighting or matching).
+
+And here’s the key point: **your goal is not to get the best prediction of treatment.** Your goal is to use the propensity score to balance covariates between groups. That’s it.
+
+So even if a fancy XGBoost model gives you higher prediction accuracy, it may overfit or fail to achieve covariate balance—which defeats the purpose. In fact, some of the best-performing PS models (for causal purposes) may have terrible predictive accuracy but excel at achieving balance.
+
+There’s a trade-off here:
+
+- Predictive ML models focus on minimizing error.
+- Propensity score models should optimize **covariate balance**.
+
+And that trade-off is why a more accurate model is not necessarily better for causal inference.
+
+## Bottom Line
+
+- Predictive models are about forecasting outcomes; causal models are about estimating effects.
+
+- In causal inference, you must think carefully about what to include in the model—“bad controls” can bias results.
+
+- Propensity scores should be judged by how well they balance covariates, not by how well they predict treatment.
+
+- More context and domain knowledge is usually required for causal models than for predictive ones.
+
+## Where to Learn More
+
+For causal inference, the gold standard is *Causal Inference: The Mixtape* by Scott Cunningham or *Mostly Harmless Econometrics* by Angrist and Pischke. For a more technical treatment, check out Hernán and Robins’ *Causal Inference*. Judea Pearl’s *Book of Why* adds more philosophical background. For those working with propensity scores specifically, papers by Peter Austin and Elizabeth Stuart are a great starting point. If you're trying to navigate the blurry line between prediction and causation, Andrew Gelman’s blog has a wealth of insights too.
+
+## References (if applicable)
+
+Hernán, M. A., & Robins, J. M. (2020). *Causal Inference: What If*. 
+
+Cunningham, S. (2021). *Causal Inference: The Mixtape*.  
+
+Angrist, J. D., & Pischke, J.-S. (2009). *Mostly Harmless Econometrics*.  
+
+Pearl, J., & Mackenzie, D. (2018). *The Book of Why: The New Science of Cause and Effect*.

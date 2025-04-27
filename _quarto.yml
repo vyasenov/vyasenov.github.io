@@ -1,0 +1,51 @@
+
+project:
+  type: website
+
+website:
+  title: "Vasco Yasenov"
+  site-url: https://yourusername.github.io/your-site
+  description: "Personal academic website of Dr. Your Name"
+  navbar:
+    right:
+      - text: About
+        href: about.qmd
+      - text: CV
+        href: cv.qmd        
+      - text: Blog
+        href: blog/index.qmd        
+      - text: Research
+        href: research.qmd
+      - text: Children's Book
+        href: childrenbook.qmd        
+      - icon: github
+        href: https://github.com/vyasenov
+        target: _blank
+      - icon: linkedin
+        href: https://www.linkedin.com/in/vasil-yasenov/
+        target: _blank
+      - icon: mortarboard-fill
+        href: https://scholar.google.com/citations?user=pQw1oG8AAAAJ
+        target: _blank
+      - icon: amazon
+        href: https://www.amazon.com/Causal-Inference-Toddlers-Meatball-Recipe/dp/B0BLG6SWZJ
+        target: _blank
+  search: true
+  page-footer:
+    left: "© 2025 Vasco Yasenov"
+    right: "Powered by [Quarto](https://quarto.org)"
+
+resources:
+  - ../code/open-links-new-tab.js
+
+format:
+  html:
+    theme: 
+      light: cosmo
+      dark: cyborg
+    css: code/styles.css
+    toc: true
+    page-layout: full
+    include-in-header:
+      - text: |
+          <script src="../code/open-links-new-tab.js"></script>

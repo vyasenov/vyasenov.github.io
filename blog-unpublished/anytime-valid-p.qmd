@@ -1,0 +1,101 @@
+---
+title: "Anytime-Valid $p$-values and Online Multiple Testing: A Modern Guide"
+date: "2025-00-00"
+categories: [multiple testing, statistical inference]
+---
+
+## Background
+
+In modern data analysis, we often don’t test all hypotheses at once. Instead, hypotheses arrive over time: an A/B test today, another one tomorrow, and so on. The problem? Traditional multiple testing corrections like the Bonferroni or Benjamini-Hochberg procedures assume you know the total number of hypotheses *in advance*. They were designed for batch testing, not for this streaming world.
+
+This mismatch has serious consequences. If you naively apply these classical corrections each time a new test arrives, you'll either inflate your false discovery rate (FDR) or make your tests overly conservative, wasting precious power. Worse yet, if you monitor your $p$-values as data accumulate and stop when they look good (a practice called *continuous monitoring* or *peeking*), traditional $p$-values are no longer valid.
+
+This is where **anytime-valid $p$-values** and **online multiple testing methods** come to the rescue. They let you monitor and make decisions at any time, without inflating Type I errors — all while controlling error rates like the FDR.
+
+In this article, we explain how anytime-valid inference works, why traditional $p$-values fail in online settings, and introduce the key algorithms developed over the last 15 years that allow principled, flexible testing when hypotheses arrive sequentially.
+
+## Notation
+
+At time $t$, you face hypothesis $H_t$, with a $p$-value $P_t$. You must decide whether to reject $H_t$ before seeing $H_{t+1}$. Importantly:
+- You don't know how many hypotheses will arrive in total.
+- Your decision $R_t$ (reject or not) may depend on past decisions $R_1, \dots, R_{t-1}$.
+
+The **false discovery proportion (FDP)** at time $T$ is:
+
+$$
+\text{FDP}(T) = \frac{V(T)}{R(T) \vee 1},
+$$
+
+where $V(T)$ is the number of false rejections and $R(T)$ is the total number of rejections. The **false discovery rate (FDR)** is the expectation of this quantity:
+
+$$
+\text{FDR}(T) = \mathbb{E}\left[ \frac{V(T)}{R(T) \vee 1} \right].
+$$
+
+An **anytime-valid $p$-value** is a $p$-value that remains valid no matter when you stop — even if you peek at the data continuously.
+
+## A Closer Look
+
+### Why Traditional $p$-values Fail in Sequential Testing
+
+Traditional $p$-values assume a fixed sample size and no interim monitoring. If you check the $p$-value repeatedly and stop as soon as it crosses a threshold, you're implicitly running a sequential test without adjusting for multiple looks.
+
+This leads to **inflated Type I error rates** because the chance of eventually seeing a small $p$-value grows with each additional look. The $p$-value you see is no longer uniformly distributed under the null.
+
+Anytime-valid $p$-values solve this by ensuring validity at every possible stopping time. Formally, for any stopping rule $N$:
+
+$$
+\Pr(P_{t, N} \leq x) \leq x \quad \text{for all } x \in [0,1].
+$$
+
+### The Rise of Online Multiple Testing
+
+Once we have anytime-valid $p$-values, we can build **online multiple testing procedures** that control the FDR over time. Here, you never know the total number of hypotheses upfront — hypotheses just keep arriving.
+
+The pioneering work of Foster and Stine (2008) introduced the concept of **alpha-investing**, a method that allocates an "alpha-wealth" budget across tests. Rejections replenish this budget, allowing more liberal testing when discoveries accumulate.
+
+Subsequent work refined these ideas into powerful modern algorithms:
+
+#### 1. **LORD++** (Javanmard and Montanari, Ramdas et al.)
+LORD++ stands for **Levels based On Recent Discovery**, a monotone GAI++ (Generalized Alpha Investing) rule. It updates testing levels dynamically based on previous rejections, preventing the test levels from collapsing as more tests accumulate.
+
+#### 2. **SAFFRON** (Ramdas et al., 2018)
+An adaptive procedure that estimates the proportion of null hypotheses and avoids wasting testing budget on weak signals. SAFFRON focuses alpha-wealth on promising $p$-values, improving power especially when there are many non-nulls.
+
+#### 3. **ADDIS** (Tian and Ramdas, 2019)
+ADDIS stands for **ADaptive algorithm that DIScards conservative nulls**. It further improves power by discarding $p$-values that are unlikely to be rejected anyway (e.g., large $p$-values that suggest conservative nulls).
+
+### Anytime-valid $p$-values and Confidence Sequences
+
+Anytime-valid $p$-values often arise from **confidence sequences** — time-uniform confidence intervals that hold at every sample size. These are built using techniques like:
+
+- **Martingale-based betting strategies** (e.g., e-processes).
+- **Concentration inequalities** (e.g., Hoeffding's inequality for bounded data).
+
+For example, in A/B testing, always-valid $p$-values allow you to continuously monitor the success rate difference between two groups without inflating your Type I error.
+
+## Bottom Line
+
+- Traditional $p$-values are not valid under continuous monitoring or online testing.
+
+- Anytime-valid $p$-values remain valid no matter when you stop.
+
+- Online multiple testing algorithms like LORD++, SAFFRON, and ADDIS enable FDR control when hypotheses arrive sequentially.
+
+- Adaptive algorithms improve power by estimating the fraction of nulls and focusing resources on likely non-nulls.
+
+## Where to Learn More
+
+The paper by Robertson, Wason, and Ramdas (2023) offers an excellent review of the literature on online error rate control, including algorithmic details, proofs, and simulation results. For a deep dive into anytime-valid $p$-values and confidence sequences, see Howard et al. (2021) and the always-valid inference literature.
+
+## References
+
+- Robertson, D. S., Wason, J. M. S., & Ramdas, A. (2023). Online Multiple Hypothesis Testing. *Statistical Science*, 38(4), 557–575.
+
+- Foster, D. P., & Stine, R. A. (2008). Alpha-Investing: A Procedure for Sequential Control of Expected False Discoveries. *Journal of the Royal Statistical Society: Series B*, 70(2), 429–444.
+
+- Ramdas, A., et al. (2018). SAFFRON: An Adaptive Algorithm for Online Control of the False Discovery Rate. *Journal of the Royal Statistical Society: Series B*, 80(5), 1225–1248.
+
+- Tian, J., & Ramdas, A. (2019). ADDIS: An Adaptive Discarding Algorithm for Online FDR Control. *International Conference on Artificial Intelligence and Statistics (AISTATS)*.
+
+- Howard, S. R., Ramdas, A., McAuliffe, J. D., & Sekhon, J. S. (2021). Time-Uniform Chernoff Bounds via Nonnegative Supermartingales. *Probability Surveys*, 18, 1–29.

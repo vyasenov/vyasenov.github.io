@@ -1,0 +1,118 @@
+---
+title: "Column-Sampling Bootstrap?"
+date: "2024-12-16"
+categories: [bootstrap, statistical inference]
+---
+
+## Background
+
+The bootstrap is a versatile resampling technique traditionally focused on rows. Let’s add a twist to the plain vanilla bootstrap. Imagine you have a wide dataset—many variables but few rows—and want to test the statistical significance of a correlation between two variables. An example is a genetic dataset with thousands of columns (genetic information and outcomes) but a limited number of rows (patients). Can you use the bootstrap to determine if the correlation between a specific gene-outcome pair is statistically significant?
+
+One creative approach is *resampling columns instead of rows*, generating a distribution of correlation coefficients to assess the significance of your observed correlation.
+
+## A Closer Look
+
+### Definition
+
+Here’s the basic algorithm:
+
+::: {.callout-note title="Algorithm:"}
+1. Randomly sample columns from your dataset with replacement to create fake dataset.
+2. Compute their correlation coefficient.
+3. Repeat this many times.
+4. Compare your observed correlation to the distribution of these synthetic correlations.
+5. Declare statistical significance if the observed correlation appears as an “outlier” in this synthetic distribution.
+:::
+
+This approach allows you to explore a large number of possible correlations in a computationally efficient way. But does it actually work? Let’s unpack the key considerations.
+
+The column-sampling bootstrap is most valuable when a dataset has many columns but too few rows for traditional bootstrap methods. The abundance of columns provides a rich sampling landscape. The goal is determining whether a correlation is significantly stronger or weaker than what might occur by chance. Let’s simplify the problem and ignore any issues stemming from being unable to estimate the correlation coefficients well enough.
+
+### Problems
+
+However, several critical challenges exist. The method assumes columns are independent and identically distributed (i.i.d.), which rarely holds in practice. Columns often represent related variables—like gene measurements or interconnected phenomena—and these dependencies can bias resampled correlations. Moreover, by resampling columns, you ignore row-level relationships, such as connections in time series or grouped data (like patients from the same household).
+
+Interpreting the null distribution presents another significant challenge. Synthetic correlation coefficients generated through column resampling might not represent a meaningful null hypothesis. If your dataset contains highly correlated features, the null distribution could shift, potentially leading to misleading conclusions. Unlike traditional bootstrapping—where samples reflect a subpopulation—this method lacks that fundamental connection.
+
+### The Verdict
+
+While the column-sampling bootstrap is an intriguing concept, it will likely prove useful only in very specific, carefully constrained settings.
+
+## An Example
+
+While we should be skeptical of the column-sampling bootstrap in practical applications, it can be instructive to see how we might implement it.
+
+Below is a sample `R` and `python` code illustrating the main concept. We begin with setting up a synthetic dataset.
+
+:::: {.panel-tabset}
+
+### R
+```r
+rm(list=ls())
+set.seed(1988)
+data <- as.data.frame(matrix(rnorm(1000), nrow = 50, ncol = 20))
+observed_correlation <- cor(data[[1]], data[[2]])
+
+# Perform the resampling
+n_bootstrap <- 1000  # Number of bootstrap iterations
+n_columns <- ncol(data)  # Total number of columns in the dataset
+bootstrap_correlations <- numeric(n_bootstrap)
+
+for (i in 1:n_bootstrap) {
+  resampled_columns <- sample(1:n_columns, size = n_columns, replace = TRUE)
+  resampled_data <- data[, resampled_columns]
+  bootstrap_correlations[i] <- cor(resampled_data[[1]], resampled_data[[2]])
+}
+
+# Test the significance of the observed correlation
+p_value <- mean(abs(bootstrap_correlations) >= abs(observed_correlation))
+
+# Print the results
+cat("Observed Correlation:", observed_correlation, "\n")
+> Observed Correlation: 0.05758855 
+cat("P-value:", p_value, "\n")
+> P-value: 0.676 
+```
+
+### Python
+```python
+import numpy as np
+np.random.seed(1988)
+
+# Generate synthetic dataset
+data = np.random.normal(size=(50, 20))  # 50 rows, 20 columns
+observed_correlation = np.corrcoef(data[:, 0], data[:, 1])[0, 1]
+
+# Perform the resampling
+n_bootstrap = 1000  # Number of bootstrap iterations
+n_columns = data.shape[1]  # Total number of columns in the dataset
+bootstrap_correlations = []
+
+for _ in range(n_bootstrap):
+    # Resample columns with replacement
+    resampled_columns = np.random.choice(n_columns, size=n_columns, replace=True)
+    resampled_data = data[:, resampled_columns]
+    # Compute correlation between the first two columns of the resampled data
+    bootstrap_correlations.append(np.corrcoef(resampled_data[:, 0], resampled_data[:, 1])[0, 1])
+
+# Test the significance of the observed correlation
+bootstrap_correlations = np.array(bootstrap_correlations)
+p_value = np.mean(np.abs(bootstrap_correlations) >= np.abs(observed_correlation))
+
+# Print the results
+print("Observed Correlation:", observed_correlation)
+print("P-value:", p_value)
+```
+
+::::
+
+The observed correlation is quite low and equal to $0.58$. Its associated p-value is $0.676$, consistent with the value not being statistically significant.
+
+
+## Bottom Line
+
+- The column-sampling bootstrap is a thought-proviking twist on traditional resampling techniques that leverages the width of your dataset.
+
+- While it offers computational efficiency and flexibility, its reliance on the i.i.d. assumption and potential to overlook row-level dependencies highlight the need for careful application.
+
+- The column-sampling bootrap should not be your go-to method to assess statistical significance.

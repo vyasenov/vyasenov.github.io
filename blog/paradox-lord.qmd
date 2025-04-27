@@ -1,0 +1,148 @@
+---
+title: "Lord’s Paradox: A Simple Illustration"
+date: "2022-12-18"
+categories: [correlation, paradox]
+---
+
+## Background
+
+Lord’s paradox presents a fascinating challenge in causal inference and statistics. It highlights how different statistical methods applied to the same data can lead to contradictory conclusions. The paradox typically arises when comparing changes over time between two groups in the context of adjusting for baseline characteristics. Despite its theoretical nature, the phenomena is deeply relevant to practical data analysis, especially in observational studies where causation is challenging to establish. Let’s look at an example.
+
+## A Closer Look
+
+### Mean Differences Over Time
+
+To explore Lord’s paradox, consider the following scenario: Suppose we have two groups of individuals—$A$ and $B$—with their body weights measured at two time points: before and after a specific intervention. Let the weight at the initial time point be denoted as $W_{\text{pre}}$, and the weight at the final time point be $W_{\text{post}}$. We are interested in whether the intervention caused a change in weight between the two groups.
+
+One approach to analyze this is to compute the (unadjusted) mean weight change for each group over time:
+
+$$\Delta = \Delta^A - \Delta^B.$$
+
+If this quantity is statistically significant, we might conclude that the intervention had a differential effect.
+
+### Controlling for Baseline Characteristics
+
+An alternative approach involves adjusting for baseline weight $W_{\text{pre}}$ using, for example, a regression model:
+
+  $$W_{\text{post}}=\beta_1 + \beta_2 G_A + \beta_3 W_{\text{pre}} + \epsilon,$$
+
+where $G$ is a binary indicator for group $A$ membership and $\epsilon$ is an error term. Here, $\beta_2$ captures the group difference in $W_{\text{post}}$, linearly controlling for baseline body weight.
+
+Surprisingly, these two approaches can yield conflicting results. For example, the former method might suggest no difference, while the regression adjustment indicates a significant group effect.
+
+### Explanation
+
+This contradiction arises because the two methods implicitly address different causal questions.
+
+- **Method 1** asks: “Do Groups $A$ and $B$ gain/lose different amounts of weight?”
+- **Method 2** asks: “Given the same initial weight, does any of the groups end up at different final weights?”
+The regression approach adjusts for baseline differences, assuming $W_{\text{pre}}$ is a confounder.
+
+The key insight is that the choice of analysis reflects underlying assumptions about the causal structure of the data. If $W_{\text{pre}}$ is affected by group membership (e.g., due to selection bias), then adjusting for it may introduce bias rather than remove it. However, in practice we most often should control for baseline characteristics as they are critical in balancing the treatment and control groups.
+
+### The Simpson’s Paradox Once Again
+
+I recently illustrated the more commonly discussed Simpson’s paradox. Interestingly, a [2008 paper](https://link.springer.com/article/10.1186/1742-7622-5-2) claims that two phenomena are closely related, with the Lord’s paradox being a “continuous version” of Simpson’s paradox.
+
+## An Example
+
+Let’s look at some code illustrating Lord’s paradox in `R` and `python`. We start with simulating a dataset where two groups have identical distributions of $W_{\text{pre}}$ and $W_{\text{post}}$, yet differing relationships between the two variables.
+
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+rm(list=ls())
+set.seed(1988)
+n <- 1000
+
+# Simulate data for two groups (e.g., male/female students)
+group <- factor(rep(c("A", "B"), each = n/2))
+
+# Initial weight (pre). # Group A starts with higher average weight
+weight_pre <- numeric(n)
+weight_pre[group == "A"] <- rnorm(n/2, mean = 75, sd = 10)
+weight_pre[group == "B"] <- rnorm(n/2, mean = 65, sd = 10)
+
+# Final weight (post). Both groups improve by the same amount on average
+gain <- rnorm(n, mean = 10, sd = 5)
+weight_post <- weight_pre + gain
+
+# Create data frame
+data <- data.frame(group = group, pre = weight_pre, post = weight_post)
+
+# Analysis 1: Compare change scores between groups`
+t.test(post - pre ~ group, data = data)
+> p-value = 0.6107
+
+# Analysis 2: Regression Adjustment`
+model <- lm(post ~ group + pre, data = data)
+summary(model)
+> p-value = 0.08428742
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+from scipy.stats import ttest_ind
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+# Set seed for reproducibility
+np.random.seed(1988)
+n = 1000
+
+# Simulate data for two groups (e.g., male/female students)
+group = np.array(["A"] * (n // 2) + ["B"] * (n // 2))
+
+# Initial weight (pre). Group A starts with higher average weight
+weight_pre = np.zeros(n)
+weight_pre[group == "A"] = np.random.normal(loc=75, scale=10, size=n // 2)
+weight_pre[group == "B"] = np.random.normal(loc=65, scale=10, size=n // 2)
+
+# Final weight (post). Both groups improve by the same amount on average
+gain = np.random.normal(loc=10, scale=5, size=n)
+weight_post = weight_pre + gain
+
+# Create DataFrame
+data = pd.DataFrame({"group": group, "pre": weight_pre, "post": weight_post})
+
+# Analysis 1: Compare change scores between groups
+data["change"] = data["post"] - data["pre"]
+group_a_change = data[data["group"] == "A"]["change"]
+group_b_change = data[data["group"] == "B"]["change"]
+t_stat, p_value = ttest_ind(group_a_change, group_b_change)
+print(f"Analysis 1: p-value = {p_value:.4f}")
+
+# Analysis 2: Regression Adjustment
+model = smf.ols("post ~ group + pre", data=data).fit()
+print(model.summary())
+```
+
+::::
+
+The former approach shows lack of statistically significant differences in the body weight after the intervention between the two groups ($p$-value =$ 0.6107$). The results from the latter method do show meaningful differences ($p$-value = $0.0842$).
+
+This illustrates the core of Lord’s paradox – the statistical approach chosen can lead to different interpretations of the same underlying phenomenon.
+
+## Bottom Line
+
+- Lord’s paradox underscores the importance of aligning statistical methods with causal assumptions.
+
+- Different methods answer different questions and may yield contradictory results if applied blindly.
+
+- Careful consideration of the data-generating process and the role of potential confounders is crucial in choosing the appropriate analytical approach.
+
+## References
+
+Lord, E. M. (1967). A paradox in the interpretation of group comparisons. Psychological Bulletin, 68, 304–305. doi:10.1037/h0025105
+
+Lord, F. M. (1969). Statistical adjustments when comparing preexisting groups. Psychological Bulletin, 72, 336–337. doi:10.1037/h0028108
+
+Lord, E. M. (1975). Lord’s paradox. In S. B. Anderson, S. Ball, R. T. Murphy, & Associates, Encyclopedia of Educational Evaluation (pp. 232–236). San Francisco, CA: Jossey-Bass.
+
+Tu, Y. K., Gunnell, D., & Gilthorpe, M. S. (2008). Simpson’s Paradox, Lord’s Paradox, and Suppression Effects are the same phenomenon–the reversal paradox. Emerging themes in epidemiology, 5, 1-9.

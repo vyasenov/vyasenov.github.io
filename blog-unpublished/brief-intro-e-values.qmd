@@ -1,0 +1,176 @@
+---
+title: "A Brief Introduction to E-Values"
+date: "2025-04-24"
+categories: [statistical inference]
+---
+
+## Background
+
+Statistical hypothesis testing has long been dominated by the use of $p$-values. However, $p$-values have several conceptual and practical limitations, particularly in their frequentist interpretation. They require a prespecified significance level and do not naturally accommodate sequential testing or decision-making in a flexible way. This has led to the search for alternative measures of statistical evidence, and one promising alternative is the e-value.
+
+E-values, as introduced in recent work by Grünwald (2024) and others, offer a decision-theoretic foundation for hypothesis testing that extends beyond the classical Neyman–Pearson framework. Unlike $p$-values, e-values provide Type-I risk control even when decision tasks are formulated post hoc. E-values can support decisions without the need to predefine a fixed significance level, allowing flexibility in interpreting evidence post hoc. Note, however, that this is a different type of control from traditional fixed-$\alpha$ control.
+
+In this article, we’ll explore the motivation behind e-values, define their mathematical properties, and illustrate their application using a simple example in `R` and `python`.
+
+## Notation
+
+Let’s set up the basic notation. Suppose we are testing a null hypothesis $H_0$ against an alternative $H_1$ based on observed data $Y$. In classical Neyman–Pearson testing, we define a test statistic T(Y) and derive a $p$-value:
+
+  $$P(Y) = P_{H_0}(T(Y) \geq T_{obs}),$$
+
+where $P_{H_0}$ represents probability under the null hypothesis and $T_{obs}$ is the observed test statistic.
+
+## A Closer Look
+
+### Definition
+
+E-values replace this with an alternative statistic, the e-variable, denoted as $S(Y)$, which satisfies:
+
+  $$E_{H_0}[S(Y)] \leq 1.$$
+
+This ensures that the e-value does not, on average, exceed 1 under the null, providing a valid way to quantify evidence against $H_0$.
+
+### Why E-Values?
+
+The fundamental problem with $p$-values is their lack of a clear decision-theoretic interpretation. They are often misunderstood and misused, leading to issues such as the replication crisis in scientific research. E-values address these issues by offering:
+
+- **Interpretability**: Large e-values provide direct evidence against $H_0$, unlike small $p$-values, which are difficult to interpret without a fixed alpha threshold.
+- **Optional Stopping**: Because e-values maintain their validity even when a study stops based on interim results, they are useful in sequential testing.
+- **Post Hoc Decision-Making**: Since e-values allow for Type-I risk control after seeing the data, they facilitate more flexible decision-making.
+
+### Constructing the E-Values
+
+A common way to define an e-value is through a likelihood ratio:
+
+  $$S(Y) = \frac{P_{H_1}(Y)}{P_{H_0}(Y)}.$$
+
+This is similar to a Bayes factor but differs in that it does not require a prior distribution over hypotheses. Another approach is to construct empirical e-values based on resampling methods or alternative test statistics that satisfy the expectation constraint.
+
+A more general definition involves e-processes, which allow for sequential testing. An e-process $\{S_t\}_{t=1}^{\infty}$ is a sequence of nonnegative random variables satisfying:
+
+  $$E_{H_0}[S_t | S_1, \dots, S_{t-1}] \leq S_{t-1}, \quad \forall t.$$
+
+This property ensures that the sequence remains a valid e-value throughout a study, making it particularly powerful for adaptive testing procedures.
+
+Another important construction is via supermartingales. An e-value can be defined as a nonnegative random variable $S(Y)$ such that $\{S_t\}$ forms a nonnegative supermartingale under $H_0$:
+
+  $$E_{H_0}[S_t | S_{t-1}] \leq S_{t-1},$$
+
+which guarantees that the expectation does not increase under the null hypothesis.
+
+## Comparison
+
+<div style="max-width: 400px; margin: 0 auto;">
+
+| Property             | $P$-Value                             | E-Value                                  |
+|----------------------|---------------------------------------|------------------------------------------|
+| Interpretability     | Indirect (requires fixed $\alpha$)    | Direct (large values indicate evidence)  |
+| Optional Stopping    | No                                    | Yes                                      |
+| Sequential Analysis  | Problematic                           | Natural                                  |
+| Post Hoc Decisions   | Not well-defined                      | Valid risk guarantees                    |
+
+</div>
+
+## An Example
+
+Let’s consider a simple hypothesis test using the `iris` dataset in `R`. We will test whether the mean `Sepal.Length` differs between two species using both a $p$-value and an e-value.
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+# Load Data
+rm(list=ls())
+library(dplyr)
+library(tibble)
+
+# Load dataset
+data(iris)
+iris_filtered <- iris %>% filter(Species %in% c("setosa", "versicolor"))
+
+# Compute P-Value (Traditional T-Test)
+p_value <- t.test(Sepal.Length ~ Species, data = iris_filtered)$p.value
+print(p_value)
+
+# Compute E-Value
+# Define likelihood under each hypothesis
+likelihood_ratio <- function(y, mu0, mu1, sigma) {
+  dnorm(y, mean = mu1, sd = sigma) / dnorm(y, mean = mu0, sd = sigma)
+}
+
+# Estimate parameters
+mu0 <- mean(iris_filtered$Sepal.Length[iris_filtered$Species == "setosa"]) 
+mu1 <- mean(iris_filtered$Sepal.Length[iris_filtered$Species == "versicolor"])
+sigma <- sd(iris_filtered$Sepal.Length)
+
+# Compute e-value
+e_values <- sapply(iris_filtered$Sepal.Length, likelihood_ratio, mu0, mu1, sigma)
+e_value <- mean(e_values)
+print(e_value)
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+from scipy.stats import ttest_ind, norm
+
+# Load dataset
+from sklearn.datasets import load_iris
+iris_data = load_iris(as_frame=True)
+iris = iris_data['data']
+iris['Species'] = iris_data['target']
+iris['Species'] = iris['Species'].replace({0: 'setosa', 1: 'versicolor', 2: 'virginica'})
+
+# Filter dataset for two species
+iris_filtered = iris[iris['Species'].isin(['setosa', 'versicolor'])]
+
+# Compute P-Value (Traditional T-Test)
+setosa = iris_filtered[iris_filtered['Species'] == 'setosa']['Sepal.Length']
+versicolor = iris_filtered[iris_filtered['Species'] == 'versicolor']['Sepal.Length']
+p_value = ttest_ind(setosa, versicolor).pvalue
+print(f"P-Value: {p_value}")
+
+# Compute E-Value
+# Define likelihood ratio function
+def likelihood_ratio(y, mu0, mu1, sigma):
+    return norm.pdf(y, loc=mu1, scale=sigma) / norm.pdf(y, loc=mu0, scale=sigma)
+
+# Estimate parameters
+mu0 = setosa.mean()
+mu1 = versicolor.mean()
+sigma = iris_filtered['Sepal.Length'].std()
+
+# Compute e-value
+e_values = [likelihood_ratio(y, mu0, mu1, sigma) for y in iris_filtered['Sepal.Length']]
+e_value = np.prod(e_values)
+print(f"E-Value: {e_value}")
+```
+
+::::
+
+The e-value directly quantifies the strength of evidence against the null. Unlike the $p$-value, which requires an arbitrary threshold (e.g., $0.05$) to make a decision, the e-value provides a more interpretable measure of support for $H_1$.
+
+## Bottom Line
+
+- E-values provide a decision-theoretic alternative to $p$-values, offering clearer evidence quantification.
+
+- They naturally handle optional stopping and sequential testing, unlike $p$-values.
+
+- They allow for flexible, post hoc decision-making, making them particularly useful in real-world applications.
+
+- Likelihood ratios and supermartingales serve as a natural basis for constructing e-values, making them conceptually simple yet powerful.
+
+## Where to Learn More
+
+For a deep dive into e-values, Grünwald (2024) provides a rigorous mathematical foundation, discussing their application in decision theory and hypothesis testing. Another useful resource is Shafer (2021), which explores connections between e-values and likelihood ratios. For practical applications, Vovk & Wang (2019) discuss the use of e-values in sequential analysis and machine learning contexts.
+
+## References
+
+Grünwald, P. (2024). *Beyond Neyman-Pearson: E-values enable hypothesis testing with a data-driven alpha*. PNAS.
+
+Shafer, G. (2021). *Testing by betting: A strategy for statistical and scientific communication*. Cambridge University Press.
+
+Vovk, V., & Wang, R. (2019). *E-values: Calibration, combination, and applications*. Journal of the Royal Statistical Society.

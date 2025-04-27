@@ -1,0 +1,88 @@
+---
+title: "The Limits of Parametric Models: The Cramér-Rao Bound"
+date: "2025-01-12"
+categories: [statistical inference, parametric models]
+---
+
+## Background
+
+Obtaining the lowest possible variance is a primary goal for anyone working with statistical models. Efficiency (or precision), as is the jargon, is a cornerstone of statistics and econometrics, guiding us toward estimators that extract the maximum possible information from the data. It can make or break a data project.
+
+The Cramér-Rao lower bound (CRLB) plays a pivotal role in this context by establishing a theoretical limit on the variance of unbiased estimators. Unbiased estimators are those that yield the true answer (on average), rendering them a highly attractive class of methods. The CRLB highlights the best achievable precision for parameter estimation based on the Fisher information in the data. This article explores the theoretical foundation of the CRLB, its computation, and its implications for practical estimation.
+
+In what follows, I am concerned with unbiased estimators, a common practice that should not be taken for granted. As a counterexample, consider the [James-Stein estimator](http://yasenov.com/2025/01/steins-paradox-a-simple-illustration/) —a biased but attractive technique.
+
+## Notation
+
+Before diving in, let’s establish a unified notation to structure the mathematical discussion:
+
+- Let X denote the observed data, with $X_1, X_2, \dots, X_n$ being n independent and identically distributed (i.i.d.) observations.
+- The model governing the data is characterized by a (finite-dimensional) parameter $\theta \in \mathbb{R}^d$ which we aim to estimate.
+- The likelihood of the data is $f(x; \theta)$, fully specified by the parameter $\theta$.
+
+## A Closer Look
+
+The Cramér-Rao lower bound provides a theoretical benchmark for how precise an unbiased estimator can be. It sets the minimum variance that any unbiased estimator of a parameter $\theta$ can achieve, given a specific data-generating process.
+
+### The CRLB Formula
+
+For a parameter $\theta$ in a parametric model with likelihood $f(x; \theta)$, the CRLB is expressed as:
+
+  $$\text{Var}(\hat{\theta}) \geq \frac{1}{I(\theta)},$$
+
+where $I(\theta)$ is the Fisher information (FI), defined as:
+
+  $$I(\theta) = \mathbb{E}\left[ \left( \frac{\partial}{\partial \theta} \log f(x; \theta) \right)^2 \right].$$
+
+### Intuition
+To understand the CRLB, we must delve into the concept of Fisher information named after one of the modern fathers of statistics R.A. Fisher. Intuitively, FI quantifies how much information the observed data carries about the parameter $\theta$.
+
+Think of the likelihood function $f(x; \theta)$ as describing the probability of observing a given dataset $x$ for a particular value of $\theta$. If the likelihood changes sharply with $\theta$ (i.e., $\frac{\partial}{\partial \theta} \log f(x; \theta)$ is large), small changes in $\theta$ lead to noticeable differences in the likelihood. This variability reflects high information: the data can “pinpoint” $\theta$ with greater precision. Conversely, if the likelihood changes slowly with $\theta$, the data offers less information about its true value.
+
+Mathematically, the Fisher information $I(\theta)$ is the variance of the the partial derivative
+
+$$\frac{\partial}{\partial \theta} logf(x;\theta),$$
+
+which we refer to as the score function. This score measures how sensitive the likelihood function is to changes in $\theta$. Higher variance in the score corresponds to more precise information about $\theta$.
+
+### Practical Application
+
+The CRLB provides a benchmark for evaluating the performance of estimators. For example, if you propose an unbiased estimator $\hat{\theta}$, you can compare its variance to the CRLB. If $\text{Var}(\hat{\theta}) = \frac{1}{I(\theta)}$, we say the estimator is efficient. However, if the variance is higher, there may be room to improve the estimation method.
+
+Moreover, the CRLB also offers insight into the difficulty of estimating a parameter. If $I(\theta)$ is “small”, so that the bound on the variance is high, then no unbiased estimator can achieve high precision with the available data. It is possible to develop a biased estimator for $\theta$ with lower variance, but it is not clear why you would do that.
+
+## An Example
+
+Imagine you are estimating the mean \mu of a normal distribution, where $X \sim N(\mu, \sigma^2)$, and $\sigma^2$ is known. The likelihood for a single observation $x_i$ is:
+
+$$f(x_i;\mu) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{(x_i-\mu)^2}{2 \sigma^2}}.$$
+
+Using the Fisher information defintion given above, taking the derivative and simplifying, we find:
+
+$$I(\mu)=  \left( \frac{\partial}{\partial \theta} \log f(x; \theta) \right)^2 = \frac{1}{\sigma^2}.$$
+
+For n independent observations, this expression becomes:
+
+$$I(\mu)=\frac{n}{\sigma^2}.$$
+
+The CRLB for the variance of any unbiased estimator of \mu is:
+
+$$\text{Var}(\hat{\mu})\geq \frac{\sigma^2}{n}$$
+
+This result aligns with our intuition: as n increases, the precision of our estimate improves. In other words, more data leads to more informative results.
+
+## Where to Learn More
+
+Any graduate econometrics textbook will do. Personally, my grad school nightmares were induced by Greene’s textbook (cited below). It can be dry but certainly contains what you need to know.
+
+## Bottom Line
+
+- The CRLB establishes a theoretical lower limit on the variance of unbiased estimators, serving as a benchmark for efficiency.
+
+- Fisher information measures the sensitivity of the likelihood to changes in the parameter $\theta$, linking the amount of information in the data to the precision of estimation.
+
+- Efficient estimators achieve the CRLB and are optimal under the given model assumptions.
+
+## References
+
+Greene, William H. “Econometric analysis”. New Jersey: Prentice Hall (2000): 201-215.

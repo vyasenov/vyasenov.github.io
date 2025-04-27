@@ -1,0 +1,368 @@
+---
+title: "The Many Flavors of Bootstrap"
+date: "2025-04-27"
+categories: [bootstrap, inference]
+---
+
+## Background
+
+The bootstrap is one of those statistical ideas that feels almost too simple to work—and yet, it works beautifully. At its core, the bootstrap is about asking, "What if we could repeatedly sample from the data we already have, as if we were drawing fresh samples from the population?" This clever sleight of hand allows us to estimate variability, construct confidence intervals, and even perform hypothesis tests—all without relying heavily on strong parametric assumptions.
+
+But here's the thing: there isn’t just *one* bootstrap. Over the years, statisticians have developed many flavors of the bootstrap to address different challenges. Some handle small samples better. Some are designed for dependent data like time series. Others shine when the assumptions of classic bootstrapping crumble (think clustered data or heteroskedasticity).
+
+In this post, we’ll take a tour through the zoo of bootstrap methods: from the classic nonparametric bootstrap to the jackknife, parametric bootstrap, Bayesian bootstrap, wild bootstrap, moving block bootstrap, and more. We’ll explore where each method shines, where it stumbles, and how to pick the right tool for your problem.
+
+No need to worry—I won’t just throw formulas at you (though there will be some of those). The focus here is on understanding *why* these methods work, not just how to mechanically apply them.
+
+## Notation
+
+Throughout this article, we’ll assume we have data $\{Y_1, Y_2, \dots, Y_n\}$, where $Y_i$ are independent and identically distributed (i.i.d.) random variables drawn from some unknown distribution $F$. We’re interested in estimating some parameter $\theta = T(F)$, like the mean, median, regression coefficients, or a more complicated functional.
+
+Our estimator of $\theta$ from the observed sample is $\hat{\theta} = T(\hat{F}_n)$, where $\hat{F}_n$ is the empirical distribution function that puts mass $1/n$ on each observed data point.
+
+The big question is: *How variable is $\hat{\theta}$?* And that’s where the bootstrap comes in.
+
+## A Closer Look
+
+### The Jackknife
+
+Let’s start with the jackknife, developed back in the 1950s by Quenouille and popularized by Tukey. The jackknife isn’t technically a bootstrap, but it’s often the gateway drug to resampling methods.
+
+Here’s the idea: drop one observation at a time, recompute your estimate, and use the variability across these "leave-one-out" estimates to approximate the variance of $\hat{\theta}$.
+
+Mathematically, the jackknife replicates are:
+$$
+\hat{\theta}_{(i)} = T(\hat{F}_{n,-i}),
+$$
+where $\hat{F}_{n,-i}$ is the empirical distribution leaving out the $i$-th observation.
+
+The jackknife variance estimate is:
+$$
+\hat{V}_{\text{jack}} = \frac{n - 1}{n} \sum_{i=1}^n \left( \hat{\theta}_{(i)} - \bar{\theta}_{\text{jack}} \right)^2,
+$$
+where $\bar{\theta}_{\text{jack}} = \frac{1}{n} \sum_{i=1}^n \hat{\theta}_{(i)}$.
+
+**When to use it?** The jackknife works well for smooth statistics like the mean or regression coefficients. But it can fail miserably for non-smooth functionals like the median or quantiles.
+
+**Strengths:** Fast, easy to implement, no randomness involved.
+
+**Weaknesses:** Limited to statistics that are smooth in the data. Doesn’t handle complex dependency structures or non-smooth parameters well.
+
+
+::::{.panel-tabset}
+
+### R
+```r
+set.seed(42)
+y <- rnorm(100)
+jackknife_estimates <- sapply(1:length(y), function(i) mean(y[-i]))
+jackknife_variance <- (length(y) - 1) / length(y) * var(jackknife_estimates)
+print(jackknife_variance)
+```
+
+### Python
+```python
+import numpy as np
+np.random.seed(42)
+y = np.random.normal(size=100)
+jackknife_estimates = np.array([np.mean(np.delete(y, i)) for i in range(len(y))])
+jackknife_variance = (len(y) - 1) / len(y) * np.var(jackknife_estimates, ddof=1)
+print(jackknife_variance)
+```
+::::
+
+---
+
+### Classic Nonparametric Bootstrap
+
+The classic bootstrap, introduced by Bradley Efron in 1979, takes the idea of resampling and turns it up a notch. Instead of dropping one observation at a time, we repeatedly resample **with replacement** from our data to create many "new" datasets, each the same size as the original.
+
+For each bootstrap sample $b = 1, \dots, B$:
+1. Sample $n$ observations with replacement.
+2. Compute the statistic $\hat{\theta}^*_b = T(\hat{F}^*_b)$.
+
+The bootstrap variance estimate is:
+$$
+\hat{V}_{\text{boot}} = \frac{1}{B - 1} \sum_{b=1}^B \left( \hat{\theta}^*_b - \bar{\theta}^* \right)^2,
+$$
+where $\bar{\theta}^* = \frac{1}{B} \sum_{b=1}^B \hat{\theta}^*_b$.
+
+**When to use it?** Whenever the sample size is moderate or large and you can safely assume i.i.d. observations.
+
+**Strengths:** Flexible, broadly applicable, works well for non-smooth statistics.
+
+**Weaknesses:** Can struggle with small samples or dependent data (like time series). Resampling with replacement assumes independence.
+
+
+::::{.panel-tabset}
+
+### R
+```r
+set.seed(42)
+y <- rnorm(100)
+B <- 1000
+boot_means <- replicate(B, mean(sample(y, replace = TRUE)))
+boot_variance <- var(boot_means)
+print(boot_variance)
+```
+
+### Python
+```python
+np.random.seed(42)
+B = 1000
+boot_means = [np.mean(np.random.choice(y, size=len(y), replace=True)) for _ in range(B)]
+boot_variance = np.var(boot_means, ddof=1)
+print(boot_variance)
+```
+::::
+
+---
+
+### Parametric Bootstrap
+
+The parametric bootstrap tweaks the classic idea. Instead of sampling from the empirical distribution $\hat{F}_n$, you assume a parametric model $F_\theta$ for the data, fit it to the sample, and then generate new data from the fitted model.
+
+For example, if you assume $Y_i \sim N(\mu, \sigma^2)$, estimate $\hat{\mu}$ and $\hat{\sigma}^2$, and then generate bootstrap samples from $N(\hat{\mu}, \hat{\sigma}^2)$.
+
+**When to use it?** When you trust your parametric model (or at least trust it more than the empirical distribution) and want to leverage that structure.
+
+**Strengths:** More efficient than nonparametric bootstrap if the model is well-specified. Can handle small samples better.
+
+**Weaknesses:** Garbage in, garbage out—if the parametric model is wrong, so are your bootstrap results.
+
+
+::::{.panel-tabset}
+
+### R
+```r
+set.seed(42)
+y <- rnorm(100)
+mu_hat <- mean(y)
+sigma_hat <- sd(y)
+param_boot_means <- replicate(B, mean(rnorm(100, mu_hat, sigma_hat)))
+param_boot_variance <- var(param_boot_means)
+print(param_boot_variance)
+```
+
+### Python
+```python
+mu_hat = np.mean(y)
+sigma_hat = np.std(y, ddof=1)
+param_boot_means = [np.mean(np.random.normal(mu_hat, sigma_hat, size=len(y))) for _ in range(B)]
+param_boot_variance = np.var(param_boot_means, ddof=1)
+print(param_boot_variance)
+```
+::::
+
+---
+
+### Bayesian Bootstrap
+
+Invented by Rubin in 1981, the Bayesian bootstrap doesn’t resample data points directly. Instead, it puts a **Dirichlet prior** on the weights assigned to each observation.
+
+The weights $(w_1, \dots, w_n)$ are drawn from:
+$$
+(w_1, \dots, w_n) \sim \text{Dirichlet}(1, \dots, 1).
+$$
+Then the statistic is computed as:
+$$
+\hat{\theta}^* = T\left( \sum_{i=1}^n w_i \delta_{Y_i} \right).
+$$
+
+**When to use it?** When you're in a Bayesian mood or want a resampling scheme without discrete resampling (i.e., no repeated observations).
+
+**Strengths:** Smooth, avoids ties from discrete resampling, easy to implement.
+
+**Weaknesses:** Interpretation may feel less intuitive if you're used to classical frequentist bootstrap.
+
+
+::::{.panel-tabset}
+
+### R
+```r
+library(MCMCpack)  # for rdirichlet
+set.seed(42)
+y <- rnorm(100)
+B <- 1000
+bayes_boot_means <- replicate(B, {
+  weights <- as.numeric(rdirichlet(1, rep(1, length(y))))
+  sum(weights * y)
+})
+var(bayes_boot_means)
+```
+
+### Python
+```python
+from scipy.stats import dirichlet
+bayes_boot_means = []
+for _ in range(B):
+    weights = dirichlet.rvs([1] * len(y))[0]
+    bayes_boot_means.append(np.sum(weights * y))
+np.var(bayes_boot_means, ddof=1)
+```
+::::
+
+---
+
+### Wild Bootstrap
+
+The wild bootstrap is a lifesaver when dealing with **heteroskedasticity** or few clusters. Instead of resampling observations, it perturbs the residuals.
+
+Suppose you’re estimating a regression model:
+$$
+Y_i = X_i \beta + \varepsilon_i.
+$$
+The wild bootstrap generates:
+$$
+Y^*_i = X_i \hat{\beta} + v_i \hat{\varepsilon}_i,
+$$
+where $v_i$ are random variables with mean zero and variance one (e.g., Rademacher random variables taking values $\pm1$ with probability $0.5$).
+
+**When to use it?** Heteroskedastic models, clustered data with few clusters.
+
+**Strengths:** Handles heteroskedasticity gracefully, robust in small-sample settings.
+
+**Weaknesses:** Mostly designed for regression contexts. Choice of perturbation distribution matters.
+
+
+::::{.panel-tabset}
+
+### R
+```r
+set.seed(42)
+x <- rnorm(100)
+y <- 2 * x + rnorm(100, sd = abs(x))
+model <- lm(y ~ x)
+residuals <- resid(model)
+predicted <- fitted(model)
+B <- 1000
+wild_means <- replicate(B, {
+  v <- sample(c(-1, 1), length(residuals), replace = TRUE)
+  y_star <- predicted + v * residuals
+  coef(lm(y_star ~ x))[2]
+})
+var(wild_means)
+```
+
+### Python
+```python
+from sklearn.linear_model import LinearRegression
+x = np.random.normal(size=100).reshape(-1, 1)
+y = 2 * x.flatten() + np.random.normal(scale=np.abs(x.flatten()))
+model = LinearRegression().fit(x, y)
+residuals = y - model.predict(x)
+predicted = model.predict(x)
+wild_boot_coefs = []
+for _ in range(B):
+    v = np.random.choice([-1, 1], size=len(residuals))
+    y_star = predicted + v * residuals
+    coef = LinearRegression().fit(x, y_star).coef_[0]
+    wild_boot_coefs.append(coef)
+np.var(wild_boot_coefs, ddof=1)
+```
+::::
+
+---
+
+### Moving Block Bootstrap
+
+If your data are **dependent**, like time series, the classic bootstrap fails because it breaks the correlation structure. The moving block bootstrap fixes this by resampling blocks of adjacent observations instead of individual data points.
+
+You choose a block length $l$ and create overlapping blocks of data:
+$$
+\{Y_1, \dots, Y_l\}, \{Y_2, \dots, Y_{l+1}\}, \dots, \{Y_{n-l+1}, \dots, Y_n\}.
+$$
+Then resample these blocks with replacement to form a new dataset.
+
+**When to use it?** Time series or spatial data with short-range dependence.
+
+**Strengths:** Maintains local dependence within blocks.
+
+**Weaknesses:** Choice of block size can be tricky; too small loses dependence, too big reduces variability.
+
+::::{.panel-tabset}
+
+### R
+```r
+library(boot)
+set.seed(42)
+y <- arima.sim(model = list(ar = 0.7), n = 100)
+block_length <- 5
+B <- 1000
+block_boot_means <- tsboot(y, statistic = function(x) mean(x), R = B, l = block_length, sim = "fixed")
+var(block_boot_means$t)
+```
+
+### Python
+```python
+from arch.bootstrap import MovingBlockBootstrap
+np.random.seed(42)
+y = np.random.normal(size=100)
+block_length = 5
+bs = MovingBlockBootstrap(block_length, y)
+boot_means = np.array([np.mean(data[0]) for data in bs.bootstrap(B)])
+np.var(boot_means, ddof=1)
+```
+::::
+
+---
+
+### Subsampling
+
+Subsampling is like bootstrap’s minimalist cousin. Instead of resampling with replacement, it draws subsamples **without replacement** of size $m < n$.
+
+You then adjust for the fact that your subsamples are smaller. Subsampling doesn’t assume i.i.d. data, making it attractive for dependent or non-identically distributed data.
+
+**When to use it?** Dependent data, heavy-tailed distributions, or when bootstrap consistency fails.
+
+**Strengths:** Fewer assumptions than classic bootstrap.
+
+**Weaknesses:** Choosing the subsample size $m$ is non-trivial. Usually requires theoretical justification.
+
+::::{.panel-tabset}
+
+### R
+```r
+set.seed(42)
+y <- rnorm(100)
+subsample_size <- 50
+B <- 1000
+subsample_means <- replicate(B, mean(sample(y, subsample_size, replace = FALSE)))
+var(subsample_means)
+```
+
+### Python
+```python
+subsample_size = 50
+subsample_means = [np.mean(np.random.choice(y, size=subsample_size, replace=False)) for _ in range(B)]
+np.var(subsample_means, ddof=1)
+```
+::::
+
+---
+
+## Bottom Line
+
+- The bootstrap is not a single method—it’s a whole family of techniques, each with its own sweet spot.
+
+- The jackknife is fast and simple but struggles with non-smooth statistics.
+
+- The classic bootstrap works great for i.i.d. data and smooth or non-smooth statistics, but fails with dependence or small samples.
+
+- Specialized bootstraps (wild, block, Bayesian, subsampling) handle heteroskedasticity, clustering, dependence, and other real-world challenges that trip up the classic approach.
+
+## Where to Learn More
+
+For a thorough dive into bootstrap methods, I recommend the textbook *An Introduction to the Bootstrap* by Efron and Tibshirani. For time series applications, Lahiri’s *Resampling Methods for Dependent Data* is a gem. If you’re interested in the asymptotic theory behind these methods, consult Davison and Hinkley’s *Bootstrap Methods and Their Application*. There are also excellent lecture notes floating around online from advanced econometrics courses that cover these topics with a modern perspective.
+
+---
+
+## References
+
+Efron, B. (1979). Bootstrap methods: Another look at the jackknife. *Annals of Statistics*, 7(1), 1–26.
+
+Rubin, D. B. (1981). The Bayesian bootstrap. *Annals of Statistics*, 9(1), 130–134.
+
+Lahiri, S. N. (2003). *Resampling Methods for Dependent Data*. Springer.
+
+Davison, A. C., & Hinkley, D. V. (1997). *Bootstrap Methods and Their Application*. Cambridge University Press.

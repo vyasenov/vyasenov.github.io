@@ -1,0 +1,203 @@
+---
+title: "How Much Do Controls Matter? Unpacking Gelbach Decomposition and Oster's δ Method"
+date: "2025-00-00"
+categories: [causal inference, regression]
+---
+
+## Background
+
+In regression analysis, especially in social science and economics, a key question often arises: how sensitive are our estimates to the inclusion (or exclusion) of covariates? Are we picking up a genuine causal relationship, or is our coefficient of interest just soaking up omitted variable bias? Two influential papers—Gelbach (2016) and Oster (2019)—tackle this head-on but from different angles. Gelbach focuses on decomposing changes in coefficient estimates, while Oster proposes a method for assessing robustness to unobserved confounding. In this article, we explore both approaches and highlight how they can inform our understanding of variable importance and robustness.
+
+## Notation
+
+Let’s consider a standard linear regression model:
+
+$$
+y = X\beta + Z\gamma + \varepsilon
+$$
+
+Here:
+- $y$ is the outcome,
+- $X$ is a variable of interest (say, a treatment),
+- $Z$ is a set of controls,
+- $\varepsilon$ is the error term.
+
+Suppose we estimate a "short" regression without $Z$, and then a "long" regression with $Z$. How does the inclusion of $Z$ affect the estimate of $\beta$?
+
+## A Closer Look
+
+### Gelbach Decomposition
+
+Gelbach (2016) proposes a formal method to break down the change in your coefficient of interest when you add additional covariates. Instead of just eyeballing the before-and-after change, Gelbach tells you exactly how much of the change is due to each new variable (or group of variables).
+
+The key result comes from the omitted variable bias formula. For a regression of the form:
+
+$$
+y = X_1 \beta_1 + X_2 \beta_2 + \varepsilon,
+$$
+
+where $X_1$ is the variable of interest (e.g., treatment) and $X_2$ is the set of additional controls, the difference between the coefficient on $X_1$ in the “short” model (without $X_2$) and the “long” model (with $X_2$) can be written as:
+
+$$
+\hat{\beta}^{short}_1 - \hat{\beta}^{long}_1 = (X_1' X_1)^{-1}X_1'X_2 \hat{\beta_2}.
+$$
+
+This formula lets you attribute the coefficient change to each control variable in $X_2$. Crucially, this decomposition is order-invariant—unlike the naive practice of sequentially adding controls (which can produce wildly different results depending on the order of inclusion, as Gelbach demonstrates with wage gap studies).
+
+Intuition: Think of the decomposition as answering the question: Which control variables are responsible for the observed shift in my estimate? And by how much?
+
+### Gelbach Decomposition 2
+
+Gelbach (2016) offers a way to formally decompose the change in $\hat{\beta}$ when controls are added. The key result is:
+
+$$
+\hat{\beta}_{\text{long}} - \hat{\beta}_{\text{short}} = \hat{\delta}'(\hat{\gamma}_{\text{aux}})
+$$
+
+Where:
+- $\hat{\delta}$ comes from regressing $Z$ on $X$ (auxiliary regression),
+- $\hat{\gamma}_{\text{aux}}$ are the coefficients from regressing $y$ on $Z$ while controlling for $X$.
+
+Intuitively, this tells us exactly how much of the change in $\hat{\beta}$ is due to each added covariate in $Z$.
+
+### Oster's $\delta$ Method
+
+While Gelbach helps you understand what’s happening with your observed controls, Oster (2019) tackles the next big question: What about the stuff I can’t observe?
+
+Oster extends ideas from Altonji, Elder, and Taber (2005) and formalizes the relationship between coefficient stability and omitted variable bias. But here’s the critical insight: coefficient stability alone is not enough. You also need to look at changes in $R^2$.
+
+If adding controls barely budges your coefficient and dramatically increases your $R^2$, that suggests the included controls are genuinely explaining a lot of variation—and unobserved factors may not be a huge threat. On the other hand, if the $R^2$ hardly changes, even a stable coefficient might not mean much.
+
+The Oster bounding formula allows you to compute what your estimate would be if you could observe everything. The adjusted coefficient is given by:
+
+$$
+\tilde{\beta} = \hat{\beta}_{\text{long}} - \delta(\hat{\beta}_{\text{short}} - \hat{\beta}_{\text{long}}) \cdot \left(\frac{R^2_{\text{max}} - R^2_{\text{long}}}{R^2_{\text{long}} - R^2_{\text{short}}}\right),
+$$
+
+where:
+
+- $R^2_{\text{short}}$ is the fit of the model without controls,
+- $R^2_{\text{long}}$ is the fit with controls,
+- $R^2_{\text{max}}$ is the hypothetical fit if all confounders were observed,
+- $\delta$ is the key assumption: the relative importance of selection on unobservables versus observables.
+
+Oster (2019) suggests that assuming $\delta=1$ (equal selection) is a reasonable upper bound, but this can be adjusted based on context.
+
+### Oster's $\delta$ Method 2
+
+Oster (2019) tackles a different but related question: what if we’re worried about selection on unobservables? Her approach uses coefficient stability and changes in $R^2$ to bound the effect of unobserved confounding.
+
+The core idea is to calculate a value $\delta$ such that:
+
+$$
+\frac{\Delta\beta}{\Delta R^2} = \delta
+$$
+
+If this ratio is stable as you add more controls, and assuming selection on unobservables is not much worse than selection on observables, you can project how much $\hat{\beta}$ would change if you could observe everything. She formalizes this with the adjusted coefficient formula:
+
+$$
+\tilde{\beta} = \hat{\beta}_{\text{long}} - \delta(\hat{\beta}_{\text{short}} - \hat{\beta}_{\text{long}}) \cdot \left(\frac{R^2_{\text{max}} - R^2_{\text{long}}}{R^2_{\text{long}} - R^2_{\text{short}}}\right)
+$$
+
+This gives a way to estimate bounds on $\beta$ under assumptions about how much more could be explained if we had access to the unobservables.
+
+### Intuition and Contrast
+
+Gelbach's method is like a post-mortem dissection: it tells you exactly how much each covariate changed your result. Oster’s method is more of a risk assessment: given the changes you've seen, how scared should you be of the things you can't see?
+
+Both are powerful tools, but they address different kinds of uncertainty—Gelbach focuses on observable confounding, while Oster extends this to unobservable confounding.
+
+### Why Coefficient Stability Alone Can Mislead
+
+Both papers caution against over-interpreting coefficient stability on its own:
+
+- Gelbach shows that apparent robustness may depend on which controls you added and in what order.
+
+- Oster shows that stability without $R^2$ movement is meaningless—if your controls aren’t explaining much of the outcome, their failure to shift the coefficient tells you little.
+
+Oster’s illustrative example of wage returns to education highlights this issue clearly: if you add a weak control (say, a poor proxy for ability), the coefficient on education may appear stable, but that doesn’t mean there’s no bias—it just means your control wasn’t very good.
+
+## An Example
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+library(hdm)
+library(oaxaca)
+
+# Simulated data
+df <- data.frame(
+  y = rnorm(1000),
+  x = rnorm(1000),
+  z1 = rnorm(1000),
+  z2 = rnorm(1000)
+)
+
+# Short model
+short <- lm(y ~ x, data = df)
+
+# Long model
+long <- lm(y ~ x + z1 + z2, data = df)
+
+# Gelbach decomposition using Oaxaca-Blinder (as approximation)
+library(oaxaca)
+oaxaca(y ~ x | z1 + z2, data = df, R = 30)
+
+# Oster bounds (simplified)
+library(psacalc)
+psa(y = df$y, d = df$x, X = df[, c("z1", "z2")], R2max = 0.9)
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
+# Simulated data
+df = pd.DataFrame({
+    'y': np.random.randn(1000),
+    'x': np.random.randn(1000),
+    'z1': np.random.randn(1000),
+    'z2': np.random.randn(1000)
+})
+
+# Short model
+X_short = sm.add_constant(df['x'])
+model_short = sm.OLS(df['y'], X_short).fit()
+
+# Long model
+X_long = sm.add_constant(df[['x', 'z1', 'z2']])
+model_long = sm.OLS(df['y'], X_long).fit()
+
+print(model_short.params)
+print(model_long.params)
+
+# No direct analog to Gelbach in Python, but differences in coefficients can be manually computed.
+```
+
+::::
+
+## Bottom Line
+
+- Gelbach decomposition explains *why* coefficients change when you add covariates.
+
+- Oster’s method helps you assess how robust your findings are to *unobserved* variables.
+
+- Both approaches require strong assumptions—but when applied carefully, they offer insight into what’s driving your regression results.
+
+- Don't blindly include controls—use tools like these to make sense of what they’re doing to your estimates.
+
+## Where to Learn More
+
+If you're into causal inference and want to go beyond just “throwing in controls,” both these papers are must-reads. For applied guidance, check out Emily Oster’s book *“Uncontrolled”* and Guido Imbens' lecture notes on sensitivity analysis. You might also explore sensitivity tools like `sensemakr` in R, which is built around similar ideas to Oster's method.
+
+## References
+
+- Gelbach, J. B. (2016). When do covariates matter? And which ones, and how much? *Journal of Labor Economics*, 34(2), 509–543.
+
+- Oster, E. (2019). Unobservable selection and coefficient stability: Theory and evidence. *Journal of Business & Economic Statistics*, 37(2), 187–204.
+

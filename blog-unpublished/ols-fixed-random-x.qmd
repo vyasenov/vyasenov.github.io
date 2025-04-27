@@ -1,0 +1,92 @@
+---
+title: "OLS with Fixed versus Random Regressors"
+date: "2025-04-24"
+categories: [statistical inference, linear model]
+---
+
+## Background
+
+Linear regression stands as one of the fundamental workhorses of statistical modeling and is ubiquitous in applied work across fields like econometrics, biostatistics, and machine learning. Beneath its seemingly simple exterior lies a nuanced landscape of assumptions and theoretical considerations. One such distinction that often gets overlooked—even by seasoned practitioners—is the difference between fixed and random regressors. This distinction, while subtle, has important implications for how we interpret our models, conduct inference, and understand uncertainty.
+
+The goal of this article is to clarify the differences between fixed and random regressors in linear regression. We'll explore why this distinction matters and how it affects everything from your confidence intervals to your prediction errors. My goal is to help you develop both the technical understanding and the intuition needed to make informed modeling decisions in your day-to-day work.
+
+## Notation
+
+To set the stage, consider the standard linear regression model:
+
+$$Y = X\beta + \varepsilon,$$
+
+where:
+
+- $Y$ is an $ n \times 1 $ vector of outcomes,
+- $X$ is an $ n \times p $ matrix of regressors (also called covariates or features),
+- $\beta$ is a $p \times 1$ vector of coefficients to be estimated,
+- $\varepsilon$ is an $ n \times 1$ vector of errors.
+
+The least squares estimator of $\beta$ is given by:
+
+$$ \hat{\beta} = (X'X)^{-1}X'Y. $$
+
+The key question is: What do we assume about $X$? If $ X $ is considered fixed, we condition on it when deriving properties of $\hat{\beta}$. If $X$ is random, we take expectations over its distribution. This affects how we think about the variance of our estimator, the validity of standard errors, and the asymptotic behavior of $\hat{\beta}$.
+
+## A Closer Look
+
+### Fixed Regressors
+
+In the fixed regressor framework, we assume that $X$ is determined beforehand—perhaps through experimental design or by conditioning on observed values. The randomness in our model comes solely from the error term $\varepsilon$.
+
+The key assumptions typically made under this approach are:
+
+- **Linearity**: The model is correctly specified as $Y = X\beta + \varepsilon$.
+- **Exogeneity**: The errors satisfy $E[\varepsilon \mid X] = 0 $, ensuring that there is no systematic relationship between $X$ and $\varepsilon$.
+- **Homoskedasticity**: The variance of errors is constant, i.e., $\text{Var}(\varepsilon \mid X) = \sigma^2 I_n$.
+- **No Perfect Multicollinearity**: $X'X$ is full rank, ensuring that the inverse $(X'X)^{-1}$ exists.
+
+In the classical Gauss-Markov framework, the regressors $X$ are treated as fixed. This means that we analyze the behavior of $\hat{\beta}$ conditional on the observed $X$. 
+
+Under these conditions, the ordinary least squares (OLS) estimator is unbiased and has the classical variance formula:
+
+$$\text{Var}(\hat{\beta} | X) = \sigma^2 (X'X)^{-1}.$$
+
+An important feature here is that all expectations and variances are conditional on $X$. This conditioning makes sense because we're treating $X$ as fixed and known.
+
+### Random Regressors
+
+In most real-world scenarios, our $X$ variables aren't actually fixed. We often sample observations from a population, making both $Y$ and $X$ random. The random regressor framework acknowledges this reality. Under this framework, we add assumptions about the distribution of $X$.
+
+When $X$ is treated as random, it is assumed to be drawn from some probability distribution. This changes how we analyze $\hat{\beta}$, since expectations are now taken over both $\varepsilon$ and $X$. The key assumptions in this setting are:
+
+- **Joint Distribution**: $(X, Y)$ follows some joint distribution, meaning $X$ is not fixed but rather drawn from a population.
+- **Exogeneity in Expectation**: In both frameworks, we typically assume $E[\varepsilon \mid X] = 0$, which rules out omitted variable bias. However, under the random regressor perspective, we also account for the fact that $X$ itself is drawn from a distribution, and expectations (e.g., for variance) are taken over both 
+$X$ and $\varepsilon$.
+- **Law of Large Numbers**: As $n \to \infty$, the sample quantities $\frac{1}{n} X'X$ converge to their population analogs.
+
+A major consequence of assuming $X$ is random is that the variance of $\hat{\beta}$ takes a different form:
+
+$$\text{Var}(\hat{\beta}) = E[(X'X)^{-1} X' \varepsilon \varepsilon' X (X'X)^{-1}].$$
+
+This expression accounts for uncertainty in both $ X $ and $ \varepsilon $, and under large samples, it converges to the population variance.
+
+### Practical Implications
+
+So what's the big deal? Here are some practical implications:
+
+1. **Inference**: In the fixed regressor framework, inference is conditional on the observed values of $X$—you’re estimating the best linear approximation given this specific sample design. In the random regressor case, inference targets a population-level relationship between $X$ and $Y$.
+2. **Prediction** Error: With fixed regressors, prediction error only accounts for the randomness in $\varepsilon$. With random regressors, you must also account for the randomness in future $\mathbf{X} $ values.
+3. **Robustness**: The random regressor framework tends to provide more realistic assessments of model uncertainty, especially when extrapolating.
+
+Let me put this in more intuitive terms: if you're designing an experiment where you precisely control the levels of your predictors, the fixed regressor framework makes sense. If you're analyzing observational data where both predictors and responses are sampled from a population, the random regressor framework is more appropriate.
+
+## Bottom Line
+
+- The distinction between fixed and random regressors affects estimation and inference.
+
+- Fixed regressors condition on $X$, while random regressors integrate $X$ over its distribution.
+
+- OLS properties such as bias and variance differ under these assumptions.
+
+- In practice, whether $X$ is fixed or random depends on the study design and intended inference.
+
+## References
+
+Greene, W. H. (2012). Econometric Analysis. Pearson. Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning. Springe

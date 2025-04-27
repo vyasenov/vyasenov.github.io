@@ -1,0 +1,167 @@
+---
+title: "Post-Lasso OLS: Why Refit After Selection?"
+date: "2025-00-00"
+categories: [lasso, high-dimensional regression]
+---
+
+## Background
+
+When working in high-dimensional regression, where the number of covariates $p$ may exceed or be comparable to the sample size $n$, Lasso has become the go-to method for variable selection and estimation. Thanks to its \(\ell_1\)-penalty, Lasso can zero out coefficients of irrelevant variables, effectively performing feature selection while estimating the model. However, as elegant and powerful as Lasso is, it has one well-known drawback: **bias due to shrinkage**.
+
+Here's the big idea: what if we use Lasso to select variables, but then go back and run plain old OLS on just those selected variables? This is the core of **Post-Lasso OLS** (also known as OLS post-Lasso). The promise is that this approach can reduce shrinkage bias while still enjoying the selection capabilities of Lasso.
+
+In this article, we'll unpack the intuition behind Post-Lasso OLS, its theoretical properties, and its practical benefits and risks. We'll also discuss when you should—and shouldn't—use it.
+
+## Notation
+
+Consider a linear regression model where for observations $i = 1, \dots, n$, the outcome $y_i$ and covariates $x_i \in \mathbb{R}^p$ satisfy:
+
+$$
+y_i = x_i^\top \beta_0 + \varepsilon_i, \quad \varepsilon_i \sim N(0, \sigma^2),
+$$
+
+with $\beta_0$ being the true, unknown coefficient vector. The number of nonzero elements in $\beta_0$, denoted by $s = \|\beta_0\|_0$, is assumed to be small relative to $n$.
+
+Define the **Lasso estimator** as:
+
+$$
+\hat{\beta}^{\text{Lasso}} = \arg \min_{\beta \in \mathbb{R}^p} \left\{ \frac{1}{2n} \| y - X \beta \|_2^2 + \lambda \| \beta \|_1 \right\}.
+$$
+
+The **selected model** is:
+
+$$
+\hat{T} = \text{support}(\hat{\beta}^{\text{Lasso}}).
+$$
+
+The **Post-Lasso OLS estimator** then runs OLS on the selected variables $\hat{T}$:
+
+$$
+\tilde{\beta} = \arg \min_{\beta : \beta_j = 0 \text{ for } j \notin \hat{T}} \frac{1}{2n} \| y - X \beta \|_2^2.
+$$
+
+## A Closer Look
+
+### Why Refit After Lasso?
+
+Lasso achieves sparsity through penalization, but this same penalty introduces bias. In particular, even the coefficients of truly important variables are shrunk toward zero. While this helps with variance reduction, it may hurt estimation quality, especially when we care about unbiased coefficient estimates or accurate predictions.
+
+The insight behind Post-Lasso is simple: **use Lasso as a variable selector, not an estimator**. Once the selection is done, we drop the penalty and refit OLS on the reduced model. This removes the shrinkage-induced bias on the selected coefficients.
+
+### Properties and Theoretical Guarantees
+
+The key results from Belloni and Chernozhukov (2013) show that:
+
+1. Post-Lasso OLS performs **at least as well as Lasso** in terms of convergence rates for prediction error.
+2. Under certain conditions, Post-Lasso OLS can **strictly outperform Lasso**, achieving a faster rate of convergence.
+3. If Lasso perfectly selects the true model (which happens under strong assumptions like well-separated signals and certain design conditions), Post-Lasso OLS becomes the **oracle estimator**—as if we knew the true model all along.
+
+Mathematically, the prediction error for Post-Lasso satisfies:
+
+$$
+\| X ( \tilde{\beta} - \beta_0 ) \|_2^2 / n = O_p \left( \frac{s \log p}{n} \right),
+$$
+
+matching Lasso's rate, and potentially improving upon it when model selection is good.
+
+### When Does Post-Lasso Work Well?
+
+The advantage of Post-Lasso depends critically on how well the first-step selection works. If Lasso misses important variables (false negatives), OLS cannot "recover" those missing predictors. However, if Lasso selects all relevant variables (even with some extras), Post-Lasso can effectively de-bias the estimates while tolerating mild over-selection.
+
+This behavior is particularly attractive in **near-sparse models**, where there are a few large coefficients and many small or zero ones.
+
+### When Should You Be Careful?
+
+Despite its appeal, Post-Lasso is **not a magic bullet**. There are cases where using it might backfire:
+
+- **Severe model selection failure**: If Lasso misses key variables, Post-Lasso inherits this problem.
+- **Highly correlated predictors**: If the design matrix has strong collinearity, selection may be unstable, leading to poor performance.
+- **Small sample sizes**: If $n$ is small relative to the number of selected variables, the post-selection OLS may overfit.
+
+A helpful rule of thumb: Post-Lasso is most reliable when selection is **conservative** (including all relevant predictors, perhaps with some extras) rather than aggressive (cutting out too many).
+
+## An Example
+
+Here’s how to implement Post-Lasso OLS in both R and Python. First, use Lasso to select variables, then refit an OLS model on the selected subset.
+
+:::: {.panel-tabset}
+
+### R 
+```r
+# Load required packages
+library(glmnet)
+library(hdm)  # for post-lasso OLS (optional)
+
+set.seed(123)
+n <- 100
+p <- 20
+X <- matrix(rnorm(n * p), n, p)
+beta_true <- c(3, 1.5, 0, 0, 2, rep(0, p - 5))
+y <- X %*% beta_true + rnorm(n)
+
+# Step 1: Fit Lasso to select variables
+lasso_fit <- cv.glmnet(X, y, alpha = 1)  # alpha=1 for Lasso
+coef_lasso <- coef(lasso_fit, s = "lambda.min")
+selected <- which(coef_lasso != 0)[-1]  # remove intercept
+
+# Step 2: Refit OLS on selected variables
+if (length(selected) > 0) {
+  X_selected <- X[, selected, drop = FALSE]
+  ols_fit <- lm(y ~ X_selected)
+  summary(ols_fit)
+} else {
+  print("No variables selected by Lasso.")
+}
+```
+
+### Python
+```python
+import numpy as np
+from sklearn.linear_model import LassoCV, LinearRegression
+
+# Simulate data
+np.random.seed(123)
+n, p = 100, 20
+X = np.random.randn(n, p)
+beta_true = np.array([3, 1.5, 0, 0, 2] + [0]*(p - 5))
+y = X @ beta_true + np.random.randn(n)
+
+# Step 1: Lasso for variable selection
+lasso = LassoCV(cv=5).fit(X, y)
+selected = np.where(lasso.coef_ != 0)[0]
+
+# Step 2: Refit OLS on selected variables
+if len(selected) > 0:
+    X_selected = X[:, selected]
+    ols = LinearRegression().fit(X_selected, y)
+    print("Selected variables:", selected)
+    print("OLS coefficients:", ols.coef_)
+else:
+    print("No variables selected by Lasso.")
+```
+
+::::
+
+---
+
+## Bottom Line
+
+- Post-Lasso OLS reduces the bias introduced by Lasso’s shrinkage while retaining its variable selection benefits.
+
+- It matches or improves upon the prediction error rates of Lasso, especially when selection works well.
+
+- Use Post-Lasso when you're confident that selection includes most or all relevant variables.
+
+- Avoid Post-Lasso if your selection step is unstable, misses important variables, or you're working with tiny sample sizes.
+
+## Where to Learn More
+
+The seminal paper by Belloni and Chernozhukov (2013), "Least Squares After Model Selection in High-Dimensional Sparse Models," provides a rigorous theoretical treatment of Post-Lasso OLS. Additional discussions on related methods can be found in the broader high-dimensional regression literature, including works on adaptive Lasso, thresholded Lasso, and debiased Lasso. For practical implementation, both the `hdm` package in R and the `sklearn.linear_model` module in Python offer accessible ways to perform Lasso and OLS refitting.
+
+## References
+
+- Belloni, A., & Chernozhukov, V. (2013). Least squares after model selection in high-dimensional sparse models. *Bernoulli*, 19(2), 521–547.
+
+- Tibshirani, R. (1996). Regression shrinkage and selection via the Lasso. *Journal of the Royal Statistical Society: Series B*, 58(1), 267–288.
+
+- Zhao, P., & Yu, B. (2006). On model selection consistency of Lasso. *Journal of Machine Learning Research*, 7, 2541–2563.

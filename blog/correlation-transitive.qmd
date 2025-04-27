@@ -1,0 +1,125 @@
+---
+title: "Correlation is Not (Always) Transitive"
+date: "2022-12-22"
+categories: [correlation, statistical inference]
+---
+
+## Background
+
+At first, I found this really puzzling. $X$ is correlated (Pearson) with Y, and Y is correlated with $Z$. Does this mean X is necessarily correlated with $Z$? Intuitively, this totally makes sense. The answer, however, is “no.”
+
+Perhaps the strangest thing is how easy it is to rationalize this “puzzle.” I drink more beer ($X$) and read more books ($Z$) when I am on a vacation (Y). That is, both pairs – $X$ and $Y$ and $Z$ and $Y$ – are positively correlated. But I do not drink more beer when I read more books – $X$ and $Z$ are not correlated. It is now obvious that correlation is not (always) transitive, but a second ago, this sounded bizarre.
+
+## A Closer Look
+
+Let’s denote the respective correlations between $X$, $Y$ and $Z$ by $cor(X,Y)$, $cor(X,Z)$, and $cor(Y,Z)$. For simplicity (and without loss of generality), let’s work with standardized versions of these variables – that is, means of $0$ and variances of $1$. This implies, $cov(X,Y) = cor(X,Y)$ for any pair.
+
+We can write the linear projections of $X$ and $Z$ on $Y$ as follows:
+
+$$ X = cor(X,Y)Y + \epsilon^{X,Y}, $$
+
+$$ Z = cor(Z,Y)Y + \epsilon^{Z,Y}. $$
+
+Then, we have:
+
+$$ cor(X,Z)=cor(X,Y)cor(Z,Y)+cor(\epsilon^{X,Y},\epsilon^{Z,Y}).$$
+
+We can use the Cauchy-Schwarz inequality to bound the last term, which gives the final range of possible values for cor(X,Z):
+
+$$cor(X,Y)cor(Z,Y) - \sqrt{(1-cor(X,Y)^2) (1-cor(Z,Y)^2)}$$
+
+$$\leq cor(X,Z) \leq  $$
+
+$$cor(X,Y)cor(Z,Y) + \sqrt{(1-cor(X,Y)^2) (1-cor(Z,Y)^2)}$$
+
+For instance, if we set $cor(X,Y)=cor(Z,Y)=0.6$, then we get:
+
+$$-.28 \leq cor(X,Z) \leq 1.$$
+
+That is, $cor(X,Z)$ can be negative.
+
+### An (Extremely Simple) Example
+
+Perhaps the simplest example to illustrate this is:
+
+- $X$ and $Z$ are independent random variables,
+- $Y=X+Z$.
+The result follows.
+
+The following code sets up this example in `R` and `python`.
+
+:::: {.panel-tabset}
+
+### R
+```r
+rm(list=ls())
+set.seed(68493)
+
+x <- runif(n=1000)
+z <- runif(n=1000)
+y <- x + z
+
+cor(y, x)
+cor(y, z)
+cor(z, x)
+
+cor.test(y, x, alternative='two.sided', method='pearson')
+cor.test(y, z, alternative='two.sided', method='pearson')
+cor.test(z, x, alternative='two.sided', method='pearson')
+```
+
+### Python
+```python
+import numpy as np
+from scipy.stats import pearsonr
+
+# Set seed for reproducibility
+np.random.seed(68493)
+
+# Generate random variables
+x = np.random.uniform(size=1000)
+z = np.random.uniform(size=1000)
+y = x + z
+
+# Compute correlations
+print("cor(y, x):", np.corrcoef(y, x)[0, 1])
+print("cor(y, z):", np.corrcoef(y, z)[0, 1])
+print("cor(z, x):", np.corrcoef(z, x)[0, 1])
+
+# Perform correlation tests
+print("cor.test(y, x):", pearsonr(y, x))
+print("cor.test(y, z):", pearsonr(y, z))
+print("cor.test(z, x):", pearsonr(z, x))
+```
+
+::::
+
+Below is a table with correlation coefficients and $p$-values associated with the null hypotheses that they are equal to zero.
+
+<div style="max-width: 400px; margin: 0 auto;">
+vars | cor. coef. | $p$-value
+|-----|:-----|:-----
+$cor(X,Y)$ | 0.68 | 0.00
+$cor(Z,Y)$ | 0.70 | 0.00
+$cor(X,Z)$ |-0.05 | 0.15
+</div>
+
+## When *Is* Correlation Transitive
+
+From the equation above it follows that when both $cor(X,Y)$ and $cor(Z,Y)$ are sufficiently large, then $cor(X,Z)$ is sure to be positive (i.e., bounded below by $0$).
+
+In the example above, if we fix $cor(X,Y)=.6$, then we need $cor(Z,Y)>.8$ to guarantee that $cor(X,Z)>0$.
+
+## Where to Learn More
+
+Multiple Stack Overflow threads explain this phenomenon from various angles. Olkin (1981) derives some further mathematical results related to transitivity in higher dimensions.
+
+## Bottom Line
+
+- $X$ and $Z$ both being correlated with $Y$ does not guarantee that $X$ and $Z$ are correlated with each other.
+
+- This is the case when the former two correlations are “large enough.”
+
+## References
+
+Olkin, I. (1981). Range restrictions for product-moment correlation matrices. Psychometrika, 46, 469-472. doi:10.1007/BF02293804

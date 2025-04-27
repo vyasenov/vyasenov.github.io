@@ -1,0 +1,226 @@
+---
+title: "Understanding Correlated Random Effects Models"
+date: "2025-00-00"
+categories: [causal inference, panel data]
+---
+
+## Background
+
+In the world of panel data analysis, we often find ourselves choosing between fixed effects (FE) and random effects (RE) models. Each has its strengths and limitations. The FE model controls for all time-invariant unobserved heterogeneity but does not allow us to estimate the effects of those time-invariant covariates. On the other hand, the RE model allows for the inclusion of time-invariant variables but makes a strong assumption: that the unobserved individual-specific effects are uncorrelated with the regressors. What happens when that assumption doesn't hold? That’s where the correlated random effects (CRE) model—or the hybrid model—steps in.
+
+This article explores the motivation behind the CRE model, its mechanics, and its advantages over traditional FE and RE models. We also provide a hands-on example using `R` and `python` to illustrate how it works in practice.
+
+## Notation
+
+Let us consider a standard panel data setup where we observe units $i=1,\dots,N$ over time periods $t = 1, \dots, T$. The outcome is $y_{it}$, and $x_{it}$ is a vector of time-varying covariates. The generic random effects model is:
+
+$$
+y_{it} = x_{it}'\beta + \alpha_i + \varepsilon_{it}
+$$
+
+where $\alpha_i$ is the individual-specific effect and $\varepsilon_{it}$ is the idiosyncratic error term. The crucial RE assumption is:
+
+$$
+\text{Cov}(x_{it}, \alpha_i) = 0
+$$
+
+The CRE model relaxes this assumption by explicitly modeling the correlation between $x_{it}$ and $\alpha_i$.
+
+## A Closer Look
+
+### A Refresher on Fixed and Random Effects
+
+### A Refresher on Fixed and Random Effects
+
+In panel data models, the goal is often to account for unobserved heterogeneity across units (e.g., individuals, firms, regions). Two popular approaches to handle this are **fixed effects (FE)** and **random effects (RE)** models. Understanding these two approaches is critical before we dive into correlated random effects.
+
+#### Fixed Effects (FE) Model
+
+The fixed effects model controls for all time-invariant characteristics of the units by allowing each unit to have its own intercept. The model is specified as:
+
+$$
+y_{it} = x_{it}'\beta + \alpha_i + \varepsilon_{it},
+$$
+
+where:
+- $y_{it}$ is the outcome for unit $i$ at time $t$,
+- $x_{it}$ are the observed covariates,
+- $\alpha_i$ is the unit-specific intercept (the fixed effect),
+- $\varepsilon_{it}$ is the error term.
+
+The key feature of FE models is that **$\alpha_i$ is treated as a set of unknown parameters to be estimated (or differenced out)**. This approach eliminates all time-invariant confounders, whether observed or unobserved.
+
+Fixed effects estimation often proceeds by **demeaning** the data within each unit (also known as the “within transformation”), removing $\alpha_i$:
+
+$$
+y_{it} - \bar{y}_i = (x_{it} - \bar{x}_i)'\beta + (\varepsilon_{it} - \bar{\varepsilon}_i),
+$$
+
+where $\bar{y}_i$ and $\bar{x}_i$ are the within-unit means.
+
+Fixed effects are especially popular in **causal inference** because they remove bias from any time-invariant omitted variables. They can be seen as a generalization of the familiar **difference-in-differences (DiD)** approach, which is just a special case of FE with two time periods and a treatment indicator.
+
+#### Random Effects (RE) Model
+
+The random effects model uses the same setup as the FE model:
+
+$$
+y_{it} = x_{it}'\beta + \alpha_i + \varepsilon_{it}.
+$$
+
+But here, **$\alpha_i$ is treated as a random variable** drawn from a distribution (usually assumed to be normal):
+
+$$
+\alpha_i \sim N(0, \sigma_\alpha^2).
+$$
+
+The crucial assumption in RE models is:
+
+$$
+\text{Cov}(x_{it}, \alpha_i) = 0.
+$$
+
+In other words, the unit effects $\alpha_i$ must be uncorrelated with the covariates $x_{it}$. This allows for more efficient estimation through Generalized Least Squares (GLS), but if the assumption fails, the RE estimates will be biased and inconsistent.
+
+#### Summary
+
+| Feature             | Fixed Effects (FE)                              | Random Effects (RE)                                  |
+|---------------------|--------------------------------------------------|------------------------------------------------------|
+| Treatment of $\alpha_i$ | Fixed parameters (unknown intercepts per unit) | Random variables (assumed uncorrelated with $x_{it}$) |
+| Can estimate time-invariant covariates? | No                                         | Yes                                                  |
+| Suitable for causal inference? | Yes, widely used                         | Only if exogeneity assumption holds                  |
+| Efficiency           | Lower (uses within variation only)              | Higher (uses both within and between variation)      |
+
+In short, the FE model is robust but discards between-unit variation, while the RE model is more efficient but relies on a strong independence assumption between covariates and unobserved heterogeneity.
+
+The **correlated random effects (CRE)** model differs from standard fixed and random effects by explicitly modeling the correlation between the unit-specific effects $\alpha_i$ and the covariates $x_{it}$. Instead of assuming independence (as in RE) or differencing out the effects entirely (as in FE), CRE includes the **unit-level means of the covariates** as additional regressors, allowing for consistent estimation while still retaining the ability to estimate time-invariant variables.
+
+
+### Why Use Correlated Random Effects?
+
+The correlated random effects (CRE) model offers a middle ground between FE and RE approaches. Traditional RE models assume that unobserved heterogeneity is uncorrelated with covariates. FE models remove all unit-level heterogeneity but cannot estimate time-invariant covariates. CRE models address these limitations by including group means of time-varying covariates, decomposing variation into within and between components.
+
+### Model Estimation and Inference
+
+In the linear case:
+
+$$
+y_{it} = \beta_0 + \beta_1 x_{it} + \gamma \bar{x}_i + u_i + \varepsilon_{it},
+$$
+
+where $\bar{x}_i$ is the individual mean of $x_{it}$.
+
+Estimation uses RE methods but includes $\bar{x}_i$ to account for potential correlation with $u_i$. This enables hypothesis testing comparing within and between effects.
+
+### Advantages and Challenges
+
+The CRE model offers a few attractive advantages:
+
+- Estimation of time-invariant variables.
+- Decomposition of effects into within and between components.
+- Improved efficiency under relaxed assumptions.
+- Diagnostic insight into the plausibility of RE assumptions.
+
+Here is a brief list of its downsides:
+
+- The random intercept assumption remains.
+- No remedy for level-2 confounding.
+- Care needed with interaction terms.
+- Potential bias with a small number of clusters.
+
+### Where the CRE Model Shines
+
+CRE models are ideal for repeated measures data where:
+- Both time-varying and time-invariant predictors matter.
+- There's potential endogeneity between covariates and individual effects.
+
+Applications include policy evaluation, health outcomes research, and educational studies.
+
+## An Example
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+library(plm)
+library(dplyr)
+
+set.seed(42)
+n <- 100
+t <- 5
+data <- data.frame(
+  id = rep(1:n, each = t),
+  time = rep(1:t, n)
+)
+data <- data %>%
+  group_by(id) %>%
+  mutate(
+    x = rnorm(n(), mean = id/10),
+    alpha = rnorm(1),
+    eps = rnorm(n(), sd = 1),
+    y = 1 + 0.5 * x + alpha + eps
+  )
+
+pdata <- pdata.frame(data, index = c("id", "time"))
+
+fe_model <- plm(y ~ x, data = pdata, model = "within")
+re_model <- plm(y ~ x, data = pdata, model = "random")
+pdata$mean_x <- ave(pdata$x, pdata$id, FUN = mean)
+cre_model <- plm(y ~ x + mean_x, data = pdata, model = "random")
+
+summary(fe_model)
+summary(re_model)
+summary(cre_model)
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
+np.random.seed(42)
+n, t = 100, 5
+df = pd.DataFrame({
+    'id': np.repeat(np.arange(1, n+1), t),
+    'time': np.tile(np.arange(1, t+1), n)
+})
+df['x'] = df['id'] / 10 + np.random.randn(n*t)
+df['alpha'] = np.repeat(np.random.randn(n), t)
+df['eps'] = np.random.randn(n*t)
+df['y'] = 1 + 0.5 * df['x'] + df['alpha'] + df['eps']
+df['mean_x'] = df.groupby('id')['x'].transform('mean')
+
+# Short model (RE approximation)
+X_short = sm.add_constant(df[['x']])
+model_short = sm.OLS(df['y'], X_short).fit()
+
+# CRE model
+X_cre = sm.add_constant(df[['x', 'mean_x']])
+model_cre = sm.OLS(df['y'], X_cre).fit()
+
+print(model_short.summary())
+print(model_cre.summary())
+```
+
+::::
+
+## Bottom Line
+
+- CRE models relax the strict RE assumptions by modeling the correlation between unit effects and covariates.
+
+- They provide within and between estimates while allowing time-invariant variables.
+
+- Appropriate for longitudinal, multilevel, and policy evaluation studies.
+
+## Where to Learn More
+
+Schunck (2013) provides a comprehensive overview of CRE models. Mundlak’s foundational work is essential for understanding the theoretical basis. Tools like `R`’s `plm` and `Python’s` `statsmodels` can implement these models with the correct transformations.
+
+## References
+
+- Schunck, R. (2013). Within and between estimates in random-effects models: Advantages and drawbacks of correlated random effects and hybrid models. *The Stata Journal*, 13(1), 65-76.
+
+- Mundlak, Y. (1978). On the pooling of time series and cross section data. *Econometrica*, 46(1), 69–85.

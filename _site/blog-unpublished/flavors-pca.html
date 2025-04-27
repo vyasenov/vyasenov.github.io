@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2024-10-31">
+
+<title>Principal Components Analysis (PCA) and Its Variants – Vasco Yasenov</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../code/open-links-new-tab.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../code/styles.css">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    window.setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      window.setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    window.hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(darkModeDefault) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const darkModeDefault = false;
+    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !window.hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+    };
+    // Switch to dark mode if need be
+    if (window.hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Vasco Yasenov</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../cv.html"> 
+<span class="menu-text">CV</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../blog/index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../research.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../childrenbook.html"> 
+<span class="menu-text">Children’s Book</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/vyasenov" target="_blank"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/vasil-yasenov/" target="_blank"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://scholar.google.com/citations?user=pQw1oG8AAAAJ" target="_blank"> <i class="bi bi-mortarboard-fill" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.amazon.com/Causal-Inference-Toddlers-Meatball-Recipe/dp/B0BLG6SWZJ" target="_blank"> <i class="bi bi-amazon" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
+  <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
+  <ul class="collapse">
+  <li><a href="#classical-pca-variance-maximization-and-eigen-decomposition" id="toc-classical-pca-variance-maximization-and-eigen-decomposition" class="nav-link" data-scroll-target="#classical-pca-variance-maximization-and-eigen-decomposition">Classical PCA: Variance Maximization and Eigen Decomposition</a></li>
+  <li><a href="#sparse-pca-zou-hastie-tibshirani-2006" id="toc-sparse-pca-zou-hastie-tibshirani-2006" class="nav-link" data-scroll-target="#sparse-pca-zou-hastie-tibshirani-2006">Sparse PCA (Zou, Hastie, Tibshirani, 2006)</a></li>
+  <li><a href="#kernel-pca-schölkopf-et-al.-1998" id="toc-kernel-pca-schölkopf-et-al.-1998" class="nav-link" data-scroll-target="#kernel-pca-schölkopf-et-al.-1998">Kernel PCA (Schölkopf et al., 1998)</a></li>
+  <li><a href="#robust-pca-candes-et-al.-2011" id="toc-robust-pca-candes-et-al.-2011" class="nav-link" data-scroll-target="#robust-pca-candes-et-al.-2011">Robust PCA (Candes et al., 2011)</a></li>
+  <li><a href="#probabilistic-pca-tipping-and-bishop-1999" id="toc-probabilistic-pca-tipping-and-bishop-1999" class="nav-link" data-scroll-target="#probabilistic-pca-tipping-and-bishop-1999">Probabilistic PCA (Tipping and Bishop, 1999)</a></li>
+  <li><a href="#truncated-svd-a-computational-variant" id="toc-truncated-svd-a-computational-variant" class="nav-link" data-scroll-target="#truncated-svd-a-computational-variant">Truncated SVD (a Computational Variant)</a></li>
+  <li><a href="#nonnegative-matrix-factorization-nmf-lee-and-seung-1999" id="toc-nonnegative-matrix-factorization-nmf-lee-and-seung-1999" class="nav-link" data-scroll-target="#nonnegative-matrix-factorization-nmf-lee-and-seung-1999">Nonnegative Matrix Factorization (NMF) (Lee and Seung, 1999)</a></li>
+  <li><a href="#independent-component-analysis-ica" id="toc-independent-component-analysis-ica" class="nav-link" data-scroll-target="#independent-component-analysis-ica">Independent Component Analysis (ICA)</a></li>
+  </ul></li>
+  <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
+  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-page-left" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Principal Components Analysis (PCA) and Its Variants</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">PCA</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta column-page-left">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 31, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Principal Components Analysis (PCA) is one of the most widely used techniques for <strong>dimensionality reduction</strong> and <strong>unsupervised learning</strong>. Originally introduced by Karl Pearson in 1901 and later formalized by Harold Hotelling in 1933, PCA aims to find new, uncorrelated variables (the <em>principal components</em>) that successively maximize the variance in the data. It provides a systematic way to summarize high-dimensional datasets with fewer dimensions, making it easier to visualize, compress, or preprocess data for further modeling.</p>
+<p>Beyond standard PCA, many <strong>variants and extensions</strong> have been developed to handle specific challenges like sparsity, robustness to outliers, missing data, and non-linear structures. These PCA flavors extend the core idea to different contexts, making PCA a versatile workhorse in both theory and practice.</p>
+<p>In this article, we’ll explain the classical PCA approach thoroughly and then introduce several important PCA variants, providing their mathematical formulations and discussing when and why they are useful.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Let <span class="math inline">\(X \in \mathbb{R}^{n \times p}\)</span> be a data matrix with: - <span class="math inline">\(n\)</span> observations (rows), - <span class="math inline">\(p\)</span> variables (columns).</p>
+<p>Assume that each column of <span class="math inline">\(X\)</span> has been <strong>centered</strong> (mean zero): <span class="math display">\[
+\frac{1}{n} \sum_{i=1}^n X_{ij} = 0 \quad \text{for all} \ j = 1, \dots, p.
+\]</span></p>
+<p>The <strong>empirical covariance matrix</strong> of <span class="math inline">\(X\)</span> is: <span class="math display">\[
+\Sigma = \frac{1}{n} X^T X.
+\]</span></p>
+<p>Our goal is to find new orthogonal directions (principal components) <span class="math inline">\(u_1, \dots, u_p \in \mathbb{R}^p\)</span>, such that projecting the data onto these directions captures the maximum variance.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="classical-pca-variance-maximization-and-eigen-decomposition" class="level3">
+<h3 class="anchored" data-anchor-id="classical-pca-variance-maximization-and-eigen-decomposition">Classical PCA: Variance Maximization and Eigen Decomposition</h3>
+<p>The principal components are obtained by solving the following optimization problem: <span class="math display">\[
+\max_{u \in \mathbb{R}^p} u^T \Sigma u \quad \text{subject to} \quad \| u \|_2 = 1.
+\]</span></p>
+<p>This is a <strong>Rayleigh quotient maximization problem</strong>, whose solution is the eigenvector of <span class="math inline">\(\Sigma\)</span> corresponding to the largest eigenvalue. The eigenvalues <span class="math inline">\(\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_p \geq 0\)</span> represent the variances explained by each principal component.</p>
+<section id="sequential-extraction" class="level4">
+<h4 class="anchored" data-anchor-id="sequential-extraction">Sequential Extraction</h4>
+<p>The <span class="math inline">\(k\)</span>-th principal component direction <span class="math inline">\(u_k\)</span> is obtained by solving: <span class="math display">\[
+\max_{u} u^T \Sigma u, \quad \text{subject to} \quad \| u \|_2 = 1, \quad u^T u_j = 0 \quad \text{for} \ j = 1, \dots, k-1.
+\]</span></p>
+<p>The principal components themselves (the transformed data) are: <span class="math display">\[
+Z = X U,
+\]</span> where <span class="math inline">\(U = [u_1, u_2, \dots, u_p]\)</span> is the matrix of eigenvectors.</p>
+</section>
+<section id="singular-value-decomposition-svd-formulation" class="level4">
+<h4 class="anchored" data-anchor-id="singular-value-decomposition-svd-formulation">Singular Value Decomposition (SVD) Formulation</h4>
+<p>PCA can also be performed via <strong>Singular Value Decomposition (SVD)</strong> of the centered data matrix <span class="math inline">\(X\)</span>: <span class="math display">\[
+X = U D V^T,
+\]</span> where: - <span class="math inline">\(U \in \mathbb{R}^{n \times p}\)</span> contains the left singular vectors, - <span class="math inline">\(D \in \mathbb{R}^{p \times p}\)</span> is diagonal with singular values, - <span class="math inline">\(V \in \mathbb{R}^{p \times p}\)</span> contains the right singular vectors (principal component directions).</p>
+<p>The columns of <span class="math inline">\(V\)</span> are the eigenvectors of <span class="math inline">\(\Sigma\)</span>, and the squared singular values <span class="math inline">\(D^2 / n\)</span> are the eigenvalues.</p>
+</section>
+<section id="variance-explained" class="level4">
+<h4 class="anchored" data-anchor-id="variance-explained">Variance Explained</h4>
+<p>The <strong>proportion of variance explained</strong> by the first <span class="math inline">\(k\)</span> components is: <span class="math display">\[
+\frac{\sum_{j=1}^k \lambda_j}{\sum_{j=1}^p \lambda_j}.
+\]</span></p>
+<p>PCA allows data compression by projecting onto the first <span class="math inline">\(k\)</span> components while retaining most of the variance.</p>
+<p>While classical PCA provides a powerful linear dimensionality reduction tool, it has several limitations: it does not handle sparsity well, it is sensitive to outliers, and it only captures linear relationships. Over the years, many extensions of PCA have been developed to address these challenges. Below we discuss several of the most popular PCA variants.</p>
+</section>
+</section>
+<section id="sparse-pca-zou-hastie-tibshirani-2006" class="level3">
+<h3 class="anchored" data-anchor-id="sparse-pca-zou-hastie-tibshirani-2006">Sparse PCA (Zou, Hastie, Tibshirani, 2006)</h3>
+<p><strong>Key Idea:</strong><br>
+Encourage sparsity in the principal component loading vectors to improve interpretability.</p>
+<p><strong>Objective Function (simplified):</strong> <span class="math display">\[
+\max_{u} \quad u^T \Sigma u - \lambda \| u \|_1 \quad \text{subject to} \quad \| u \|_2 = 1.
+\]</span></p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>When you expect only a subset of variables to be important in each component.</li>
+<li>Useful in high-dimensional settings like genomics, image processing, and text analysis.</li>
+</ul>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Enhances interpretability by producing sparse loadings.</li>
+<li>Retains much of the variance while simplifying the component structure.</li>
+</ul>
+<hr>
+</section>
+<section id="kernel-pca-schölkopf-et-al.-1998" class="level3">
+<h3 class="anchored" data-anchor-id="kernel-pca-schölkopf-et-al.-1998">Kernel PCA (Schölkopf et al., 1998)</h3>
+<p><strong>Key Idea:</strong></p>
+<p>Map the data into a higher-dimensional feature space using a nonlinear kernel and then apply PCA in that space.</p>
+<p><strong>Objective Function:</strong></p>
+<p>Standard PCA applied to the kernel matrix: <span class="math display">\[
+K_{ij} = k(x_i, x_j),
+\]</span> where <span class="math inline">\(k(\cdot, \cdot)\)</span> is a positive-definite kernel function (e.g., RBF, polynomial).</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>When the data exhibit nonlinear structures that linear PCA cannot capture.</li>
+<li>Popular in pattern recognition, computer vision, and bioinformatics.</li>
+</ul>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Captures nonlinear relationships between variables.</li>
+<li>Choice of kernel critically affects performance.</li>
+</ul>
+<hr>
+</section>
+<section id="robust-pca-candes-et-al.-2011" class="level3">
+<h3 class="anchored" data-anchor-id="robust-pca-candes-et-al.-2011">Robust PCA (Candes et al., 2011)</h3>
+<p><strong>Key Idea:</strong><br>
+Decompose the data matrix <span class="math inline">\(X\)</span> into a low-rank component <span class="math inline">\(L\)</span> and a sparse outlier component <span class="math inline">\(S\)</span>: <span class="math display">\[
+\min_{L, S} \| L \|_* + \lambda \| S \|_1 \quad \text{subject to} \quad X = L + S.
+\]</span> where <span class="math inline">\(\| L \|_*\)</span> is the nuclear norm (sum of singular values).</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>When the data contain gross outliers or corruptions.</li>
+<li>Common in computer vision (background subtraction), video surveillance, and recommender systems.</li>
+</ul>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>More robust to outliers than classical PCA.</li>
+<li>Separates structured low-rank signals from sparse noise.</li>
+</ul>
+<hr>
+</section>
+<section id="probabilistic-pca-tipping-and-bishop-1999" class="level3">
+<h3 class="anchored" data-anchor-id="probabilistic-pca-tipping-and-bishop-1999">Probabilistic PCA (Tipping and Bishop, 1999)</h3>
+<p><strong>Key Idea:</strong><br>
+Reformulate PCA as a latent variable model with Gaussian noise: <span class="math display">\[
+x_i = W z_i + \mu + \varepsilon_i, \quad \varepsilon_i \sim N(0, \sigma^2 I),
+\]</span> where <span class="math inline">\(z_i\)</span> are latent factors.</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>When modeling uncertainty and likelihood is important.</li>
+<li>Allows probabilistic interpretation and missing data handling.</li>
+</ul>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Maximum likelihood estimation provides the same solution as classical PCA in the limit.</li>
+<li>Naturally extends to mixture models and Bayesian frameworks.</li>
+</ul>
+<hr>
+</section>
+<section id="truncated-svd-a-computational-variant" class="level3">
+<h3 class="anchored" data-anchor-id="truncated-svd-a-computational-variant">Truncated SVD (a Computational Variant)</h3>
+<p><strong>Key Idea:</strong><br>
+Use the first <span class="math inline">\(k\)</span> singular vectors from the SVD of <span class="math inline">\(X\)</span> without computing the full decomposition: <span class="math display">\[
+X \approx U_k D_k V_k^T.
+\]</span></p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Very large-scale data (e.g., text mining, collaborative filtering).</li>
+<li>When speed and memory efficiency are critical.</li>
+</ul>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Often implemented using randomized algorithms.</li>
+<li>Computationally efficient for sparse or massive datasets.</li>
+</ul>
+<hr>
+</section>
+<section id="nonnegative-matrix-factorization-nmf-lee-and-seung-1999" class="level3">
+<h3 class="anchored" data-anchor-id="nonnegative-matrix-factorization-nmf-lee-and-seung-1999">Nonnegative Matrix Factorization (NMF) (Lee and Seung, 1999)</h3>
+<p><strong>Key Idea:</strong><br>
+Decompose the data into nonnegative factors: <span class="math display">\[
+X \approx WH, \quad W, H \geq 0.
+\]</span></p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Nonnegative data (e.g., image pixels, word counts).</li>
+<li>When parts-based or additive decompositions are meaningful.</li>
+</ul>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Unlike PCA, does not produce orthogonal components.</li>
+<li>Often yields interpretable, parts-based representations.</li>
+</ul>
+<hr>
+</section>
+<section id="independent-component-analysis-ica" class="level3">
+<h3 class="anchored" data-anchor-id="independent-component-analysis-ica">Independent Component Analysis (ICA)</h3>
+<p><strong>Key Idea:</strong><br>
+Find components that are statistically independent, not just uncorrelated: <span class="math display">\[
+X = A S,
+\]</span> where <span class="math inline">\(S\)</span> contains independent components.</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>When underlying sources are assumed to be independent (e.g., EEG signal separation).</li>
+<li>Suitable for blind source separation problems.</li>
+</ul>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Goes beyond PCA by removing higher-order dependencies.</li>
+<li>Sensitive to scaling and noise.</li>
+</ul>
+<hr>
+<p>These PCA variants allow the core idea of variance decomposition to be adapted to a wide variety of practical problems, whether by enforcing sparsity, allowing for nonlinearity, handling outliers, or modeling uncertainty.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li><p>Classical PCA reduces dimensionality by projecting data onto orthogonal directions that maximize variance.</p></li>
+<li><p>Many PCA variants exist to handle real-world challenges like sparsity (Sparse PCA), outliers (Robust PCA), nonlinearity (Kernel PCA), and uncertainty (Probabilistic PCA).</p></li>
+<li><p>Choosing the right PCA flavor depends on the structure of your data and the goals of your analysis — interpretability, robustness, scalability, or flexibility.</p></li>
+<li><p>Several of these extensions (e.g., Kernel PCA, NMF, ICA) relax key assumptions of traditional PCA, making them better suited for specialized applications like image analysis, genomics, and signal processing.</p></li>
+<li><p>Understanding the mathematical foundation behind these methods helps avoid misapplication and improves the quality of insights from dimensionality reduction.</p></li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>For a comprehensive introduction to PCA, see <em>Principal Component Analysis</em> by Jolliffe (2002), which remains a classic reference. The review paper by Shlens (2014), <em>A Tutorial on Principal Component Analysis</em>, offers an accessible and intuitive explanation of the method and its geometric interpretation. For deeper dives into specific variants, refer to Zou, Hastie, and Tibshirani (2006)</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Bishop, C. M. (1999). “Bayesian PCA.” <em>Advances in Neural Information Processing Systems</em>, 11.</p></li>
+<li><p>Pearson, K. (1901). “On Lines and Planes of Closest Fit to Systems of Points in Space.” <em>Philosophical Magazine</em>, 2(11), 559–572.</p></li>
+<li><p>Hotelling, H. (1933). “Analysis of a Complex of Statistical Variables into Principal Components.” <em>Journal of Educational Psychology</em>, 24(6), 417–441.</p></li>
+<li><p>Jolliffe, I. T. (2002). <em>Principal Component Analysis</em>. Springer Series in Statistics.</p></li>
+<li><p>Zou, H., Hastie, T., &amp; Tibshirani, R. (2006). “Sparse Principal Component Analysis.” <em>Journal of Computational and Graphical Statistics</em>, 15(2), 265–286.</p></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/yourusername\.github\.io\/your-site");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2025 Vasco Yasenov</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Powered by <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

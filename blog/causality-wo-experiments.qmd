@@ -1,0 +1,162 @@
+---
+title: "Causality without Experiments, Unconfoundedness, or Instruments"
+date: "2024-08-12"
+categories: [causal inference, instrumental variables]
+---
+
+## Background
+
+Causality is central to many practical data-related questions. Conventional methods for isolating causal relationships rely on experimentation, assume unconfoundedness, or require instrumental variables. However, experimentation is often infeasible, costly, or ethically concerning; good instruments are notoriously difficult to find; and unconfoundedness can be an uncomfortable assumption in many settings.
+
+This article highlights methods for measuring causality beyond these three paradigms. These underappreciated approaches exploit higher moments and heteroscedastic error structures (Lewbel 2012, Rigobon 2003), latent instrumental variables (IVs) (Ebbes et al. 2005), and copulas (Park and Gupta 2012). I will unite them in a common statistical framework and discuss the key assumptions underlying each one.
+
+The focus will be on the ideas, intuition, and practical aspects of these methodologies, rather than technical details. Readers can find more in-depth information in the References section. This article assumes familiarity with econometric endogeneity and the basics of instrumental variables; without this background, some sections may be challenging to follow.
+
+Note: Regression discontinuity (RD) methods are excluded from this discussion, as they fall somewhere between instrument-based and instrument-free econometric methodologies. We know that in fuzzy RDs, the running variable can be viewed as an instrument.
+
+## Notation
+
+Let’s begin by establishing some basic notation. We aim to analyze the impact of a binary, endogenous treatment variable $X_1$ on an outcome variable $Y$, in a setting with exogenous variables $X_2$. We have access to a well-behaved, representative iid sample of size $n$ of $Y$, and $X:=[X_1, X_2]$. These variables are related as follows:
+
+  $$ Y = \beta X_1 + \gamma X_2 + \epsilon, $$
+
+where \epsilon is a mean-zero error term. Our goal is to obtain a consistent estimate of $\beta$. For simplicity, we’re using the same notation for both single- and vector-valued quantities, as $X_2$ can be in $\mathbb{R}^p$ with $ p>1$.
+
+The challenge arises because $X_1$ and $\epsilon$ are correlated, rendering the standard OLS estimator inconsistent. Even in large samples, $\hat{\beta}_{OLS}$ will be biased, and getting more data would not help. Specifically:
+
+  $$\hat{\beta}_{OLS} := (X'X)^{-1}X'Y \nrightarrow \beta. $$
+
+Standard instrument-based methods rely on the existence of an instrumental variable $Z$ which, conditional on $X_2$, correlates with $X_1$ but not with \epsilon. Estimation then proceeds with 2SLS, LIML, or GMM, potentially yielding good estimates of $\beta$ given appropriate assumptions. Common issues with instrumental variables include implausibility of the exclusion restriction, weak correlation with $X_1$, and challenges in interpreting $\hat{\beta}_{IV}$. Formally:
+
+  $$\hat{\beta}_{IV} := (Z'X)^{-1}Z'Y \rightarrow \beta. $$
+
+In this article, we focus on obtaining correct estimates of $\beta$ in settings where we don’t have access to such an instrumental variable $Z$.
+
+## A Closer Look
+
+Let’s start with the heteroskedasticity-based approach of [Lewbel (2012)](https://doi.org/10.1080/07350015.2012.643126).
+
+### Heteroskedasticity & Higher Moments
+
+The main idea here is to construct valid instruments for $X_1$ by using information contained in the heteroskedasticity of $\epsilon$. Intuitively, if $\epsilon$ exhibits heteroskedasticity related to $ X_2$, we can use to create instruments—specifically by interacting $X_2$ with the residuals of the endogenous regressor’s reduced form equation. So, this is an IV-based method, but the instrument is “internal” to the model and does not rely on any external information.
+
+The key assumptions are:
+
+- The error term in the structural equation ($\epsilon$) is heteroskedastic. This means $var(\epsilon|X_2)$ is not constant and depends on $X_2$. Moreover, we need $cov(X_2,\epsilon^2) \neq 0$. This is an analogue of the first stage assumption in IV methods.
+- The exogenous variable ($X_2$) are uncorrelated with the product of the endogeneous variable ($X_1$) and the error term ($\epsilon$). That is, $cov(X_2, X_1\epsilon) = 0$. This is a form of the standard exogeneity assumption in IV estimation.
+
+The heteroskedasticity-based estimator of Lewbel (2012) proceeds in two steps:
+
+::: {.callout-note title="Algorithm:"}
+1. Regress $X_1$ on $X_2$ and save the estimated residuals; call them $\hat{u}$. Construct an instrument for $X_1$ as $\tilde{Z}=(X_2-\bar{X}_2)\hat{u}$, where $\bar{X}_2$ is the mean of $X_2$.
+2. Use $\tilde{Z}$ as an instrument in a standard 2SLS estimation:
+  $$\hat{\beta}_{LEWBEL} = (X'P_{\tilde{Z}}X)^{-1}X'P_{\tilde{Z}}Y,$$
+
+where $P_{\tilde{Z}}$ ​is the projection matrix onto the instrument.
+:::
+
+This line of thought can also be extended to use higher moments as an alternative or additional way to construct instrumental variables. The original approach uses the variance of the error term, but we can also rely on skewness, kurtosis, etc. The assumptions then must be modified such that these higher moments are correlated with the endogenous variable, etc.
+
+*Software Packages*: [REndo](https://www.rdocumentation.org/packages/REndo), [ivlewbel](https://www.rdocumentation.org/packages/ivlewbel).
+
+### Latent IVs
+
+The [latent IV](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2817701) [approach](https://doi.org/10.1007/s11129-005-1177-6) imposes distributional assumptions on the exogenous part of the endogenous variable and employs likelihood-based methods to estimate $\beta$.
+
+Let’s simplify the model above, so that we have:
+
+  $$ Y=\beta X + \epsilon, $$
+
+where $X$ is endogenous. The key idea is to decompose $X$ into two components:
+
+  $$ X= \theta + \nu, $$
+
+with $cov(\theta, \epsilon)=0$, $cov(\theta, \nu) = 0$, and $cov(\epsilon, \nu)\neq0$. The first condition states that $\theta$ is the exogenous part of $X$, and the last one gives rise to the endogeneity problem.
+
+We then proceed with adding distributional assumptions. Importantly, $\theta$ must follow some discrete distribution with a finite number of mass points. A common example imposes:
+
+  $$ \theta \sim \text{Multinomial}(\cdot) $$
+
+and
+
+  $$ (\epsilon, \nu) \sim \text{Gaussian}(\cdot). $$
+
+These set of assumptions lead to analytical solutions for the conditional and unconditional distributions of $(Y,X)$ and all parameters of the model are identified. Maximum likelihood estimation can then give us an estimate of $\beta_{LIV}$.
+
+*Software Packages*: [REndo](https://www.rdocumentation.org/packages/REndo).
+
+### Copulas
+
+First, a word on copulas. A copula is a multivariate cumulative distribution function (CDF) with uniform marginals on $[0,1]$. An old theorem states that any multivariate CDF can be expressed with uniform marginals and a copula function that represents the relationship between the variables. Specifically, if $A$ and $B$ are two random variables with marginal CDFs $F_A$ and $F_B$ and joint CDF $H$, then there exists a copula $C$ such that $H(a,b)=C(F_A(a), F_B(b))$.
+
+How does this fit into our context and framework? [Park and Gupta (2012)](https://doi.org/10.1287/mksc.1120.0718) introduced two estimation methods for $\beta$ under the assumption that $\epsilon \sim Gaussian(\cdot)$. The key idea is positing a Gaussian copula to link the marginal distributions of $X$ and $\epsilon$ and obtain their joint distribution. We can then estimate $\beta$ in one of two ways: either impose distributional assumptions on these marginals and derive and maximize the joint likelihood function of $X$ and $\epsilon$, or use a generated regressor approach. We will focus on the latter.
+
+In the linear model, endogeneity is tackled by creating a novel variable $\tilde{X}$ and adding that as a control (i.e., a generated regressor). Using our simplified model where $X$ is single-valued and endogenous, we now have:
+
+  $$Y=\beta X + \mu \tilde{X} + \eta, $$
+
+where $\eta$ is the error term in this augmented model.
+
+We construct $\tilde{X}$ as follows:
+
+  $$\tilde{X}=\Phi^{-1}(\hat{F}_X(X)).$$
+
+Here $\Phi^{-1}(\cdot)$ is the inverse CDF of the standard normal distribution and $F_X(\cdot)$ is the marginal CDF of $X$. We can estimate the latter using the empirical CDF by sorting the observations in ascending order and calculating the proportion of rows with smaller values for each observation. As you can guess, this introduces further uncertainty into the model, so the standard errors should be estimated using bootstrap.
+
+*Software Packages*: [REndo](https://www.rdocumentation.org/packages/REndo), [copula](https://www.rdocumentation.org/packages/copula).
+
+### Comparison
+
+Each statistical method has its strengths and limitations. While the methods described here circumvent the traditional unconfoundedness and external instruments-based assumptions, they do not provide a magical panacea to the endogeneity problem. Instead, they rely on their own, different assumptions. These methods are not universally superior, but should be considered when traditional approaches do not fit your context.
+
+The heteroskedasticity-based approach, as the name suggests, requires a considerable degree of heteroskedasticity to perform well. Latent IVs may offer efficiency advantages but come at the cost of imposing distributional assumptions and requiring a group structure of $X_1$. The copula-based approach, while simple to implement, also requires strong assumptions about the distributions of $X$ and $Y$, as well as their relationship.
+
+That’s it. You are now equipped with a set of new methods designed to identify causal relationships in your data.
+
+## Bottom Line
+
+- Conventional methods used to tease causality rely on experiments or ambitious assumptions such as unconfoudedness or the access to valid instrumental variables.
+
+- Researchers have developed methods aimed at measuring causality without relying on these frameworks.
+
+- None of these are a panacea and they rely on their own assumptions that have to be checked on a case-by-case basis.
+
+## Where to Learn More
+
+Ebbes, Wedel, and Bockenholt (2009), Park and Gupta (2012), Papies, Ebbes, and Heerde (2017), and Rutz and Watson (2019) provide detailed comparisons of these IV-free methods with alternative methods. Also, Qian et al. (2024) and Papadopolous (2022) and Baum and Lewbel (2019) have a practical angle that many data scientist will find accessible and attractive.
+
+## References
+
+Baum, C. F., & Lewbel, A. (2019). Advice on using heteroskedasticity-based identification. The Stata Journal, 19(4), 757-767.
+
+Ebbes, P. (2004). Latent instrumental variables: a new approach to solve for endogeneity.
+
+Ebbes, P., Wedel, M., & Böckenholt, U. (2009). Frugal IV alternatives to identify the parameter for an endogenous regressor. Journal of Applied Econometrics, 24(3), 446-468.
+
+Ebbes, P., Wedel, M., Böckenholt, U., & Steerneman, T. (2005). Solving and testing for regressor-error (in) dependence when no IVs are available: With new evidence for the effect of education on income. Quantitative Marketing and Economics, 3, 365-392.
+
+Erickson, T., & Whited, T. M. (2002). Two-step GMM estimation of the errors-in-variables model using high-order moments. Econometric Theory, 18(3), 776-799.
+
+Gui, R., Meierer, M., Schilter, P., & Algesheimer, R. (2020). REndo: An R package to address endogeneity without external instrumental variables. Journal of Statistical Software.
+
+Hueter, I. (2016). Latent instrumental variables: a critical review. Institute for New Economic Thinking Working Paper Series, (46).
+
+Lewbel, A. (1997). Constructing instruments for regressions with measurement error when no additional data are available, with an application to patents and R&D. Econometrica, 1201-1213.
+
+Lewbel, A. (2012). Using heteroscedasticity to identify and estimate mismeasured and endogenous regressor models. Journal of business & economic statistics, 30(1), 67-80.
+
+Papadopoulos, A. (2022). Accounting for endogeneity in regression models using Copulas: A step-by-step guide for empirical studies. Journal of Econometric Methods, 11(1), 127-154.
+
+Papies, D., Ebbes, P., & Van Heerde, H. J. (2017). Addressing endogeneity in marketing models. Advanced methods for modeling markets, 581-627.
+
+Park, S., & Gupta, S. (2012). Handling endogenous regressors by joint estimation using copulas. Marketing Science, 31(4), 567-586.
+
+Rigobon, R. (2003). Identification through heteroskedasticity. Review of Economics and Statistics, 85(4), 777-792.
+
+Qian, Y., Koschmann, A., & Xie, H. (2024). A Practical Guide to Endogeneity Correction Using Copulas (No. w32231). National Bureau of Economic Research.
+
+Rigobon, R. (2003). Identification through heteroskedasticity. Review of Economics and Statistics, 85(4), 777-792.
+
+Rutz, O. J., & Watson, G. F. (2019). Endogeneity and marketing strategy research: An overview. Journal of the Academy of Marketing Science, 47, 479-498.
+
+Tran, K. C., & Tsionas, E. G. (2015). Endogeneity in stochastic frontier models: Copula approach without external instruments. Economics Letters, 133, 85-88.

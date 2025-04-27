@@ -1,0 +1,170 @@
+---
+title: "The Two Types of Weights in Causal Inference"
+date: "2025-02-28"
+categories: [weights, causal inference]
+---
+
+## Background
+
+Causal inference fundamentally seeks to answer: What is the effect of a treatment or intervention? The challenge lies in ensuring that the comparison groups—treated versus untreated—are balanced in terms of their characteristics, so differences in outcomes can be attributed solely to the intervention. This idea, often referred to as “like-with-like” or “apples-to-apples” comparison, is as simple as it is intuitive.
+
+Balance is thus fundamental to causal inference. [Weighting methods](https://doi.org/10.1080/01621459.2016.1260466), central to achieving this balance, have evolved to include two primary types: inverse propensity score weights and covariate balancing weights. This article briefly describes these weights, their mathematical foundations, and the intuition behind them, with an example in `R` to bring it all together.
+
+## Notation
+
+To set the stage, we begin by establishing the potential outcome framework and laying out the notation for the discussion:
+
+- $Y(0), Y(1)$: Potential outcomes under treatment and control.
+- $W$: Treatment indicator ($1$ for treated, $0$ for untreated).
+- $X$: Vector of covariates (i.e., control variables).
+- $e(X)=P(W=1 \mid X)$: Propensity score, the probability of receiving treatment given covariates.
+- $\mu_1​=E[Y(1)]$: Mean outcome under treatment.
+- $\tau=\mu_1 - \mu_0$: Average treatment effect (ATE), the main object of interest.
+- $n$: number of observations in the sample.
+- $n_T$: number of observations in the treatment group.
+
+We observe a random sample of size $n$, of $\{Y_i, W_i, X_i \}$, where $i$ indexes units (e.g., individuals, firms, schools etc.). Under the assumptions of strong ignorability—unconfoundedness $W \perp (Y(0), Y(1)) \mid X$ and overlap $(0<e(X)<1)$ — the ATE can be identified and estimated.
+
+## A Closer Look
+
+### Inverse Propensity Score Weights
+
+Inverse propensity score (IPS) weights rely on the estimated propensity score \hat{e}(X). The weights for treated and untreated groups are defined as:
+
+$$ \gamma_{\text{IPS}}(X) = \begin{cases} 1 / \hat{e}(X) & \text{if } W = 1, \\ 1 / (1 - \hat{e}(X)) & \text{if } W = 0. \end{cases} $$
+
+IPS weights intuitively correct for the unequal probability of treatment assignment. If an individual has a low probability of treatment $e(X)\approx 0$ but is treated, their weight is large, amplifying their influence in the analysis. Conversely, individuals with high treatment probabilities are downweighted to prevent overrepresentation.
+
+A few notes. First, these weights [adjust the observed data](https://academic.oup.com/biomet/article/70/1/41/240879) such that the distribution of covariates in the weighted treated and control groups resembles that of the overall population. This helps mitigate selection bias, ensuring that comparisons between treated and control groups reflect a treatment effect rather than confounded differences in covariates (e.g., the control group is older).
+
+A second key property is that the weighted average of the outcomes for the treated group is an unbiased estimator for the mean outcome under treatment, $\mu_1$. This can be expressed mathematically as:
+
+$$ \hat{\mu}_1(X)=\frac{\sum_i W_i Y_i/ \hat{e}(X)}{ \sum_i W_i / \hat{e}(X)}=\frac{1}{n_T}\sum_i  \gamma_{\text{IPS}}(X_i) W_i Y_i. $$
+
+This equality is particularly useful in the next step, when estimating the treatment effect $\tau$.
+
+Third, these IPS weights are generally unknown and have to be estimated from the data. A leading exception is controlled randomized experiments where the researcher determines the probability of treatment. This is, however, uncommon. Traditionally, practitioners rely on methods like logistic regression to first obtain $\hat{e}(X)$ and then take its reciprocal to construct the weights.
+
+Using IPS weights entails two primary challenges. When $\hat{e}(X)$ is close to $0$ or $1$, weights can become excessively large, leading to high variance in estimates. Practitioners then turn to trim observations with “too large” or “too small” $\hat{e}(X)$ values. Moreover, model misspecification in $\hat{e}(X)$ can lead to poor covariate balance, introducing bias. More flexible methods such as machin learning models can alleviate this problem.
+
+*Software Packages*: [MatchIt](https://www.rdocumentation.org/packages/MatchIt), [Matching](https://www.rdocumentation.org/packages/Matching).
+
+### Covariate Balancing Weights
+
+An alternative approach seeks weights that directly balance the dataset at hand. Typically this is framed as a constrained optimization problem with placing restrictions on the maximum imbalance in X between the treatment and control groups.
+
+The weights $\gamma_{\text{CB}}(X)$ are obtained by solving:
+
+$$ \min_{\gamma} \text{Imbalance}(\gamma) + \lambda \text{Penalty}(\gamma),$$
+
+where “Imbalance” measures covariate discrepancies between groups, and “Penalty” controls for extreme weights. A common formulation balances means:
+
+$$ \frac{1}{n} \sum_{i=1}^n W_i \gamma(X_i) f(X_i) \approx \frac{1}{n} \sum_{i=1}^n f(X_i), $$
+
+with $f(x_i)=x$. The same idea can be applied to higher moments of $X$ like variance or skewness. Examples methods relying on this type of weights include include [Hainmueller (2012)](https://doi.org/10.1093/pan/mpr025), [Chan et al. (2016)](https://doi.org/10.1111/rssb.12129), and [Athey et al. (2018)](https://doi.org/10.1111/rssb.12268), among many others.
+
+Covariate balancing weights bypass the need to explicitly estimate $e(X)$. Instead, they solve for weights that ensure the treated and control groups are balanced across predefined covariates or their transformations. This method aligns closely with the goal of causal inference: achieving balance. The main challenge is selecting the right set of covariates to be balanced. Variance estimation can also be more involved, although modern statistical packages take care of it.
+
+*Software Packages*: [MatchIt](https://www.rdocumentation.org/packages/MatchIt), [Matching](https://www.rdocumentation.org/packages/Matching).
+
+### Hybrid Approach
+
+[Imai and Ratkovic (2013)](https://doi.org/10.1111/rssb.12027) developed a hybrid method that combines elements of covariate balancing and inverse propensity score methods. Their method, known as Covariate Balancing Propensity Score (CBPS), aims to estimate propensity scores while simultaneously achieving covariate balance. Instead of relying on a tuning parameter, CBPS ensures balance by solving the following moment conditions:
+
+$$ \sum_{i}\left[ W_i - e(X_i; \gamma) \right] X_i = 0. $$
+
+Additionally, CBPS estimates \gamma by solving the standard likelihood score equation:
+
+$$ \sum_{i} \left[ W_i - e(X_i; \gamma) \right] \frac{\partial e(X_i; \gamma)}{\partial \gamma} = 0. $$
+
+The CBPS is operationalized in the Genralized Method of Moments (GMM) framework from the econometrics literature. This approach ensures that the estimated propensity scores lead to balanced covariates, potentially improving the robustness of causal inference. CBPS can be implemented using available GMM software packages and is particularly useful when traditional propensity score models fail to achieve adequate balance.
+
+*Software Packages*: [CBPS](https://github.com/kosukeimai/CBPS).
+
+## An Example
+
+Let’s illustrate these methods in practice with `R`. Consider a dataset with treatment $W$, outcome $Y$, and covariates $X_1, X_2​$. We estimate the ATE using both IPS, [entropy balancing weights](https://doi.org/10.1093/pan/mpr025) and CBPS. The exercise starts with generating some synthetic data.
+
+```r
+rm(list=ls())
+library(MASS)
+library(WeightIt)
+set.seed(1988)
+
+# generate fake data
+n <- 1000
+X1 <- rnorm(n)
+X2 <- rnorm(n)
+W <- rbinom(n, 1, plogis(0.5 * X1 - 0.25 * X2))
+Y <- 3 + 2 * W + X1 + X2 + rnorm(n)
+data = data.frame(Y, W, X1, X2)
+
+# define functions that will calculate the weights and the associated Average Treatment Effects.
+
+compute_weights <- function(method) {
+    weightit(W ~ X1 + X2, method = method, data = data)$weights
+}
+
+compute_ate <- function(weights) {
+     weighted.mean(Y[W == 1], weights = weights[W == 1]) - 
+        weighted.mean(Y[W == 0], weights = weights[W == 0])
+}
+
+# calcualte the three types of estimates.
+ips_weights <- compute_weights("glm")
+ebal_weights <- compute_weights("ebal")
+cbps_weights <- compute_weights("cbps")
+
+# we estimate the average treatment effect and print the results.
+ips_ate <- compute_ate(ips_weights)
+ebal_ate <- compute_ate(ebal_weights)
+cbps_ate <- compute_ate(cbps_weights)
+
+cat("ATE (IPS Weights):", ips_ate, "\n")
+>ATE (IPS Weights): 2.287048 
+cat("ATE (Entropy Balance Weights):", ebal_ate, "\n")
+>ATE (Entropy Balance Weights): 2.287048 
+
+cat("ATE (CBPS Weights):", cbps_ate, "\n")
+>ATE (CBPS Weights): 2.287048 
+```
+
+The weights are all very highly correlated with each other (not shown above), so they yield nearly identical results. For simplicity, I have ignored variance estimation and confidence intervals.
+
+## Where to Learn More
+
+This article was inspired by [Ben-Michael et al. (2021)](https://arxiv.org/abs/2110.14831) and [Chattopadhyay et al. (2020)](https://doi.org/10.1002/sim.8659). Both references are great starting points. There are plenty of accessible materials on the topic online. My favorite is [Imbens (2015)](https://jhr.uwpress.org/content/50/2/373.short). For more in-depth content turn to [Imbens and Rubin (2015)](https://www.amazon.com/Causal-Inference-Statistics-Biomedical-Sciences/dp/0521885884/ref=sr_1_1?dib=eyJ2IjoiMSJ9.nem1mlE601jgKEheniqQFEj4Pz1c35gbXgCgSU8NoUPGjHj071QN20LucGBJIEps.8MYs_J-ThoGfV5QH6emDwPZzBCBeJL_vtQZPuJeWkcU&dib_tag=se&keywords=imbens+rubin&qid=1740166258&sr=8-1)‘s seminal textbook.
+
+## Bottom Line
+
+- Covariate balance between the treatment and control groups is at the core of causal inference.
+
+- There are two broad classes of weights that achieve such balance.
+
+- IPS weights adjust for treatment probability but can be unstable.
+
+- Covariate balancing weights directly target balance X, bypassing propensity score estimation.
+
+## References
+
+Athey, S., Imbens, G. W., & Wager, S. (2018). Approximate residual balancing: debiased inference of average treatment effects in high dimensions. Journal of the Royal Statistical Society Series B: Statistical Methodology, 80(4), 597-623.
+
+Ben-Michael, E., Feller, A., Hirshberg, D. A., & Zubizarreta, J. R. (2021). The balancing act in causal inference. arXiv preprint arXiv:2110.14831.
+
+Chan, K. C. G., Yam, S. C. P., & Zhang, Z. (2016). Globally efficient non-parametric inference of average treatment effects by empirical balancing calibration weighting. Journal of the Royal Statistical Society Series B: Statistical Methodology, 78(3), 673-700.
+
+Chattopadhyay, A., Hase, C. H., & Zubizarreta, J. R. (2020). Balancing vs modeling approaches to weighting in practice. Statistics in Medicine, 39(24), 3227-3254.
+
+Hainmueller, J. (2012). Entropy balancing for causal effects: A multivariate reweighting method to produce balanced samples in observational studies. Political analysis, 20(1), 25-46.
+
+Hirshberg, D. A., & Wager, S. (2018). Augmented minimax linear estimation for treatment and policy evaluation.
+
+Imai, K., & Ratkovic, M. (2014). Covariate balancing propensity score. Journal of the Royal Statistical Society Series B: Statistical Methodology, 76(1), 243-263.
+
+Imbens, G. W., & Rubin, D. B. (2015). Causal inference in statistics, social, and biomedical sciences. Cambridge university press.
+
+Imbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.
+
+Li, F., Morgan, K. L., & Zaslavsky, A. M. (2018). Balancing covariates via propensity score weighting. Journal of the American Statistical Association, 113(521), 390-400.
+
+Rosenbaum, P. R., & Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. Biometrika, 70(1), 41-55.

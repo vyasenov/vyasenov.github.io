@@ -1,0 +1,135 @@
+---
+title: "Stratified Sampling with Continuous Variables"
+date: "2024-12-18"
+categories: [randomized experiments, causal inference]
+---
+
+## Background
+
+Stratified sampling is a foundational technique in survey design, ensuring that observations capture key characteristics of a population. By dividing the data into distinct strata and sampling from each, stratified sampling often results in more efficient estimates than simple random sampling. Strata are typically defined by categorical variables such as classrooms, villages, or user types. This method is particularly advantageous when some strata are rare but carry critical information, as it ensures their representation in the sample. It is also often employed to tackle spillover effects or manage survey costs more effectively.
+
+While straightforward for categorical variables (like geographic region), continuous variables—such as income or churn score—pose greater challenges for stratified sampling. The primary issue lies in the curse of dimensionality: attempting to create strata across multiple continuous variables results in an explosion of possible combinations, making effective sampling impractical. For example, stratifying a population based on income at every possible dollar amount is absurd.
+
+In this article, I present two solutions to the problem of stratified sampling with continuous variables.
+
+## A Closer Look
+
+### The Traditional Method: Equal-Sized Binning
+
+This approach involves dividing the continuous variable(s) into intervals or bins. For example, churn score, a single continuous variable $X$, can be divided into quantiles (e.g., quartiles or deciles), ensuring each bin contains approximately the same number of observations/users.
+
+Let’s focus on the case of building ten equally-sized strata. Mathematically, for a continuous variable $X$, the decile-based binning can be defined as:
+
+  $$\text{Bin}_i = \{x \in X : Q_{10\times (i-1)+1} \leq x < Q_{10\times i}\} \text{ for } i \in \{1,\dots,10\}, $$
+
+where $Q_k$ represents the $k$-th quantile of $X$. This approach splits in the first ten percentiles (i.e., minimum value to the $10$th percentile) into a single stratum, the next ten percentiles ($10$th to $20$th) into another stratum, and so on.
+
+When dealing with multiple variables, this method extends to either marginally stratify each variable or jointly stratify them. However, joint stratification across multiple variables can also fall prey to the curse of dimensionality.
+
+### The Modern Method: Unsupervised Clustering
+
+An alternative approach uses unsupervised clustering algorithms, such as $k$-means or hierarchical clustering, to group observations into clusters, treating these clusters as strata. Unlike binning, clustering leverages the distribution of the data to form natural groupings.
+
+Formally, let $X$ be a matrix of n observations across $p$ continuous variables. One class of clustering algorithms aims to assign each observation $i$ to one of $k$ clusters:
+
+$$\text{minimize} \quad \sum_{j=1}^k \sum_{i \in \mathcal{C}_j} \text{distance}(X_i - \mu_j), $$
+
+where $\mu_j=\frac{1}{|S_j|}\sum_{i\in \mathcal{C}_j} X$​ is the centroid of cluster $\mathcal{C}_j$ of $size |S_j|$.
+
+Commonly, $\text{distance}(X_i, \mu_j)=\|X_i - \mu_j\|^2$ which leads to $k$-means clustering. Unlike in the binning approach, here we are not restricting each strata to have the same number of observations.
+
+## Pros and Cons
+
+Unsurprisingly, each method comes with its trade-offs. Traditional binning is simple and interpretable but can struggle with multivariate dependencies. Clustering accounts for multivariate relationships between variables, avoids imposing arbitrary bin thresholds, and may results in more natural groupings. However, it can be computationally expensive and sensitive to the choice of algorithm and hyperparameters (e.g., $k$ in $k$-means).
+
+One can also imagine a hybrid approach. Begin with a dimensionality reduction method like PCA and then perform binning on the first few principal components.
+
+## An Example
+
+Here is `R` and `python` code illustrating both types of approaches on the popular `iris` dataset. We are interested in creating strata based on the SepalLenght variable. We begin with the traditional binning approach.
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+rm(list=ls())
+set.seed(1988)
+data(iris)
+
+#Divide the continuous variable "Sepal.Length" into 4 quantile bins
+iris$SepalLengthBin <- cut(iris$Sepal.Length, 
+                           breaks = quantile(iris$Sepal.Length, probs = seq(0, 1, 0.25)), include.lowest = TRUE)
+
+#Inspect the resulting strata
+table(iris$SepalLengthBin)
+> [4.3,5.1] (5.1,5.8] (5.8,6.4] (6.4,7.9] 
+>       41        39        35        35
+
+#Perform k-means clustering on two continuous variables
+iris_cluster <- kmeans(iris[, c("Sepal.Length", "Petal.Length")], centers = 4)
+
+#Assign clusters as strata
+iris$Cluster <- as.factor(iris_cluster$cluster)
+
+#Inspect the resulting strata
+table(iris$Cluster) 
+> 1  2  3  4 
+> 50 15 54 31 
+```
+
+### Python
+
+```python
+# Load libraries
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+np.random.seed(1988)
+
+# Load the iris dataset
+from sklearn.datasets import load_iris
+iris_data = load_iris(as_frame=True)
+iris = iris_data['data']
+iris.columns = ['Sepal.Length', 'Sepal.Width', 'Petal.Length', 'Petal.Width']
+
+# Divide the continuous variable "Sepal.Length" into 4 quantile bins
+iris['SepalLengthBin'] = pd.qcut(iris['Sepal.Length'], q=4, labels=False)
+
+# Inspect the resulting strata
+print("Quantile Bins (Sepal.Length):")
+print(iris['SepalLengthBin'].value_counts())
+> SepalLengthBin
+> 0    41
+> 1    39
+> 3    35
+> 2    35
+
+# Perform k-means clustering on two continuous variables
+kmeans = KMeans(n_clusters=4, random_state=1988)
+iris['Cluster'] = kmeans.fit_predict(iris[['Sepal.Length', 'Petal.Length']])
+
+# Assign clusters as strata
+iris['Cluster'] = iris['Cluster'].astype('category')
+
+# Inspect the resulting strata
+print("\nCluster Sizes:")
+print(iris['Cluster'].value_counts())
+> Cluster
+> 2    50
+> 3    50
+> 0    28
+> 1    22
+```
+
+::::
+
+Here we also have four clusters, but their size ranges from $25$ to $50$ observations each.
+
+## Bottom Line
+
+- Stratified sampling with continuous variables requires balancing simplicity and sophistication.
+
+- Traditional binning remains a practical choice for single continuous variables or very few categorical ones.
+
+- Clustering provides a robust alternative, enabling stratification with multiple continuous variables at the cost of adding complexity and tuning parameters.

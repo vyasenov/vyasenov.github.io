@@ -1,0 +1,133 @@
+---
+title: "Lasso for Heterogeneous Treatment Effects Estimation"
+date: "2023-06-30"
+categories: [lasso, heterogeneous treatment effects, causal inference]
+---
+
+## Background
+
+Lasso is one of my favorite machine learning algorithms. It is so simple, elegant, and powerful. My feelings aside, Lasso indeed has a lot to offer. While, admittedly, it is outperformed by more complex, black-box type methods (e.g., boosting or neural networks), it has several advantages: interpretability, [computational efficiency](https://projecteuclid.org/journals/annals-of-statistics/volume-32/issue-2/Least-angle-regression/10.1214/009053604000000067.full), and flexibility. Even when it comes to accuracy, [theory](https://www.tandfonline.com/doi/abs/10.1198/016214501753382273) tells us that under appropriate assumptions, Lasso can uncover the true submodel and we can even derive bounds on its prediction loss.
+
+In this article I will briefly describe two ways researchers use Lasso to detect heterogeneous treatment effects. The underlying idea is to throw a bunch of covariates in the model and let the $L1$ regularization do the difficult job of identifying which ones are important for treatment effect heterogeneity.
+
+## Notation
+
+As always, let’s start with some notation. Let $T$ denote a binary treatment indicator, $Y(0), Y(1)$ be the potential outcomes under each treatment state ($Y$ is the observed one), and $X$ be a covariate vector. Lastly, $p$ is the share of units in the treatment group, $p=\frac{1}{N}\sum T$, where $N$ is the sample size.
+
+The Lasso coefficient vector is commonly expressed as the solution to the following problem:
+
+ $$\min_\beta \{ \frac{1}{N}||y-X\beta||_2^2 + \lambda||\beta||_1 \},$$
+
+where $\lambda$ is the regularization parameter governing the variance-bias trade-off.
+
+We are interested in the heterogeneous treatment effect given $X (HTE(X))$:
+
+ $$HTE(X) = E[Y(1)-Y(0)|X=x].$$
+
+That is, $HTE(X)$ is the average treatment effect for units with covariate levels $X=x$.
+
+More precisely, our goal is identifying which variables in $X$ divide the population of interest such that there are meaningful treatment effect differences across these groups. For instance, in the case of estimating the impact of school quality on test scores, $X$ might be students’ gender (e.g., girls benefit more than boys), or in the context of online A/B testing, $X$ might denote previous product engagement (e.g., tenured users benefit more from a new feature than inexperienced users).
+
+Broadly speaking, there are two main approaches to using Lasso to solve this problem — (i) a linear model with interactions between $T$ and $X$, and (ii) directly regressing the imputed unit-level treatment effects on $X$.
+
+## A Closer Look
+
+### Lasso with Treatment Variable Interactions
+
+In a low-dimensional world where regularization is not necessary and researchers are interested in $HTE$s, they often use a linear model in which the treatment variable is interacted with the covariates. Statistically significant interaction coefficients identify the $X$ variables for which the treatment has a differential impact.
+
+Mathematically, when all variables are properly interacted, this is analogous to splitting the sample into subgroups based on $X$ and running OLS on each group separately. This is feasible and convenient when $X$ is binary or categorical, but not when it is continuous. The advantage of this approach is that linear regression produces $p$-values which can be (mis)used to determine statistical significance of these interaction variables.
+
+The OLS model is then:
+
+$$Y = \beta_1 T + \beta_2 X + \beta_3 X \times T + \epsilon,$$
+
+where $\epsilon$ is the error term. The attention here falls on the coefficient vector $\beta_3$ which identifies whether the treatment has had a differential impact on units with a particular characteristic $X$.
+
+In high-dimensional settings with a wide $X$, this is not feasible. Instead, we can use an algorithm to pick out the variables in $X$ that are important for treatment effect heterogeneity.
+
+[Imai and Ratkovic (2013)](https://projecteuclid.org/journals/annals-of-applied-statistics/volume-7/issue-1/Estimating-treatment-effect-heterogeneity-in-randomized-program-evaluation/10.1214/12-AOAS593.full) show how to adapt the Lasso to this setting. It turns out we should not simply throw this model into the Lasso loss function. Can you guess why? Some variables might be predictive of the baseline outcome while others only of the treatment effect heterogeneity. The trick is to have two separate Lasso constraints — $\lambda_1$ and $\lambda_2$.
+
+So, the loss function looks something like this:
+
+ $$\min_\beta \{ \frac{1}{N}||y-f(X,T)\beta_1 - X\times T \beta_2 ||_2^2 + \lambda_1||\beta_1||_1 + \lambda_2||\beta_2||_1 \}.$$
+
+A simplified version of the algorithm is as follows:
+
+::: {.callout-note title="Algorithm:"}
+1. Generate interaction variables, $\tilde{X}(T)$.
+2. Run Lasso of $Y$ on $T$, $X$ and $\tilde{X}(T)$.
+3. Identify statistically significant variables determining treatment effect heterogeneity.
+:::
+
+Two notes. First, this requires some assurance that we are not overfitting, so that some form of sample splitting or cross validation is necessary. On top of this, [Athey and Imbens (2017)](https://www.aeaweb.org/articles?id=10.1257/jep.31.2.3) suggest comparing these results with post-lasso OLS estimates to further guard against overfitting. Second, multiple testing is an issue as is the case with ML algorithms more generally. (You can check my earlier post on multiple hypothesis testing in linear machine learning models.) Options to take care of this include [sample splitting](https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.tm08647) and [bootstrap](https://www.tandfonline.com/doi/abs/10.1198/jasa.2011.tm10159), among others.
+
+*Software Package*: [FindIt](https://github.com/kosukeimai/FindIt).
+
+### Lasso with Knockoffs
+
+An alternative approach directly regresses the unit-level treatment effects on $X$. To get there, we first model the outcome function and impute the missing potential outcome for each unit. See my previous post on using Machine Learning tools for causal inference for more information on how we might do that.
+
+This approach was developed by [Xie et al. (2018)](https://dl.acm.org/doi/abs/10.1145/3219819.3219860?casa_token=prn79eBrsBMAAAAA:hWN_3s9f9DcTlWu4DtQlnU4bdJfchGOWFabAGa20TaAeJ660LWtC0rdcj5Gf62BSQmtER-T6wMDq). They recognized the multiple hypothesis issue and suggested using [knockoffs](https://projecteuclid.org/journals/annals-of-statistics/volume-43/issue-5/Controlling-the-false-discovery-rate-via-knockoffs/10.1214/15-AOS1337.full) to control the False Discovery Rate.  This is still not completely kosher, as it does not account for the fact that the outcome variable is estimated in an earlier step. Oh well. My guess and hope are that this is more of a theoretical concern, and empirically the inference we get is still “correct.”
+
+Here is a simplified version of their algorithm:
+
+::: {.callout-note title="Algorithm:"}
+1. Transform the outcome variable $\tilde{Y}=Y\times\frac{(T-p)}{p(1-p)}$.
+2. Calculate unit-level treatment effects, $\hat{Y}(1)-\hat{Y}(0)$.
+3. Generate the difference $Y^*=\tilde{Y}-\frac{1}{N}\sum \hat{Y}(1)-\hat{Y}(0)$.
+4. Run Lasso of $Y^*$ on $X$ and $X^*$ (the knockoff counterparts of $X$).
+5. Follow the knockoff method to obtain the set of significant variables.
+:::
+
+Remember that $\tilde{Y}$ has the special property that $E[\tilde{Y} \mid X=x]=HTE(X)$ under the unconfoundedness assumption.
+
+Interestingly, in the special case when $p=1/2$ the algebra reduces further which provides computation scaling advantages. [Tian et al. (2014)](https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.951443) showed this result first.
+
+## An Example
+
+I used the popular Titanic dataset ($n=889$) to illustrate the latter method. As such, it is a mere depiction of the approach, and its results should certainly not be taken seriously.
+
+The outcome variable was survived, and the treatment variable was male. As is well known, women were much more likely to survive than men ($74\%$ vs $19\%$ in this sample). So, I analyzed whether the gender difference in survival was impacted by other factors. I included the following covariates – `pclass` (ticket class), `age`, `sibsp` (number of siblings aboard), parch (number of parents aboard), `fare`, `embarked` (port of Embarkation), and `cabin`. Some of these were categorical in which case I converted them to a bunch of binary variables.
+
+The knockoff filter identified a single variable as having a significant impact on the treatment effect – `pclass`. For the more affluent passengers (i.e., those in the higher ticket classes), this gender difference in survival was much smaller.
+
+You can find the code in [this GitHub repo](https://github.com/vyasenov/lasso-knockoffs-hte).
+
+## Bottom Line
+
+- The core idea behind using Lasso in HTE estimation is to leverage $L_1$ regularization to select which covariates explain differences in treatment responses.
+
+- There are two main ways researchers use Lasso to estimate HTEs. Use a linear model with all covariates interacted with the treatment indicator, and apply Lasso with two separate regularization constraints. Directly regress unit-level treatment effects on the covariates.
+
+- I am not aware of simulation studies comparing both approaches.
+
+- While Lasso is among the simplest and most popular machine learning algorithms, more suitable methods may exist for estimating HTEs.
+
+## Where to Learn More
+
+[Hu (2022)](https://www.sciencedirect.com/science/article/pii/S0049089X22001211) is an excellent summary of the several ways researchers use Machine Learning to uncover heterogeneity in treatment effect estimation.
+
+## References
+
+Barber, R. F., & Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. The Annals of Statistics: 2055-2085.
+
+Barber, R. F., & Candès, E. J. (2019). A knockoff filter for high-dimensional selective inference. The Annals of Statistics, 47(5), 2504-2537.
+
+Chatterjee, A., & Lahiri, S. N. (2011). Bootstrapping lasso estimators. Journal of the American Statistical Association, 106(494), 608-625.
+
+Hu, A. (2022). Heterogeneous treatment effects analysis for social scientists: A review. Social Science Research, 102810.
+
+Imai, K., & Ratkovic, M. (2013). Estimating treatment effect heterogeneity in randomized program evaluation. The Annals of Applied Statistics (2013): 443-470.
+
+Nie, X., & Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319.
+
+Meinshausen, N., Meier, L., & Bühlmann, P. (2009). P-values for high-dimensional regression. Journal of the American Statistical Association, 104(488), 1671-1681.
+
+Tian, L., Alizadeh, A. A., Gentles, A. J., & Tibshirani, R. (2014). A simple method for estimating interactions between a treatment and a large number of covariates. Journal of the American Statistical Association, 109(508), 1517-1532.
+
+Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. Journal of the Royal Statistical Society: Series B (Methodological), 58(1), 267-288.
+
+Wager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228-1242.
+
+Xie, Y., Chen, N., & Shi, X. (2018). False discovery rate controlled heterogeneous treatment effect detection for online controlled experiments. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (pp. 876-885).

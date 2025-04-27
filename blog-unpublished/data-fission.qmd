@@ -1,0 +1,166 @@
+---
+title: "Data Fission: A New Approach to Model Selection and Inference"
+date: "2025-00-00"
+categories: [statistical inference]
+---
+
+## Background
+
+When conducting statistical modeling and hypothesis testing, analysts often face the challenge of **model selection bias**: if we use the same data both to select a model and to conduct inference, our confidence intervals and p-values may no longer be valid. Traditionally, the go-to solution has been **data splitting** — partitioning the dataset into two separate parts: one for model selection and one for inference.
+
+However, what if we don't have the luxury of a large dataset? What if splitting would waste valuable information, especially when rare events or high-leverage points dominate? Enter **data fission**, a recent innovation proposed by Leiner et al. (2025), which offers a more efficient, flexible, and assumption-lean alternative to data splitting.
+
+This article introduces the concept of data fission, how it works, and where it outperforms traditional methods like data splitting and data carving. We'll also walk through examples and highlight its applications in linear regression, GLMs, trend filtering, and post-selection inference.
+
+## Notation
+
+Assume we observe a random variable $X$ drawn from a distribution $P$ with unknown parameter $\theta$. The core idea of data fission is to decompose $X$ into two parts:
+
+$$
+f(X), \quad g(X)
+$$
+
+such that:
+- Neither $f(X)$ nor $g(X)$ alone can fully reconstruct $X$,
+- But together they determine $X$,
+- The joint distribution of $(f(X), g(X))$ is known or tractable.
+
+For example, if $X \sim N(\mu, \sigma^2)$, fission is achieved by:
+
+$$
+f(X) = X + Z, \quad g(X) = X - Z, \quad Z \sim N(0, \sigma^2).
+$$
+
+## A Closer Look
+
+### Why Fission Instead of Splitting?
+
+The motivation behind data fission is to keep **all data points "alive" in both selection and inference**, but only share part of the information from each data point with each stage. This allows the analyst to:
+- Hedge their bets on influential points,
+- Maintain flexibility in model selection,
+- Retain valid inferential guarantees.
+
+Fission can be viewed as a **continuous analog to data splitting**, trading off information between selection and inference smoothly, rather than discretely cutting the data in half.
+
+---
+
+### Gaussian Example: The Simplest Case
+
+If $X \sim N(\mu, \sigma^2)$, one can construct independent random noise $Z \sim N(0, \sigma^2)$ and define:
+
+$$
+f(X) = X + \tau Z, \quad g(X) = X - \frac{1}{\tau} Z.
+$$
+
+The parameter $\tau$ controls how much information is allocated to $f(X)$ versus $g(X)$. When $\tau \to \infty$, $f(X)$ becomes uninformative; when $\tau \to 0$, $g(X)$ becomes uninformative.
+
+---
+
+### Generalized Fission via Conjugate Prior Reversal
+
+Beyond the Gaussian case, data fission leverages **conjugate prior relationships** to achieve similar decompositions:
+
+- **Poisson Example**: If $X \sim \text{Poisson}(\mu)$, set $f(X) = Z \sim \text{Binomial}(X, p)$, $g(X) = X - Z$.
+- **Bernoulli Example**: If $X \sim \text{Bernoulli}(\theta)$, draw $Z \sim \text{Bernoulli}(p)$ and set $f(X) = X(1 - Z) + (1 - X)Z$.
+
+These constructions maintain a tractable joint distribution between $f(X)$ and $g(X)$ while achieving the desired splitting of information.
+
+---
+
+### Efficiency: Why Fission Outperforms Splitting
+
+One of the most compelling results from Leiner et al. is that fission, on average, yields **tighter confidence intervals** and **higher power** than data splitting. This advantage is particularly pronounced when:
+
+- The sample size is small,
+- Certain data points have disproportionate influence (high leverage),
+- Covariates are fixed (non-random).
+
+The reason: data splitting introduces randomness into which points are selected for inference, which lowers efficiency. Data fission avoids this by deterministically splitting the information within each point.
+
+---
+
+### Applications
+
+The authors demonstrate the usefulness of data fission across several settings:
+
+1. **Post-selection inference after multiple testing**: Construct valid confidence intervals even after adaptive selection of hypotheses.
+2. **Linear regression with feature selection**: Use fissioned data to select variables with LASSO and then conduct inference without sacrificing power.
+3. **Generalized linear models (GLMs)**: Extend the approach to non-Gaussian responses like Poisson and Binomial models.
+4. **Trend filtering and nonparametric regression**: Enable valid uncertainty quantification in adaptive smoothing problems.
+
+### Discussion
+
+This paper generated tremendous amount of discussion in the Journal of the American Statistical Association. Here is a brief summary of the twelve or so comments published alongisde the original paper. The discussion papers on data fission explore its potential as a novel statistical method for splitting a single data point into two components for model selection and inference. ​ Many contributors praise its innovative use of Bayesian ideas and conjugate models, highlighting its advantages in selective inference and applications like clustering, Gaussian Process regression, and single-cell RNA-seq analysis. However, several critiques emerge, including concerns about its reliance on parametric assumptions, sensitivity to data-specific properties, and potential overfitting in small sample sizes. ​ Some authors suggest extending data fission to nonparametric settings, leveraging tools like the Dirichlet Process, or exploring debiasing methods for complex dependencies in unsupervised learning tasks. ​
+
+Others propose practical improvements, such as asymptotic guarantees for broader selection rules, new decomposition strategies for dependent data, and connections to empirical Bayes frameworks. ​ Comparisons with data splitting and data carving reveal that while data fission excels in high-dimensional problems and inference tasks, it may underperform in small data contexts or when selection events are tractable. The authors of the original paper acknowledge these critiques and emphasize the need for further research into extending data fission to dependent data, improving computational accessibility, and exploring its applications in risk estimation and clustering. Overall, the discussions highlight both the promise and challenges of data fission as a versatile tool in modern statistics. 
+
+## An Example
+
+::::{.panel-tabset}
+
+### R
+
+```r
+set.seed(123)
+n <- 500
+x <- rnorm(n)
+y <- 1 + 2 * x + rnorm(n)
+
+# Fission step: add independent noise
+z <- rnorm(n)
+tau <- 1
+f_y <- y + tau * z
+g_y <- y - z / tau
+
+# Model selection on f_y (e.g., LASSO, here just OLS for simplicity)
+selection_model <- lm(f_y ~ x)
+selected_coef <- summary(selection_model)$coefficients
+
+# Inference on g_y
+inference_model <- lm(g_y ~ x)
+summary(inference_model)
+```
+
+### Python
+
+```python
+import numpy as np
+import statsmodels.api as sm
+
+np.random.seed(123)
+n = 500
+x = np.random.randn(n)
+y = 1 + 2 * x + np.random.randn(n)
+
+z = np.random.randn(n)
+tau = 1
+f_y = y + tau * z
+g_y = y - z / tau
+
+X = sm.add_constant(x)
+selection_model = sm.OLS(f_y, X).fit()
+print(selection_model.summary())
+
+inference_model = sm.OLS(g_y, X).fit()
+print(inference_model.summary())
+```
+
+::::
+
+## Bottom Line
+
+- Data fission splits the *information* within each data point rather than the data points themselves.
+
+- It offers higher efficiency and flexibility than traditional data splitting.
+
+- Particularly advantageous with small samples or high-leverage points.
+
+- Extends naturally to regression, GLMs, and nonparametric smoothing.
+
+## Where to Learn More
+
+The foundational article by Leiner et al. (2025) is the key resource on data fission. It offers detailed proofs, simulation studies, and practical examples. Related work on data splitting, data carving, and post-selection inference helps contextualize this method within the broader landscape of selective inference.
+
+## References
+
+- Leiner, J., Duan, B., Wasserman, L., & Ramdas, A. (2025). Data Fission: Splitting a Single Data Point. *Journal of the American Statistical Association*, 120(549), 135–146.

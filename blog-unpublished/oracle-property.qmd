@@ -1,0 +1,142 @@
+---
+title: "The Oracle Property in Machine Learning"
+date: "2025-00-00"
+categories: [variable selection, machine learning]
+---
+
+## Background
+
+Imagine this: you’re trying to predict an outcome based on dozens or even hundreds of variables. You suspect only a few of them actually matter, but you don’t know which ones. Wouldn’t it be great if you had an oracle—a magical being who could whisper in your ear and tell you exactly which variables to use?
+
+In machine learning and statistics, when we say that an estimator has the *oracle property*, we mean it behaves *as if it had access to that oracle*. Specifically, it consistently identifies the correct subset of relevant variables, and then estimates their effects with the same efficiency as if it had known the true model all along. That’s a big deal. Most estimators don’t come close.
+
+In this post, we’ll unpack the intuition and math behind the oracle property, explore estimators that (claim to) have it—like the adaptive lasso—and clarify what it means for an estimator to *not* have this magical trait. We'll also briefly touch on another, broader use of the term "oracle" in machine learning.
+
+## Notation
+
+Let’s ground ourselves in a simple linear regression model:
+
+$$y_i = X_i^\top \beta^* + \varepsilon_i, \quad i = 1, \dots, n,$$
+
+where:
+- $y_i \in \mathbb{R}$ is the outcome,
+- $X_i \in \mathbb{R}^p$ is the vector of predictors (covariates),
+- $\beta^* \in \mathbb{R}^p$ is the true but unknown coefficient vector,
+- $\varepsilon_i \sim \mathcal{N}(0, \sigma^2)$ are independent errors.
+
+We assume that the true coefficient vector $\beta^*$ is sparse—that is, many of its entries are exactly zero. Let $S = \{j : \beta^*_j \neq 0\}$ be the support set of non-zero coefficients, and $s = |S|$ its cardinality.
+
+The dream is to recover both the support $S$ and estimate the non-zero coefficients accurately.
+
+## A Closer Look
+
+### What Does the Oracle Property Actually Mean?
+
+An estimator $\hat{\beta}$ has the oracle property if, as the sample size $n \to \infty$:
+
+- **(Support Recovery)** It correctly identifies the set of non-zero coefficients with probability tending to 1:
+
+   $$\Pr(\text{supp}(\hat{\beta}) = S) \to 1.$$
+
+- **(Asymptotic Efficiency)** The estimator is asymptotically normal and efficient for the non-zero coefficients, just like the OLS estimator would be if you knew $ S $ in advance:
+   $$\sqrt{n}(\hat{\beta}_S - \beta^*_S) \overset{d}{\to} \mathcal{N}(0, \Sigma_S),$$
+   where $\Sigma_S$ is the variance that would result from estimating only on the true subset $S$.
+
+### The Adaptive Lasso & SCAD
+
+The ordinary lasso doesn’t quite cut it. While it’s great for variable selection and shrinkage, it tends to be biased and doesn't consistently identify the correct support. But its cousin—the **adaptive lasso**—fixes this, at least under certain conditions.
+
+The adaptive lasso solves:
+
+$$\hat{\beta}^{\text{AL}} = \arg\min_{\beta} \left\{ \frac{1}{2n} \sum_{i=1}^n (y_i - X_i^\top \beta)^2 + \lambda \sum_{j=1}^p w_j |\beta_j| \right\},$$
+
+where $w_j = 1 / |\tilde{\beta}_j|^\gamma$, and $\tilde{\beta}$ is an initial consistent estimator (e.g., OLS or ridge), and $\gamma > 0$ is a tuning parameter.
+
+These weights penalize small coefficients more harshly than large ones, allowing relevant predictors to remain in the model while aggressively zeroing out the rest. Under mild regularity conditions, this approach achieves the oracle property.
+
+The Smoothly Clipped Absolute Deviation (SCAD) penalty, proposed by Fan and Li (2001), was one of the pioneering approaches that achieves the oracle property. Unlike the lasso, SCAD uses a non-concave penalty function that applies the same rate of penalization to small coefficients but continuously relaxes the penalty for larger coefficients, effectively reducing the estimation bias. Beyond SCAD and the adaptive lasso, several other estimators have been developed with oracle properties, including the Minimax Concave Penalty (MCP) introduced by Zhang (2010), which provides a smoother transition between penalized and unpenalized coefficients than SCAD. The elastic net with adaptive weights (adaptive elastic net) also possesses the oracle property while handling correlated predictors better than pure L1 methods. More recently, folded concave penalties like the transformed L1 (TL1) and the Log penalty have gained attention for their theoretical guarantees regarding the oracle property while offering computational advantages.
+
+### What If an Estimator Lacks the Oracle Property?
+
+Most estimators don't possess the oracle property. They might:
+
+- Include irrelevant variables (false positives),
+- Miss relevant ones (false negatives),
+- Estimate effects with too much bias or variance.
+
+Even the basic lasso, which shrinks coefficients toward zero, doesn’t achieve consistent variable selection unless some strong assumptions hold (e.g., the irrepresentable condition).
+
+That’s why oracle properties are a holy grail: they offer both variable selection and precise estimation.
+
+## An Example
+
+Let’s try out the adaptive lasso in action.
+
+::::{.panel-tabset}
+
+### R
+
+```r
+library(glmnet)
+
+# Simulated data
+set.seed(1988)
+n <- 100; p <- 20
+X <- matrix(rnorm(n * p), n, p)
+beta_true <- c(rep(2, 5), rep(0, 15))
+y <- X %*% beta_true + rnorm(n)
+
+# Initial OLS estimate for weights
+beta_ols <- coef(lm(y ~ X - 1))
+weights <- 1 / abs(beta_ols)^1  # gamma = 1
+
+# Adaptive lasso using glmnet with weights
+fit <- glmnet(X, y, alpha = 1, penalty.factor = weights)
+coef(fit, s = "lambda.min")
+```
+
+### Python
+
+```python
+import numpy as np
+from sklearn.linear_model import LinearRegression, Lasso
+from sklearn.preprocessing import StandardScaler
+
+np.random.seed(1988)
+n, p = 100, 20
+X = np.random.randn(n, p)
+beta_true = np.concatenate([np.repeat(2.0, 5), np.zeros(15)])
+y = X @ beta_true + np.random.randn(n)
+
+# Initial OLS for weights
+ols = LinearRegression().fit(X, y)
+weights = 1 / np.abs(ols.coef_)
+
+# Adaptive lasso: reweight features
+X_scaled = StandardScaler().fit_transform(X)
+adaptive_lasso = Lasso(alpha=0.1, max_iter=10000)
+adaptive_lasso.coef_ = adaptive_lasso.fit(X_scaled * weights, y).coef_ / weights
+adaptive_lasso.coef_
+```
+
+::::
+
+## Bottom Line
+
+- The oracle property means an estimator selects the correct model and estimates coefficients as if it knew the truth.
+
+- The adaptive lasso is one estimator that can achieve this under certain conditions.
+
+- Most common estimators, including the basic lasso, do not have the oracle property.
+
+- The term “oracle” can also refer more broadly to hypothetical sources of perfect knowledge in learning theory.
+
+## Where to Learn More
+
+For a deeper dive into oracle properties and related asymptotics, check out the seminal work by Fan and Li (2001) or Zou (2006) on the adaptive lasso. For the broader “oracle” idea in computational learning theory, Michael Kearns’ work on computational learning theory is a great starting point. If you're into theory with a practical bent, books like Elements of Statistical Learning also give a more intuitive overview of these ideas.
+
+## References
+
+Fan, J., & Li, R. (2001). Variable selection via nonconcave penalized likelihood and its oracle properties. Journal of the American Statistical Association.
+
+Zou, H. (2006). The adaptive lasso and its oracle properties. Journal of the American Statistical Association.

@@ -1,0 +1,100 @@
+---
+title: "FOCI: A New Variable Selection Method"
+date: "2024-06-11"
+categories: [variable selection, machine learning]
+---
+
+## Background
+
+In our data-abundant world, we often have access to tens, hundreds, or even thousands of variables. Most of these features are usually irrelevant or redundant, leading to increased computational complexity and potentially overfitted models. Variable selection algorithms are designed to mitigate these challenges by selecting the subset of columns that is most relevant to the problem at hand. This, in turn, can result in simplified, more efficient, and interpretable machine learning (ML) models. Examples of such methods abound—lasso, ridge, elastic net utilizing $L1$ and $L2$ regularization or a linear combination of both; forward/backward stepwise regression algorithms, etc.
+
+In this article, I will describe a new variable selection method built on the idea of Chatterjee’s correlation coefficient, which has been a hot topic of discussion among statisticians. The new method goes by the abbreviation FOCI, which stands for Feature Ordering by Conditional Independence. It is somewhat similar to forward stepwise regression but overcomes some of the critiques most often associated with it.
+
+Let’s start with setting up some basic notation. We are focused on studying the correlation between ($Y$) (e.g., income) and ($X$) (education level) while interested in conditioning on/controlling for ($Z$) (parental education and other factors). As always, we are armed with a random sample of size n of all these variables and assume everything is well-behaved. If you have not had a chance, I recommend you first read my earlier post on Chatterjee’s correlation measure, which lays some of the foundations necessary to understand the algorithm under the hood.
+
+## A Closer Look
+
+I will be being with taking you on a tour of conditional and unconditional statistics. What’s the deal with conditional versus unconditional correlation, and is one of them always a better choice than the other?
+
+### Conditional and Unconditional Correlation
+
+Most times, when we talk about the correlation between $X$ and $Y$, knowingly or not, we mean unconditional correlation. This is the correlation between two variables without considering any additional or contextual factors. As such, it describes their relationship “in general.” In my previous post, I illustrated several ways to measure such unconditional correlations, including the well-known Spearman correlation coefficient.
+
+In some cases, however, we like to go one step further and consider contextual factors. This is where conditional correlation comes in. It considers the influence of one or more additional variables when measuring the relationship between $X$ and $Y$. Thus, it provides information on how their relationship changes under specific conditions.
+
+Conditional correlation is hard (pun intended); it’s even [NP-hard](https://doi.org/10.1016/0004-3702(93)90036-B) in some contexts.
+
+Under certain assumptions, it might be possible to go from conditional to unconditional correlation. Simplifying the example above, let’s say that $Z$ (parental education) can take on two values—low and high. If we have measures of the correlation between $X$ and $Y$ for each of these values (i.e., for families with low and high parental education), we can weigh these by their relative proportion and arrive at an estimate of the unconditional correlation between $X$ and $Y$.
+
+To answer my own question above, it’s difficult to say that one is always better than the other. It really depends on your goal. If you want to know how $X$ and $Y$ vary in general, unconditional correlation is your friend; if, instead, you are interested in incorporating contextual information or simply controlling for other factors, you really want conditional correlation. My take is that most often we are after conditional correlations but use tools for measuring unconditional ones.
+
+### Quantile Regression
+
+::: {.callout-note title="Side Note on Quantile Regression"}
+
+[Quantile regression](https://doi.org/10.1146/annurev-economics-063016-103651) is another setting where most often people confuse conditional and [unconditional statistical inference](https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6822). Interestingly, though, the situation is flipped. The classical quantile regression estimator, which most people utilize, measures the impact of $X$ on the *conditional* quantile of $Y$, but there results are [commonly](https://doi.org/10.1002/hec.2927) [interpreted](interpreted) as having unconditional interpretation.
+
+:::
+
+
+### New Coefficient of Conditional Independence
+
+[Azadkia and Chatterjee (2021)](http://10.0.4.190/21-AOS2073) develop a new coefficient of conditional correlation. The math behind is in extremely involved and I will not even be discussing its formula here. For simplicity, let’s just call it $T(\cdot)$:
+
+$$T(Y,X|Z) = \text{corr} (Y, X | Z).$$
+
+$T(\cdot)$ enjoys the following attractive properties:
+
+- It is an extension of Chatterjee’s unconditional correlation coefficient.
+- It is non-parametric.
+- It has no tuning parameters.
+- It can be estimated quickly, in $O(n \text{ log}n)$ time.
+- Asymptotically converges to a limit in $[0,1]$. It’s limit is $0$ when $Y$ and $X$ are conditionally independent, and it is $1$ when $Y$ is a measurable function of $X$, conditionally.
+- It is a nonlinear generalization of the partial $R^2$ coefficient in a linear regression of $Y$ on $X$ and $Z$.
+
+All this is to say – $T(\cdot)$ has many things going for it, and it is a pretty good measure of conditional correlation.
+
+### The Variable Selection Algorithm
+
+The key idea is to integrate $T(\cdot)$ into a forward stepwise variable selection procedure. Let’s add the $Z$ variables into $X$, so we only have $Y\in \mathbb{R}$ and $X\in \mathbb{R}^p$. Then the algorithm goes as follows:
+
+::: {.callout-note title="Algorithm:"}
+1. Start with the index $j$ that maximizes $T(Y \mid X_j)$.
+2. Given $j_1, \dots j_k$, select $j_{k+1}$ as the index $\notin (j_1, \dots j_k)$ that maximizes $T(Y,X_j \mid X_{j_1}, \dots, X_{j_k})$.
+3. Continue until finding the first $k$ such that $T(Y, X_{j_{k+1}} \mid X_{j_1}, \dots, X_{j_k}) \leq 0$.
+4. Declare the set of selected variables $\hat{S} ={X_{j_1}, \dots, X_{j_k}}$.
+:::
+
+*Software Package*: [FOCI](https://www.rdocumentation.org/packages/FOCI)
+
+In words, we start with the variable j that maximizes $T(Y\mid X_j)$. In each subsequent step we select the variable that has not yet been selected and has the highest $T(Y \mid \cdot)$ value up until $T(Y \mid \cdot)$ is positive. That’s it. We then have the set of FOCI selected variables.
+
+Although it is not required theoretically, the predictor variables be standardized before running the algorithm. If computational time is not an issue, one can try to add $m \geq  2$ variables at each step instead of just one.
+
+There you have it. Grab your data and see whether and how much FOCI improves on your favorite feature selection method.
+
+## Bottom Line
+
+- Azadkia and Chatterjee (2021) develop a new coefficient of conditional correlation featuring a host of attractive properties.
+
+- This coefficient can be used in a stepwise inclusion fashion as a variable selection algorithm potentially improving on well-established methods in the field.
+
+## Where to Learn More
+
+My earlier post on Chatterjee’s bivariate coefficient of (unconditional) correlation is a good starting point. Data scientists more deeply interested in FOCI should read Azadkia and Chatterjee's paper which describes in detail the mathematics behind the new algorithm.
+
+## References
+
+Alejo, J., Favata, F., Montes-Rojas, G., & Trombetta, M. (2021). Conditional vs Unconditional Quantile Regression Models: A Guide to Practitioners. Economia, 44(88), 76-93.
+
+Azadkia, M., & Chatterjee, S. (2021). A simple measure of conditional dependence. The Annals of Statistics, 49(6), 3070-3102.
+
+Borah, B. J., & Basu, A. (2013). Highlighting differences between conditional and unconditional quantile regression approaches through an application to assess medication adherence. Health economics, 22(9), 1052-1070.
+
+Chatterjee, S. (2021). A new coefficient of correlation. Journal of the American Statistical Association, 116(536), 2009-2022.
+
+Dagum, P., & Luby, M. (1993). Approximating probabilistic inference in Bayesian belief networks is NP-hard. Artificial intelligence, 60(1), 141-153.
+
+Firpo, S., Fortin, N. M., & Lemieux, T. (2009). Unconditional quantile regressions. Econometrica, 77(3), 953-973.
+
+Koenker, R. (2017). Quantile regression: 40 years on. Annual review of economics, 9, 155-176.

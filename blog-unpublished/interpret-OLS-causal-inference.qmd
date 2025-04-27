@@ -1,0 +1,94 @@
+---
+title: "Interpreting OLS Estimates for Causal Inference"
+date: "2025-00-00"
+categories: [causal inference, linear model]
+---
+
+- use the model by Aronow and Samii but that’s asymptotically
+- Zubisaretta show a finite sample formula
+- Sloczynski focuses on heterogeneous. Show it briefly
+- Angrist focuses on saturated models. impossible with continuous X
+- OLS regressions do not implicitly assume PO framework
+
+## Background
+
+Ordinary Least Squares (OLS) regression is a staple in the toolkit of data scientists and statisticians. However, its application in causal inference, especially in observational studies, requires a nuanced understanding of its limitations and the implications of its estimates. In applied research, Ordinary Least Squares (OLS) is often the workhorse method for estimating causal effects from observational data. Its popularity comes from its simplicity and the appealing property that—when treatment effects are homogeneous—it recovers the average treatment effect (ATE) under standard assumptions. However, in practice, treatment effects are frequently heterogeneous. This heterogeneity means that the impact of a treatment can vary across individuals, and as a result, the standard OLS estimator does not simply estimate the ATE. Instead, it implicitly assigns weights to different subpopulations (e.g., the treated and the untreated), and these weights can be quite counterintuitive.
+
+Two recent papers help us understand this phenomenon in detail. Chattopadhyay and Zubizarreta (2022) focuses on deriving closed-form expressions for the implied weights of linear regression estimators. Their analysis shows how, even when treatment effects are homogeneous, the regression adjustment does not “treat” every observation equally—it rather targets a specific covariate profile that may differ from the sample average. On the other hand, Słoczyński (2022) takes a closer look at the scenario with heterogeneous treatment effects. He demonstrates that the OLS treatment coefficient is actually a convex combination of the average treatment effects on the treated (ATT) and the untreated (ATU), and, quite surprisingly, the weights assigned to these groups are inversely related to their sample proportions.
+
+This article aims to delve into the interpretation of OLS estimates for causal inference, focusing on the implied weights of linear regression and the impact of treatment effect heterogeneity. The goal of this article is to unpack these findings in detail, explain the underlying mathematical structure, and provide intuition for why OLS behaves the way it does in causal inference settings.
+
+## Notation
+
+Let’s start by setting up our notation in the familiar potential outcomes framework. Suppose we have a sample $\{ \,Y_i, D_i, X_i \} \,_{i=1}^n$, where:
+
+- $Y_i$ is the observed outcome for unit $i$
+- $Y_i(0), Y_i(1)$ are the potential outcomes for unit $i$ if in control and treatment, respectively.
+- $D_i$ indicates treatment ($D_i=1$ for treated units, and $D_i=0$ for controls)
+- $X_i$ is a vector of covariates
+
+The conventional OLS regression model is written as:
+
+  $$Y_i=\alpha + \tau D_i +X_i \beta + \epsilon_i,$$
+
+where $\epsilon$ is a mean-zero error term and $\tau$ is typically interpreted as the causal effect of the treatment.
+
+The key causal estimants (i.e., target parameters) are:
+
+- **Average Treatment Effect** (ATE): $E\left[Y(1)-Y(0)\right]$,
+- **Average Treatment Effect on the Treated** (ATT): $E\left[Y(1)-Y(0)\mid D=1 \right]$,
+- **Averate Treatment effect on the Control** (ATC): $E\left[Y(1)-Y(0) \mid D=0 \right]$.
+
+Lastly, it is common to introduce the propensity score $p(X)=E\left[D\mid X\right]$ or its best linear approximation, which plays a central role in understanding the weights that OLS assigns.
+
+## A Closer Look
+
+### Homogeneous Treatment Effects
+
+explore how linear regression adjustments in observational studies emulate key features of randomized experiments. The main focus is on Section 3, where they derive the implied weights of various linear regression estimators.
+
+The authors show that the OLS estimator of the ATE can be expressed as a difference of weighted means of the treated and control outcomes. Specifically, they provide closed-form expressions for the implied regression weights. For instance, the URI (uni-regression imputation) estimator of the ATE is given by:
+
+  $$\hat{\tau}_{\text{OLS}}=\sum_{i:D=1} w_i ^{\text{URI}}Y_i - \sum_{i:D=0} w_i^{\text{URI}}Y_i$$
+
+where the weights $w_i ^{\text{URI}}$ depend on the covariates and treatment indicators but not on the observed outcomes. This weighting representation shows that linear regression can be “fit” without the outcomes, aligning it with the design stage of an observational study.
+
+The paper also discusses the properties of these implied weights, such as covariate balance, representativeness, dispersion, and optimality. For example, the URI and MRI (multi-regression imputation) weights exactly balance the means of the covariates included in the model, ensuring that the regression adjustments emulate the covariate balance of a randomized experiment.
+
+### Heterogeneous Treatment Effects
+
+Słoczyński’s paper tackles the same question in the world of heterogeneous treatment effects. The key result is that the OLS treatment coefficient is a convex combination of the average treatment effects on the treated (ATT) and untreated (ATU), with weights inversely related to the proportion of observations in each group.
+
+The scenario becomes even more intricate when treatment effects vary across individuals. Słoczyński (2022) takes on this challenge by examining the causal interpretation of the OLS estimand when treatment effects are heterogeneous. He shows that the OLS treatment coefficient can be decomposed as a convex combination of two group-specific effects:
+
+Mathematically, the OLS estimand \tau can be expressed as:
+
+  $$\hat{\tau}_{\text{OLS}}=w_1 \times \text{ATT} + w_0 \times \text{ATC},$$
+
+where $w_1 = \frac{1}{1}=f(\rho, p(X))$ and $w_0 = 1 -w_1$.
+
+This result highlights that OLS places more weight on the group with fewer observations, which can lead to substantial biases when interpreting the OLS estimand as the ATE or ATT.
+
+Słoczyński provides diagnostic tools to detect these biases, emphasizing that OLS might often be substantially biased for ATE, ATT, or both. He suggests using alternative estimators or diagnostic methods to avoid potential biases in applied work.
+
+## Bottom Line
+
+- Linear regression remains among the most popular ways to estimate treatment effects in causal inference
+
+- It implicitly weights individual observations, which can be represented in closed-form expressions.
+
+- OLS estimates can be biased when treatment effects are heterogeneous, with smaller groups receiving larger weights.
+
+## References
+
+Angrist, J. D., & Krueger, A. B. (1999). Empirical strategies in labor economics. In Handbook of labor economics (Vol. 3, pp. 1277-1366). Elsevier.
+
+Angrist, J. D., & Pischke, J. S. (2009). Mostly harmless econometrics: An empiricist’s companion. Princeton university press.
+
+Aronow, P. M., & Samii, C. (2016). Does regression produce representative estimates of causal effects?. American Journal of Political Science, 60(1), 250-267.
+
+Chattopadhyay, A., & Zubizarreta, J. R. (2023). On the implied weights of linear regression for causal inference. Biometrika, 110(3), 615-629.
+
+Humphreys, M. (2009). Bounds on least squares estimates of causal effects in the presence of heterogeneous assignment probabilities. Manuscript, Columbia University.
+
+Słoczyński, T. (2022). Interpreting OLS estimands when treatment effects are heterogeneous: Smaller groups get larger weights. The Review of Economics and Statistics, 104(3), 501-509.

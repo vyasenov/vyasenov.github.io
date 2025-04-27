@@ -1,0 +1,73 @@
+---
+title: "Research"
+format: html
+---
+
+<style>
+  h2 + ul > li  {
+    margin-bottom: 1.5em; /* Adjust spacing as needed */
+  }
+</style>
+
+## Publications
+
+- “The Labor Market Effects of Mexican Repatriations: Longitudinal Evidence from the 1930s” (w/ JongKwan Lee and Giovanni Peri)
+    * [**Journal of Public Economics**](https://www.sciencedirect.com/science/article/abs/pii/S0047272721001948?dgcid=coauthor){target="_blank"} (2022) 25, 104558; [latest version](files/mexican_repat.pdf){target="_blank"}; [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/X1HW7O){target="_blank"}
+    * Media: [**The Washington Post**](https://www.washingtonpost.com/news/wonk/wp/2018/01/10/trump-wants-to-remove-these-immigrants-an-ugly-bit-of-history-tells-us-what-it-could-do-to-the-economy/){target="_blank"},[ **The New York Times**](https://www.nytimes.com/2017/10/24/business/economy/immigration-jobs.html){target="_blank"}, [**The Economist**](https://www.economist.com/united-states/2020/02/13/immigration-to-america-is-down-wages-are-up){target="_blank"}, [Bloomberg](https://www.bloomberg.com/opinion/articles/2017-10-05/mass-deportation-is-a-lose-lose-proposition){target="_blank"}, [This American Life](https://www.thisamericanlife.org/extras/we-deported-half-a-million-people-to-mexico-in-the-1930s-did-it-create-jobs){target="_blank"}, [The Guardian](https://www.theguardian.com/us-news/2024/dec/03/trump-mass-deportation-plan-1930s-repatriation-program){target="_blank"}, [Forbes](https://www.forbes.com/sites/stuartanderson/2024/12/05/trumps-plans-to-deport-immigrants-likely-to-harm-us-workers/){target="_blank"}
+    * _Summary_: A large-scale program of repatriating Mexicans and Mexican Americans during the Great Depression did not achieve its goal – more jobs for native workers.
+
+
+- “The Role of Labor Market Institutions in the Impact of Immigration on Wages and Employment” (w/ Mette Foged and Linea Hasager)
+    * [**Scandinavian Journal of Economics**](https://onlinelibrary.wiley.com/doi/10.1111/sjoe.12452){target="_blank"} (2022) 124(1), 164-213; [latest version](https://docs.iza.org/dp14158.pdf){target="_blank"}; [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/JUIDV0){target="_blank"}
+    * _Summary_: Labor market institutions may reduce the wage inequality effect of immigration while weakening the associated economic benefits.
+
+
+- “Does Halting Refugee Resettlement Reduce Crime? Evidence from the US Refugee Ban” (2020) (w/ Daniel Masterson)
+    * [**American Political Science Review**](https://www.cambridge.org/core/journals/american-political-science-review/article/does-halting-refugee-resettlement-reduce-crime-evidence-from-the-us-refugee-ban/E111764FC700841C5E5FD3FAA2A6BE8C){target="_blank"} (2021) 115(3), 1066-1073; [latest version](https://osf.io/preprints/socarxiv/w2x7p/){target="_blank"}; [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/KDOM7E){target="_blank"}; [appendix](https://static.cambridge.org/content/id/urn:cambridge.org:id:article:S0003055421000150/resource/name/S0003055421000150sup001.pdf){target="_blank"}
+    * Media: [**Bloomberg**](https://www.bloomberg.com/opinion/articles/2019-01-07/connection-between-rising-crime-and-refugees-doesn-t-exist){target="_blank"}, [The World Bank Blog](https://blogs.worldbank.org/impactevaluations/what-i-learned-looking-what-was-published-recently-top-journals-sociology-and?cid=SHR_BlogSiteShare_EN_EXT){target="_blank"}
+    * _Summary_: The refugee ban introduced by Trump in early 2017 did not lower local crime rates.  
+
+
+- “Association between Health Care Utilization and Immigration Enforcement Events in San Francisco” (w/ J. Hainmueller, M. Hotard, D. Lawrence, L. Gottlieb, and J. Torres)
+    * [**JAMA Network Open**](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2772733){target="_blank"} (2020) 3(11), e2025065-e2025065; [replication code](files/jama_no_ucsf_replication_code.zip){target="_blank"}; [appendix](files/jama_no_additional_appendix.pdf){target="_blank"}; [pre-analysis plan](https://osf.io/zhj3a){target="_blank"}
+    * _Summary_: Healthcare utilization among likely undocumented immigrants in San Francisco did not respond to local ICE raids or anti-immigration rhetoric and policies.
+
+
+- “Public Health Insurance Expansion for Immigrant Children and Interstate Migration of Low-income Immigrants” (w/ D. Lawrence, F. Mendoza, and J. Hainmueller)
+    * [**JAMA Pediatrics**](https://jamanetwork.com/journals/jamapediatrics/fullarticle/2755835){target="_blank"} (2020) Vol 174(1), pp22-28.; [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/H9HQVI){target="_blank"}
+    * Media: [**Vox**](https://www.vox.com/2019/11/18/20966793/study-public-health-insurance-states-welfare-magnet-medicaid-immigrant-stanford-yasenov){target="_blank"}, [**Reuters**](https://www.reuters.com/article/us-health-immigrants-idUSKBN1XS2JN){target="_blank"}, [Yahoo! News](https://news.yahoo.com/immigrants-dont-flock-states-expand-215946669.html){target="_blank"}
+    * _Summary_: Public health insurance expansion for recent immigrants did not lead to an increased interstate in-migration among eligible foreign-born.
+
+- “Standardizing the Fee-Waiver Application Increased Naturalization Rates of Low-Income Immigrants” (w/ M. Hotard, D. Lawrence, J. Hainmueller, and D. Laitin)
+    * [**PNAS**](https://www.pnas.org/doi/full/10.1073/pnas.1905904116){target="_blank"} Vol 116(34), pp16768-16772 (2019); [latest version](https://osf.io/acmdw/); [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PEETCY)
+    * Media: [**The Washington Post**](https://www.washingtonpost.com/politics/2020/04/07/trump-administration-is-raising-application-fee-us-citizenship-that-will-cost-us-later/){target="_blank"}, [Fortune](https://fortune.com/2019/11/08/us-citizenship-application-fee-uscis-waiver-lawsuit/){target="_blank"}
+    * _Summary_: Standardizing the fee waiver for citizenship applications raised naturalization rates among low-income immigrants.
+
+- “Does Schedule Irregularity Affect Productivity? Evidence from Random Assignment into College Classes” (w/ Lester Lusher and Phuc Luong)
+    * [**Labour Economics**](https://www.sciencedirect.com/science/article/abs/pii/S0927537119300600?via%3Dihub){target="_blank"} Vol 60, pp115-128 (2019); [latest version](files/sleep_consistency.pdf); [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/0ABDQU){target="_blank"}
+    * _Summary_: More volatile school start schedules throughout the week do not lead to lower college test scores.
+
+- “The Labor Market Effects of a Refugee Wave: Synthetic Control Method Meets the Mariel Boatlift” (w/ Giovanni Peri)
+    * [**Journal of Human Resources**](http://jhr.uwpress.org/content/54/2/267.short){target="_blank"}
+    * Media: [**The Wall Street Journal**](https://www.wsj.com/articles/the-great-mariel-boatlift-experiment-1497630468){target="_blank"}, [**The Economist**](https://www.economist.com/free-exchange/2017/06/12/a-new-paper-rekindles-a-tiresome-debate-on-immigration-and-wages){target="_blank"}, [**Vox**](https://www.vox.com/the-big-idea/2017/6/23/15855342/immigrants-wages-trump-economics-mariel-boatlift-hispanic-cuban){target="_blank"}, [**The Atlantic**](https://www.theatlantic.com/politics/archive/2016/01/the-great-immigration-data-debate/424230/){target="_blank"}, Bloomberg ([#1](https://www.bloomberg.com/opinion/articles/2017-06-16/immigrants-don-t-steal-from-americans-paychecks){target="_blank"}, [#2](https://www.bloomberg.com/opinion/articles/2015-12-18/an-immigrant-isn-t-going-to-steal-your-pay-raise)){target="_blank"}, [The Chicago Tribune](http://www.google.com/url?q=http%3A%2F%2Fwww.chicagotribune.com%2Fnews%2Fsns-wp-blm-immig-jobs-comment-df0629f6-a5a4-11e5-8318-bd8caed8c588-20151218-story.html&sa=D&sntz=1&usg=AOvVaw1jV9Sepfm26vDBDnrWVDG-){target="_blank"}, [CBS News](https://www.cbsnews.com/news/whats-immigrations-real-impact-on-us-wages/){target="_blank"}, Newsweek ([#1](https://www.newsweek.com/trumps-anti-immigration-policies-are-based-flawed-data-646476){target="_blank"}, [#2](https://www.newsweek.com/restricting-immigration-doesnt-help-blue-collar-jobless-776995)){target="_blank"}, [Business Insider](https://www.businessinsider.com/last-time-the-us-welcomed-refugees-2015-12){target="_blank"}, [Yahoo! Finance](https://finance.yahoo.com/news/heres-happened-last-time-us-163436187.html){target="_blank"}
+    * _Summary_: The Mariel Boatlift of 1980 did not result in large, statistically detectable wage or employment changes among low-skilled Miamians.
+
+- “Gender Performance Gaps: Quasi-Experimental Evidence on the Role of Gender Differences in Sleep Cycles” (w/ Lester Lusher)
+    * [**Economic Inquiry**](https://onlinelibrary.wiley.com/doi/10.1111/ecin.12483){target="_blank"} Vol 56(1), pp252-262 (2018); [latest version](files/late_start_gender_gap.pdf){target="_blank"}; [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/ACLJJZ){target="_blank"}
+    * Media: [**The Washington Post**](https://www.washingtonpost.com/news/wonk/wp/2016/08/05/how-sleep-holds-back-boys/){target="_blank"}, [The Independent](https://www.independent.co.uk/news/education/girls-do-better-than-boys-at-school-because-they-re-morning-people-study-suggests-a7181511.html){target="_blank"}
+    * _Summary_: Girls benefit from earlier school start times relative to boys, partially contributing to the observed gender performance gap.
+
+- “Double-Shift Schooling and Student Success: Quasi-experimental Evidence from Europe” (w/ Lester Lusher)
+    * [**Economics Letters**](https://www.sciencedirect.com/science/article/abs/pii/S0165176515005182?via%3Dihub){target="_blank"} Vol.139, pp36-39 (2016); [latest version](files/late_start.pdf){target="_blank"}; [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6AYLVO){target="_blank"}
+    * _Summary_: Students achieve slightly higher grades when taking classes in the morning compared to the afternoon.
+
+## Working Papers
+ 
+ - "Who Can Work from Home?' (2020)
+ * [IZA WP No. 13197](https://www.iza.org/en/publications/dp/13197/imprint); [replication package](https://github.com/vyasenov/who-can-work-from-home).
+
+## Non-Academic Publications
+
+- “Immigration in Local US Economies was Associated with Strong Native Wage Growth for 40 Years” (w/ Giovanni Peri) [Global Migration Center](https://globalmigration.ucdavis.edu/immigration-local-us-economies-was-associated-strong-native-wage-growth-40-years){target="_blank"} (UC Davis) 03/2020
+
+- “New Evidence on Immigration and Jobs” (w/ Giovanni Peri) [The Wall Street Journal](https://www.wsj.com/articles/new-evidence-on-immigrants-and-jobs-1453162462){target="_blank"}, 01/2016
