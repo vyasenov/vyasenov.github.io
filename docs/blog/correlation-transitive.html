@@ -377,7 +377,8 @@ window.Quarto = {
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#an-extremely-simple-example" id="toc-an-extremely-simple-example" class="nav-link" data-scroll-target="#an-extremely-simple-example">An (Extremely Simple) Example</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#example-city-lifestyle" id="toc-example-city-lifestyle" class="nav-link" data-scroll-target="#example-city-lifestyle">Example: City Lifestyle</a></li>
   </ul></li>
   <li><a href="#when-is-correlation-transitive" id="toc-when-is-correlation-transitive" class="nav-link" data-scroll-target="#when-is-correlation-transitive">When <em>Is</em> Correlation Transitive</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -439,9 +440,15 @@ window.Quarto = {
 <p>For instance, if we set <span class="math inline">\(cor(X,Y)=cor(Z,Y)=0.6\)</span>, then we get:</p>
 <p><span class="math display">\[-.28 \leq cor(X,Z) \leq 1.\]</span></p>
 <p>That is, <span class="math inline">\(cor(X,Z)\)</span> can be negative.</p>
-<section id="an-extremely-simple-example" class="level3">
-<h3 class="anchored" data-anchor-id="an-extremely-simple-example">An (Extremely Simple) Example</h3>
-<p>Perhaps the simplest example to illustrate this is:</p>
+<section id="examples" class="level3">
+<h3 class="anchored" data-anchor-id="examples">Examples</h3>
+</section>
+<section id="example-city-lifestyle" class="level3">
+<h3 class="anchored" data-anchor-id="example-city-lifestyle">Example: City Lifestyle</h3>
+<p>Let’s go through three examples of non-transitive correlations.</p>
+<p>Let <span class="math inline">\(X\)</span> represent the number of hours a person spends commuting daily in a city, <span class="math inline">\(Y\)</span> represent their monthly public transit expenses, and <span class="math inline">\(Z\)</span> represent their daily step count. <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are correlated because longer commutes (<span class="math inline">\(X\)</span>) typically involve more frequent or longer public transit use, increasing transit expenses (<span class="math inline">\(Y\)</span>). Similarly, <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> are correlated since longer commutes (<span class="math inline">\(X\)</span>) often involve more walking to and from transit stops, boosting step count (<span class="math inline">\(Z\)</span>). However, <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> are not correlated because transit expenses (<span class="math inline">\(Y\)</span>) depend on fare structures and trip frequency, while step count (<span class="math inline">\(Z\)</span>) is influenced by walking habits unrelated to cost, such as choosing to walk shorter distances or using different transit routes, resulting in no direct relationship between the two.</p>
+<p>Consider <span class="math inline">\(X\)</span> as the number of hours a person exercises per week, <span class="math inline">\(Y\)</span> as their muscle mass, and <span class="math inline">\(Z\)</span> as their resting heart rate. <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are correlated because more exercise (<span class="math inline">\(X\)</span>) typically increases muscle mass (<span class="math inline">\(Y\)</span>). Likewise, <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> are correlated since regular exercise (<span class="math inline">\(X\)</span>) tends to lower resting heart rate (<span class="math inline">\(Z\)</span>). However, <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> are not correlated because muscle mass (<span class="math inline">\(Y\)</span>) and resting heart rate (<span class="math inline">\(Z\)</span>) are influenced by different physiological mechanisms—muscle mass depends on strength training, while heart rate is more tied to cardiovascular fitness—and thus show no direct relationship.</p>
+<p>Perhaps the simplest example to illustrate this mathematically is:</p>
 <ul>
 <li><span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> are independent random variables,</li>
 <li><span class="math inline">\(Y=X+Z\)</span>. The result follows.</li>
