@@ -151,7 +151,7 @@ Papies, D., Ebbes, P., & Van Heerde, H. J. (2017). Addressing endogeneity in mar
 
 Park, S., & Gupta, S. (2012). Handling endogenous regressors by joint estimation using copulas. Marketing Science, 31(4), 567-586.
 
-Rigobon, R. (2003). Identification through heteroskedasticity. Review of Economics and Statistics, 85(4), 777-792.
+Rigobon, R. (2003). Identification through heteroskedasticity. Review of Economics a  nd Statistics, 85(4), 777-792.
 
 Qian, Y., Koschmann, A., & Xie, H. (2024). A Practical Guide to Endogeneity Correction Using Copulas (No. w32231). National Bureau of Economic Research.
 

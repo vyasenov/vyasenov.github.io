@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "Athey",
+        "binscatter",
         "bivariate",
         "Bonferroni",
         "counterfactuals",
@@ -20,6 +21,7 @@
         "Imbens",
         "Interpretability",
         "misspecification",
+        "Misspecified",
         "Neyman",
         "overfit",
         "overfitting",

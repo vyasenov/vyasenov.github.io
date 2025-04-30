@@ -44,9 +44,14 @@ format:
     theme: 
       light: cosmo
       dark: cyborg
-    css: code/styles.css
+    css: 
+      - code/styles.css
+    header-includes: <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&product=inline-share-buttons' async='async'></script>
     toc: true
     page-layout: full
+    includes: 
+      after-body: 
+        - _includes/comments.html
     include-in-header:
       - text: |
           <script src="../code/open-links-new-tab.js"></script>

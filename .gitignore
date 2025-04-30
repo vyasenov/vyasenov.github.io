@@ -1,8 +1,11 @@
 # Quarto cache folders
 .quarto/
+.vscode/
 
 # Site output (if using _site instead of docs/)
 _site/
+_extensions/
+_templates/
 
 # Mac system file
 .DS_Store
@@ -12,4 +15,5 @@ _drafts/
 
 # prompt files
 prompts.txt
+
 /.quarto/

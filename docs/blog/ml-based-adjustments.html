@@ -72,6 +72,7 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 <script src="../code/open-links-new-tab.js"></script>
+<script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&amp;product=inline-share-buttons" async="async"></script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -384,6 +385,10 @@ window.Quarto = {
 </header>
 
 
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>Randomized experiments are the gold standard when interested in measuring causal relationships with data. In settings with small treatment effects or underpowered designs, a major focus falls on decreasing the variance. In simple low-dimensional settings a common attempt to do that is to include a bunch of covariates and their interaction with the treatment variable in an OLS regression. Under <a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-7/issue-1/Agnostic-notes-on-regression-adjustments-to-experimental-data--Reexamining/10.1214/12-AOAS583.full">standard assumptions</a>, the coefficient on the treatment variable is still asymptotically unbiased (albeit not in finite samples) and including the interactions guarantees that this estimator does not have higher asymptotic variance than the simple difference-in-means.</p>

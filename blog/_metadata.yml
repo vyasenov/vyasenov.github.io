@@ -1,0 +1,5 @@
+# this is for social media sharing buttons
+
+filters:
+  - code-insertion
+insert-before-post: _sharebuttons.md
