@@ -53,4 +53,4 @@ format:
         - _includes/comments.html
     include-in-header:
       - text: |
-          <script src="../code/open-links-new-tab.js"></script>
+          <script src="../code/open-links-new-tab.js"></script>   
