@@ -82,8 +82,18 @@ This expression highlights a fundamental characteristic of nonparametric methods
 
 Let’s illustrate bandwidth selection with a simple example.
 
+::: {.panel-tabset}
+
+### R
+
 ```r
+# clear workspace
+rm(list=ls())
+
+# load data
 require(graphics)
+
+# plot
 with(cars, {
     plot(speed, dist)
     lines(ksmooth(speed, dist, "normal", bandwidth = 2), col = 2)
@@ -91,6 +101,49 @@ with(cars, {
     lines(ksmooth(speed, dist, "normal", bandwidth = 10), col = 4)
 })
 ```
+
+### Python
+
+```python
+# same idea, but with the iris dataset
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from statsmodels.nonparametric.kernel_regression import KernelReg
+
+# Load iris dataset
+iris = load_iris()
+df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+
+# Choose two continuous variables
+x = df['sepal length (cm)'].values
+y = df['petal length (cm)'].values
+
+# Define a function to plot kernel smoothed lines with varying bandwidths
+def plot_kernel_smoothing(x, y, bandwidths):
+    plt.figure(figsize=(8, 6))
+    plt.scatter(x, y, alpha=0.5, label='Data', color='black')
+
+    x_grid = np.linspace(x.min(), x.max(), 200)
+    
+    colors = ['red', 'green', 'blue']
+    for bw, color in zip(bandwidths, colors):
+        kr = KernelReg(endog=[y], exog=[x], var_type='c', bw=[bw])
+        mean, _ = kr.fit(x_grid)
+        plt.plot(x_grid, mean, label=f'bandwidth={bw}', color=color)
+
+    plt.xlabel('Sepal Length (cm)')
+    plt.ylabel('Petal Length (cm)')
+    plt.title('Kernel Smoothing with Varying Bandwidths')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+# Call function with different bandwidths
+plot_kernel_smoothing(x, y, bandwidths=[0.2, 0.5, 1.0])
+```
+:::
 
 This yields a simplified version of the following figure:
 

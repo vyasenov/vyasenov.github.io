@@ -10,13 +10,13 @@ format: html
 </a>
 
 <div class="btn-group mt-3" role="group" aria-label="Book links">
-  <a class="btn" href="files/ci-toddlers-eng-reduced.pdf" download target="_blank" style="background-color: rgb(39, 180, 95); color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
+  <a class="btn" href="files/ci-toddlers-eng-reduced.pdf" download target="_blank" style="background-color: #007bff; color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
     English (pdf)
   </a>
-  <a class="btn" href="files/ci-toddlers-bg-reduced.pdf" download target="_blank" style="background-color:rgb(39, 180, 95); color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
+  <a class="btn" href="files/ci-toddlers-bg-reduced.pdf" download target="_blank" style="background-color:#007bff; color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
     Български (pdf)
   </a>
-  <a class="btn" href="https://www.amazon.com/dp/B0BLG6SWZJ?ref_=pe_3052080_397514860" download target="_blank" style="background-color:rgb(39, 180, 95); color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
+  <a class="btn" href="https://www.amazon.com/dp/B0BLG6SWZJ?ref_=pe_3052080_397514860" download target="_blank" style="background-color: #007bff; color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
     Amazon (paperback)
   </a>
 </div>

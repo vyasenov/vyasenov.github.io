@@ -505,5 +505,11 @@
   },
   "blog-unpublished/interpret-OLS-causal-inference.qmd": {
     "interpret-OLS-causal-inference.html": "dfa7ff85"
+  },
+  "blog/diff-causal-predictive-models.qmd": {
+    "diff-causal-predictive-models.html": "88246be3"
+  },
+  "blog/ci-residualized-reg.qmd": {
+    "ci-residualized-reg.html": "7e729c8f"
   }
 }

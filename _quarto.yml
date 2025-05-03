@@ -8,7 +8,7 @@ website:
   description: "Personal Site of Vasco Yasenov"
   navbar:
     right:
-      - text: About
+      - text: About Me
         href: about.qmd
       - text: CV
         href: cv.qmd        
@@ -37,6 +37,7 @@ website:
 
 resources:
   - ../code/open-links-new-tab.js
+  - ../code/back-to-top.js
 
 format:
   html:
@@ -45,12 +46,15 @@ format:
       dark: cyborg
     css: 
       - code/styles.css
-    header-includes: <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&product=inline-share-buttons' async='async'></script>
+    header-includes: |
+      <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&product=inline-share-buttons' async='async'></script>
+      <script src="../code/open-links-new-tab.js"></script>  
+      <script src="../code/back-to-top.js"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Source+Code+Pro&display=swap" rel="stylesheet">
     toc: true
     page-layout: full
     includes: 
       after-body: 
-        - _includes/comments.html
-    include-in-header:
-      - text: |
-          <script src="../code/open-links-new-tab.js"></script>   
+        - ../_includes/comments.html
+        - text: |
+            <button id="back-to-top" onclick="scrollToTop()">↑</button>

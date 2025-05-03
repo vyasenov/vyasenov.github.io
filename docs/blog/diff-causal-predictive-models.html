@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-04-12">
+<meta name="dcterms.date" content="2025-04-30">
 
-<title>Nonlinear Correlations and Chatterjee’s Coefficient – Vasco Yasenov</title>
+<title>Causal vs.&nbsp;Predictive Modeling: Subtle, but Crucial Differences – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,41 +20,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -380,12 +345,12 @@ window.Quarto = {
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#linear-relationships" id="toc-linear-relationships" class="nav-link" data-scroll-target="#linear-relationships">Linear Relationships</a></li>
-  <li><a href="#monotone-relationships" id="toc-monotone-relationships" class="nav-link" data-scroll-target="#monotone-relationships">Monotone Relationships</a></li>
-  <li><a href="#more-general-relationships" id="toc-more-general-relationships" class="nav-link" data-scroll-target="#more-general-relationships">More General Relationships</a></li>
+  <li><a href="#predictive-modeling-just-give-me-accuracy" id="toc-predictive-modeling-just-give-me-accuracy" class="nav-link" data-scroll-target="#predictive-modeling-just-give-me-accuracy">Predictive Modeling: Just Give Me Accuracy</a></li>
+  <li><a href="#causal-modeling-think-harder-control-smarter" id="toc-causal-modeling-think-harder-control-smarter" class="nav-link" data-scroll-target="#causal-modeling-think-harder-control-smarter">Causal Modeling: Think Harder, Control Smarter</a></li>
+  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
+  <li><a href="#propensity-scores-where-predictive-and-causal-worlds-collide" id="toc-propensity-scores-where-predictive-and-causal-worlds-collide" class="nav-link" data-scroll-target="#propensity-scores-where-predictive-and-causal-worlds-collide">Propensity Scores: Where Predictive and Causal Worlds Collide</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
-  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -396,9 +361,10 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Nonlinear Correlations and Chatterjee’s Coefficient</h1>
+<h1 class="title">Causal vs.&nbsp;Predictive Modeling: Subtle, but Crucial Differences</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">correlation</div>
+    <div class="quarto-category">causality</div>
+    <div class="quarto-category">machine learning</div>
   </div>
   </div>
 
@@ -410,7 +376,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 12, 2024</p>
+      <p class="date">April 30, 2025</p>
     </div>
   </div>
   
@@ -428,150 +394,67 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Much of data science is concerned with learning about the relationships between different variables. The most basic tool to quantify relationship strength is the correlation coefficient. In 2021 Sourav Chatterjee of Stanford <a href="http://tandfonline.com/doi/abs/10.1080/01621459.2020.1758115">published a paper</a> outlining a novel correlation coefficient which has ignited many discussions in the statistics community.</p>
-<p>In this article I will go over the basics of Chatterjee’s correlation measure. Before we get there, let’s first review some of the more traditional approaches in assessing bivariate relationship strength.</p>
-<p>For simplicity, let’s assume away ties. Let’s also set hypothesis testing aside. All test statistics I describe below have well-established asymptotic theory for hypothesis testing and calculating p-values. Thus, we can gauge not only the strength of the relationship between the variables but also the uncertainty associated with that measurement and whether or not it is statistically significant.</p>
+<p>It’s one of the most common mix-ups I see among data scientists—especially those coming from a machine learning background: confusing causal modeling with predictive modeling. On the surface, they look similar. You build a model, you include some variables, you fit it, and then you do… something with the results. But under the hood, these two approaches serve fundamentally different goals and require very different mindsets.</p>
+<p>Predictive modeling is about building a model that can forecast outcomes. Causal modeling is about understanding how the world works. And mixing them up can lead to some really bad decisions—like launching a product based on a spurious correlation or controlling for the wrong variables and wiping out your treatment effect.</p>
+<p>This post is for all the data scientists who’ve ever wondered any of the following: - “Why can’t I just throw everything into my causal model like I do with my random forest?” - “This causal model is great. Can’t we just use it for prediction as well?” - “What exactly is the difference between the two?”</p>
+<p>Let’s unpack it.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="linear-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="linear-relationships">Linear Relationships</h3>
-<p>When we simply say “correlation” we refer to the so-called Pearson correlation coefficient. Virtually everyone working with data is familiar with it. Given a random sample <span class="math inline">\((X_1,Y_1),\dots,(X_n, Y_n)\)</span> of two random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> it is computed by:</p>
-<p><span class="math display">\[corr^{P}(X,Y) = \frac{ \sum_i(x_i - \bar{x})(y_i - \bar{y})} {\sqrt{\sum_i(x_i - \bar{x})^2}\sqrt{\sum_i(y_i - \bar{y})^2}},\]</span></p>
-<p>where an upper bar denotes a sample mean.</p>
-<p>This coefficient lives in the <span class="math inline">\([-1,1]\)</span> interval. Larger values indicate stronger relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, be it positive or negative. At the extreme, the Pearson coefficient will equal <span class="math inline">\(1\)</span> when all observations can be perfectly lined up on a upward sloping line. Yes, you guessed it – when it equals <span class="math inline">\(-1\)</span> the line is sloping down.</p>
-<p>You can easily calculate the Pearson correlation in <code>R</code> and <code>python</code>:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y, <span class="at">method =</span> <span class="st">'pearson'</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(x,y, <span class="at">method =</span> <span class="st">'pearson'</span>, <span class="at">alternative=</span><span class="st">'two.sided'</span>).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> pearsonr</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pearson_corr, pearson_pval <span class="op">=</span> pearsonr(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p>This measure, while widely popular, suffers from a few shortcomings. First, outliers have an outsized impact in skewing its value. Sample means vulnerable to outliers are a key ingredient in the calculation, rendering the measure sensitive to data anomalies. Second, it is designed to detect only linear relationships. Two variables might have a strong but non-linear relationship which this measure will not detect. Lastly, it is not transformation-invariant, meaning that applying a monotone transformation to either of the variables will change the correlation value.</p>
-<p>Let’s discuss some improvements to the Pearson correlation measure. Enter Spearman correlation.</p>
+<section id="predictive-modeling-just-give-me-accuracy" class="level3">
+<h3 class="anchored" data-anchor-id="predictive-modeling-just-give-me-accuracy">Predictive Modeling: Just Give Me Accuracy</h3>
+<p>Let’s start with what more folks are familiar with: predictive models.</p>
+<p>In predictive modeling, you’re judged by how well you can forecast an outcome, <span class="math inline">\(Y\)</span>. That’s it. You can (and often do) throw in everything and the kitchen sink—lagged outcomes, future values of other variables (careful though!), variables that are correlated with the outcome but not necessarily meaningful in a causal sense.</p>
+<p>It’s all good <em>as long as</em> it helps you reduce Root Mean Squared Error (RMSE), increase Area Under the Curve (AUC), or minimize cross-entropy loss. Data leakage is your main enemy, but otherwise, the bar for “what goes in the model” is pretty low. Setting data leakage and interpretation aside, just throw anything you have in there. You can often get away with building a decent model without deep institutional or context knowledge. The complex algorithms take care of that for you.</p>
+<p>No one cares <em>why</em> your model works, only that it does.</p>
 </section>
-<section id="monotone-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="monotone-relationships">Monotone Relationships</h3>
-<p>Spearman correlation is the Pearson correlation among the ranks of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>:</p>
-<p><span class="math display">\[corr^{S}(X,Y) = corr^{P}(R(X),R(Y)),\]</span></p>
-<p>where <span class="math inline">\(R(\cdot)\)</span> denotes an observation’s rank (or order) in the sample.</p>
-<p>Spearman correlation is thus a rank correlation measure. As such, it quantifies how well the relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> can be described using a monotone (and not necessarily a linear) function. It is therefore a more flexible measure of association. Again, intuitively, Spearman correlation will take on a large positive value when the <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> observations have similar ranks. This value will be negative when the ranks tend to go in opposite directions.</p>
-<p>Spearman correlation addresses some of the shortcomings associated with Pearson correlation. It is not easily influenced by outliers, and it does not change if we apply a monotone transformation of <span class="math inline">\(X\)</span> and/or <span class="math inline">\(Y\)</span>. These benefits come at the expense of a loss in interpretation and potential issues when tied ranks are common, a scenario I ignore here.</p>
-<p>Calculating it is just as simple:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y, <span class="at">method =</span> <span class="st">'pearson'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(x,y, <span class="at">method =</span> <span class="st">'spearman'</span>, <span class="at">alternative=</span><span class="st">'two.sided'</span>).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> spearmanr</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>spearman_corr, spearman_pval <span class="op">=</span> spearmanr(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p>Spearman correlation is not the only rank correlation coefficient out there. А popular alternative is the Kendall rank coefficient which is computed slightly differently. Let’s define a pair of observations <span class="math inline">\((X_i, Y_i)\)</span> and <span class="math inline">\((X_j, Y_j)\)</span> to be agreeing (the technical term is concordant) if the differences <span class="math inline">\((X_i - X_j)\)</span> and <span class="math inline">\((Y_i - Y_j)\)</span> have the same sign (i.e., either both <span class="math inline">\(X_i &gt; X_j\)</span> and $Y_i &gt; Y_j $or both <span class="math inline">\(X_i &lt; X_j\)</span> and <span class="math inline">\(Y_i &lt; Y_j\)</span> ).</p>
-<p>Then, Kendall’s coefficient is expressed as:</p>
-<p><span class="math display">\[corr^{K} = \frac{\text{number of agreeing pairs} - \text{number of disagreeing pairs}} {\text{total number of pairs}}.\]</span></p>
-<p>So, it quantifies the degree of agreement between the ranks of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. Like the other coeffients described above, its range is <span class="math inline">\([-1, 1]\)</span> and values away from zero indicate stronger relationship.</p>
-<p>Again, this coefficient is similarly computed in <code>R</code> and <code>python</code>:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y, <span class="at">method =</span> <span class="st">'kendall'</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(x,y, <span class="at">method =</span> <span class="st">'spearman'</span>, <span class="at">alternative=</span><span class="st">'two.sided'</span>).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> pearsonr, spearmanr, kendalltau</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>kendall_corr, kendall_pval <span class="op">=</span> kendalltau(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p>Kendall’s measure improves on some of the shortcomings baked in the Spearman’s coefficients – it has a clearer interpretation and it is less sensitive to rank ties.</p>
-<p>However, none of these rank correlation coefficients can detect non-monotonic relationships. For instance, <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> can have a parabola- or wave-like pattern when plotted against each other. We would like a correlation measure flexible enough to capture such non-linear relationships.</p>
-<p>This is where Chatterjee’s coefficient comes in.</p>
+<section id="causal-modeling-think-harder-control-smarter" class="level3">
+<h3 class="anchored" data-anchor-id="causal-modeling-think-harder-control-smarter">Causal Modeling: Think Harder, Control Smarter</h3>
+<p>Now, enter the world of causal inference. The rules are completely different.</p>
+<p>In causal modeling, the goal is not prediction, but isolation of the effect of a treatment (<span class="math inline">\(T\)</span>) on <span class="math inline">\(Y\)</span>. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here’s the catch: <strong>not all variables should be controlled for</strong>.</p>
+<p>This is where the concept of <strong>bad controls</strong> comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.</p>
+<p>In other words, in causal inference:</p>
+<ul>
+<li>Including the wrong variable can make things worse.</li>
+<li>You must think hard about the causal structure of your data.</li>
+<li>Domain knowledge is critical.</li>
+</ul>
+<p>Throwing in “everything” like in a predictive model? That can completely destroy your estimate. Furthermore, in causal inference you can almost never get away without deep knowledge of the environment, intervention, etc. Thus, in many ways causality is significantly more challenging than prediction.</p>
 </section>
-<section id="more-general-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="more-general-relationships">More General Relationships</h3>
-<p>Chatterjee recently proposed <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.2020.1758115">a new correlation coefficient</a> designed to detect non-monotonic relationships. He discovered a novel estimator of a population quantity first proposed by <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-9469.2011.00767.x">Dette et al.&nbsp;(2013)</a>.</p>
-<p>Let’s start with the formula. The Chatterjee correlation coefficient is calculated as follows:</p>
-<p><span class="math display">\[corr^{C}(X,Y) = 1-\frac{3\sum_{i=1}^{n-1}|R(Y_{k:R(X_k)=i+1}) - R(Y_{k:R(X_k)=i})|}{n^2-1},\]</span></p>
-<p>where n is the sample size. This looks complicated, so let’s try to simplify the numerator. Let’s sort the data in an ascending order of <span class="math inline">\(X\)</span> so that we have <span class="math inline">\((X_{(1)}, Y_{(1)}), \dots, (X_{(n)}, Y_{(n)})\)</span>, where <span class="math inline">\(X_{(1)}&lt;X_{(2)}&lt;\dots &lt;X_{(n)}\)</span>. Also, denote <span class="math inline">\(R(Y_i)\)</span> be the rank of <span class="math inline">\(Y_{(i)}\)</span>. Then:</p>
-<p><span class="math display">\[corr^{C}(X,Y) = 1 - \frac{3\sum_{i=1}^{n-1}|R(Y_{i+1})-R(Y_i)|}{n^2-1}.\]</span></p>
-<p>So, this new coefficient is a scaled version of the sum of the absolute differences in the consecutive ranks of <span class="math inline">\(Y\)</span> when ordered by <span class="math inline">\(X\)</span>. It is perhaps best to think about Chatterjee’s method as a measure of dependence and not strictly a correlation coefficient.</p>
-<p>There are some major difference compared to the previous correlation measures. Chatterjee’s correlation coefficient lies in the <span class="math inline">\([0,1]\)</span> interval. It is equal to zero if and only if <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent and to one if one of them is a function of the other. Unlike the coefficients described above, it is not symmetric in <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, meaning <span class="math inline">\(corr^{C}(X,Y) \neq corr^{C}(Y,X)\)</span>. This is understandable since we are interested in whether <span class="math inline">\(X\)</span> is a function of <span class="math inline">\(Y\)</span>, which does not imply the opposite. The author also develops asymptotic theory for calculating p-values although some researchers have <a href="https://academic.oup.com/biomet/article-abstract/109/2/317/6259083">raised concerns</a> about the coefficient’s power.</p>
-<p>Here is a sample code to calculate its value:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n) </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">*</span> <span class="fu">sin</span>(x) <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>R <span class="ot">&lt;-</span> <span class="fu">rank</span>(data<span class="sc">$</span>y)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data[<span class="fu">order</span>(data<span class="sc">$</span>x), ]</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">abs</span>(<span class="fu">diff</span>(data<span class="sc">$</span>R))) <span class="sc">/</span> (n<span class="sc">^</span><span class="dv">2-1</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>[<span class="dv">1</span>] <span class="fl">0.4093024</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.uniform(size<span class="op">=</span>n)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">5</span> <span class="op">*</span> np.sin(x) <span class="op">+</span> np.random.normal(size<span class="op">=</span>n)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> np.array(<span class="bu">sorted</span>(<span class="bu">zip</span>(x, y), key<span class="op">=</span><span class="kw">lambda</span> pair: pair[<span class="dv">0</span>]))</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>ranks <span class="op">=</span> np.argsort(np.argsort(data[:, <span class="dv">1</span>]))  <span class="co"># Rank of y</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>chatterjee_corr <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> <span class="dv">3</span> <span class="op">*</span> np.<span class="bu">sum</span>(np.<span class="bu">abs</span>(np.diff(ranks))) <span class="op">/</span> (n<span class="op">**</span><span class="dv">2</span> <span class="op">-</span> <span class="dv">1</span>)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Chatterjee's correlation: </span><span class="sc">{</span>chatterjee_corr<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Chatterjee<span class="st">'s correlation: 0.4050</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p><em>Software Package</em>: <a href="https://www.rdocumentation.org/packages/XICOR/versions/0.4.1">XICOR</a>.</p>
-<p>There you have it. You are now well-equipped to dive deeper into your datasets and find new exciting relationships.</p>
+<section id="an-example" class="level3">
+<h3 class="anchored" data-anchor-id="an-example">An Example</h3>
+<p>The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success (<span class="math inline">\(Y\)</span>), and we find that hard work (<span class="math inline">\(T\)</span>) has a causal effect on academic achievement. This means that if we were to increase a given student’s effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about <strong>what will happen if we intervene</strong> (i.e., if we manipulate <span class="math inline">\(T\)</span>). Intervene is the key word here.</p>
+<p>However, this doesn’t necessarily help us predict with high accuracy which students will be most successful. Here’s the <a href="https://vyasenov.github.io/blog/causation-without-correlation.html">crazy thing</a> - in observational data, student success and effort might not even be correlated! For that task, other variables—like parental income (<span class="math inline">\(X_1\)</span>), neighborhood quality (<span class="math inline">\(X_2\)</span>), or prior test scores (<span class="math inline">\(X_3\)</span>)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.</p>
+</section>
+<section id="propensity-scores-where-predictive-and-causal-worlds-collide" class="level3">
+<h3 class="anchored" data-anchor-id="propensity-scores-where-predictive-and-causal-worlds-collide">Propensity Scores: Where Predictive and Causal Worlds Collide</h3>
+<p>One place where this confusion often plays out is in propensity score modeling.</p>
+<p>To recap, the propensity score <span class="math inline">\(e(X) = P(T = 1 \mid X)\)</span> is the probability of receiving treatment given covariates. It’s often estimated via a logistic regression or ML model. Then, you use this score to adjust for differences between treated and control groups (e.g., via weighting or matching).</p>
+<p>And here’s the key point: <strong>your goal is not to get the best prediction of treatment.</strong> Your goal is to use the propensity score to balance covariates between groups. That’s it.</p>
+<p>So even if a fancy <code>XGBoost</code> model gives you higher prediction accuracy, it may overfit or fail to achieve covariate balance—which defeats the purpose. In fact, some of the best-performing PS models (for causal purposes) may have terrible predictive accuracy but excel at achieving balance.</p>
+<p>There’s a trade-off here:</p>
+<ul>
+<li>Predictive ML models focus on minimizing error.</li>
+<li>Propensity score models should optimize <strong>covariate balance</strong>.</li>
+</ul>
+<p>And that trade-off is why a more accurate model is not necessarily better for causal inference.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li><p>There are numerous ways of measuring association between two variables.</p></li>
-<li><p>The most common methods measure only linear or monotonic relationships. These are often useful but do not capture more complex, non-linear associations.</p></li>
-<li><p>A new correlation measure, Chatterjee’s coefficient, is designed to go beyond monotonicity and assess more general bivariate relationships.</p></li>
+<li><p>Predictive models are about forecasting outcomes; causal models are about estimating effects.</p></li>
+<li><p>In causal inference, you must think carefully about what to include in the model—“bad controls” can bias results.</p></li>
+<li><p>Propensity scores should be judged by how well they balance covariates, not by how well they predict treatment.</p></li>
+<li><p>More context and domain knowledge is usually required for causal models than for predictive ones.</p></li>
 </ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Wikipedia has detailed entries on correlation, rank correlation, and Kendall’s coefficient which I found helpful. The R bloggers platform has articles exploring the Chatterjee’s correlation coefficient in detail. The more technically oriented folks will find Chatterjee’s original paper helpful.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Chatterjee, S. (2021). A new coefficient of correlation. Journal of the American Statistical Association, 116(536), 2009-2022.</p>
-<p>Dette, H., Siburg, K. F., &amp; Stoimenov, P. A. (2013). A Copula‐Based Non‐parametric Measure of Regression Dependence. Scandinavian Journal of Statistics, 40(1), 21-41.</p>
-<p>Shi, H., Drton, M., &amp; Han, F. (2022). On the power of Chatterjee’s rank correlation. Biometrika, 109(2), 317-333.</p>
-<p>https://www.r-bloggers.com/2021/12/exploring-the-xi-correlation-coefficient/</p>
+<p>Hernán, M. A., &amp; Robins, J. M. (2020). <em>Causal Inference: What If</em>.</p>
+<p>Cunningham, S. (2021). <em>Causal Inference: The Mixtape</em>.</p>
+<p>Angrist, J. D., &amp; Pischke, J.-S. (2009). <em>Mostly Harmless Econometrics</em>.</p>
+<p>Pearl, J., &amp; Mackenzie, D. (2018). <em>The Book of Why: The New Science of Cause and Effect</em>.</p>
 
 
 </section>

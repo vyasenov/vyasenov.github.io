@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-04-12">
+<meta name="dcterms.date" content="2025-05-01">
 
-<title>Nonlinear Correlations and Chatterjee’s Coefficient – Vasco Yasenov</title>
+<title>Causal Inference with Residualized Regressions – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -378,14 +378,17 @@ window.Quarto = {
    
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#linear-relationships" id="toc-linear-relationships" class="nav-link" data-scroll-target="#linear-relationships">Linear Relationships</a></li>
-  <li><a href="#monotone-relationships" id="toc-monotone-relationships" class="nav-link" data-scroll-target="#monotone-relationships">Monotone Relationships</a></li>
-  <li><a href="#more-general-relationships" id="toc-more-general-relationships" class="nav-link" data-scroll-target="#more-general-relationships">More General Relationships</a></li>
+  <li><a href="#the-fwl-theorem" id="toc-the-fwl-theorem" class="nav-link" data-scroll-target="#the-fwl-theorem">The FWL Theorem</a></li>
+  <li><a href="#intuition" id="toc-intuition" class="nav-link" data-scroll-target="#intuition">Intuition</a></li>
+  <li><a href="#geometric-interpretation" id="toc-geometric-interpretation" class="nav-link" data-scroll-target="#geometric-interpretation">Geometric Interpretation</a></li>
+  <li><a href="#variance-and-standard-errors" id="toc-variance-and-standard-errors" class="nav-link" data-scroll-target="#variance-and-standard-errors">Variance and Standard Errors</a></li>
+  <li><a href="#practical-implications" id="toc-practical-implications" class="nav-link" data-scroll-target="#practical-implications">Practical Implications</a></li>
   </ul></li>
+  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
-  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -396,9 +399,10 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Nonlinear Correlations and Chatterjee’s Coefficient</h1>
+<h1 class="title">Causal Inference with Residualized Regressions</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">correlation</div>
+    <div class="quarto-category">causal inference</div>
+    <div class="quarto-category">linear models</div>
   </div>
   </div>
 
@@ -410,7 +414,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 12, 2024</p>
+      <p class="date">May 1, 2025</p>
     </div>
   </div>
   
@@ -428,150 +432,163 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Much of data science is concerned with learning about the relationships between different variables. The most basic tool to quantify relationship strength is the correlation coefficient. In 2021 Sourav Chatterjee of Stanford <a href="http://tandfonline.com/doi/abs/10.1080/01621459.2020.1758115">published a paper</a> outlining a novel correlation coefficient which has ignited many discussions in the statistics community.</p>
-<p>In this article I will go over the basics of Chatterjee’s correlation measure. Before we get there, let’s first review some of the more traditional approaches in assessing bivariate relationship strength.</p>
-<p>For simplicity, let’s assume away ties. Let’s also set hypothesis testing aside. All test statistics I describe below have well-established asymptotic theory for hypothesis testing and calculating p-values. Thus, we can gauge not only the strength of the relationship between the variables but also the uncertainty associated with that measurement and whether or not it is statistically significant.</p>
+<p>The Frisch-Waugh-Lovell (FWL) theorem offers an elegant alternative to standard multivariate linear regression when estimating causal effects. Instead of running a full regression with treatment and control variables, FWL demonstrates that we can obtain identical treatment coefficient estimates by first “residualizing” both the outcome and treatment variable(s) with respect to controls, then regressing these residuals against each other. This approach provides both computational advantages and conceptual clarity.</p>
+<p>This theorem effectively decomposes multiple regression into simpler components, helping data scientists understand what happens “under the hood” of regression models. By residualizing variables—removing the components explained by control variables—we can isolate and estimate treatment effects more intuitively, essentially peeling away confounding layers to reveal the core relationship of interest.</p>
+<p>My PhD advisor often emphasized that the magnitude of a treatment effect’s standard error can matter more than the effect itself. A related but underexplored issue is how standard errors behave in this setting. Fortunately, <a href="https://www.sciencedirect.com/science/article/abs/pii/S0167715220302480">a recent paper</a> by Peng Ding (2021) extends the Frisch–Waugh–Lovell (FWL) theorem to show that various standard errors—homoskedastic, heteroskedastic-robust (EHW), cluster-robust, and HAC—are either equivalent or differ only by degrees-of-freedom corrections.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Consider a standard linear model:</p>
+<p><span class="math display">\[Y = \alpha + \tau D + X\beta + \varepsilon, \]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Y\)</span> is the outcome variable (e.g., earnings),</li>
+<li><span class="math inline">\(D\)</span> is the treatment variable (e.g., whether a person attended a job training program),</li>
+<li><span class="math inline">\(X\)</span> is a vector of control variables (e.g., age, education, experience),</li>
+<li><span class="math inline">\(\tau\)</span> is the treatment effect we want to estimate,</li>
+<li><span class="math inline">\(\beta\)</span> represents the coefficients on the controls,</li>
+<li><span class="math inline">\(\varepsilon\)</span> is the error term.</li>
+</ul>
+<p>We assume that <span class="math inline">\(X\)</span> includes all relevant confounders, the linear model is correct, etc. so that this model has a causal interpretation. In econometrics jargon, this is a “structural” model.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="linear-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="linear-relationships">Linear Relationships</h3>
-<p>When we simply say “correlation” we refer to the so-called Pearson correlation coefficient. Virtually everyone working with data is familiar with it. Given a random sample <span class="math inline">\((X_1,Y_1),\dots,(X_n, Y_n)\)</span> of two random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> it is computed by:</p>
-<p><span class="math display">\[corr^{P}(X,Y) = \frac{ \sum_i(x_i - \bar{x})(y_i - \bar{y})} {\sqrt{\sum_i(x_i - \bar{x})^2}\sqrt{\sum_i(y_i - \bar{y})^2}},\]</span></p>
-<p>where an upper bar denotes a sample mean.</p>
-<p>This coefficient lives in the <span class="math inline">\([-1,1]\)</span> interval. Larger values indicate stronger relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, be it positive or negative. At the extreme, the Pearson coefficient will equal <span class="math inline">\(1\)</span> when all observations can be perfectly lined up on a upward sloping line. Yes, you guessed it – when it equals <span class="math inline">\(-1\)</span> the line is sloping down.</p>
-<p>You can easily calculate the Pearson correlation in <code>R</code> and <code>python</code>:</p>
+<section id="the-fwl-theorem" class="level3">
+<h3 class="anchored" data-anchor-id="the-fwl-theorem">The FWL Theorem</h3>
+<p>The OLS estimate of <span class="math inline">\(\tau\)</span> in the full regression includes both <span class="math inline">\(D\)</span> and <span class="math inline">\(X\)</span>. However, FWL tells us that we can obtain the same estimate of <span class="math inline">\(\tau\)</span> by following these steps:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Algorithm:
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Regress <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> and collect the residuals <span class="math inline">\(\tilde{Y}\)</span>.</li>
+<li>Regress <span class="math inline">\(D\)</span> on <span class="math inline">\(X\)</span> and collect the residuals <span class="math inline">\(\tilde{D}\)</span>.</li>
+<li>Regress <span class="math inline">\(\tilde{Y}\)</span> on <span class="math inline">\(\tilde{D}\)</span> (without an intercept). The coefficient on <span class="math inline">\(\tilde{D}\)</span> is exactly <span class="math inline">\(\tau\)</span>.</li>
+</ol>
+</div>
+</div>
+</section>
+<section id="intuition" class="level3">
+<h3 class="anchored" data-anchor-id="intuition">Intuition</h3>
+<p>FWL is simple yet profound. When we regress <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span>, we strip out the variation in <span class="math inline">\(Y\)</span> that is explained by <span class="math inline">\(X\)</span>, leaving only the part orthogonal to (i.e., unexplained by) <span class="math inline">\(X\)</span>. Similarly, regressing <span class="math inline">\(D\)</span> on <span class="math inline">\(X\)</span> removes the influence of <span class="math inline">\(X\)</span> on <span class="math inline">\(D\)</span>, isolating the component of <span class="math inline">\(D\)</span> that is independent of <span class="math inline">\(X\)</span>. Since <span class="math inline">\(X\)</span> has been accounted for in both cases, the regression of <span class="math inline">\(\tilde{Y}\)</span> on <span class="math inline">\(\tilde{D}\)</span> retrieves the direct relationship between <span class="math inline">\(D\)</span> and <span class="math inline">\(Y\)</span>, net of <span class="math inline">\(X\)</span>.</p>
+<p>Mathematically, the key result of FWL is:</p>
+<p><span class="math display">\[\hat{\tau} = (D' M_X D)^{-1} D' M_X Y,\]</span></p>
+<p>where <span class="math inline">\(M_X = I - X(X'X)^{-1}X'\)</span> is the projection matrix that residualizes variables with respect to <span class="math inline">\(X\)</span>. This shows that the estimate of remains unchanged whether we use the full regression or the residualized regression.</p>
+<p>Think of it this way: we’re first “adjusting” both our treatment and outcome variables by removing the predictable parts based on our controls. Then we’re examining how the “adjusted” treatment relates to the “adjusted” outcome. This residual-on-residual regression gives us our causal estimate.</p>
+</section>
+<section id="geometric-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="geometric-interpretation">Geometric Interpretation</h3>
+<p>Geometrically, we can think of the FWL theorem in terms of projections in vector space. The residuals <span class="math inline">\(\tilde{D}\)</span> and <span class="math inline">\(\tilde{\mathbf{y}}\)</span>​ are what remain after projecting <span class="math inline">\(D\)</span> and <span class="math inline">\(Y\)</span> onto the orthogonal complement of the space spanned by <span class="math inline">\(Z\)</span>.</p>
+<p>In other words, we’re looking at the components of <span class="math inline">\(D\)</span> and <span class="math inline">\(Y\)</span> that are orthogonal to (i.e., cannot be explained by) the control variables. The relationship between these orthogonal components gives us our treatment effect estimate.</p>
+</section>
+<section id="variance-and-standard-errors" class="level3">
+<h3 class="anchored" data-anchor-id="variance-and-standard-errors">Variance and Standard Errors</h3>
+<p>The precision of our treatment effect estimate depends on how much variation in the treatment remains after accounting for the controls. If the treatment is highly collinear with the controls (meaning <span class="math inline">\(\tilde{D}\)</span> has little variation), our estimate will be imprecise.</p>
+<p>This highlights the “curse of dimensionality” in causal inference with observational data. As we include more control variables to reduce omitted variable bias, we may inadvertently limit the residual variation in the treatment variable after adjusting for those controls. This reduction in effective variation makes it harder to isolate the treatment effect, leading to wider standard errors and less precise estimates. In extreme cases, the treatment can become nearly collinear with the controls, undermining our ability to learn anything meaningful from the data.</p>
+</section>
+<section id="practical-implications" class="level3">
+<h3 class="anchored" data-anchor-id="practical-implications">Practical Implications</h3>
+<ul>
+<li><p><strong>Conceptual clarity</strong>: FWL emphasizes that controlling for <span class="math inline">\(X\)</span> means adjusting both <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span> before examining their relationship.</p></li>
+<li><p><strong>Computational benefits</strong>: In high-dimensional settings, it is often more efficient to work with residualized variables rather than estimating the full model.</p></li>
+<li><p><strong>Instrumental variables and two-stage regression</strong>: The residualization step is analogous to first-stage regressions in instrumental variable estimation.</p></li>
+<li><p><strong>Two separate data sources</strong>: In some cases, possibly due to data privacy concerns, the three variables <span class="math inline">\(Y\)</span>, <span class="math inline">\(X\)</span> and <span class="math inline">\(D\)</span> might live in two separate datasets - one with <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span>, and the other one with <span class="math inline">\(D\)</span> and <span class="math inline">\(X\)</span>. The traditional multivariate regression approach is then not available.</p></li>
+</ul>
+</section>
+</section>
+<section id="an-example" class="level2">
+<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
+<p>Let’s go through an example in <code>R</code> and <code>python</code>. We will generate synthetic data where the treatment effect is nonzero and show that both the full regression and the residualized approach give the same estimate.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y, <span class="at">method =</span> <span class="st">'pearson'</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(x,y, <span class="at">method =</span> <span class="st">'pearson'</span>, <span class="at">alternative=</span><span class="st">'two.sided'</span>).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> <span class="dv">3</span>), <span class="at">ncol =</span> <span class="dv">3</span>)  <span class="co"># Three control variables</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> X[,<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.3</span> <span class="sc">*</span> X[,<span class="dv">2</span>] <span class="sc">+</span> <span class="fu">rnorm</span>(n)  <span class="co"># Treatment depends on controls</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> D <span class="sc">+</span> <span class="fl">1.5</span> <span class="sc">*</span> X[,<span class="dv">1</span>] <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> X[,<span class="dv">2</span>] <span class="sc">+</span> <span class="fl">0.3</span> <span class="sc">*</span> X[,<span class="dv">3</span>] <span class="sc">+</span> <span class="fu">rnorm</span>(n)  <span class="co"># Outcome model</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Full Regression</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>full_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> D <span class="sc">+</span> X)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="do">### Residualized Regression </span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>Y_resid <span class="ot">&lt;-</span> <span class="fu">residuals</span>(<span class="fu">lm</span>(Y <span class="sc">~</span> X)) </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>D_resid <span class="ot">&lt;-</span> <span class="fu">residuals</span>(<span class="fu">lm</span>(D <span class="sc">~</span> X)) </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>resid_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y_resid <span class="sc">~</span> D_resid <span class="sc">-</span> <span class="dv">1</span>)  <span class="co"># No intercept </span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Print Results</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(full_model)<span class="sc">$</span>coefficients[<span class="st">"D"</span>,]  </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>Estimate  Std. Error     t value    <span class="fu">Pr</span>(<span class="sc">&gt;</span><span class="er">|</span>t<span class="sc">|</span>) </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span><span class="fl">1.99338755</span>  <span class="fl">0.03095204</span> <span class="fl">64.40246546</span>  <span class="fl">0.00000000</span> </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(resid_model)<span class="sc">$</span>coefficients[<span class="st">"D_resid"</span>,]</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>Estimate  Std. Error     t value    <span class="fu">Pr</span>(<span class="sc">&gt;</span><span class="er">|</span>t<span class="sc">|</span>) </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span><span class="fl">1.99338755</span>  <span class="fl">0.03089001</span> <span class="fl">64.53178781</span>  <span class="fl">0.00000000</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> pearsonr</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pearson_corr, pearson_pval <span class="op">=</span> pearsonr(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load libraries</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate synthetic data</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.normal(size<span class="op">=</span>(n, <span class="dv">3</span>))  <span class="co"># Three control variables</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> X[:, <span class="dv">0</span>] <span class="op">+</span> <span class="fl">0.3</span> <span class="op">*</span> X[:, <span class="dv">1</span>] <span class="op">+</span> np.random.normal(size<span class="op">=</span>n)  <span class="co"># Treatment depends on controls</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> D <span class="op">+</span> <span class="fl">1.5</span> <span class="op">*</span> X[:, <span class="dv">0</span>] <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> X[:, <span class="dv">1</span>] <span class="op">+</span> <span class="fl">0.3</span> <span class="op">*</span> X[:, <span class="dv">2</span>] <span class="op">+</span> np.random.normal(size<span class="op">=</span>n)  <span class="co"># Outcome model</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Full Regression</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>full_model <span class="op">=</span> LinearRegression()</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>full_model.fit(np.column_stack((D, X)), Y)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>full_coef <span class="op">=</span> full_model.coef_[<span class="dv">0</span>]  <span class="co"># Coefficient for D</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Full Regression Coefficient for D: </span><span class="sc">{</span>full_coef<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Residualized Regression</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Residualize Y with respect to X</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>Y_resid_model <span class="op">=</span> LinearRegression()</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>Y_resid_model.fit(X, Y)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>Y_resid <span class="op">=</span> Y <span class="op">-</span> Y_resid_model.predict(X)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Residualize D with respect to X</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>D_resid_model <span class="op">=</span> LinearRegression()</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>D_resid_model.fit(X, D)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>D_resid <span class="op">=</span> D <span class="op">-</span> D_resid_model.predict(X)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress residualized Y on residualized D</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>resid_model <span class="op">=</span> LinearRegression(fit_intercept<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>resid_model.fit(D_resid.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>), Y_resid)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>resid_coef <span class="op">=</span> resid_model.coef_[<span class="dv">0</span>]</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Residualized Regression Coefficient for D: </span><span class="sc">{</span>resid_coef<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>Full Regression Coefficient <span class="cf">for</span> D: <span class="fl">2.020</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>Residualized Regression Coefficient <span class="cf">for</span> D: <span class="fl">2.020</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
-<p>This measure, while widely popular, suffers from a few shortcomings. First, outliers have an outsized impact in skewing its value. Sample means vulnerable to outliers are a key ingredient in the calculation, rendering the measure sensitive to data anomalies. Second, it is designed to detect only linear relationships. Two variables might have a strong but non-linear relationship which this measure will not detect. Lastly, it is not transformation-invariant, meaning that applying a monotone transformation to either of the variables will change the correlation value.</p>
-<p>Let’s discuss some improvements to the Pearson correlation measure. Enter Spearman correlation.</p>
-</section>
-<section id="monotone-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="monotone-relationships">Monotone Relationships</h3>
-<p>Spearman correlation is the Pearson correlation among the ranks of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>:</p>
-<p><span class="math display">\[corr^{S}(X,Y) = corr^{P}(R(X),R(Y)),\]</span></p>
-<p>where <span class="math inline">\(R(\cdot)\)</span> denotes an observation’s rank (or order) in the sample.</p>
-<p>Spearman correlation is thus a rank correlation measure. As such, it quantifies how well the relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> can be described using a monotone (and not necessarily a linear) function. It is therefore a more flexible measure of association. Again, intuitively, Spearman correlation will take on a large positive value when the <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> observations have similar ranks. This value will be negative when the ranks tend to go in opposite directions.</p>
-<p>Spearman correlation addresses some of the shortcomings associated with Pearson correlation. It is not easily influenced by outliers, and it does not change if we apply a monotone transformation of <span class="math inline">\(X\)</span> and/or <span class="math inline">\(Y\)</span>. These benefits come at the expense of a loss in interpretation and potential issues when tied ranks are common, a scenario I ignore here.</p>
-<p>Calculating it is just as simple:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y, <span class="at">method =</span> <span class="st">'pearson'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(x,y, <span class="at">method =</span> <span class="st">'spearman'</span>, <span class="at">alternative=</span><span class="st">'two.sided'</span>).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> spearmanr</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>spearman_corr, spearman_pval <span class="op">=</span> spearmanr(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p>Spearman correlation is not the only rank correlation coefficient out there. А popular alternative is the Kendall rank coefficient which is computed slightly differently. Let’s define a pair of observations <span class="math inline">\((X_i, Y_i)\)</span> and <span class="math inline">\((X_j, Y_j)\)</span> to be agreeing (the technical term is concordant) if the differences <span class="math inline">\((X_i - X_j)\)</span> and <span class="math inline">\((Y_i - Y_j)\)</span> have the same sign (i.e., either both <span class="math inline">\(X_i &gt; X_j\)</span> and $Y_i &gt; Y_j $or both <span class="math inline">\(X_i &lt; X_j\)</span> and <span class="math inline">\(Y_i &lt; Y_j\)</span> ).</p>
-<p>Then, Kendall’s coefficient is expressed as:</p>
-<p><span class="math display">\[corr^{K} = \frac{\text{number of agreeing pairs} - \text{number of disagreeing pairs}} {\text{total number of pairs}}.\]</span></p>
-<p>So, it quantifies the degree of agreement between the ranks of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. Like the other coeffients described above, its range is <span class="math inline">\([-1, 1]\)</span> and values away from zero indicate stronger relationship.</p>
-<p>Again, this coefficient is similarly computed in <code>R</code> and <code>python</code>:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(x,y, <span class="at">method =</span> <span class="st">'kendall'</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(x,y, <span class="at">method =</span> <span class="st">'spearman'</span>, <span class="at">alternative=</span><span class="st">'two.sided'</span>).</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> pearsonr, spearmanr, kendalltau</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>kendall_corr, kendall_pval <span class="op">=</span> kendalltau(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p>Kendall’s measure improves on some of the shortcomings baked in the Spearman’s coefficients – it has a clearer interpretation and it is less sensitive to rank ties.</p>
-<p>However, none of these rank correlation coefficients can detect non-monotonic relationships. For instance, <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> can have a parabola- or wave-like pattern when plotted against each other. We would like a correlation measure flexible enough to capture such non-linear relationships.</p>
-<p>This is where Chatterjee’s coefficient comes in.</p>
-</section>
-<section id="more-general-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="more-general-relationships">More General Relationships</h3>
-<p>Chatterjee recently proposed <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.2020.1758115">a new correlation coefficient</a> designed to detect non-monotonic relationships. He discovered a novel estimator of a population quantity first proposed by <a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1467-9469.2011.00767.x">Dette et al.&nbsp;(2013)</a>.</p>
-<p>Let’s start with the formula. The Chatterjee correlation coefficient is calculated as follows:</p>
-<p><span class="math display">\[corr^{C}(X,Y) = 1-\frac{3\sum_{i=1}^{n-1}|R(Y_{k:R(X_k)=i+1}) - R(Y_{k:R(X_k)=i})|}{n^2-1},\]</span></p>
-<p>where n is the sample size. This looks complicated, so let’s try to simplify the numerator. Let’s sort the data in an ascending order of <span class="math inline">\(X\)</span> so that we have <span class="math inline">\((X_{(1)}, Y_{(1)}), \dots, (X_{(n)}, Y_{(n)})\)</span>, where <span class="math inline">\(X_{(1)}&lt;X_{(2)}&lt;\dots &lt;X_{(n)}\)</span>. Also, denote <span class="math inline">\(R(Y_i)\)</span> be the rank of <span class="math inline">\(Y_{(i)}\)</span>. Then:</p>
-<p><span class="math display">\[corr^{C}(X,Y) = 1 - \frac{3\sum_{i=1}^{n-1}|R(Y_{i+1})-R(Y_i)|}{n^2-1}.\]</span></p>
-<p>So, this new coefficient is a scaled version of the sum of the absolute differences in the consecutive ranks of <span class="math inline">\(Y\)</span> when ordered by <span class="math inline">\(X\)</span>. It is perhaps best to think about Chatterjee’s method as a measure of dependence and not strictly a correlation coefficient.</p>
-<p>There are some major difference compared to the previous correlation measures. Chatterjee’s correlation coefficient lies in the <span class="math inline">\([0,1]\)</span> interval. It is equal to zero if and only if <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent and to one if one of them is a function of the other. Unlike the coefficients described above, it is not symmetric in <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, meaning <span class="math inline">\(corr^{C}(X,Y) \neq corr^{C}(Y,X)\)</span>. This is understandable since we are interested in whether <span class="math inline">\(X\)</span> is a function of <span class="math inline">\(Y\)</span>, which does not imply the opposite. The author also develops asymptotic theory for calculating p-values although some researchers have <a href="https://academic.oup.com/biomet/article-abstract/109/2/317/6259083">raised concerns</a> about the coefficient’s power.</p>
-<p>Here is a sample code to calculate its value:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n) </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">*</span> <span class="fu">sin</span>(x) <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>R <span class="ot">&lt;-</span> <span class="fu">rank</span>(data<span class="sc">$</span>y)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data[<span class="fu">order</span>(data<span class="sc">$</span>x), ]</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> <span class="fu">sum</span>(<span class="fu">abs</span>(<span class="fu">diff</span>(data<span class="sc">$</span>R))) <span class="sc">/</span> (n<span class="sc">^</span><span class="dv">2-1</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>[<span class="dv">1</span>] <span class="fl">0.4093024</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.uniform(size<span class="op">=</span>n)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">5</span> <span class="op">*</span> np.sin(x) <span class="op">+</span> np.random.normal(size<span class="op">=</span>n)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> np.array(<span class="bu">sorted</span>(<span class="bu">zip</span>(x, y), key<span class="op">=</span><span class="kw">lambda</span> pair: pair[<span class="dv">0</span>]))</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>ranks <span class="op">=</span> np.argsort(np.argsort(data[:, <span class="dv">1</span>]))  <span class="co"># Rank of y</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>chatterjee_corr <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> <span class="dv">3</span> <span class="op">*</span> np.<span class="bu">sum</span>(np.<span class="bu">abs</span>(np.diff(ranks))) <span class="op">/</span> (n<span class="op">**</span><span class="dv">2</span> <span class="op">-</span> <span class="dv">1</span>)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Chatterjee's correlation: </span><span class="sc">{</span>chatterjee_corr<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Chatterjee<span class="st">'s correlation: 0.4050</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p><em>Software Package</em>: <a href="https://www.rdocumentation.org/packages/XICOR/versions/0.4.1">XICOR</a>.</p>
-<p>There you have it. You are now well-equipped to dive deeper into your datasets and find new exciting relationships.</p>
-</section>
+<p>The coefficient on <span class="math inline">\(D\)</span> in the full model and the coefficient on <span class="math inline">\(D_{resid}\)</span> in the residualized model are identical up to a degrees of freedom correction. This demonstrates that controlling for <span class="math inline">\(X\)</span> can be done implicitly by working with residuals.</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li><p>There are numerous ways of measuring association between two variables.</p></li>
-<li><p>The most common methods measure only linear or monotonic relationships. These are often useful but do not capture more complex, non-linear associations.</p></li>
-<li><p>A new correlation measure, Chatterjee’s coefficient, is designed to go beyond monotonicity and assess more general bivariate relationships.</p></li>
+<li><p>The FWL theorem shows that controlling for variables in a regression can be done by residualizing first.</p></li>
+<li><p>This approach helps conceptually separate the treatment effect from confounding influences.</p></li>
+<li><p>Residualization is particularly useful in high-dimensional settings and instrumental variables estimation.</p></li>
+<li><p>Whether you use the full regression or the residualized approach, you get the same treatment effect estimate.</p></li>
 </ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Wikipedia has detailed entries on correlation, rank correlation, and Kendall’s coefficient which I found helpful. The R bloggers platform has articles exploring the Chatterjee’s correlation coefficient in detail. The more technically oriented folks will find Chatterjee’s original paper helpful.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Chatterjee, S. (2021). A new coefficient of correlation. Journal of the American Statistical Association, 116(536), 2009-2022.</p>
-<p>Dette, H., Siburg, K. F., &amp; Stoimenov, P. A. (2013). A Copula‐Based Non‐parametric Measure of Regression Dependence. Scandinavian Journal of Statistics, 40(1), 21-41.</p>
-<p>Shi, H., Drton, M., &amp; Han, F. (2022). On the power of Chatterjee’s rank correlation. Biometrika, 109(2), 317-333.</p>
-<p>https://www.r-bloggers.com/2021/12/exploring-the-xi-correlation-coefficient/</p>
+<p>Ding, P. (2021). The Frisch–Waugh–Lovell theorem for standard errors. Statistics &amp; Probability Letters, 168, 108945.</p>
 
 
 </section>

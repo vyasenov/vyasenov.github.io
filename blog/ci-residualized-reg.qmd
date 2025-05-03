@@ -1,0 +1,171 @@
+---
+title: "Causal Inference with Residualized Regressions"
+date: "2025-05-01"
+categories: [causal inference, linear models]
+---
+
+## Background
+
+The Frisch-Waugh-Lovell (FWL) theorem offers an elegant alternative to standard multivariate linear regression when estimating causal effects. Instead of running a full regression with treatment and control variables, FWL demonstrates that we can obtain identical treatment coefficient estimates by first "residualizing" both the outcome and treatment variable(s) with respect to controls, then regressing these residuals against each other. This approach provides both computational advantages and conceptual clarity.
+
+This theorem effectively decomposes multiple regression into simpler components, helping data scientists understand what happens "under the hood" of regression models. By residualizing variables—removing the components explained by control variables—we can isolate and estimate treatment effects more intuitively, essentially peeling away confounding layers to reveal the core relationship of interest.
+
+My PhD advisor often emphasized that the magnitude of a treatment effect’s standard error can matter more than the effect itself. A related but underexplored issue is how standard errors behave in this setting. Fortunately, [a recent paper](https://www.sciencedirect.com/science/article/abs/pii/S0167715220302480) by Peng Ding (2021) extends the Frisch–Waugh–Lovell (FWL) theorem to show that various standard errors—homoskedastic, heteroskedastic-robust (EHW), cluster-robust, and HAC—are either equivalent or differ only by degrees-of-freedom corrections.
+
+## Notation
+
+Consider a standard linear model:
+
+  $$Y = \alpha + \tau D + X\beta + \varepsilon, $$
+
+where:
+
+- $Y$ is the outcome variable (e.g., earnings),
+- $D$ is the treatment variable (e.g., whether a person attended a job training program),
+- $X$ is a vector of control variables (e.g., age, education, experience),
+- $\tau$ is the treatment effect we want to estimate,
+- $\beta$ represents the coefficients on the controls,
+- $\varepsilon$ is the error term.
+
+We assume that $X$ includes all relevant confounders, the linear model is correct, etc. so that this model has a causal interpretation. In econometrics jargon, this is a "structural" model. 
+
+## A Closer Look
+
+### The FWL Theorem
+
+The OLS estimate of $\tau$ in the full regression includes both $D$ and $X$. However, FWL tells us that we can obtain the same estimate of $\tau$ by following these steps:
+
+::: {.callout-note title="Algorithm:"}
+1. Regress $Y$ on $X$ and collect the residuals $\tilde{Y}$.
+2. Regress $D$ on $X$ and collect the residuals $\tilde{D}$.
+3. Regress $\tilde{Y}$ on $\tilde{D}$ (without an intercept). The coefficient on $\tilde{D}$ is exactly $\tau$.
+:::
+
+### Intuition
+
+FWL is simple yet profound. When we regress $Y$ on $X$, we strip out the variation in $Y$ that is explained by $X$, leaving only the part orthogonal to (i.e., unexplained by) $X$. Similarly, regressing $D$ on $X$ removes the influence of $X$ on $D$, isolating the component of $D$ that is independent of $X$. Since $X$ has been accounted for in both cases, the regression of $\tilde{Y}$ on $\tilde{D}$ retrieves the direct relationship between $D$ and $Y$, net of $X$.
+
+Mathematically, the key result of FWL is:
+
+  $$\hat{\tau} = (D' M_X D)^{-1} D' M_X Y,$$
+
+where $M_X = I - X(X'X)^{-1}X'$ is the projection matrix that residualizes variables with respect to $X$. This shows that the estimate of \tau remains unchanged whether we use the full regression or the residualized regression. 
+
+Think of it this way: we’re first “adjusting” both our treatment and outcome variables by removing the predictable parts based on our controls. Then we’re examining how the “adjusted” treatment relates to the “adjusted” outcome. This residual-on-residual regression gives us our causal estimate.
+
+### Geometric Interpretation
+
+Geometrically, we can think of the FWL theorem in terms of projections in vector space. The residuals $\tilde{D}$ and $\tilde{\mathbf{y}}$​ are what remain after projecting $D$ and $Y$ onto the orthogonal complement of the space spanned by $Z$.
+
+In other words, we’re looking at the components of $D$ and $Y$ that are orthogonal to (i.e., cannot be explained by) the control variables. The relationship between these orthogonal components gives us our treatment effect estimate.
+
+### Variance and Standard Errors
+
+The precision of our treatment effect estimate depends on how much variation in the treatment remains after accounting for the controls. If the treatment is highly collinear with the controls (meaning $\tilde{D}$ has little variation), our estimate will be imprecise.
+
+This highlights the “curse of dimensionality” in causal inference with observational data.  As we include more control variables to reduce omitted variable bias, we may inadvertently limit the residual variation in the treatment variable after adjusting for those controls. This reduction in effective variation makes it harder to isolate the treatment effect, leading to wider standard errors and less precise estimates. In extreme cases, the treatment can become nearly collinear with the controls, undermining our ability to learn anything meaningful from the data.
+
+### Practical Implications
+
+- **Conceptual clarity**: FWL emphasizes that controlling for $X$ means adjusting both $Y$ and $D$ before examining their relationship.
+
+- **Computational benefits**: In high-dimensional settings, it is often more efficient to work with residualized variables rather than estimating the full model.
+
+- **Instrumental variables and two-stage regression**: The residualization step is analogous to first-stage regressions in instrumental variable estimation.
+
+- **Two separate data sources**: In some cases, possibly due to data privacy concerns, the three variables $Y$, $X$ and $D$ might live in two separate datasets - one with $Y$ and $X$, and the other one with $D$ and $X$. The traditional multivariate regression approach is then not available.
+
+## An Example
+
+Let’s go through an example in `R` and `python`. We will generate synthetic data where the treatment effect is nonzero and show that both the full regression and the residualized approach give the same estimate.
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+rm(list=ls())
+set.seed(1988)
+n <- 1000
+X <- matrix(rnorm(n * 3), ncol = 3)  # Three control variables
+D <- 0.5 * X[,1] + 0.3 * X[,2] + rnorm(n)  # Treatment depends on controls
+Y <- 2 * D + 1.5 * X[,1] - 0.5 * X[,2] + 0.3 * X[,3] + rnorm(n)  # Outcome model
+
+# Full Regression
+full_model <- lm(Y ~ D + X)
+
+### Residualized Regression 
+Y_resid <- residuals(lm(Y ~ X)) 
+D_resid <- residuals(lm(D ~ X)) 
+resid_model <- lm(Y_resid ~ D_resid - 1)  # No intercept 
+
+# Print Results
+summary(full_model)$coefficients["D",]  
+>Estimate  Std. Error     t value    Pr(>|t|) 
+>1.99338755  0.03095204 64.40246546  0.00000000 
+summary(resid_model)$coefficients["D_resid",]
+>Estimate  Std. Error     t value    Pr(>|t|) 
+>1.99338755  0.03089001 64.53178781  0.00000000 
+```
+
+### Python
+
+```python
+# Load libraries
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+np.random.seed(1988)
+
+# Generate synthetic data
+n = 1000
+X = np.random.normal(size=(n, 3))  # Three control variables
+D = 0.5 * X[:, 0] + 0.3 * X[:, 1] + np.random.normal(size=n)  # Treatment depends on controls
+Y = 2 * D + 1.5 * X[:, 0] - 0.5 * X[:, 1] + 0.3 * X[:, 2] + np.random.normal(size=n)  # Outcome model
+
+# Full Regression
+full_model = LinearRegression()
+full_model.fit(np.column_stack((D, X)), Y)
+full_coef = full_model.coef_[0]  # Coefficient for D
+print(f"Full Regression Coefficient for D: {full_coef}")
+
+# Residualized Regression
+# Residualize Y with respect to X
+Y_resid_model = LinearRegression()
+Y_resid_model.fit(X, Y)
+Y_resid = Y - Y_resid_model.predict(X)
+
+# Residualize D with respect to X
+D_resid_model = LinearRegression()
+D_resid_model.fit(X, D)
+D_resid = D - D_resid_model.predict(X)
+
+# Regress residualized Y on residualized D
+resid_model = LinearRegression(fit_intercept=False)
+resid_model.fit(D_resid.reshape(-1, 1), Y_resid)
+resid_coef = resid_model.coef_[0]
+
+# Print results
+print(f"Residualized Regression Coefficient for D: {resid_coef}")
+
+>Full Regression Coefficient for D: 2.020
+>Residualized Regression Coefficient for D: 2.020
+```
+
+::::
+
+The coefficient on $D$ in the full model and the coefficient on $D_{resid}$ in the residualized model are identical up to a degrees of freedom correction. This demonstrates that controlling for $X$ can be done implicitly by working with residuals.
+
+## Bottom Line
+
+- The FWL theorem shows that controlling for variables in a regression can be done by residualizing first.
+
+- This approach helps conceptually separate the treatment effect from confounding influences.
+
+- Residualization is particularly useful in high-dimensional settings and instrumental variables estimation.
+
+- Whether you use the full regression or the residualized approach, you get the same treatment effect estimate.
+
+## References
+
+Ding, P. (2021). The Frisch–Waugh–Lovell theorem for standard errors. Statistics & Probability Letters, 168, 108945.

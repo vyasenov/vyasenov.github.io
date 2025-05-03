@@ -2,6 +2,8 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/ci-residualized-reg.html",
+      "/blog/diff-causal-predictive-models.html",
       "/blog/two-types-weights-causality.html",
       "/blog/binscatter.html",
       "/blog/filling-missing-data-mcmc.html",

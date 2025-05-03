@@ -1,4 +1,155 @@
-/* css styles */
+/* General body styles for the website */
 body {
-    font-family: system-ui, sans-serif;
+    font-family:  system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Use a modern sans-serif font stack */
+    line-height: 1.6; /* Improve readability with increased line height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+/* Styles for all headings (h1 to h6) */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Georgia', serif; /* Use a serif font for headings */
+    margin-top: 1.5em; /* Add space above headings */
+    margin-bottom: 0.5em; /* Add space below headings */
+}
+
+/* set font sizes for headings */
+h1 { font-size: 2em; }
+h2 { font-size: 1.75em; }
+h3 { font-size: 1.5em; }
+h4 { font-size: 1.25em; }
+h5 { font-size: 1.1em; }
+h6 { font-size: 1em; }
+
+/* Paragraph styles */
+p {
+    margin-bottom: 1em; /* Add space below each paragraph */
+    font-size: 1.1em; /* Slightly larger font size for better readability */
+}
+
+/* Link styles */
+a {
+    text-decoration: none; /* Remove underline from links */
+}
+
+a:hover {
+    text-decoration: underline; /* Add underline on hover for better accessibility */
+}
+
+/* Styles for blog post listing items */
+.quarto-post {
+    border-radius: 15px; /* Round the corners */
+    padding: 1em; /* Add padding inside the item */
+    margin-bottom: 1.5em; /* Add space between items */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth animation for shadow and position changes */
+    border: 1px solid #ddd; /* Add a light border around each item */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+}
+
+/* Hover animation for blog post listing items */
+.quarto-post:hover {
+    transform: translateY(-5px); /* Move the item slightly upward on hover */
+}
+
+/* Hover effect on the list of categories to the right */
+.category:hover {
+    transform: translateX(10px); /* Move slightly to the right */
+}
+
+/* Hover effect on the Quarto category within eac blog post */
+.quarto-category:hover {
+    transform: translateY(-5px); /* Move slightly to the right */
+    transition: transform 0.5s ease; /* Slow down the animation to 0.5 seconds */
+}
+
+/* Table styles for better readability */
+table {
+    width: 100%; /* Make tables take up the full width */
+    border-collapse: collapse; /* Remove gaps between table cells */
+    margin-bottom: 1.5em; /* Add space below tables */
+}
+
+/* Table cell styles */
+th, td {
+    padding: 0.75em; /* Add padding inside cells */
+    text-align: left; /* Align text to the left */
+}
+
+/* Table header styles */
+th {
+    font-weight: bold; /* Make header text bold */
+}
+
+/* Table of Contents link styles */
+.nav-link {
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease, transform 0.3s ease; /* Smooth animation */
+}
+
+.nav-link:hover {
+    transform: translateX(5px); /* Slightly move the link to the right */
+    text-decoration: underline; /* Add underline on hover */
+}
+
+/* Back-to-top button styles */
+#back-to-top {
+    position: fixed; /* Fix the button to a specific position on the screen */
+    bottom: 20px; /* Position the button 20px from the bottom */
+    right: 20px; /* Position the button 20px from the right */
+    padding: 0.5em 1em; /* Add padding inside the button */
+    border-radius: 50%; /* Make the button circular */
+    text-align: center; /* Center the text inside the button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    display: none; /* Initially hide the button */
+}
+
+/* Inline code (e.g., `this`) */
+code {
+    font-family: 'Fira Code', 'Source Code Pro', Consolas, Monaco, monospace;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.95em;
   }
+
+/* Code inside tabsets, inline or block */
+.panel-tabset pre,
+.sourceCode pre {
+  padding: 1em;
+  overflow-x: auto;
+  border-radius: 6px;
+  font-family: 'Fira Code', 'Source Code Pro', Consolas, Monaco, monospace;
+  font-size: 0.95em;
+  line-height: 1.5;
+  margin-bottom: 1.5em;
+}
+
+/* List item styles */  
+ul, ol {
+    margin-bottom: 1em;
+    padding-left: 1.5em;
+  }
+
+/* Button styling */
+.btn {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Smooth animation */
+}
+
+/* Button hover animation */
+.btn:hover {
+    transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+/* Styles for research publication items */
+.research-item {
+    border-radius: 15px; /* Round the corners */
+    padding: 1em; /* Add padding inside the item */
+    margin-bottom: 1.5em; /* Add space between items */
+    border: 1px solid #ddd; /* Add a light border around each item */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Smooth animation for shadow and position changes */
+}
+
+/* Hover animation for research publication items */
+.research-item:hover {
+    transform: translateY(-5px); /* Move the item slightly upward on hover */
+}
