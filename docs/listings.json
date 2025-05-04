@@ -2,6 +2,8 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/jackknife-vs-bootstrap.html",
+      "/blog/roles-covariates-rtc.html",
       "/blog/ci-residualized-reg.html",
       "/blog/diff-causal-predictive-models.html",
       "/blog/two-types-weights-causality.html",
