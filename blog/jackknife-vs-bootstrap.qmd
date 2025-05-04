@@ -1,6 +1,6 @@
 ---
 title: "Jackknife vs. Bootstrap: A Tale of Two Resamplers"
-date: "2024-05-04"
+date: "2025-05-04"
 categories: [bootstrap, statistical inference]
 ---
 
