@@ -16,4 +16,7 @@ _drafts/
 # prompt files
 prompts.txt
 
+# Python virtual environment
+.venv/
+
 /.quarto/

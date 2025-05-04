@@ -1,0 +1,72 @@
+---
+title: "Jackknife vs. Bootstrap: A Tale of Two Resamplers"
+date: "2024-05-04"
+categories: [bootstrap, statistical inference]
+---
+
+## Background
+
+If you've ever dived into resampling methods, you've likely come across the **jackknife** and the **bootstrap**. They both aim to help us estimate uncertainty or bias relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, I have often wondered what made the bootstrap, developed decades after the jackknife, such a big deal? Aren't they too similar to be considered separate methods and have distinct properties?
+
+This article walks through the key intuition behind these methods and explains why the bootstrap was a genuine innovation.
+
+## Notation
+
+We observe a sample of data points $X_1, X_2, \dots, X_n$, and we’re interested in an estimator $\hat{\theta} = \hat{\theta}(X_1, \dots, X_n)$ such as the mean, median, or a regression coefficient. Our goal is to understand the variability or bias of $\hat{\theta}$.
+
+## A Closer Look
+
+### The Jackknife: Systematic Deletion
+
+The jackknife, introduced by Quenouille and popularized by Tukey in the 1950s, works by **systematically leaving out one observation at a time**. For each $i$, we compute $\hat{\theta}^{(-i)}$, the estimator based on the dataset with the $i$th observation removed.
+
+This gives us $n$ estimates to work with:
+$$
+\hat{\theta}^{(-1)}, \hat{\theta}^{(-2)}, \dots, \hat{\theta}^{(-n)}
+$$
+
+These can be used to estimate the bias or variance of $\hat{\theta}$. But the method assumes that the estimator behaves “smoothly” as data points change—a property that fails for medians, quantiles, and many modern estimators.
+
+### The Bootstrap: Simulating the Sampling Distribution
+
+The bootstrap, invented by Bradley Efron in 1979, made a conceptual leap: instead of deleting one observation at a time, **draw samples of size $n$ from the data, *with replacement*.** Each resample is like a new dataset:
+$$
+X_1^*, X_2^*, \dots, X_n^* \sim \text{Empirical distribution of } \{X_1, \dots, X_n\}
+$$
+
+Compute $\hat{\theta}^*$ for each resample. Repeat this many times—hundreds or thousands—and you get a full approximation of the sampling distribution of $\hat{\theta}$.
+
+This approach doesn’t rely on linearity or smoothness. It works for medians, maximums, machine learning models—you name it. In [an earlier article](https://vyasenov.github.io/blog/bootstrap-limitations.html) I discussed some of the situations in which the bootstrap fails.
+
+### The Conceptual Difference
+
+- **Jackknife**: Analytic, leaves out one data point at a time.
+- **Bootstrap**: Simulation-based, creates synthetic datasets by resampling with replacement.
+
+The bootstrap was feasible in 1979 thanks to improvements in computing. It provided a practical, general-purpose way to get confidence intervals and bias corrections for almost any estimator—not just the well-behaved ones.
+
+## Bottom Line
+
+- The jackknife is elegant but limited; it works best for linear, smooth estimators.
+
+- The bootstrap is flexible and simulation-based, requiring no assumptions about estimator smoothness.
+
+- Bootstrap’s strength lies in approximating the full sampling distribution—even for complex estimators.
+
+- Efron's insight: use the data to simulate the data-generating process.
+
+## Where to Learn More
+
+A great place to start is Efron and Tibshirani’s classic *An Introduction to the Bootstrap*. For those seeking for a technical challenge, look at advanced resampling chapters in texts like Wasserman’s *All of Statistics* or Hastie and Efron's *Computer Age Statistical Inference*. You can never really go wrong with the latter two books.
+
+## References
+
+Efron, B. (1992). Bootstrap methods: another look at the jackknife. In Breakthroughs in statistics: Methodology and distribution (pp. 569-593). New York, NY: Springer New York.
+
+Efron, B., & Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.
+
+Quenouille, M. H. (1956). Notes on bias in estimation. Biometrika, 43(3/4), 353-360.
+
+Tukey, J. (1958). Bias and confidence in not quite large samples. Ann. Math. Statist., 29, 614.
+
+Wasserman, L. (2013). All of statistics: a concise course in statistical inference. Springer Science & Business Media.

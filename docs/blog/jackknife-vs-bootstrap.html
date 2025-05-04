@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-04-30">
+<meta name="dcterms.date" content="2024-05-04">
 
-<title>Causal vs.&nbsp;Predictive Modeling: Subtle, but Crucial Differences – Vasco Yasenov</title>
+<title>Jackknife vs Bootstrap: What Makes the Bootstrap a Real Leap Forward? – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -343,14 +343,15 @@ window.Quarto = {
    
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#predictive-modeling-just-give-me-accuracy" id="toc-predictive-modeling-just-give-me-accuracy" class="nav-link" data-scroll-target="#predictive-modeling-just-give-me-accuracy">Predictive Modeling: Just Give Me Accuracy</a></li>
-  <li><a href="#causal-modeling-think-harder-control-smarter" id="toc-causal-modeling-think-harder-control-smarter" class="nav-link" data-scroll-target="#causal-modeling-think-harder-control-smarter">Causal Modeling: Think Harder, Control Smarter</a></li>
-  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
-  <li><a href="#propensity-scores-where-predictive-and-causal-worlds-collide" id="toc-propensity-scores-where-predictive-and-causal-worlds-collide" class="nav-link" data-scroll-target="#propensity-scores-where-predictive-and-causal-worlds-collide">Propensity Scores: Where Predictive and Causal Worlds Collide</a></li>
+  <li><a href="#the-jackknife-systematic-deletion" id="toc-the-jackknife-systematic-deletion" class="nav-link" data-scroll-target="#the-jackknife-systematic-deletion">The Jackknife: Systematic Deletion</a></li>
+  <li><a href="#the-bootstrap-simulating-the-sampling-distribution" id="toc-the-bootstrap-simulating-the-sampling-distribution" class="nav-link" data-scroll-target="#the-bootstrap-simulating-the-sampling-distribution">The Bootstrap: Simulating the Sampling Distribution</a></li>
+  <li><a href="#the-conceptual-difference" id="toc-the-conceptual-difference" class="nav-link" data-scroll-target="#the-conceptual-difference">The Conceptual Difference</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
+  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -361,10 +362,10 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Causal vs.&nbsp;Predictive Modeling: Subtle, but Crucial Differences</h1>
+<h1 class="title">Jackknife vs Bootstrap: What Makes the Bootstrap a Real Leap Forward?</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">causal inference</div>
-    <div class="quarto-category">machine learning</div>
+    <div class="quarto-category">bootstrap</div>
+    <div class="quarto-category">statistical inference</div>
   </div>
   </div>
 
@@ -376,7 +377,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 30, 2025</p>
+      <p class="date">May 4, 2024</p>
     </div>
   </div>
   
@@ -394,70 +395,59 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>It’s one of the most common mix-ups I see among data scientists—especially those coming from a machine learning background: confusing causal modeling with predictive modeling. On the surface, they look similar. You build a model, you include some variables, you fit it, and then you do… something with the results. But under the hood, these two approaches serve fundamentally different goals and require very different mindsets.</p>
-<p>Predictive modeling is about building a model that can forecast outcomes. Causal modeling is about understanding how the world works. And mixing them up can lead to some really bad decisions—like launching a product based on a spurious correlation or controlling for the wrong variables and wiping out your treatment effect.</p>
-<p>This post is for all the data scientists who’ve ever wondered any of the following: - “Why can’t I just throw everything into my causal model like I do with my random forest?” - “This causal model is great. Can’t we just use it for prediction as well?” - “What exactly is the difference between the two?”</p>
-<p>Let’s unpack it.</p>
+<p>If you’ve ever dived into resampling methods, you’ve likely come across the <strong>jackknife</strong> and the <strong>bootstrap</strong>. They both aim to help us estimate uncertainty or bias relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, I have often wondered what made the bootstrap, developed decades after the jackknife, such a big deal? Aren’t they too similar to be considered separate methods and have distinct properties?</p>
+<p>This article walks through the key intuition behind these methods and explains why the bootstrap was a genuine innovation.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>We observe a sample of data points <span class="math inline">\(X_1, X_2, \dots, X_n\)</span>, and we’re interested in an estimator <span class="math inline">\(\hat{\theta} = \hat{\theta}(X_1, \dots, X_n)\)</span> such as the mean, median, or a regression coefficient. Our goal is to understand the variability or bias of <span class="math inline">\(\hat{\theta}\)</span>.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="predictive-modeling-just-give-me-accuracy" class="level3">
-<h3 class="anchored" data-anchor-id="predictive-modeling-just-give-me-accuracy">Predictive Modeling: Just Give Me Accuracy</h3>
-<p>Let’s start with what more folks are familiar with: predictive models.</p>
-<p>In predictive modeling, you’re judged by how well you can forecast an outcome, <span class="math inline">\(Y\)</span>. That’s it. You can (and often do) throw in everything and the kitchen sink—lagged outcomes, future values of other variables (careful though!), variables that are correlated with the outcome but not necessarily meaningful in a causal sense.</p>
-<p>It’s all good <em>as long as</em> it helps you reduce Root Mean Squared Error (RMSE), increase Area Under the Curve (AUC), or minimize cross-entropy loss. Data leakage is your main enemy, but otherwise, the bar for “what goes in the model” is pretty low. Setting data leakage and interpretation aside, just throw anything you have in there. You can often get away with building a decent model without deep institutional or context knowledge. The complex algorithms take care of that for you.</p>
-<p>No one cares <em>why</em> your model works, only that it does.</p>
+<section id="the-jackknife-systematic-deletion" class="level3">
+<h3 class="anchored" data-anchor-id="the-jackknife-systematic-deletion">The Jackknife: Systematic Deletion</h3>
+<p>The jackknife, introduced by Quenouille and popularized by Tukey in the 1950s, works by <strong>systematically leaving out one observation at a time</strong>. For each <span class="math inline">\(i\)</span>, we compute <span class="math inline">\(\hat{\theta}^{(-i)}\)</span>, the estimator based on the dataset with the <span class="math inline">\(i\)</span>th observation removed.</p>
+<p>This gives us <span class="math inline">\(n\)</span> estimates to work with: <span class="math display">\[
+\hat{\theta}^{(-1)}, \hat{\theta}^{(-2)}, \dots, \hat{\theta}^{(-n)}
+\]</span></p>
+<p>These can be used to estimate the bias or variance of <span class="math inline">\(\hat{\theta}\)</span>. But the method assumes that the estimator behaves “smoothly” as data points change—a property that fails for medians, quantiles, and many modern estimators.</p>
 </section>
-<section id="causal-modeling-think-harder-control-smarter" class="level3">
-<h3 class="anchored" data-anchor-id="causal-modeling-think-harder-control-smarter">Causal Modeling: Think Harder, Control Smarter</h3>
-<p>Now, enter the world of causal inference. The rules are completely different. Hinting at the challenging nature of determining causality, the ancient Greek philosopher Democritus famously said:</p>
-<blockquote class="blockquote">
-<p>“I would rather understand one cause than be King of Persia.”</p>
-</blockquote>
-<p>In causal modeling, the goal is not prediction, but isolation of the effect of a treatment <span class="math inline">\(T\)</span> on <span class="math inline">\(Y\)</span>. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here’s the catch: <strong>not all variables should be controlled for</strong>.</p>
-<p>This is where the concept of <strong>bad controls</strong> comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.</p>
-<p>In other words, in causal inference:</p>
+<section id="the-bootstrap-simulating-the-sampling-distribution" class="level3">
+<h3 class="anchored" data-anchor-id="the-bootstrap-simulating-the-sampling-distribution">The Bootstrap: Simulating the Sampling Distribution</h3>
+<p>The bootstrap, invented by Bradley Efron in 1979, made a conceptual leap: instead of deleting one observation at a time, <strong>draw samples of size <span class="math inline">\(n\)</span> from the data, <em>with replacement</em>.</strong> Each resample is like a new dataset: <span class="math display">\[
+X_1^*, X_2^*, \dots, X_n^* \sim \text{Empirical distribution of } \{X_1, \dots, X_n\}
+\]</span></p>
+<p>Compute <span class="math inline">\(\hat{\theta}^*\)</span> for each resample. Repeat this many times—hundreds or thousands—and you get a full approximation of the sampling distribution of <span class="math inline">\(\hat{\theta}\)</span>.</p>
+<p>This approach doesn’t rely on linearity or smoothness. It works for medians, maximums, machine learning models—you name it. In <a href="https://vyasenov.github.io/blog/bootstrap-limitations.html">an earlier article</a> I discussed some of the situations in which the bootstrap fails.</p>
+</section>
+<section id="the-conceptual-difference" class="level3">
+<h3 class="anchored" data-anchor-id="the-conceptual-difference">The Conceptual Difference</h3>
 <ul>
-<li>Including the wrong variable can make things worse.</li>
-<li>You must think hard about the causal structure of your data.</li>
-<li>Domain knowledge is critical.</li>
+<li><strong>Jackknife</strong>: Analytic, leaves out one data point at a time.</li>
+<li><strong>Bootstrap</strong>: Simulation-based, creates synthetic datasets by resampling with replacement.</li>
 </ul>
-<p>Throwing in “everything” like in a predictive model? That can completely destroy your estimate. Furthermore, in causal inference you can almost never get away without deep knowledge of every aspect of your analysis - environment, intervention, sample, etc. Thus, in many ways causality is significantly more challenging than prediction.</p>
-</section>
-<section id="an-example" class="level3">
-<h3 class="anchored" data-anchor-id="an-example">An Example</h3>
-<p>The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success (<span class="math inline">\(Y\)</span>), and we find that hard work (<span class="math inline">\(T\)</span>) has a causal effect on academic achievement. This means that if we were to increase a given student’s effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about <strong>what will happen if we intervene</strong> (i.e., manipulate <span class="math inline">\(T\)</span>). Intervene is the key word here. Here’s the <a href="https://vyasenov.github.io/blog/causation-without-correlation.html">crazy thing</a> - in observational data, student success and effort might not even be correlated!</p>
-<p>So, this doesn’t necessarily help us predict with high accuracy which students will be most successful. For that task, other variables—like parental income (<span class="math inline">\(X_1\)</span>), neighborhood quality (<span class="math inline">\(X_2\)</span>), or prior test scores (<span class="math inline">\(X_3\)</span>)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.</p>
-</section>
-<section id="propensity-scores-where-predictive-and-causal-worlds-collide" class="level3">
-<h3 class="anchored" data-anchor-id="propensity-scores-where-predictive-and-causal-worlds-collide">Propensity Scores: Where Predictive and Causal Worlds Collide</h3>
-<p>One place where this confusion often plays out is in propensity score modeling.</p>
-<p>To recap, the propensity score <span class="math inline">\(e(X) = P(T = 1 \mid X)\)</span> is the probability of receiving treatment given covariates. It’s often estimated via a logistic regression or ML model. Then, you use this score to adjust for differences between treated and control groups (e.g., via weighting or matching).</p>
-<p>And here’s the key point: <strong>your goal is not to get the best prediction of treatment.</strong> Your goal is to use the propensity score to balance covariates between groups. That’s it.</p>
-<p>So even if a fancy <code>XGBoost</code> model gives you higher prediction accuracy, it may overfit or fail to achieve covariate balance—which defeats the purpose. In fact, some of the best-performing PS models (for causal purposes) may have terrible predictive accuracy but excel at achieving balance.</p>
-<p>There’s a trade-off here:</p>
-<ul>
-<li>Predictive ML models focus on minimizing error.</li>
-<li>Propensity score models should optimize <strong>covariate balance</strong>.</li>
-</ul>
-<p>And that trade-off is why a more accurate model is not necessarily better for causal inference.</p>
+<p>The bootstrap was feasible in 1979 thanks to improvements in computing. It provided a practical, general-purpose way to get confidence intervals and bias corrections for almost any estimator—not just the well-behaved ones.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li><p>Predictive models are about forecasting outcomes; causal models are about estimating effects.</p></li>
-<li><p>In causal inference, you must think carefully about what to include in the model—“bad controls” can bias results.</p></li>
-<li><p>Propensity scores should be judged by how well they balance covariates, not by how well they predict treatment.</p></li>
-<li><p>More context and domain knowledge is usually required for causal models than for predictive ones.</p></li>
+<li><p>The jackknife is elegant but limited; it works best for linear, smooth estimators.</p></li>
+<li><p>The bootstrap is flexible and simulation-based, requiring no assumptions about estimator smoothness.</p></li>
+<li><p>Bootstrap’s strength lies in approximating the full sampling distribution—even for complex estimators.</p></li>
+<li><p>Efron’s insight: use the data to simulate the data-generating process.</p></li>
 </ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>A great place to start is Efron and Tibshirani’s classic <em>An Introduction to the Bootstrap</em>. For those seeking for a technical challenge, look at advanced resampling chapters in texts like Wasserman’s <em>All of Statistics</em> or Hastie and Efron’s <em>Computer Age Statistical Inference</em>. You can never really go wrong with the latter two books.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Hernán, M. A., &amp; Robins, J. M. (2020). <em>Causal Inference: What If</em>.</p>
-<p>Cunningham, S. (2021). <em>Causal Inference: The Mixtape</em>.</p>
-<p>Angrist, J. D., &amp; Pischke, J.-S. (2009). <em>Mostly Harmless Econometrics</em>.</p>
-<p>Pearl, J., &amp; Mackenzie, D. (2018). <em>The Book of Why: The New Science of Cause and Effect</em>.</p>
+<p>Efron, B. (1992). Bootstrap methods: another look at the jackknife. In Breakthroughs in statistics: Methodology and distribution (pp.&nbsp;569-593). New York, NY: Springer New York.</p>
+<p>Efron, B., &amp; Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.</p>
+<p>Quenouille, M. H. (1956). Notes on bias in estimation. Biometrika, 43(3/4), 353-360.</p>
+<p>Tukey, J. (1958). Bias and confidence in not quite large samples. Ann. Math. Statist., 29, 614.</p>
 
 
 </section>

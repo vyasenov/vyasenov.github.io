@@ -31,9 +31,11 @@ No one cares *why* your model works, only that it does.
 
 ### Causal Modeling: Think Harder, Control Smarter
 
-Now, enter the world of causal inference. The rules are completely different.
+Now, enter the world of causal inference. The rules are completely different. Hinting at the challenging nature of determining causality, the ancient Greek philosopher Democritus famously said:
 
-In causal modeling, the goal is not prediction, but isolation of the effect of a treatment ($T$) on $Y$. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here's the catch: **not all variables should be controlled for**.
+> "I would rather understand one cause than be King of Persia."
+
+In causal modeling, the goal is not prediction, but isolation of the effect of a treatment $T$ on $Y$. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here's the catch: **not all variables should be controlled for**.
 
 This is where the concept of **bad controls** comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.
 
@@ -43,13 +45,13 @@ In other words, in causal inference:
 - You must think hard about the causal structure of your data.
 - Domain knowledge is critical.
 
-Throwing in “everything” like in a predictive model? That can completely destroy your estimate. Furthermore, in causal inference you can almost never get away without deep knowledge of the environment, intervention, etc. Thus, in many ways causality is significantly more challenging than prediction. 
+Throwing in “everything” like in a predictive model? That can completely destroy your estimate. Furthermore, in causal inference you can almost never get away without deep knowledge of every aspect of your analysis - environment, intervention, sample, etc. Thus, in many ways causality is significantly more challenging than prediction. 
 
 ### An Example
 
-The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success ($Y$), and we find that hard work ($T$) has a causal effect on academic achievement. This means that if we were to increase a given student's effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about **what will happen if we intervene** (i.e., if we manipulate $T$). Intervene is the key word here. 
+The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success ($Y$), and we find that hard work ($T$) has a causal effect on academic achievement. This means that if we were to increase a given student's effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about **what will happen if we intervene** (i.e., manipulate $T$). Intervene is the key word here. Here's the [crazy thing](https://vyasenov.github.io/blog/causation-without-correlation.html) - in observational data, student success and effort might not even be correlated! 
 
-However, this doesn't necessarily help us predict with high accuracy which students will be most successful. Here's the [crazy thing](https://vyasenov.github.io/blog/causation-without-correlation.html) - in observational data, student success and effort might not even be correlated! For that task, other variables—like parental income ($X_1$), neighborhood quality ($X_2$), or prior test scores ($X_3$)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.
+So, this doesn't necessarily help us predict with high accuracy which students will be most successful. For that task, other variables—like parental income ($X_1$), neighborhood quality ($X_2$), or prior test scores ($X_3$)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.
 
 ### Propensity Scores: Where Predictive and Causal Worlds Collide
 

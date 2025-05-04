@@ -511,5 +511,11 @@
   },
   "blog/ci-residualized-reg.qmd": {
     "ci-residualized-reg.html": "7e729c8f"
+  },
+  "blog/roles-covariates-rtc.qmd": {
+    "roles-covariates-rtc.html": "3f10cf84"
+  },
+  "blog/jackknife-vs-bootstrap.qmd": {
+    "jackknife-vs-bootstrap.html": "2d2cc3a1"
   }
 }

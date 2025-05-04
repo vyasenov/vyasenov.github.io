@@ -94,10 +94,6 @@ print(f"Lilliefors test: statistic={stat}, p-value={pval}")
 
 - The KS test is less sensitive in the tails—be cautious with it as a global fit measure.
 
-## Where to Learn More
-
-If you're regularly checking distributional assumptions, it's worth diving into goodness-of-fit tests in more depth. The *American Statistician* paper by Zeimbekakis et al. (2024) is a great read. Also consider books like *Goodness-of-Fit Techniques* by D’Agostino and Stephens, or *All of Statistics* by Larry Wasserman for more intuitive overviews.
-
 ## References
 
 Zeimbekakis, A., Schifano, E. D., & Yan, J. (2024). On Misuses of the Kolmogorov–Smirnov Test for One-Sample Goodness-of-Fit. *The American Statistician*, 78(4), 481-487.
