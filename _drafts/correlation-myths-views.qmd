@@ -67,7 +67,7 @@ Each interpretation highlights a different trade-off or caveat. For example, the
 
 To dig deeper into the nuances of correlation, the papers discussed here are essential. You might also enjoy Bollen and Pearl's work on correlation vs. causation, or more modern texts on exploratory data analysis and robust statistics. Visualization tools like scatterplot matrices, partial residual plots, and nonparametric smoothers (e.g., loess) can complement numeric summaries.
 
-## References (if applicable)
+## References
 
 - van den Heuvel, E., & Zhan, Z. (2022). Myths about linear and monotonic associations: Pearson’s $r$, Spearman’s $\rho$, and Kendall’s $\tau$. *The American Statistician*, 76(1), 44–52.
 - Lee Rodgers, J., & Nicewander, W. A. (1988). Thirteen ways to look at the correlation coefficient. *The American Statistician*, 42(1), 59–66.

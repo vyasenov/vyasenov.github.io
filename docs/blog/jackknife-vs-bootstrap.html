@@ -347,9 +347,9 @@ window.Quarto = {
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
   <li><a href="#smooth-and-non-smooth-data-quantities" id="toc-smooth-and-non-smooth-data-quantities" class="nav-link" data-scroll-target="#smooth-and-non-smooth-data-quantities">Smooth and Non-smooth Data Quantities</a></li>
-  <li><a href="#the-jackknife-systematic-deletion" id="toc-the-jackknife-systematic-deletion" class="nav-link" data-scroll-target="#the-jackknife-systematic-deletion">The Jackknife: Systematic Deletion</a></li>
-  <li><a href="#the-bootstrap-simulating-the-sampling-distribution" id="toc-the-bootstrap-simulating-the-sampling-distribution" class="nav-link" data-scroll-target="#the-bootstrap-simulating-the-sampling-distribution">The Bootstrap: Simulating the Sampling Distribution</a></li>
-  <li><a href="#the-conceptual-difference" id="toc-the-conceptual-difference" class="nav-link" data-scroll-target="#the-conceptual-difference">The Conceptual Difference</a></li>
+  <li><a href="#the-jackknife" id="toc-the-jackknife" class="nav-link" data-scroll-target="#the-jackknife">The Jackknife</a></li>
+  <li><a href="#the-bootstrap" id="toc-the-bootstrap" class="nav-link" data-scroll-target="#the-bootstrap">The Bootstrap</a></li>
+  <li><a href="#comparison" id="toc-comparison" class="nav-link" data-scroll-target="#comparison">Comparison</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -407,26 +407,27 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="smooth-and-non-smooth-data-quantities" class="level3">
 <h3 class="anchored" data-anchor-id="smooth-and-non-smooth-data-quantities">Smooth and Non-smooth Data Quantities</h3>
-<p>What does it mean for a quantity to be smooth? A smooth quantity is one that responds gradually to small changes in the data—technically, it’s a statistic that is continuous or even differentiable as a function of the data points. The mean is a classic example: if you nudge any individual value slightly, the overall mean shifts just a little. In contrast, non-smooth quantities like the median can change abruptly; removing or altering a single observation may cause the median to jump, especially in small samples. This matters because the jackknife estimates bias and variance by systematically leaving out one observation at a time, and it performs best when the estimator varies smoothly with the data. When that assumption breaks, as it does with non-smooth statistics, the jackknife can give misleading results—whereas the bootstrap often still performs well.</p>
+<p>Our upcoming discussion will evolve around the concept of smoothness. What does it mean for a quantity to be smooth? A smooth quantity is one that responds gradually to small changes in the data—technically, it’s a statistic that is continuous or even differentiable as a function of the data points. The mean is a classic example: if you nudge any individual value slightly, the overall mean shifts just a little. In contrast, non-smooth quantities like the median can change abruptly; removing or altering a single observation may cause the median to jump, especially in small samples.</p>
 </section>
-<section id="the-jackknife-systematic-deletion" class="level3">
-<h3 class="anchored" data-anchor-id="the-jackknife-systematic-deletion">The Jackknife: Systematic Deletion</h3>
+<section id="the-jackknife" class="level3">
+<h3 class="anchored" data-anchor-id="the-jackknife">The Jackknife</h3>
 <p>The jackknife, introduced by Quenouille and popularized by Tukey in the 1950s, works by <strong>systematically leaving out one observation at a time</strong>. For each <span class="math inline">\(i\)</span>, we compute <span class="math inline">\(\hat{\theta}^{(-i)}\)</span>, the estimator based on the dataset with the <span class="math inline">\(i\)</span>th observation removed.</p>
 <p>This gives us <span class="math inline">\(n\)</span> estimates to work with: <span class="math display">\[
 \hat{\theta}^{(-1)}, \hat{\theta}^{(-2)}, \dots, \hat{\theta}^{(-n)}
 \]</span></p>
 <p>These can be used to estimate the bias or variance of <span class="math inline">\(\hat{\theta}\)</span>. But the method assumes that the estimator behaves “smoothly” as data points change—a property that fails for medians, quantiles, and many modern estimators.</p>
 </section>
-<section id="the-bootstrap-simulating-the-sampling-distribution" class="level3">
-<h3 class="anchored" data-anchor-id="the-bootstrap-simulating-the-sampling-distribution">The Bootstrap: Simulating the Sampling Distribution</h3>
+<section id="the-bootstrap" class="level3">
+<h3 class="anchored" data-anchor-id="the-bootstrap">The Bootstrap</h3>
 <p>The bootstrap, invented by Bradley Efron in 1979, made a conceptual leap: instead of deleting one observation at a time, <strong>draw samples of size <span class="math inline">\(n\)</span> from the data, <em>with replacement</em>.</strong> Each resample is like a new dataset: <span class="math display">\[
 X_1^*, X_2^*, \dots, X_n^* \sim \text{Empirical distribution of } \{X_1, \dots, X_n\}
 \]</span></p>
 <p>Compute <span class="math inline">\(\hat{\theta}^*\)</span> for each resample. Repeat this many times—hundreds or thousands—and you get a full approximation of the sampling distribution of <span class="math inline">\(\hat{\theta}\)</span>.</p>
 <p>This approach doesn’t rely on linearity or smoothness. It works for medians, maximums, machine learning models—you name it. It does have limitations though. In <a href="https://vyasenov.github.io/blog/bootstrap-limitations.html">an earlier article</a> I discussed some of the situations in which the bootstrap fails. Fun fact: Bradley Efron is still a professor of statistics at Stanford and can often be spotted in the front row at department seminars.</p>
 </section>
-<section id="the-conceptual-difference" class="level3">
-<h3 class="anchored" data-anchor-id="the-conceptual-difference">The Conceptual Difference</h3>
+<section id="comparison" class="level3">
+<h3 class="anchored" data-anchor-id="comparison">Comparison</h3>
+<p>So why did we begin with defining smoothness? Because the jackknife estimates bias and variance by systematically leaving out one observation at a time, and it performs best when the estimator varies smoothly with the data. When that assumption breaks, as it does with non-smooth statistics, the jackknife can give misleading results—whereas the bootstrap often still performs well.</p>
 <ul>
 <li><strong>Jackknife</strong>: Analytic, leaves out one data point at a time.</li>
 <li><strong>Bootstrap</strong>: Simulation-based, creates synthetic datasets by resampling with replacement.</li>
@@ -440,7 +441,6 @@ X_1^*, X_2^*, \dots, X_n^* \sim \text{Empirical distribution of } \{X_1, \dots, 
 <li><p>The jackknife is elegant but limited; it works best for linear, smooth estimators.</p></li>
 <li><p>The bootstrap is flexible and simulation-based, requiring no assumptions about estimator smoothness.</p></li>
 <li><p>Bootstrap’s strength lies in approximating the full sampling distribution—even for complex estimators.</p></li>
-<li><p>Efron’s insight: use the data to simulate the data-generating process.</p></li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
