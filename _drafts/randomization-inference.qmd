@@ -1,7 +1,7 @@
 ---
-title: "Randomization Inference: Exact Testing Without Parametric Assumptions"
-date: "2025-00-00"
-categories: [causal inference, randomized experiments]
+title: "Randomization Inference: A Gentle Introduction"
+date: "2025-05-05"
+categories: [causal inference, statistical inference]
 ---
 
 ## Background
@@ -24,6 +24,10 @@ $$
 Let $T(X)$ be a chosen test statistic.
 
 ## A Closer Look
+
+### Sharp vs Regular Null Hypotheses
+
+ADD CONTENT 
 
 ### Exact Testing via Randomization
 

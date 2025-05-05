@@ -2,6 +2,7 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/ks-test-one-sample.html",
       "/blog/jackknife-vs-bootstrap.html",
       "/blog/roles-covariates-rtc.html",
       "/blog/ci-residualized-reg.html",

@@ -1,0 +1,65 @@
+---
+title: "The Kolmogorov–Smirnov Test as a Goodness-of-fit"
+date: "2025-05-05"
+categories: [statistical inference]
+---
+
+## Background
+
+The Kolmogorov–Smirnov (KS) test is a staple in the statistical toolbox for checking how well data fit a hypothesized distribution. It comes in both a one-sample and a two-sample version. A common application in causal inference is covariates distribution balance checks between the treatment and control groups. It’s nonparametric, straightforward to compute, and widely implemented just about every statistical software. But—and this is a big but—using the KS test naively can lead to some serious misinterpretations, especially when parameters are estimated from the data.
+
+This article is based on the 2024 [paper](https://www.tandfonline.com/doi/abs/10.1080/00031305.2024.2356095) by Zeimbekakis, Schifano, and Yan, which takes a hard look at the common misuses of the *one-sample* KS test. We’ll walk through what the KS test is supposed to do, when it goes wrong, and how to think more clearly about assessing goodness-of-fit.
+
+## Notation
+
+Let $X_1, \dots, X_n$ be i.i.d. random variables with unknown distribution function $F$. We want to test whether $F = F_0$, for some known distribution function $F_0$.
+
+The empirical distribution function (EDF) is:
+$$F_n(x) = \frac{1}{n} \sum_{i=1}^n I(X_i \leq x)$$
+
+You are probably familiar with this. It's is a step function that estimates the true cumulative distribution function of a random variable based on a sample. At any point $x$, the ECDF gives the proportion of observations in the sample that are less than or equal to $x$. It is the nonparametric maximum likelihood estimator of the cumulative distribution function (CDF).
+ 
+The KS statistic is:
+$$D_n = \sup_{x \in \mathbb{R}} |F_n(x) - F_0(x)|$$
+
+Under the null hypothesis, this test statistic converges to the Kolmogorov distribution, a distribution with no closed-form density but a known CDF. This is under the assumption that $F_0$ is fully specified, i.e., no parameters have been estimated from the data.
+
+## A Closer Look
+
+### A Refresher on KS
+
+Intuitively, the KS test statistic measuries the largest vertical distance between the EDF and the hypothesized CDF $F_0$.  It is sensitive to discrepancies in the CDF. This gives you a global measure of discrepancy, not a local one—so it’s less powerful for detecting issues like tail misspecification or multimodality. This is important because in many applications, tail behavior is critically important, such as in risk modeling or extreme value analysis.
+
+A well known limitation of the KS test is that with small samples, it has limited power to detect distributional differences, while with very large samples, it may detect statistically significant but practically trivial deviations from the hypothesized distribution. This problem in the contxt of "big data" is obviously broader and goes beyond the KS test.
+
+### The Problem
+
+Here’s the catch: the null distribution of the KS statistic assumes $F_0$ is fully known. But in practice, people often use the test to evaluate model fit *after* estimating parameters—e.g., fitting a normal distribution by MLE and then checking fit with KS.
+
+That invalidates the test.
+
+Why? Because the theoretical distribution of $D_n$ changes when parameters are estimated. The true distribution of the test statistic becomes conditional on the data, and the critical values are no longer accurate. This leads to an deflated Type I error rate: you're less likely to incorrectly reject the null. In other words, the test is too conservative.
+
+### Better Alternatives
+
+When parameters are estimated, we need modified procedures:
+
+- **Lilliefors test**: An adaptation of the KS test that adjusts the null distribution when testing for normality with estimated parameters.
+- **Parametric bootstrap**: Simulate the null distribution of the test statistic by repeatedly fitting the model and computing $D_n$ on simulated data.
+- **Other GOF tests**: Anderson-Darling and Cramér-von Mises tests have versions that handle estimated parameters more gracefully.
+
+## Bottom Line
+
+- The KS test is a popular and flexible method for estimating differences between statistical disitributions.
+
+- It assumes no parameters are estimated—violating this leads to invalid inference.
+
+- Estimating parameters from the same data used in the test inflates Type I error.
+
+- Use alternatives like the Lilliefors test or bootstrap methods when parameters are estimated.
+
+## References
+
+Lilliefors, H. W. (1967). On the Kolmogorov-Smirnov test for normality with mean and variance unknown. Journal of the American statistical Association, 62(318), 399-402.
+
+Zeimbekakis, A., Schifano, E. D., & Yan, J. (2024). On Misuses of the Kolmogorov–Smirnov Test for One-Sample Goodness-of-Fit. *The American Statistician*, 78(4), 481-487.

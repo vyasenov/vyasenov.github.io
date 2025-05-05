@@ -19,7 +19,7 @@ Let’s unpack it.
 
 ## A Closer Look
 
-### Predictive Modeling: Just Give Me Accuracy
+### Predictive Modeling
 
 Let’s start with what more folks are familiar with: predictive models.
 
@@ -29,9 +29,9 @@ It’s all good *as long as* it helps you reduce Root Mean Squared Error (RMSE),
 
 No one cares *why* your model works, only that it does.
 
-### Causal Modeling: Think Harder, Control Smarter
+### Causal Modeling
 
-Now, enter the world of causal inference. The rules are completely different. Hinting at the challenging nature of determining causality, the ancient Greek philosopher Democritus famously said:
+Now, enter the world of causal inference. The rules are completely different. Demonstrating the challenging nature of determining causality, the ancient Greek philosopher Democritus famously said:
 
 > "I would rather understand one cause than be King of Persia."
 
@@ -47,13 +47,7 @@ In other words, in causal inference:
 
 Throwing in “everything” like in a predictive model? That can completely destroy your estimate. Furthermore, in causal inference you can almost never get away without deep knowledge of every aspect of your analysis - environment, intervention, sample, etc. Thus, in many ways causality is significantly more challenging than prediction. 
 
-### An Example
-
-The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success ($Y$), and we find that hard work ($T$) has a causal effect on academic achievement. This means that if we were to increase a given student's effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about **what will happen if we intervene** (i.e., manipulate $T$). Intervene is the key word here. Here's the [crazy thing](https://vyasenov.github.io/blog/causation-without-correlation.html) - in observational data, student success and effort might not even be correlated! 
-
-So, this doesn't necessarily help us predict with high accuracy which students will be most successful. For that task, other variables—like parental income ($X_1$), neighborhood quality ($X_2$), or prior test scores ($X_3$)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.
-
-### Propensity Scores: Where Predictive and Causal Worlds Collide
+### Propensity Scores
 
 One place where this confusion often plays out is in propensity score modeling.
 
@@ -69,6 +63,13 @@ There’s a trade-off here:
 - Propensity score models should optimize **covariate balance**.
 
 And that trade-off is why a more accurate model is not necessarily better for causal inference.
+
+
+## An Example
+
+The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success ($Y$), and we find that hard work ($T$) has a causal effect on academic achievement. This means that if we were to increase a given student's effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about **what will happen if we intervene** (i.e., manipulate $T$). Intervene is the key word here. Here's the [crazy thing](https://vyasenov.github.io/blog/causation-without-correlation.html) - in observational data, student success and effort might not even be correlated! 
+
+So, this doesn't necessarily help us predict with high accuracy which students will be most successful. For that task, other variables—like parental income ($X_1$), neighborhood quality ($X_2$), or prior test scores ($X_3$)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.
 
 ## Bottom Line
 

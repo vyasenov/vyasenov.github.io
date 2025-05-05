@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-04-30">
+<meta name="dcterms.date" content="2025-05-05">
 
-<title>Causal vs.&nbsp;Predictive Modeling: Subtle, but Crucial Differences – Vasco Yasenov</title>
+<title>The Kolmogorov–Smirnov Test as a Goodness-of-fit – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -343,13 +343,13 @@ window.Quarto = {
    
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
+  <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#predictive-modeling" id="toc-predictive-modeling" class="nav-link" data-scroll-target="#predictive-modeling">Predictive Modeling</a></li>
-  <li><a href="#causal-modeling" id="toc-causal-modeling" class="nav-link" data-scroll-target="#causal-modeling">Causal Modeling</a></li>
-  <li><a href="#propensity-scores" id="toc-propensity-scores" class="nav-link" data-scroll-target="#propensity-scores">Propensity Scores</a></li>
+  <li><a href="#a-refresher-on-ks" id="toc-a-refresher-on-ks" class="nav-link" data-scroll-target="#a-refresher-on-ks">A Refresher on KS</a></li>
+  <li><a href="#the-problem" id="toc-the-problem" class="nav-link" data-scroll-target="#the-problem">The Problem</a></li>
+  <li><a href="#better-alternatives" id="toc-better-alternatives" class="nav-link" data-scroll-target="#better-alternatives">Better Alternatives</a></li>
   </ul></li>
-  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -361,10 +361,9 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Causal vs.&nbsp;Predictive Modeling: Subtle, but Crucial Differences</h1>
+<h1 class="title">The Kolmogorov–Smirnov Test as a Goodness-of-fit</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">causal inference</div>
-    <div class="quarto-category">machine learning</div>
+    <div class="quarto-category">statistical inference</div>
   </div>
   </div>
 
@@ -376,7 +375,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 30, 2025</p>
+      <p class="date">May 5, 2025</p>
     </div>
   </div>
   
@@ -394,70 +393,53 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>It’s one of the most common mix-ups I see among data scientists—especially those coming from a machine learning background: confusing causal modeling with predictive modeling. On the surface, they look similar. You build a model, you include some variables, you fit it, and then you do… something with the results. But under the hood, these two approaches serve fundamentally different goals and require very different mindsets.</p>
-<p>Predictive modeling is about building a model that can forecast outcomes. Causal modeling is about understanding how the world works. And mixing them up can lead to some really bad decisions—like launching a product based on a spurious correlation or controlling for the wrong variables and wiping out your treatment effect.</p>
-<p>This post is for all the data scientists who’ve ever wondered any of the following: - “Why can’t I just throw everything into my causal model like I do with my random forest?” - “This causal model is great. Can’t we just use it for prediction as well?” - “What exactly is the difference between the two?”</p>
-<p>Let’s unpack it.</p>
+<p>The Kolmogorov–Smirnov (KS) test is a staple in the statistical toolbox for checking how well data fit a hypothesized distribution. It comes in both a one-sample and a two-sample version. A common application in causal inference is covariates distribution balance checks between the treatment and control groups. It’s nonparametric, straightforward to compute, and widely implemented just about every statistical software. But—and this is a big but—using the KS test naively can lead to some serious misinterpretations, especially when parameters are estimated from the data.</p>
+<p>This article is based on the 2024 <a href="https://www.tandfonline.com/doi/abs/10.1080/00031305.2024.2356095">paper</a> by Zeimbekakis, Schifano, and Yan, which takes a hard look at the common misuses of the <em>one-sample</em> KS test. We’ll walk through what the KS test is supposed to do, when it goes wrong, and how to think more clearly about assessing goodness-of-fit.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Let <span class="math inline">\(X_1, \dots, X_n\)</span> be i.i.d. random variables with unknown distribution function <span class="math inline">\(F\)</span>. We want to test whether <span class="math inline">\(F = F_0\)</span>, for some known distribution function <span class="math inline">\(F_0\)</span>.</p>
+<p>The empirical distribution function (EDF) is: <span class="math display">\[F_n(x) = \frac{1}{n} \sum_{i=1}^n I(X_i \leq x)\]</span></p>
+<p>You are probably familiar with this. It’s is a step function that estimates the true cumulative distribution function of a random variable based on a sample. At any point <span class="math inline">\(x\)</span>, the ECDF gives the proportion of observations in the sample that are less than or equal to <span class="math inline">\(x\)</span>. It is the nonparametric maximum likelihood estimator of the cumulative distribution function (CDF).</p>
+<p>The KS statistic is: <span class="math display">\[D_n = \sup_{x \in \mathbb{R}} |F_n(x) - F_0(x)|\]</span></p>
+<p>Under the null hypothesis, this test statistic converges to the Kolmogorov distribution, a distribution with no closed-form density but a known CDF. This is under the assumption that <span class="math inline">\(F_0\)</span> is fully specified, i.e., no parameters have been estimated from the data.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="predictive-modeling" class="level3">
-<h3 class="anchored" data-anchor-id="predictive-modeling">Predictive Modeling</h3>
-<p>Let’s start with what more folks are familiar with: predictive models.</p>
-<p>In predictive modeling, you’re judged by how well you can forecast an outcome, <span class="math inline">\(Y\)</span>. That’s it. You can (and often do) throw in everything and the kitchen sink—lagged outcomes, future values of other variables (careful though!), variables that are correlated with the outcome but not necessarily meaningful in a causal sense.</p>
-<p>It’s all good <em>as long as</em> it helps you reduce Root Mean Squared Error (RMSE), increase Area Under the Curve (AUC), or minimize cross-entropy loss. Data leakage is your main enemy, but otherwise, the bar for “what goes in the model” is pretty low. Setting data leakage and interpretation aside, just throw anything you have in there. You can often get away with building a decent model without deep institutional or context knowledge. The complex algorithms take care of that for you.</p>
-<p>No one cares <em>why</em> your model works, only that it does.</p>
+<section id="a-refresher-on-ks" class="level3">
+<h3 class="anchored" data-anchor-id="a-refresher-on-ks">A Refresher on KS</h3>
+<p>Intuitively, the KS test statistic measuries the largest vertical distance between the EDF and the hypothesized CDF <span class="math inline">\(F_0\)</span>. It is sensitive to discrepancies in the CDF. This gives you a global measure of discrepancy, not a local one—so it’s less powerful for detecting issues like tail misspecification or multimodality. This is important because in many applications, tail behavior is critically important, such as in risk modeling or extreme value analysis.</p>
+<p>A well known limitation of the KS test is that with small samples, it has limited power to detect distributional differences, while with very large samples, it may detect statistically significant but practically trivial deviations from the hypothesized distribution. This problem in the contxt of “big data” is obviously broader and goes beyond the KS test.</p>
 </section>
-<section id="causal-modeling" class="level3">
-<h3 class="anchored" data-anchor-id="causal-modeling">Causal Modeling</h3>
-<p>Now, enter the world of causal inference. The rules are completely different. Demonstrating the challenging nature of determining causality, the ancient Greek philosopher Democritus famously said:</p>
-<blockquote class="blockquote">
-<p>“I would rather understand one cause than be King of Persia.”</p>
-</blockquote>
-<p>In causal modeling, the goal is not prediction, but isolation of the effect of a treatment <span class="math inline">\(T\)</span> on <span class="math inline">\(Y\)</span>. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here’s the catch: <strong>not all variables should be controlled for</strong>.</p>
-<p>This is where the concept of <strong>bad controls</strong> comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.</p>
-<p>In other words, in causal inference:</p>
+<section id="the-problem" class="level3">
+<h3 class="anchored" data-anchor-id="the-problem">The Problem</h3>
+<p>Here’s the catch: the null distribution of the KS statistic assumes <span class="math inline">\(F_0\)</span> is fully known. But in practice, people often use the test to evaluate model fit <em>after</em> estimating parameters—e.g., fitting a normal distribution by MLE and then checking fit with KS.</p>
+<p>That invalidates the test.</p>
+<p>Why? Because the theoretical distribution of <span class="math inline">\(D_n\)</span> changes when parameters are estimated. The true distribution of the test statistic becomes conditional on the data, and the critical values are no longer accurate. This leads to an deflated Type I error rate: you’re less likely to incorrectly reject the null. In other words, the test is too conservative.</p>
+</section>
+<section id="better-alternatives" class="level3">
+<h3 class="anchored" data-anchor-id="better-alternatives">Better Alternatives</h3>
+<p>When parameters are estimated, we need modified procedures:</p>
 <ul>
-<li>Including the wrong variable can make things worse.</li>
-<li>You must think hard about the causal structure of your data.</li>
-<li>Domain knowledge is critical.</li>
+<li><strong>Lilliefors test</strong>: An adaptation of the KS test that adjusts the null distribution when testing for normality with estimated parameters.</li>
+<li><strong>Parametric bootstrap</strong>: Simulate the null distribution of the test statistic by repeatedly fitting the model and computing <span class="math inline">\(D_n\)</span> on simulated data.</li>
+<li><strong>Other GOF tests</strong>: Anderson-Darling and Cramér-von Mises tests have versions that handle estimated parameters more gracefully.</li>
 </ul>
-<p>Throwing in “everything” like in a predictive model? That can completely destroy your estimate. Furthermore, in causal inference you can almost never get away without deep knowledge of every aspect of your analysis - environment, intervention, sample, etc. Thus, in many ways causality is significantly more challenging than prediction.</p>
 </section>
-<section id="propensity-scores" class="level3">
-<h3 class="anchored" data-anchor-id="propensity-scores">Propensity Scores</h3>
-<p>One place where this confusion often plays out is in propensity score modeling.</p>
-<p>To recap, the propensity score <span class="math inline">\(e(X) = P(T = 1 \mid X)\)</span> is the probability of receiving treatment given covariates. It’s often estimated via a logistic regression or ML model. Then, you use this score to adjust for differences between treated and control groups (e.g., via weighting or matching).</p>
-<p>And here’s the key point: <strong>your goal is not to get the best prediction of treatment.</strong> Your goal is to use the propensity score to balance covariates between groups. That’s it.</p>
-<p>So even if a fancy <code>XGBoost</code> model gives you higher prediction accuracy, it may overfit or fail to achieve covariate balance—which defeats the purpose. In fact, some of the best-performing PS models (for causal purposes) may have terrible predictive accuracy but excel at achieving balance.</p>
-<p>There’s a trade-off here:</p>
-<ul>
-<li>Predictive ML models focus on minimizing error.</li>
-<li>Propensity score models should optimize <strong>covariate balance</strong>.</li>
-</ul>
-<p>And that trade-off is why a more accurate model is not necessarily better for causal inference.</p>
-</section>
-</section>
-<section id="an-example" class="level2">
-<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<p>The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success (<span class="math inline">\(Y\)</span>), and we find that hard work (<span class="math inline">\(T\)</span>) has a causal effect on academic achievement. This means that if we were to increase a given student’s effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about <strong>what will happen if we intervene</strong> (i.e., manipulate <span class="math inline">\(T\)</span>). Intervene is the key word here. Here’s the <a href="https://vyasenov.github.io/blog/causation-without-correlation.html">crazy thing</a> - in observational data, student success and effort might not even be correlated!</p>
-<p>So, this doesn’t necessarily help us predict with high accuracy which students will be most successful. For that task, other variables—like parental income (<span class="math inline">\(X_1\)</span>), neighborhood quality (<span class="math inline">\(X_2\)</span>), or prior test scores (<span class="math inline">\(X_3\)</span>)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li><p>Predictive models are about forecasting outcomes; causal models are about estimating effects.</p></li>
-<li><p>In causal inference, you must think carefully about what to include in the model—“bad controls” can bias results.</p></li>
-<li><p>Propensity scores should be judged by how well they balance covariates, not by how well they predict treatment.</p></li>
-<li><p>More context and domain knowledge is usually required for causal models than for predictive ones.</p></li>
+<li><p>The KS test is a popular and flexible method for estimating differences between statistical disitributions.</p></li>
+<li><p>It assumes no parameters are estimated—violating this leads to invalid inference.</p></li>
+<li><p>Estimating parameters from the same data used in the test inflates Type I error.</p></li>
+<li><p>Use alternatives like the Lilliefors test or bootstrap methods when parameters are estimated.</p></li>
 </ul>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Hernán, M. A., &amp; Robins, J. M. (2020). <em>Causal Inference: What If</em>.</p>
-<p>Cunningham, S. (2021). <em>Causal Inference: The Mixtape</em>.</p>
-<p>Angrist, J. D., &amp; Pischke, J.-S. (2009). <em>Mostly Harmless Econometrics</em>.</p>
-<p>Pearl, J., &amp; Mackenzie, D. (2018). <em>The Book of Why: The New Science of Cause and Effect</em>.</p>
+<p>Lilliefors, H. W. (1967). On the Kolmogorov-Smirnov test for normality with mean and variance unknown. Journal of the American statistical Association, 62(318), 399-402.</p>
+<p>Zeimbekakis, A., Schifano, E. D., &amp; Yan, J. (2024). On Misuses of the Kolmogorov–Smirnov Test for One-Sample Goodness-of-Fit. <em>The American Statistician</em>, 78(4), 481-487.</p>
 
 
 </section>

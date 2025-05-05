@@ -27,6 +27,60 @@ In some of these cases theoretical approximation methods can provide analytical 
 
 While the bootstrap is a versatile and often reliable tool, awareness of these limitations can help you avoid potential pitfalls and ensure more robust statistical analyses.
 
+## An Example
+
+Let’s illustrate this failure mode with a simple example in `R` and `Python` focusing on estimating the maximum value of a random variable.
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+# Clear workspace and generate data
+rm(list=ls())
+set.seed(123)
+x <- runif(30, 0, 1)
+
+# True max and standard error via simulation
+true_max_se <- sd(replicate(10000, max(runif(30))))
+
+# Bootstrap
+B <- 1000
+boot_max <- replicate(B, max(sample(x, replace = TRUE)))
+boot_se <- sd(boot_max)
+
+# Results
+cat("True SE of max:", round(true_max_se, 4), "\n")
+> True SE of max: 0.0311 
+cat("Bootstrap SE of max:", round(boot_se, 4), "\n")
+> Bootstrap SE of max: 0.021 
+```
+
+### Python
+
+```python
+# Clear workspace and generate fake data
+import numpy as np
+np.random.seed(1988)
+x = np.random.uniform(0, 1, 30)
+
+# True SE via simulation
+true_max_se = np.std([np.max(np.random.uniform(0, 1, 30)) for _ in range(10000)])
+
+# Bootstrap
+B = 1000
+boot_max = [np.max(np.random.choice(x, size=30, replace=True)) for _ in range(B)]
+boot_se = np.std(boot_max, ddof=1)
+
+# Results
+print(f"True SE of max: {true_max_se:.4f}")
+> True SE of max: 0.0313
+print(f"Bootstrap SE of max: {boot_se:.4f}")
+> Bootstrap SE of max: 0.0240
+```
+
+::::
+
 ## Bottom Line
 
 - The bootstrap is incredible versatile, but it has its limitations.

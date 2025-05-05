@@ -6,15 +6,19 @@ categories: [bootstrap, statistical inference]
 
 ## Background
 
-If you've ever dived into resampling methods, you've likely come across the **jackknife** and the **bootstrap**. They both aim to help us estimate uncertainty or bias relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, I have often wondered what made the bootstrap, developed decades after the jackknife, such a big deal? Aren't they too similar to be considered separate methods and have distinct properties?
+If you've ever dived into resampling methods, you've likely come across the **jackknife** and the **bootstrap**. They both aim to help us estimate uncertainty or bias without relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, what made the bootstrap, developed decades after the jackknife, such a big deal? Aren't they too similar to be considered separate methods and have distinct properties?
 
 This article walks through the key intuition behind these methods and explains why the bootstrap was a genuine innovation.
 
 ## Notation
 
-We observe a sample of data points $X_1, X_2, \dots, X_n$, and we’re interested in an estimator $\hat{\theta} = \hat{\theta}(X_1, \dots, X_n)$ such as the mean, median, or a regression coefficient. Our goal is to understand the variability or bias of $\hat{\theta}$.
+We observe a sample of data points $X_1, X_2, \dots, X_n$, and we’re interested in an estimator $\hat{\theta} = \hat{\theta}(X_1, \dots, X_n)$ such as the mean, median, or a regression coefficient. Our goal is to understand and quantify the variability or bias of $\hat{\theta}$.
 
 ## A Closer Look
+
+### Smooth and Non-smooth Data Quantities
+
+What does it mean for a quantity to be smooth? A smooth quantity is one that responds gradually to small changes in the data—technically, it's a statistic that is continuous or even differentiable as a function of the data points. The mean is a classic example: if you nudge any individual value slightly, the overall mean shifts just a little. In contrast, non-smooth quantities like the median can change abruptly; removing or altering a single observation may cause the median to jump, especially in small samples. This matters because the jackknife estimates bias and variance by systematically leaving out one observation at a time, and it performs best when the estimator varies smoothly with the data. When that assumption breaks, as it does with non-smooth statistics, the jackknife can give misleading results—whereas the bootstrap often still performs well.
 
 ### The Jackknife: Systematic Deletion
 
@@ -36,14 +40,14 @@ $$
 
 Compute $\hat{\theta}^*$ for each resample. Repeat this many times—hundreds or thousands—and you get a full approximation of the sampling distribution of $\hat{\theta}$.
 
-This approach doesn’t rely on linearity or smoothness. It works for medians, maximums, machine learning models—you name it. In [an earlier article](https://vyasenov.github.io/blog/bootstrap-limitations.html) I discussed some of the situations in which the bootstrap fails.
+This approach doesn’t rely on linearity or smoothness. It works for medians, maximums, machine learning models—you name it. It does have limitations though. In [an earlier article](https://vyasenov.github.io/blog/bootstrap-limitations.html) I discussed some of the situations in which the bootstrap fails. Fun fact: Bradley Efron is still a professor of statistics at Stanford and can often be spotted in the front row at department seminars.
 
 ### The Conceptual Difference
 
 - **Jackknife**: Analytic, leaves out one data point at a time.
 - **Bootstrap**: Simulation-based, creates synthetic datasets by resampling with replacement.
 
-The bootstrap was feasible in 1979 thanks to improvements in computing. It provided a practical, general-purpose way to get confidence intervals and bias corrections for almost any estimator—not just the well-behaved ones.
+The bootstrap became feasible thanks to improvements in computing. It provided a practical, general-purpose way to get confidence intervals and bias corrections for almost any estimator—not just the well-behaved ones.
 
 ## Bottom Line
 

@@ -517,5 +517,14 @@
   },
   "blog/jackknife-vs-bootstrap.qmd": {
     "jackknife-vs-bootstrap.html": "2d2cc3a1"
+  },
+  "blog/randomization-inference.qmd": {
+    "randomization-inference.html": "96274e1d"
+  },
+  "blog/diff-stat-sig-not-stat-sig.qmd": {
+    "diff-stat-sig-not-stat-sig.html": "61e38e0d"
+  },
+  "blog/ks-test-one-sample.qmd": {
+    "ks-test-one-sample.html": "3be97ecd"
   }
 }

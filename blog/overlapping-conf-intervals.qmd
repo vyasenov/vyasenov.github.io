@@ -33,7 +33,7 @@ Crucially, we can also construct a confidence interval for the difference:
 
 $$ (\hat{Y_1} - \hat{Y_2}) \pm 1.96 \times \sqrt{ \hat{SE}(Y_1)^2+ \hat{SE}(Y_2)^2}. $$
 
-This is the interval we should be analyzing when testing whether $Y_1$ and $Y_2$ differ significantly.
+This is the interval we should be analyzing when testing whether $Y_1$ and $Y_2$ differ significantly. Gelman and Stern (2006) make the same point from a slightly different angle.
 
 
 ### Two Approaches, One Mistake
@@ -105,5 +105,7 @@ For a deeper exploration of this topic, including simulation results and discuss
 ## References
 
 Cole, S. R., & Blair, R. C. (1999). Overlapping confidence intervals. Journal of the American Academy of Dermatology, 41(6), 1051-1052.
+
+Gelman, A., & Stern, H. (2006). The difference between “significant” and “not significant” is not itself statistically significant. The American Statistician, 60(4), 328-331.
 
 Schenker, N., & Gentleman, J. F. (2001). On judging the significance of differences by examining the overlap between confidence intervals. The American Statistician, 55(3), 182-186.

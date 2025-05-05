@@ -6,7 +6,10 @@ categories: [statistical inference, correlation]
 
 ## Background
 
-Correlation is one of the most used (and misused) statistical concepts. It seems simple enough: a number between $-1$ and $1$ that tells you how strongly two variables are related. But lurking beneath that tidy number are a host of assumptions, limitations, and interpretations that often go unrecognized by even experienced analysts. In this article, we revisit two fascinating papers that try to untangle the myths and layers of meaning wrapped around correlation: van den Heuvel and Zhan (2022), and Rodgers and Nicewander (1988). Our goal is to sharpen our intuition and clear up misconceptions around three of the most popular correlation measures—Pearson's $r$, Spearman's $\rho$, and Kendall's $\tau$—while also exploring thirteen perspectives on what correlation actually tells us.
+Correlation is endlessly fascinating. It may be the single topic that I have written the most on this blog. It offers significant depth. In the era of deep learning and black box models, correlation stands out as transparent and interpretable statistical quantity.
+
+
+It is one of the most used (and misused) statistical concepts. It seems simple enough: a number between $-1$ and $1$ that tells you how strongly two variables are related. But lurking beneath that tidy number are a host of assumptions, limitations, and interpretations that often go unrecognized by even experienced analysts. In this article, we revisit two fascinating papers that try to untangle the myths and layers of meaning wrapped around correlation: van den Heuvel and Zhan (2022), and Rodgers and Nicewander (1988). Our goal is to sharpen our intuition and clear up misconceptions around three of the most popular correlation measures—Pearson's $r$, Spearman's $\rho$, and Kendall's $\tau$—while also exploring thirteen perspectives on what correlation actually tells us.
 
 ## Notation
 

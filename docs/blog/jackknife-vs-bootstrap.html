@@ -346,6 +346,7 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
+  <li><a href="#smooth-and-non-smooth-data-quantities" id="toc-smooth-and-non-smooth-data-quantities" class="nav-link" data-scroll-target="#smooth-and-non-smooth-data-quantities">Smooth and Non-smooth Data Quantities</a></li>
   <li><a href="#the-jackknife-systematic-deletion" id="toc-the-jackknife-systematic-deletion" class="nav-link" data-scroll-target="#the-jackknife-systematic-deletion">The Jackknife: Systematic Deletion</a></li>
   <li><a href="#the-bootstrap-simulating-the-sampling-distribution" id="toc-the-bootstrap-simulating-the-sampling-distribution" class="nav-link" data-scroll-target="#the-bootstrap-simulating-the-sampling-distribution">The Bootstrap: Simulating the Sampling Distribution</a></li>
   <li><a href="#the-conceptual-difference" id="toc-the-conceptual-difference" class="nav-link" data-scroll-target="#the-conceptual-difference">The Conceptual Difference</a></li>
@@ -395,15 +396,19 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>If you’ve ever dived into resampling methods, you’ve likely come across the <strong>jackknife</strong> and the <strong>bootstrap</strong>. They both aim to help us estimate uncertainty or bias relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, I have often wondered what made the bootstrap, developed decades after the jackknife, such a big deal? Aren’t they too similar to be considered separate methods and have distinct properties?</p>
+<p>If you’ve ever dived into resampling methods, you’ve likely come across the <strong>jackknife</strong> and the <strong>bootstrap</strong>. They both aim to help us estimate uncertainty or bias without relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, what made the bootstrap, developed decades after the jackknife, such a big deal? Aren’t they too similar to be considered separate methods and have distinct properties?</p>
 <p>This article walks through the key intuition behind these methods and explains why the bootstrap was a genuine innovation.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>We observe a sample of data points <span class="math inline">\(X_1, X_2, \dots, X_n\)</span>, and we’re interested in an estimator <span class="math inline">\(\hat{\theta} = \hat{\theta}(X_1, \dots, X_n)\)</span> such as the mean, median, or a regression coefficient. Our goal is to understand the variability or bias of <span class="math inline">\(\hat{\theta}\)</span>.</p>
+<p>We observe a sample of data points <span class="math inline">\(X_1, X_2, \dots, X_n\)</span>, and we’re interested in an estimator <span class="math inline">\(\hat{\theta} = \hat{\theta}(X_1, \dots, X_n)\)</span> such as the mean, median, or a regression coefficient. Our goal is to understand and quantify the variability or bias of <span class="math inline">\(\hat{\theta}\)</span>.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="smooth-and-non-smooth-data-quantities" class="level3">
+<h3 class="anchored" data-anchor-id="smooth-and-non-smooth-data-quantities">Smooth and Non-smooth Data Quantities</h3>
+<p>What does it mean for a quantity to be smooth? A smooth quantity is one that responds gradually to small changes in the data—technically, it’s a statistic that is continuous or even differentiable as a function of the data points. The mean is a classic example: if you nudge any individual value slightly, the overall mean shifts just a little. In contrast, non-smooth quantities like the median can change abruptly; removing or altering a single observation may cause the median to jump, especially in small samples. This matters because the jackknife estimates bias and variance by systematically leaving out one observation at a time, and it performs best when the estimator varies smoothly with the data. When that assumption breaks, as it does with non-smooth statistics, the jackknife can give misleading results—whereas the bootstrap often still performs well.</p>
+</section>
 <section id="the-jackknife-systematic-deletion" class="level3">
 <h3 class="anchored" data-anchor-id="the-jackknife-systematic-deletion">The Jackknife: Systematic Deletion</h3>
 <p>The jackknife, introduced by Quenouille and popularized by Tukey in the 1950s, works by <strong>systematically leaving out one observation at a time</strong>. For each <span class="math inline">\(i\)</span>, we compute <span class="math inline">\(\hat{\theta}^{(-i)}\)</span>, the estimator based on the dataset with the <span class="math inline">\(i\)</span>th observation removed.</p>
@@ -418,7 +423,7 @@ window.Quarto = {
 X_1^*, X_2^*, \dots, X_n^* \sim \text{Empirical distribution of } \{X_1, \dots, X_n\}
 \]</span></p>
 <p>Compute <span class="math inline">\(\hat{\theta}^*\)</span> for each resample. Repeat this many times—hundreds or thousands—and you get a full approximation of the sampling distribution of <span class="math inline">\(\hat{\theta}\)</span>.</p>
-<p>This approach doesn’t rely on linearity or smoothness. It works for medians, maximums, machine learning models—you name it. In <a href="https://vyasenov.github.io/blog/bootstrap-limitations.html">an earlier article</a> I discussed some of the situations in which the bootstrap fails.</p>
+<p>This approach doesn’t rely on linearity or smoothness. It works for medians, maximums, machine learning models—you name it. It does have limitations though. In <a href="https://vyasenov.github.io/blog/bootstrap-limitations.html">an earlier article</a> I discussed some of the situations in which the bootstrap fails. Fun fact: Bradley Efron is still a professor of statistics at Stanford and can often be spotted in the front row at department seminars.</p>
 </section>
 <section id="the-conceptual-difference" class="level3">
 <h3 class="anchored" data-anchor-id="the-conceptual-difference">The Conceptual Difference</h3>
@@ -426,7 +431,7 @@ X_1^*, X_2^*, \dots, X_n^* \sim \text{Empirical distribution of } \{X_1, \dots, 
 <li><strong>Jackknife</strong>: Analytic, leaves out one data point at a time.</li>
 <li><strong>Bootstrap</strong>: Simulation-based, creates synthetic datasets by resampling with replacement.</li>
 </ul>
-<p>The bootstrap was feasible in 1979 thanks to improvements in computing. It provided a practical, general-purpose way to get confidence intervals and bias corrections for almost any estimator—not just the well-behaved ones.</p>
+<p>The bootstrap became feasible thanks to improvements in computing. It provided a practical, general-purpose way to get confidence intervals and bias corrections for almost any estimator—not just the well-behaved ones.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
