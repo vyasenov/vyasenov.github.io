@@ -71,6 +71,15 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-RE2GPQMVXH"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
+</script>
 <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&amp;product=inline-share-buttons" async="async"></script>
 <script src="../code/open-links-new-tab.js"></script>  
 <script src="../code/back-to-top.js"></script>
@@ -346,6 +355,7 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
+  <li><a href="#heterogeneous-treatment-effects-in-linear-models" id="toc-heterogeneous-treatment-effects-in-linear-models" class="nav-link" data-scroll-target="#heterogeneous-treatment-effects-in-linear-models">Heterogeneous Treatment Effects in Linear Models</a></li>
   <li><a href="#lasso-with-treatment-variable-interactions" id="toc-lasso-with-treatment-variable-interactions" class="nav-link" data-scroll-target="#lasso-with-treatment-variable-interactions">Lasso with Treatment Variable Interactions</a></li>
   <li><a href="#lasso-with-knockoffs" id="toc-lasso-with-knockoffs" class="nav-link" data-scroll-target="#lasso-with-knockoffs">Lasso with Knockoffs</a></li>
   </ul></li>
@@ -412,17 +422,21 @@ window.Quarto = {
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="lasso-with-treatment-variable-interactions" class="level3">
-<h3 class="anchored" data-anchor-id="lasso-with-treatment-variable-interactions">Lasso with Treatment Variable Interactions</h3>
+<section id="heterogeneous-treatment-effects-in-linear-models" class="level3">
+<h3 class="anchored" data-anchor-id="heterogeneous-treatment-effects-in-linear-models">Heterogeneous Treatment Effects in Linear Models</h3>
 <p>In a low-dimensional world where regularization is not necessary and researchers are interested in <span class="math inline">\(HTE\)</span>s, they often use a linear model in which the treatment variable is interacted with the covariates. Statistically significant interaction coefficients identify the <span class="math inline">\(X\)</span> variables for which the treatment has a differential impact.</p>
 <p>Mathematically, when all variables are properly interacted, this is analogous to splitting the sample into subgroups based on <span class="math inline">\(X\)</span> and running OLS on each group separately. This is feasible and convenient when <span class="math inline">\(X\)</span> is binary or categorical, but not when it is continuous. The advantage of this approach is that linear regression produces <span class="math inline">\(p\)</span>-values which can be (mis)used to determine statistical significance of these interaction variables.</p>
 <p>The OLS model is then:</p>
 <p><span class="math display">\[Y = \beta_1 T + \beta_2 X + \beta_3 X \times T + \epsilon,\]</span></p>
 <p>where <span class="math inline">\(\epsilon\)</span> is the error term. The attention here falls on the coefficient vector <span class="math inline">\(\beta_3\)</span> which identifies whether the treatment has had a differential impact on units with a particular characteristic <span class="math inline">\(X\)</span>.</p>
+</section>
+<section id="lasso-with-treatment-variable-interactions" class="level3">
+<h3 class="anchored" data-anchor-id="lasso-with-treatment-variable-interactions">Lasso with Treatment Variable Interactions</h3>
 <p>In high-dimensional settings with a wide <span class="math inline">\(X\)</span>, this is not feasible. Instead, we can use an algorithm to pick out the variables in <span class="math inline">\(X\)</span> that are important for treatment effect heterogeneity.</p>
 <p><a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-7/issue-1/Estimating-treatment-effect-heterogeneity-in-randomized-program-evaluation/10.1214/12-AOAS593.full">Imai and Ratkovic (2013)</a> show how to adapt the Lasso to this setting. It turns out we should not simply throw this model into the Lasso loss function. Can you guess why? Some variables might be predictive of the baseline outcome while others only of the treatment effect heterogeneity. The trick is to have two separate Lasso constraints — <span class="math inline">\(\lambda_1\)</span> and <span class="math inline">\(\lambda_2\)</span>.</p>
 <p>So, the loss function looks something like this:</p>
 <p><span class="math display">\[\min_\beta \{ \frac{1}{N}||y-f(X,T)\beta_1 - X\times T \beta_2 ||_2^2 + \lambda_1||\beta_1||_1 + \lambda_2||\beta_2||_1 \}.\]</span></p>
+<p>In their actual implementation, this objective is embedded in a support vector machine (SVM) framework, where the authors replace the squared loss with a weighted hinge loss and treat treatment effect estimation as a classification task. The outcome variable is used to weight the classification errors, allowing the method to focus on correctly identifying individuals for whom the treatment has the most impact.</p>
 <p>A simplified version of the algorithm is as follows:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
@@ -435,18 +449,18 @@ Algorithm:
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Generate interaction variables, <span class="math inline">\(\tilde{X}(T)\)</span>.</li>
-<li>Run Lasso of <span class="math inline">\(Y\)</span> on <span class="math inline">\(T\)</span>, <span class="math inline">\(X\)</span> and <span class="math inline">\(\tilde{X}(T)\)</span>.</li>
-<li>Identify statistically significant variables determining treatment effect heterogeneity.</li>
+<li>Generate interaction variables, <span class="math inline">\(\tilde{X}(T)\)</span>, by interacting covariates with the treatment indicator.</li>
+<li>Set up a prediction model for <span class="math inline">\(Y\)</span> using <span class="math inline">\(T\)</span>, <span class="math inline">\(X\)</span>, and <span class="math inline">\(\tilde{X}(T)\)</span>, and fit it using an <em>outcome-weighted support vector machine (SVM)</em> with <em>separate Lasso penalties</em> on the main effect and interaction terms.</li>
+<li>Identify variables with non-zero interaction coefficients as drivers of treatment effect heterogeneity.</li>
 </ol>
 </div>
 </div>
-<p>Two notes. First, this requires some assurance that we are not overfitting, so that some form of sample splitting or cross validation is necessary. On top of this, <a href="https://www.aeaweb.org/articles?id=10.1257/jep.31.2.3">Athey and Imbens (2017)</a> suggest comparing these results with post-lasso OLS estimates to further guard against overfitting. Second, multiple testing is an issue as is the case with ML algorithms more generally. (You can check my earlier post on multiple hypothesis testing in linear machine learning models.) Options to take care of this include <a href="https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.tm08647">sample splitting</a> and <a href="https://www.tandfonline.com/doi/abs/10.1198/jasa.2011.tm10159">bootstrap</a>, among others.</p>
+<p>Two notes. First, this requires some assurance that we are not overfitting, so that some form of sample splitting or cross validation is necessary. On top of this, <a href="https://www.aeaweb.org/articles?id=10.1257/jep.31.2.3">Athey and Imbens (2017)</a> suggest comparing these results with post-lasso OLS estimates to further guard against overfitting. Second, multiple testing is an issue as is the case with ML algorithms more generally. (You can check my <a href="https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html">earlier post</a> on multiple hypothesis testing in linear machine learning models.) Options to take care of this include <a href="https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.tm08647">sample splitting</a> and <a href="https://www.tandfonline.com/doi/abs/10.1198/jasa.2011.tm10159">bootstrap</a>, among others.</p>
 <p><em>Software Package</em>: <a href="https://github.com/kosukeimai/FindIt">FindIt</a>.</p>
 </section>
 <section id="lasso-with-knockoffs" class="level3">
 <h3 class="anchored" data-anchor-id="lasso-with-knockoffs">Lasso with Knockoffs</h3>
-<p>An alternative approach directly regresses the unit-level treatment effects on <span class="math inline">\(X\)</span>. To get there, we first model the outcome function and impute the missing potential outcome for each unit. See my previous post on using Machine Learning tools for causal inference for more information on how we might do that.</p>
+<p>An alternative approach directly regresses the unit-level treatment effects on <span class="math inline">\(X\)</span>. To get there, we first model the outcome function and impute the missing potential outcome for each unit. See my <a href="https://vyasenov.github.io/blog/flavors-ml-methods-ci.html">previous post</a> on using Machine Learning tools for causal inference for more information on how we might do that.</p>
 <p>This approach was developed by <a href="https://dl.acm.org/doi/abs/10.1145/3219819.3219860?casa_token=prn79eBrsBMAAAAA:hWN_3s9f9DcTlWu4DtQlnU4bdJfchGOWFabAGa20TaAeJ660LWtC0rdcj5Gf62BSQmtER-T6wMDq">Xie et al.&nbsp;(2018)</a>. They recognized the multiple hypothesis issue and suggested using <a href="https://projecteuclid.org/journals/annals-of-statistics/volume-43/issue-5/Controlling-the-false-discovery-rate-via-knockoffs/10.1214/15-AOS1337.full">knockoffs</a> to control the False Discovery Rate. This is still not completely kosher, as it does not account for the fact that the outcome variable is estimated in an earlier step. Oh well. My guess and hope are that this is more of a theoretical concern, and empirically the inference we get is still “correct.”</p>
 <p>Here is a simplified version of their algorithm:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">

@@ -11,7 +11,8 @@ It’s one of the most common mix-ups I see among data scientists—especially t
 Predictive modeling is about building a model that can forecast outcomes. Causal modeling is about understanding how the world works. And mixing them up can lead to some really bad decisions—like launching a product based on a spurious correlation or controlling for the wrong variables and wiping out your treatment effect.
 
 This post is for all the data scientists who’ve ever wondered any of the following:
--  “Why can’t I just throw everything into my causal model like I do with my random forest?”
+
+- “Why can’t I just throw everything into my causal model like I do with my random forest?”
 - "This causal model is great. Can't we just use it for prediction as well?"
 - "What exactly is the difference between the two?"
 

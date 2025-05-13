@@ -6,6 +6,7 @@ website:
   title: "Vasco Yasenov"
   site-url: "https://vyasenov.github.io/"
   description: "Personal Site of Vasco Yasenov"
+  google-analytics: "G-RE2GPQMVXH"
   navbar:
     right:
       - text: About Me

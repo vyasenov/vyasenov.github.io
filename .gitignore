@@ -2,10 +2,14 @@
 .quarto/
 .vscode/
 
+# Python virtual environment
+.venv/
+
 # Site output (if using _site instead of docs/)
 _site/
 _extensions/
 _templates/
+lib/
 
 # Mac system file
 .DS_Store
@@ -13,10 +17,11 @@ _templates/
 # Drafts or private notes (choose your folder name)
 _drafts/
 
-# prompt files
+# academic papers
+_papers/
+
+# AI prompt files
 prompts.txt
 
-# Python virtual environment
-.venv/
 
 /.quarto/

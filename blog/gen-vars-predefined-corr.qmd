@@ -17,7 +17,7 @@ A powerful and efficient way to achieve this is through Cholesky decomposition. 
 Assume we want to generate a vector Y with n observations and p variables with a target correlation matrix $\Sigma$. The algorithm to obtain $Y$ is as follows:
 
 ::: {.callout-note title="Algorithm:"}
-1. **Start with Independent Variables**: Create a matrix $X$ of dimensions $n \times p$, where each column is independently drawn from N(0,1):
+1. **Start with Independent Variables**: Create a matrix $X$ of dimensions $n \times p$, where each column is independently drawn from $N(0,1)$:
   $$ X = \begin{bmatrix}x_{11} & x_{12} & \cdots & x_{1p} \\x_{21} & x_{22} & \cdots & x_{2p} \\ \vdots & \vdots & \ddots & \vdots \\x_{n1} & x_{n2} & \cdots & x_{np}.\end{bmatrix} $$
 2. **Decompose the Target Matrix**: Perform Cholesky decomposition on the target correlation matrix $\Sigma$ as:
   $$\Sigma = LL^T,$$

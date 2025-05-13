@@ -176,6 +176,8 @@ Dupraz, Y. (2013). Using Weights in Stata. Memo, 54(2)
 
 Lumley, T. (2020), Weights in Statistics, [Blog Post](https://notstatschat.rbind.io/2020/08/04/weights-in-statistics/)
 
+Miratrix, L. W., Sekhon, J. S., Theodoridis, A. G., & Campos, L. F. (2018). Worth weighting? How to think about and use weights in survey experiments. Political Analysis, 26(3), 275-291.
+
 Solon, G., Haider, S. J., & Wooldridge, J. M. (2015). What are we weighting for?. Journal of Human resources, 50(2), 301-316.
 
 [Stata User’s Guide](https://www.stata.com/manuals/u.pdf) (2023) 
