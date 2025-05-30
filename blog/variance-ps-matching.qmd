@@ -1,7 +1,7 @@
 ---
 title: "The Variance of Propensity Score Matching Estimators"
 date: "2023-03-30"
-categories: [propensity score, causal inference]
+categories: [statistical inference, causal inference]
 ---
 
 ## Background

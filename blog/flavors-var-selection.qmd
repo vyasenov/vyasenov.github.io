@@ -1,0 +1,495 @@
+---
+title: "The Many Flavors of Variable Selection"
+date: "2025-05-26"
+categories: [variable selection, machine learning]
+---
+
+## Background
+
+If you’ve ever worked with high-dimensional data, you’ve likely faced a familiar challenge: too many variables. Some features are pure noise, others are redundant or collinear, and only a handful truly matter. The question is: how do you tell the difference? This challenge lies at the heart of what we call variable selection.
+
+Over time, statisticians and machine learning researchers have created a diverse toolbox of techniques to tackle this problem—each rooted in different ideas, with its own strengths and trade-offs. Some methods apply penalties to shrink coefficients, like Lasso and Ridge. Others use geometric insights, like Principal Components Analysis (PCA). There are methods built on randomization, like Model-X Knockoffs, and some that rely on greedy or stepwise searches, such as Forward Selection and Least Angle Regression (LAR).
+
+In this post, I’ll take a guided tour through these approaches—what they do, when to use them, and why they work. We’ll also explore their limitations, because no method is a silver bullet. The goal isn’t to pick a winner, but to help you figure out which tool fits your problem. Think of it as a field guide to variable selection, focused on ideas and intuition—so you can navigate the landscape with more confidence and clarity. And, yes, there will be plenty of `R` and `Python` code snippets to illustrate each method in action.
+
+## Notation
+
+Suppose we observe data $(Y, X)$, where $Y \in \mathbb{R}^n$ is the outcome vector and $X \in \mathbb{R}^{n \times p}$ is the matrix of predictors (covariates, features, regressors—pick your favorite term). 
+
+We’re interested in estimating a relationship like:
+$$
+Y = X \beta + \varepsilon,
+$$
+
+where $\beta \in \mathbb{R}^p$ is the vector of coefficients and $\varepsilon$ is the error term.
+
+In high-dimensional settings, $p$ may be large—possibly even larger than $n$. The core task of variable selection is to identify **which components of $\beta$ are nonzero** (or, more generally, which features matter for predicting $Y$). 
+
+(Distinguishing prediction and inference is crucial here: we focus on the former, so we ignore things like confidence intervals or $p$-values for coefficients altogether. The latter is a much [more complex problem](https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html).)
+
+## A Closer Look
+
+
+### Stepwise Selection (Forward, Backward, Both)
+
+The classic workhorse of variable selection, stepwise procedures iteratively add or remove variables based on some criterion like AIC (Aikake Information Criterion), BIC (Bayesian Information Criterion), or $p$-values. In forward selection, you start with no variables and add the one that improves the model the most. In backward elimination with $p<n$, you start with all variables and remove the least significant one at each step. Both methods can also be combined in a bidirectional stepwise approach. In either case, you stop when adding or removing variables no longer improves the model according to your chosen criterion.
+
+**When to use it?** For smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side).
+
+**Strengths:** Simple, interpretable, available in every stats package.
+
+**Weaknesses:** Can be unstable, prone to overfitting, ignores model uncertainty. The statistical community looks down on it, and I find it underappreciated.
+
+:::: {.panel-tabset}
+
+#### R
+```r
+library(MASS)
+full_model <- lm(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width, data = iris)
+step_model <- stepAIC(full_model, direction = "both")
+summary(step_model)
+```
+
+#### Python
+```python
+from sklearn.datasets import load_iris
+import pandas as pd
+from mlxtend.feature_selection import SequentialFeatureSelector as SFS
+from sklearn.linear_model import LinearRegression
+
+# Load iris data
+iris = load_iris(as_frame=True)
+df = iris.frame
+X = df[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
+y = df['sepal length (cm)']
+
+# Stepwise selection (both directions)
+sfs = SFS(LinearRegression(),
+          k_features='best',  # Select best number of features
+          forward=True,
+          floating=True,      # Enables bidirectional selection
+          scoring='neg_mean_squared_error',
+          cv=0)               # No cross-validation, like stepAIC
+
+sfs = sfs.fit(X, y)
+
+# Selected features
+print('Selected features:', list(sfs.k_feature_names_))
+
+# Fit final model
+selected_X = X[list(sfs.k_feature_names_)]
+model = LinearRegression().fit(selected_X, y)
+print('Coefficients:', model.coef_)
+print('Intercept:', model.intercept_)
+```
+::::
+
+---
+
+### Lasso (aka $\ell_1$ Regularization)
+
+Lasso introduced the big idea of *sparsity*, that only some variables enter the model. It penalizes the sum of the absolute values of the coefficients:
+
+$$
+\hat{\beta}^{\text{lasso}} = \arg\min_{\beta} \left\{ \| Y - X \beta \|_2^2 + \lambda \| \beta \|_1 \right\}.
+$$
+
+The magic of the $\ell_1$ penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. It's theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios. 
+
+Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of flavors, including group lasso, adaptive lasso, and fused lasso, which I will probably cover in a future blog post. Be careful, though, lasso is known to be biased, so it's great for prediction, but don't take its coefficients at face value.
+
+**When to use it?** When you believe that only a subset of predictors are relevant and want an interpretable model.
+
+**Strengths:** Sparse solutions, automatic variable selection, computationally efficient.
+
+**Weaknesses:** Can struggle with groups of correlated predictors (tends to pick one arbitrarily), biased estimates due to shrinkage.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(glmnet)
+data(iris)
+X <- as.matrix(iris[, c("Sepal.Width", "Petal.Length", "Petal.Width")])
+Y <- iris$Sepal.Length
+fit <- cv.glmnet(X, Y, alpha = 1)
+coef(fit, s = "lambda.min")
+```
+
+#### Python
+```python
+from sklearn.linear_model import LassoCV
+from sklearn.datasets import load_iris
+import pandas as pd
+import numpy as np
+
+iris = load_iris(as_frame=True).frame
+X = iris[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
+y = iris['sepal length (cm)']
+lasso = LassoCV(cv=5).fit(X, y)
+lasso.coef_
+```
+::::
+
+---
+
+### Ridge Regression (aka $\ell_2$ Regularization)
+
+Ridge regression doesn’t exactly *select* variables—it shrinks them. The idea is to add a penalty on the size of the coefficients:
+
+$$
+\hat{\beta}^{\text{ridge}} = \arg\min_{\beta} \left\{ \| Y - X \beta \|_2^2 + \lambda \| \beta \|_2^2 \right\}.
+$$
+
+Here, $\lambda \ge 0$ is a tuning parameter that controls the strength of the penalty. As $\lambda$ increases, the solution is increasingly biased toward zero, but the variance decreases, which can improve out-of-sample performance.
+
+Unlike the lasso, Ridge regression does not produce sparse solutions—none of the coefficients are exactly zero. Instead, it distributes shrinkage smoothly across all variables, which can be helpful when all predictors contribute weakly and roughly equally.
+
+Ridge is also computationally convenient. The modified normal equations involve the matrix $X^\top X + \lambda I$, which is always invertible when $\lambda > 0$, even if $X^\top X$ is singular. As a result, Ridge provides a unique and stable solution even in high-dimensional settings where $p > n$—a situation where ordinary least squares (OLS) fails due to non-identifiability.
+
+**When to use it?** When multicollinearity is a problem or when you prefer stability over sparsity. Ridge is especially good when many small effects contribute to the outcome.
+
+**Strengths:** Stabilizes estimates, handles multicollinearity gracefully.
+
+**Weaknesses:** Does not produce sparse solutions; all coefficients remain in the model.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(glmnet)
+data(iris)
+X <- as.matrix(iris[, c("Sepal.Width", "Petal.Length", "Petal.Width")])
+Y <- iris$Sepal.Length
+fit <- cv.glmnet(X, Y, alpha = 0)
+coef(fit, s = "lambda.min")
+```
+
+#### Python
+```python
+from sklearn.linear_model import RidgeCV
+from sklearn.datasets import load_iris
+import pandas as pd
+import numpy as np
+
+iris = load_iris(as_frame=True).frame
+X = iris[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
+y = iris['sepal length (cm)']
+lasso = RidgeCV(cv=5).fit(X, y)
+lasso.coef_
+```
+::::
+
+---
+
+### Elastic Net
+
+Elastic Net combines the strengths of both Ridge and Lasso by blending their penalties into a single regularization framework:
+
+$$
+\hat{\beta}^{\text{EN}} = \arg\min_{\beta} \left\{ \| Y - X \beta \|_2^2 + \lambda_1 \| \beta \|_1 + \lambda_2 \| \beta \|_2^2 \right\}.
+$$
+
+This formulation retains the sparsity-inducing property of the Lasso via the $\ell_1$ penalty while incorporating the stabilizing effect of Ridge regression through the $\ell_2$ penalty. The result is a model that not only performs variable selection but also handles groups of correlated predictors more gracefully than Lasso alone, which tends to pick one variable from a group and ignore the rest.
+
+Elastic Net is especially helpful in high-dimensional settings where predictors are strongly correlated or when $p \gg n$. The two tuning parameters, $\lambda_1$ and $\lambda_2$, control the trade-off between sparsity and smooth shrinkage. In practice, these are often reparameterized using a single penalty term $\lambda$ and a mixing proportion $\alpha$ (as in many software packages), where:
+
+$$
+\lambda_1 = \lambda \alpha, \quad \lambda_2 = \lambda (1 - \alpha).
+$$
+
+This makes it easy to interpolate between Ridge ($\alpha = 0$) and Lasso ($\alpha = 1$), giving you a continuum of models with different regularization characteristics.
+
+**When to use it?** When predictors are correlated, and you want both sparsity and stability.
+
+**Strengths:** Handles groups of correlated variables better than Lasso alone.
+
+**Weaknesses:** Adds an extra tuning parameter to balance the ℓ₁ and ℓ₂ penalties.
+
+:::: {.panel-tabset}
+
+### R
+```r
+library(glmnet)
+data(iris)
+X <- as.matrix(iris[, c("Sepal.Width", "Petal.Length", "Petal.Width")])
+Y <- iris$Sepal.Length
+fit <- cv.glmnet(X, Y, alpha = 0.5)
+coef(fit, s = "lambda.min")
+```
+
+### Python
+```python
+from sklearn.linear_model import ElasticNetCV
+from sklearn.datasets import load_iris
+import pandas as pd
+import numpy as np
+
+iris = load_iris(as_frame=True).frame
+X = iris[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
+y = iris['sepal length (cm)']
+lasso = ElasticNetCV(cv=5).fit(X, y)
+lasso.coef_
+```
+::::
+
+---
+
+### Principal Components Regression (PCR)
+
+Principal Components Analysis (PCA) finds linear combinations of the original variables that explain the most variance of the entire dataset.
+
+$$
+\max_{w \in \mathbb{R}^p,\, \|w\| = 1} \; \mathrm{Var}(Xw) = w^\top \Sigma w
+$$
+
+In Principal Components Regression, we regress $Y$ on the top $k$ principal components of $X$ instead of on the original variables. 
+
+$$
+\hat{\beta}_{\text{PCR}} = V_k (Z^\top Z)^{-1} Z^\top y
+$$
+
+PCA is among the most popular methods for dimensionality reduction even among junior data scientists, so I won't spend too much time on it here. PCA lives in dual nature, with one foot in unsupervised learning (finding components) and the other in supervised learning (variable selection).
+
+**When to use it?** When predictors are highly correlated or when dimensionality reduction is needed before regression.
+
+**Strengths:** Reduces dimensionality, handles multicollinearity.
+
+**Weaknesses:** Components may be hard to interpret; variable selection is indirect since it selects combinations of variables, not individual variables.
+
+:::: {.panel-tabset}
+
+#### R
+```r
+library(pls)
+pcr_model <- pcr(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width, data = iris, scale = TRUE, validation = "CV")
+summary(pcr_model)
+```
+
+#### Python
+```python
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+reg = LinearRegression().fit(X_pca, y)
+reg.coef_
+```
+::::
+
+---
+
+### Least Angle Regression (LAR)
+
+Least Angle Regression (LAR) is a greedy, stepwise variable selection algorithm that adds predictors to a linear model incrementally. At each step, it moves in the direction of the predictor most correlated with the current residual, just like forward selection—but with a twist: it adjusts the direction gradually as more variables become equally correlated with the residuals. How it works:
+
+::: {.callout-note title="Algorithm:"}
+1. Start with all coefficients set to zero.
+2. Find the predictor most correlated with the current residual.
+3. Move the coefficient of that variable in the direction of its sign until another predictor becomes equally correlated with the residual.
+4. Continue in a “least angle” direction, adjusting the path to include both predictors, and so on.
+::::
+
+The result is a sequence of models, each with one more active variable—just like in forward stepwise regression, but using geometry rather than brute force.
+
+Geometrically, LAR moves along piecewise linear paths toward the least squares solution, and its trajectory closely tracks that of Lasso. In fact, with a small modification, LAR can be used to compute the entire Lasso solution path.
+
+**When to use it?** When you want a fast, interpretable selection process similar to forward selection.
+
+**Strengths:** Computationally efficient, provides the full regularization path.
+
+**Weaknesses:** Like Lasso, can behave poorly with correlated predictors.
+
+:::: {.panel-tabset}
+
+#### R
+```r
+library(lars)
+lar_model <- lars(X, Y, type = "lar")
+print(lar_model)
+```
+
+#### Python
+```python
+from sklearn.linear_model import Lars
+lar = Lars().fit(X, y)
+lar.coef_
+```
+::::
+
+---
+
+### SCAD (Smoothly Clipped Absolute Deviation)
+
+SCAD (Smoothly Clipped Absolute Deviation) is a non-convex penalty introduced by Fan and Li (2001) to address a key limitation of the Lasso: its tendency to over-shrink large coefficients, leading to biased estimates for important variables.
+
+The SCAD penalty is designed to encourage sparsity like the Lasso for small coefficients, but to relax the penalty for larger ones. In other words, it behaves like Lasso near zero—pushing small coefficients toward zero—but reduces shrinkage as coefficients grow, effectively preserving the size of large signals.
+
+Mathematically, the derivative of the SCAD penalty is defined as:
+
+$$
+P'_\lambda(\beta) = \lambda \left[ I(|\beta| \leq \lambda) + \frac{(a \lambda - |\beta|)_+}{(a - 1)\lambda} I(|\beta| > \lambda) \right],
+$$
+
+where $a > 2$ (typically $a = 3.7$) and $(x)_+ = \max(0, x)$ denotes the positive part. This piecewise definition ensures a smooth transition:
+
+* For small coefficients $|\beta| \leq \lambda$, it behaves like the Lasso.
+* For moderate coefficients $\lambda < |\beta| < a \lambda$, the penalty decreases gradually.
+* For large coefficients $|\beta| \ge a\lambda$, the penalty becomes flat—effectively applying no further shrinkage.
+
+This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and oracle-like properties under certain conditions.
+
+**When to use it?** When you need a sparse model but want to reduce shrinkage bias on strong signals.
+
+**Strengths:** Encourages sparsity, less biased than Lasso, asymptotically unbiased under certain conditions.
+
+**Weaknesses:** The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.
+
+::: {.panel-tabset}
+
+
+#### R
+```r
+library(ncvreg)
+data(iris)
+X <- as.matrix(iris[, c("Sepal.Width", "Petal.Length", "Petal.Width")])
+Y <- iris$Sepal.Length
+
+# Fit SCAD-penalized regression
+scad_fit <- ncvreg(X, Y, penalty = "SCAD")
+
+# Plot cross-validated error
+cv <- cv.ncvreg(X, Y, penalty = "SCAD")
+plot(cv)
+
+# Coefficients at optimal lambda
+coef(cv, lambda = "min")
+```
+
+#### Python
+```python
+import numpy as np
+from sparseline.penalties import SCAD
+from sparseline.regression import PenalizedLinearRegression
+from sklearn.model_selection import train_test_split
+
+# Simulate data
+np.random.seed(123)
+n, p = 100, 20
+X = np.random.randn(n, p)
+beta = np.concatenate([np.array([3, -2, 1.5]), np.zeros(p - 3)])
+y = X @ beta + np.random.randn(n)
+
+# Fit SCAD-penalized regression
+model = PenalizedLinearRegression(penalty=SCAD(lambda_=0.1, a=3.7))
+model.fit(X, y)
+
+# Coefficients
+print("Estimated coefficients:", model.coef_)
+```
+::::
+
+---
+
+### Knockoffs
+
+Knockoffs, introduced by Barber and Candès (2015), is a clever framework for variable selection with **false discovery rate (FDR) control**. The method constructs “knockoff copies” of each feature—artificial variables that mimic the correlation structure of the real ones but are known to be null. Then it tests whether the real variables outperform their knockoffs. 
+
+I have [written about knockoffs](https://vyasenov.github.io/blog/flavors-multiple-testing.html) in more detail in previous posts, so I won't go into the details here. Just like PCA, knockoffs live in dual nature, with one foot in the multiple testing literature (constructing knockoffs) and the other in supervised learning world (variable selection).
+
+**When to use it?** When you care about valid statistical guarantees like FDR control.
+
+**Strengths:** Controls FDR rigorously; applicable even in high-dimensional settings.
+
+**Weaknesses:** Requires construction of knockoff variables, which can be challenging for non-Gaussian designs.
+
+:::: {.panel-tabset}
+
+#### R
+```r
+
+# Clear workspace
+rm(list = ls())
+library(knockoff)
+library(glmnet)
+library(dplyr)
+
+# Load data
+data(iris)
+
+# Step 1: Prepare the data (binary classification)
+iris_binary <- iris %>% filter(Species != "setosa")
+X <- as.matrix(iris_binary[, 1:4])  # numeric predictors
+y <- as.numeric(iris_binary$Species == "virginica")  # binary target: virginica vs versicolor
+
+# Step 2: Create knockoff copies
+# Use the default Gaussian model-X knockoffs
+knockoffs <- create.fixed(X)  # creates a list with X and X_k (knockoffs)
+
+X_knock <- knockoffs$Xk
+
+# Step 3: Combine X and knockoffs and fit a Lasso model
+X_combined <- cbind(X, X_knock)
+fit <- cv.glmnet(X_combined, y, family = "binomial", alpha = 1)
+
+# Step 4: Compute importance statistics (lasso coefficients at lambda.min)
+coefs <- coef(fit, s = "lambda.min")[-1]  # remove intercept
+p <- ncol(X)
+
+W <- abs(coefs[1:p]) - abs(coefs[(p+1):(2*p)])  # feature importance W-statistic
+
+# Step 5: Apply knockoff threshold to select features
+threshold <- knockoff.threshold(W, fdr = 0.1)  # control FDR at 10%
+selected <- which(W >= threshold)
+
+# Step 6: Print results
+feature_names <- colnames(X)
+cat("Selected features controlling FDR at 10%:\n")
+print(feature_names[selected])
+
+```
+
+::::
+
+---
+
+### FOCI (Feature Ordering by Conditional Independence)
+
+FOCI is a recent, information-theoretic method that orders features by how much conditional mutual information they contribute to the outcome. It’s model-free and does not assume a particular parametric form. I have also writtn about FOCI in a [previous post](https://vyasenov.github.io/blog/foci.html), so I won't repeat the details here.
+
+**When to use it?** When you suspect nonlinear relationships or want model-agnostic feature screening.
+
+**Strengths:** Handles nonlinearities, no need for parametric models.
+
+**Weaknesses:** More computationally intensive; newer and less widely used in practice.
+
+---
+
+
+## Bottom Line
+
+- Lasso, Ridge, and Elastic Net are the go-to penalized regression methods, with Lasso giving sparsity, Ridge providing stability, and Elastic Net blending the two.
+- Non-convex penalties like SCAD address Lasso’s bias issue but at a computational cost.
+- PCA-based methods reduce dimensionality but don't directly select variables.
+- Knockoffs offer strong statistical guarantees like FDR control but require careful implementation.
+- Modern approaches like FOCI expand the toolkit to nonlinear and information-theoretic settings.
+
+## Where to Learn More
+
+For a great introduction to penalized regression methods, *The Elements of Statistical Learning* by Hastie, Tibshirani, and Friedman is a classic. As always, you can reach out *Computer Age Statistical Inference* or *All of Statistics* and they won't let you down. 
+
+## References
+
+Barber, R. F., & Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. *Annals of Statistics*, 43(5), 2055–2085.
+
+Efron, B., & Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.
+
+Efron, B., Hastie, T., Johnstone, I., & Tibshirani, R. (2004). Least angle regression.
+
+Fan, J., & Li, R. (2001). Variable selection via nonconcave penalized likelihood and its oracle properties. *Journal of the American Statistical Association*, 96(456), 1348–1360.
+
+Hastie, T., Tibshirani, R., & Friedman, J. (2009). *The Elements of Statistical Learning: Data Mining, Inference, and Prediction*. Springer.
+
+Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. Journal of the Royal Statistical Society Series B: Statistical Methodology, 58(1), 267-288.
+
+Wasserman, L. (2004). All of statistics: a concise course in statistical inference. Springer Science & Business Media.

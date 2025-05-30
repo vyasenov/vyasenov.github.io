@@ -9,72 +9,80 @@
     <lastmod>2025-04-27T22:45:03.406Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/filling-missing-data-mcmc.html</loc>
-    <lastmod>2025-05-01T03:03:56.011Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/flavors-bootstrap.html</loc>
+    <lastmod>2025-05-30T00:25:27.131Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/bootstrap-limitations.html</loc>
-    <lastmod>2025-05-04T15:41:11.366Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/bayesian-ab-tests.html</loc>
+    <lastmod>2025-04-28T16:56:59.381Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ml-based-adjustments.html</loc>
-    <lastmod>2025-04-25T21:01:45.206Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/column-sampling-bootstrap.html</loc>
+    <lastmod>2025-04-27T22:51:11.029Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ks-test-one-sample.html</loc>
-    <lastmod>2025-05-05T04:08:03.442Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html</loc>
+    <lastmod>2025-05-05T20:53:08.516Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ci-residualized-reg.html</loc>
-    <lastmod>2025-05-03T03:38:33.065Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/three-classes-stat-models.html</loc>
+    <lastmod>2025-04-27T22:47:29.888Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/corr-myths-13-views.html</loc>
+    <lastmod>2025-05-29T22:57:22.187Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/variance-ps-matching.html</loc>
-    <lastmod>2025-04-25T20:38:39.057Z</lastmod>
+    <lastmod>2025-05-30T02:18:44.833Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/conformal-inference-var-selection.html</loc>
-    <lastmod>2025-04-27T22:48:40.192Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/stratified-sampling-cont-var.html</loc>
+    <lastmod>2025-04-27T22:33:54.503Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/delta-method.html</loc>
-    <lastmod>2025-04-27T22:46:35.248Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/paradox-stein.html</loc>
+    <lastmod>2025-04-25T21:39:37.422Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/binscatter.html</loc>
-    <lastmod>2025-05-02T03:35:47.780Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/correlation-is-cosine.html</loc>
+    <lastmod>2025-04-25T21:24:44.157Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/limits-nonparametric-models.html</loc>
-    <lastmod>2025-05-02T23:38:51.678Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/index.html</loc>
+    <lastmod>2025-05-02T03:23:56.540Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/hypothesis-testing-all-data.html</loc>
-    <lastmod>2025-04-25T21:34:40.940Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/roles-covariates-rtc.html</loc>
+    <lastmod>2025-05-04T04:12:04.176Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/correlation-transitive.html</loc>
-    <lastmod>2025-04-27T23:01:01.112Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/overlapping-conf-intervals.html</loc>
+    <lastmod>2025-05-05T17:11:10.489Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/limits-parametric-models.html</loc>
-    <lastmod>2025-04-27T22:38:31.119Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/lasso-heterogeneous-effects.html</loc>
+    <lastmod>2025-05-06T03:49:19.700Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/gen-vars-predefined-corr.html</loc>
-    <lastmod>2025-05-05T22:36:36.562Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/flavors-var-selection.html</loc>
+    <lastmod>2025-05-30T00:45:04.605Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/diff-causal-predictive-models.html</loc>
-    <lastmod>2025-05-07T18:34:37.292Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/flavors-multiple-testing.html</loc>
+    <lastmod>2025-04-27T23:04:11.036Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/conformal-inference.html</loc>
-    <lastmod>2025-04-27T22:47:41.541Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html</loc>
+    <lastmod>2025-05-30T02:20:19.844Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/new-dev-fdr.html</loc>
-    <lastmod>2025-04-27T22:35:09.703Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/paradox-lord.html</loc>
+    <lastmod>2025-04-22T23:37:53.637Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/causality-wo-experiments.html</loc>
+    <lastmod>2025-05-01T02:33:56.914Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/foci.html</loc>
@@ -101,6 +109,10 @@
     <lastmod>2025-05-13T16:04:23.551Z</lastmod>
   </url>
   <url>
+    <loc>https://vyasenov.github.io/mind-map.html</loc>
+    <lastmod>2025-05-29T20:22:27.627Z</lastmod>
+  </url>
+  <url>
     <loc>https://vyasenov.github.io/index.html</loc>
     <lastmod>2025-05-03T03:36:55.847Z</lastmod>
   </url>
@@ -121,68 +133,76 @@
     <lastmod>2025-04-27T22:38:05.133Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/causality-wo-experiments.html</loc>
-    <lastmod>2025-05-01T02:33:56.914Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/conformal-inference.html</loc>
+    <lastmod>2025-04-27T22:47:41.541Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/paradox-lord.html</loc>
-    <lastmod>2025-04-22T23:37:53.637Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/diff-causal-predictive-models.html</loc>
+    <lastmod>2025-05-07T18:34:37.292Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html</loc>
-    <lastmod>2025-04-25T21:02:44.414Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/gen-vars-predefined-corr.html</loc>
+    <lastmod>2025-05-05T22:36:36.562Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/flavors-multiple-testing.html</loc>
-    <lastmod>2025-04-27T23:04:11.036Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/limits-parametric-models.html</loc>
+    <lastmod>2025-04-27T22:38:31.119Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/lasso-heterogeneous-effects.html</loc>
-    <lastmod>2025-05-06T03:49:19.700Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/recent-dev-fdr.html</loc>
+    <lastmod>2025-05-28T21:25:32.330Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/overlapping-conf-intervals.html</loc>
-    <lastmod>2025-05-05T17:11:10.489Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/correlation-transitive.html</loc>
+    <lastmod>2025-04-27T23:01:01.112Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/roles-covariates-rtc.html</loc>
-    <lastmod>2025-05-04T04:12:04.176Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/hypothesis-testing-all-data.html</loc>
+    <lastmod>2025-04-25T21:34:40.940Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/index.html</loc>
-    <lastmod>2025-05-02T03:23:56.540Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/limits-nonparametric-models.html</loc>
+    <lastmod>2025-05-02T23:38:51.678Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/correlation-is-cosine.html</loc>
-    <lastmod>2025-04-25T21:24:44.157Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/binscatter.html</loc>
+    <lastmod>2025-05-02T03:35:47.780Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/paradox-stein.html</loc>
-    <lastmod>2025-04-25T21:39:37.422Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/delta-method.html</loc>
+    <lastmod>2025-04-27T22:46:35.248Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/stratified-sampling-cont-var.html</loc>
-    <lastmod>2025-04-27T22:33:54.503Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/conformal-inference-var-selection.html</loc>
+    <lastmod>2025-04-27T22:48:40.192Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/flavors-matching-methods.html</loc>
+    <lastmod>2025-05-30T03:11:15.003Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/mutual-information.html</loc>
     <lastmod>2025-04-27T22:37:11.664Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/three-classes-stat-models.html</loc>
-    <lastmod>2025-04-27T22:47:29.888Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ci-residualized-reg.html</loc>
+    <lastmod>2025-05-03T03:38:33.065Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html</loc>
-    <lastmod>2025-05-05T20:53:08.516Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ks-test-one-sample.html</loc>
+    <lastmod>2025-05-05T04:08:03.442Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/column-sampling-bootstrap.html</loc>
-    <lastmod>2025-04-27T22:51:11.029Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ml-based-adjustments.html</loc>
+    <lastmod>2025-04-25T21:01:45.206Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/bayesian-ab-tests.html</loc>
-    <lastmod>2025-04-28T16:56:59.381Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/bootstrap-limitations.html</loc>
+    <lastmod>2025-05-04T15:41:11.366Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/filling-missing-data-mcmc.html</loc>
+    <lastmod>2025-05-01T03:03:56.011Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-het-treatment-effects.html</loc>
@@ -190,6 +210,6 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/about.html</loc>
-    <lastmod>2025-05-02T03:19:34.332Z</lastmod>
+    <lastmod>2025-05-18T15:14:54.595Z</lastmod>
   </url>
 </urlset>

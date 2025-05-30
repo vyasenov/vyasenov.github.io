@@ -1,0 +1,44 @@
+---
+title: "Visualizing the World of Causal Inference"
+page-layout: full
+format: html
+toc: false
+#description: "A conceptual map of treatment effect estimators organized by identification assumptions."
+---
+
+This interactive mind map presents a structured overview of methods for **treatment effect estimation** in causal inference grouped by its **core identification strategy**.  
+
+Click on each node to learn more about each method. Use it as a **learning aid**, a **reference guide**, or simply a way to explore the landscape of modern causal inference from a statistical viewpoint. 
+
+```{=html}
+<iframe src="files/mind-map.html" width="100%" height="700" frameborder="0"></iframe>
+```
+
+```{=html}
+<div style="max-width: 400px; margin-left: 0; margin-right: auto;">
+  <div class="card mt-3 mb-3">
+    <div class="card-header bg-light fw-bold">
+      Glossary
+    </div>
+    <div class="card-body" style="font-size: 14px;">
+      <ul class="list-unstyled mb-0">
+        <li><strong>PS</strong>: Propensity Score</li>
+        <li><strong>FE</strong>: Fixed Effects</li>
+        <li><strong>RE</strong>: Random Effects</li>
+        <li><strong>ML</strong>: Machine Learning</li>
+        <li><strong>DiD</strong>: Difference-in-Differences</li>
+        <li><strong>IV</strong>: Instrumental Variables</li>
+        <li><strong>SC</strong>: Synthetic Control</li>
+        <li><strong>GMM</strong>: Generalized Method of Moments</li>
+        <li><strong>TWFE</strong>: Two-Way Fixed Effects</li>
+        <li><strong>ATE</strong>: Average Treatment Effect</li>
+        <li><strong>CATE</strong>: Conditional Average Treatment Effect</li>
+        <li><strong>QTE</strong>: Quantile Treatment Effect</li>
+        <li><strong>CF</strong>: Control Function</li>
+        <li><strong>2SLS</strong>: Two-Stage Least Squares</li>
+        <li><strong>RD</strong>: Regression Discontinuity</li>
+      </ul>
+    </div>
+  </div>
+</div>
+```

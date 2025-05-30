@@ -17,6 +17,8 @@ website:
         href: blog/index.qmd        
       - text: Research
         href: research.qmd
+      - text: Methods Map
+        href: mind-map.qmd
       - text: Children's Book
         href: childrenbook.qmd        
       - icon: github

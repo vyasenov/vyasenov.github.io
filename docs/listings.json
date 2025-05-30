@@ -2,6 +2,10 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/flavors-matching-methods.html",
+      "/blog/flavors-var-selection.html",
+      "/blog/flavors-bootstrap.html",
+      "/blog/corr-myths-13-views.html",
       "/blog/ks-test-one-sample.html",
       "/blog/jackknife-vs-bootstrap.html",
       "/blog/roles-covariates-rtc.html",
@@ -31,7 +35,7 @@
       "/blog/flavors-correlation-coef.html",
       "/blog/conformal-inference.html",
       "/blog/conformal-inference-var-selection.html",
-      "/blog/new-dev-fdr.html",
+      "/blog/recent-dev-fdr.html",
       "/blog/ml-based-adjustments.html",
       "/blog/flavors-het-treatment-effects.html",
       "/blog/lasso-heterogeneous-effects.html",

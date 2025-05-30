@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-02-09">
+<meta name="dcterms.date" content="2025-05-24">
 
-<title>Binscatter: A New Visual Tool for Data Analysis – Vasco Yasenov</title>
+<title>The Secret Life of Correlation: Myths and Thirteen Views – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,41 +20,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -394,15 +359,11 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#formal-definition" id="toc-formal-definition" class="nav-link" data-scroll-target="#formal-definition">Formal Definition</a></li>
-  <li><a href="#the-algorithm" id="toc-the-algorithm" class="nav-link" data-scroll-target="#the-algorithm">The Algorithm</a></li>
-  <li><a href="#adjusting-for-covariates-the-wrong-way" id="toc-adjusting-for-covariates-the-wrong-way" class="nav-link" data-scroll-target="#adjusting-for-covariates-the-wrong-way">Adjusting for Covariates: The Wrong Way</a></li>
-  <li><a href="#adjusting-for-covariates-the-right-way" id="toc-adjusting-for-covariates-the-right-way" class="nav-link" data-scroll-target="#adjusting-for-covariates-the-right-way">Adjusting for Covariates: The Right Way</a></li>
-  <li><a href="#practical-considerations" id="toc-practical-considerations" class="nav-link" data-scroll-target="#practical-considerations">Practical Considerations</a></li>
+  <li><a href="#some-myths" id="toc-some-myths" class="nav-link" data-scroll-target="#some-myths">Some Myths</a></li>
+  <li><a href="#new-framework-for-association" id="toc-new-framework-for-association" class="nav-link" data-scroll-target="#new-framework-for-association">New Framework for Association</a></li>
+  <li><a href="#thirteen-ways-to-look-at-pearsons-r" id="toc-thirteen-ways-to-look-at-pearsons-r" class="nav-link" data-scroll-target="#thirteen-ways-to-look-at-pearsons-r">Thirteen Ways to Look at Pearson’s <span class="math inline">\(r\)</span></a></li>
   </ul></li>
-  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
-  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -413,8 +374,9 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Binscatter: A New Visual Tool for Data Analysis</h1>
+<h1 class="title">The Secret Life of Correlation: Myths and Thirteen Views</h1>
   <div class="quarto-categories">
+    <div class="quarto-category">statistical inference</div>
     <div class="quarto-category">correlation</div>
   </div>
   </div>
@@ -427,7 +389,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 9, 2025</p>
+      <p class="date">May 24, 2025</p>
     </div>
   </div>
   
@@ -445,214 +407,72 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>In the realm of data visualization, the classical scatter plot has long been a staple for exploring bivariate relationships. However, as datasets grow larger and more complex, traditional scatter plots can become cluttered and less informative. Privacy concerns may also limit the ability to plot raw data, and simple bivariate plots often fail to reveal causal relationships. This is where binscatter, or binned scatter plots, come into play.</p>
-<p>Binscatter offers a cleaner, more interpretable way to visualize the relationship between two variables, especially when dealing with large datasets. By aggregating data points into bins and plotting the average outcome within each bin, binscatter simplifies the visualization, making it easier to discern patterns and trends. It’s particularly useful for:</p>
-<ul>
-<li>Intuitive visualization for large datasets by grouping data into bins.</li>
-<li>Highlighting trends and relationship between variables effectively.</li>
-<li>Extending these ideas to control for covariates.</li>
-</ul>
-<p>In this article, I will introduce binscatter, explore its mathematical foundation, and demonstrate its utility with an example in <code>R</code> and <code>python</code>.</p>
+<p>Statistical correlation has long captivated me—it’s probably the topic I’ve written about most on this blog. What makes it so compelling is the combination of theoretical richness and deceptive simplicity. In an age dominated by deep learning and opaque models, correlation remains a refreshingly transparent and interpretable quantity. When I encounter a new dataset, it’s often the first tool I reach for to explore relationships among variables.</p>
+<p>Despite its familiarity, correlation is also one of the most frequently misunderstood and misapplied concepts in statistics. It seems straightforward: a value between –1 and 1 that quantifies the strength and direction of a relationship between two variables. But beneath that tidy number lies a complex web of assumptions, limitations, and interpretations—many of which are overlooked even by seasoned practitioners.</p>
+<p>In this article, I revisit two insightful papers—van den Heuvel and Zhan (2022), and Rodgers and Nicewander (1988)—that peel back the layers of meaning surrounding correlation. My aim is to deepen our intuition and clear up common misconceptions about three of the most widely used correlation measures: Pearson’s <em>r</em>, Spearman’s <em>ρ</em>, and Kendall’s <em>τ</em>. Along the way, I’ll explore thirteen different lenses through which correlation can be understood.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>To formalize binscatter, let’s define the following:</p>
+<p>Let <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> be two random variables with realizations <span class="math inline">\((x_i, y_i)\)</span> for a random sample indexed by <span class="math inline">\(i = 1, \ldots, n\)</span>. I assume all variables are centered (i.e., de-meaned) unless stated otherwise. Below are the three most commonly used correlation coefficients in practice.</p>
+<p>As a refresher, here are the three correlation coefficients I’ll focus on:</p>
 <ul>
-<li><span class="math inline">\(X\)</span>: The independent/predictor variable.</li>
-<li><span class="math inline">\(Y\)</span>: The dependent/outcome/response variable.</li>
-<li><span class="math inline">\(n\)</span>: The number of observations in the dataset.</li>
-<li><span class="math inline">\(K\)</span>: The number of bins into which <span class="math inline">\(X\)</span> is divided.</li>
-<li><span class="math inline">\(\bar{Y}_k\)</span>: The mean of <span class="math inline">\(Y\)</span> for observations falling in the <span class="math inline">\(k\)</span>-th bin of <span class="math inline">\(X\)</span>. Similarly for <span class="math inline">\(\bar{X}_k\)</span>.</li>
-<li><span class="math inline">\(B_k\)</span>​: The observations falling in the <span class="math inline">\(k\)</span>-th bin.</li>
-<li><span class="math inline">\(W\)</span>: The covariate to be controlled. This can be a vector too.</li>
+<li><strong>Pearson’s <span class="math inline">\(r\)</span></strong> is defined as: <span class="math display">\[r(X,Y) = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2} \sqrt{\sum (y_i - \bar{y})^2}}.\]</span></li>
+<li><strong>Spearman’s <span class="math inline">\(\rho\)</span></strong> is Pearson’s <span class="math inline">\(r\)</span> computed on the ranks of the data: <span class="math display">\[\rho(X,Y)=r(\text{rank}(X), \text{rank}(Y)).\]</span></li>
+<li><strong>Kendall’s <span class="math inline">\(\tau\)</span></strong> is based on the number of concordant and discordant pairs: <span class="math display">\[\tau = \frac{\#\text{concordant} - \#\text{discordant}}{\binom{n}{2}}.\]</span></li>
 </ul>
+<p>Concordant pairs of observations refer to pairs where the ranks of both variables move in the same direction. For example, if one observation is higher than another in both variables, they are concordant. Conversely, discordant pairs occur when the ranks of the variables move in opposite directions; one observation is higher in one variable but lower in the other.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="formal-definition" class="level3">
-<h3 class="anchored" data-anchor-id="formal-definition">Formal Definition</h3>
-<p>A binscatter plot is constructed by partitioning the range of the independent variable <span class="math inline">\(X\)</span> into a fixed number of <span class="math inline">\(K\)</span> bins, <span class="math inline">\(B_1,\dots,B_K\)</span> typically using empirical quantiles. This ensures each bin is of roughly the same size. Within each bin, the average value of the dependent variable <span class="math inline">\(Y\)</span> is calculated. These averages are then plotted against the midpoint of each bin, <span class="math inline">\(\bar{X}\)</span>, resulting in a series of points that represent an estimate of conditional mean of <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span>, <span class="math inline">\(E[Y\mid X]\)</span>.</p>
-<p>In technical jargon binscatter provides a nonparametric estimate of the conditional mean function, offering a visual summary of the relationship between the two variables. The resulting graph allows assessment of linearity, monotonicity, convexity, etc.</p>
+<section id="some-myths" class="level3">
+<h3 class="anchored" data-anchor-id="some-myths">Some Myths</h3>
+<p>Pearson’s <span class="math inline">\(r\)</span> is traditionally described as a measure of linear association, while Spearman’s <span class="math inline">\(\rho\)</span> and Kendall’s <span class="math inline">\(\tau\)</span> are thought to capture monotonic relationships. This textbook distinction often leads analysts to default to rank-based methods when faced with nonlinear relationships. But as appealing as this neat categorization may be, it oversimplifies the reality.</p>
+<p>Van den Heuvel and Zhan (2022) challenge this conventional wisdom. They argue that none of these three correlation coefficients are intrinsically limited to detecting “linear” or “monotonic” associations. Instead, their sensitivity depends on the underlying distributional structure, presence of heteroskedasticity, and even how the data were transformed. Through carefully constructed counterexamples, they demonstrate that Pearson’s <span class="math inline">\(r\)</span> can sometimes outperform Spearman’s <span class="math inline">\(\rho\)</span> and Kendall’s <span class="math inline">\(\tau\)</span> even when the association is nonlinear. Conversely, rank-based methods can be more powerful than <span class="math inline">\(r\)</span> even when the association is linear—particularly in distributions outside the bivariate normal family.</p>
+<p>Another persistent myth is that rank correlations are categorically “more robust.” While it’s true that <span class="math inline">\(\rho\)</span> and <span class="math inline">\(\tau\)</span> are less sensitive to outliers in marginal distributions, this robustness has limits. Rank-based methods can still underperform or behave erratically in the presence of non-monotonic relationships or certain forms of heteroskedasticity. For instance, a <span class="math inline">\(U\)</span>-shaped relationship will likely elude all three measures.</p>
 </section>
-<section id="the-algorithm" class="level3">
-<h3 class="anchored" data-anchor-id="the-algorithm">The Algorithm</h3>
-<p>Here is the step-by-step recipe for constructing a binscatter plot.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<section id="new-framework-for-association" class="level3">
+<h3 class="anchored" data-anchor-id="new-framework-for-association">New Framework for Association</h3>
+<p>To overcome these misconceptions and some of the counterexamples previously suggested in the literature, the authors propose a more nuanced framework for understanding linear and monotonic associations. They developed the following extended definitions:</p>
+<p><strong>Linear Association:</strong> <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are linearly associated if there exist known monotone functions <span class="math inline">\(\phi(\cdot)\)</span> and <span class="math inline">\(\psi(\cdot)\)</span> such that: <span class="math display">\[\mathbb{E}[\psi(Y) \mid \phi(X)] = \beta_0 + \beta_1 \phi(X).\]</span></p>
+<p>Similarly,</p>
+<p><strong>Monotonic Association:</strong> <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are monotonically associated if there exist two potentially unknown monotonic functions <span class="math inline">\(\phi(\cdot)\)</span> and <span class="math inline">\(\psi(\cdot)\)</span> such that <span class="math display">\[\mathbb{E}[\psi(Y) \mid \phi(X)] = \phi(X).\]</span></p>
+<p>Under these updated definitions, the conventional understanding of which correlation coefficient is best suited for linear or monotonic relationships holds better ground. These definitions capture a richer set of relationships by accounting for transformations, rather than relying on raw scale comparisons. They also emphasize the importance of conditional expectation as the lens through which to define association, rather than relying solely on scatter plot geometry or regression output.</p>
+<p>Overall, what becomes clear is that no correlation coefficient offers a complete or universally superior summary of association. Each captures different aspects of dependence. They are tools, not truths—and should be interpreted in context. Visualizations and complementary diagnostic tests remain indispensable.</p>
+</section>
+<section id="thirteen-ways-to-look-at-pearsons-r" class="level3">
+<h3 class="anchored" data-anchor-id="thirteen-ways-to-look-at-pearsons-r">Thirteen Ways to Look at Pearson’s <span class="math inline">\(r\)</span></h3>
+<p>If this wasn’t enough for you, Rodgers and Nicewander (1988) offer a brilliant framing of correlation by listing thirteen distinct ways to interpret Pearson’s <span class="math inline">\(r\)</span>. Here’s a quick tour, each providing a slightly different angle:</p>
 <ol type="1">
-<li><p><strong>Bin construction</strong>: Divide the range of <span class="math inline">\(X\)</span> into <span class="math inline">\(K\)</span> equal-width bins, or use quantile-based bins for equal sample sizes within bins. For example, with <span class="math inline">\(K=10\)</span>, the observations in <span class="math inline">\(B_1\)</span> would be those between the minimum value of <span class="math inline">\(X\)</span> and that of its tenth percentile.</p></li>
-<li><p><strong>Mean calculation</strong>: Compute the mean of <span class="math inline">\(Y\)</span> within each bin:</p></li>
+<li><strong>As a measure of standardized covariance</strong>, it tells you how two variables co-vary after accounting for their units.</li>
+<li><strong>As a regression slope between standardized variables</strong>, it equals the slope of the line predicting <span class="math inline">\(z\)</span>-scored <span class="math inline">\(Y\)</span> from <span class="math inline">\(z\)</span>-scored <span class="math inline">\(X\)</span>.</li>
+<li><strong>As the centered and standardized sum</strong> of cross-product of two variables. This is merely the definition of Pearson’s <span class="math inline">\(r\)</span> shown above.</li>
+<li><strong>As the cosine of the angle between two vectors</strong>, showing their geometric alignment.</li>
+<li><strong>As a geometric mean of the two regression slopes</strong>. It equals the square root of the product of the slopes of the regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> and <span class="math inline">\(X\)</span> on <span class="math inline">\(Y\)</span>.</li>
+<li><strong>As a square root of the ratio of two variances</strong>, where <span class="math inline">\(r^2\)</span> is the proportion of variance in <span class="math inline">\(Y\)</span> explained by <span class="math inline">\(X\)</span> by linear regression.</li>
+<li><strong>As a function of the angle between the two standardized regression lines</strong>, where it equals the sum of the inverse of the cosine and the tangent of the angle between the two lines.</li>
+<li><strong>As an average cross-product of standardized variables</strong>, which is obtained by dividing both the numerator and the denominator by the product of the two sample standard deviations.</li>
+<li><strong>As a rescaled variance of the difference between standardized scores</strong></li>
+<li><strong>As a balloon rule</strong>: A visual approximation of r using the ellipse-shaped scatterplot “balloon” width and height.</li>
+<li><strong>As a geometric property of elliptical contours (isoconcentration ellipses)</strong> in a bivariate distribution—essentially more precise versions of the “balloon” idea from the prior rule.</li>
+<li><strong>As a test statistic in randomized experiments</strong>, <span class="math inline">\(r\)</span> can be computed from a t-statistic or F-statistic (e.g., from ANOVA).</li>
+<li><strong>As a ratio of two means</strong> following Galton, <span class="math inline">\(r\)</span> reflects how the mean of Y changes with selected values of X.</li>
 </ol>
-<p><span class="math display">\[\bar{Y}_k= \frac{1}{|B_k|} \sum_{i \in B_k} Y_i,\]</span></p>
-<p>where <span class="math inline">\(|B_k|\)</span> is the number of observations in bin <span class="math inline">\(B_k\)</span>​.</p>
-<ol start="3" type="1">
-<li><strong>Plotting</strong>: Plot <span class="math inline">\(\bar{Y}_k\)</span> against the midpoints of each bin, <span class="math inline">\(\bar{X}_k\)</span>.</li>
-</ol>
-</div>
-</div>
-<p><em>Software Package</em>: <a href="https://nppackages.github.io/binsreg/">binsreg</a>.</p>
-<p>Quite simple, right? Let’s explore certain useful extensions of this idea.</p>
+<p>Each interpretation highlights a different trade-off or caveat. For example, the geometric view gives a great intuition, but the regression slope interpretation connects more directly to causal inference. And perhaps most importantly, several of these views are <strong>not invariant to nonlinear transformations</strong>, which matters a lot in real data.</p>
 </section>
-<section id="adjusting-for-covariates-the-wrong-way" class="level3">
-<h3 class="anchored" data-anchor-id="adjusting-for-covariates-the-wrong-way">Adjusting for Covariates: The Wrong Way</h3>
-<p>In many applications, it is essential to control for additional covariates <span class="math inline">\(W\)</span> to isolate the relationship between the primary variables of interest. The object of interest then becomes the conditional mean <span class="math inline">\(E[Y\mid W,X]\)</span>. An example would be focusing on the relationship between income (<span class="math inline">\(Y\)</span>) and education level (<span class="math inline">\(X\)</span>) when controlling for parental education (<span class="math inline">\(W\)</span>).</p>
-<p>A common but flawed approach to incorporating covariates in binscatter is residualized binscatter. This method involves first regressing separately both <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span> on the covariates <span class="math inline">\(W\)</span> to obtain residuals <span class="math inline">\(\hat{u}_Y\)</span>​ and <span class="math inline">\(\hat{u}_X\)</span>​, and then applying the binscatter method to these residuals:</p>
-<p><span class="math display">\[\bar{\hat{u}}_{Y,k} = \frac{1}{|B_k|} \sum_{i \in B_k} \hat{u}_{X,i}.\]</span></p>
-<p>While this approach is motivated by the <a href="https://en.wikipedia.org/wiki/Frisch%E2%80%93Waugh%E2%80%93Lovell_theorem">Frisch-Waugh-Lovell</a> theorem in linear regression, it can lead to incorrect conclusions in more general settings. The residualized binscatter may not accurately reflect the true conditional mean function, especially if the underlying relationship is nonlinear. Therefore, it is generally not recommended for empirical work.</p>
-</section>
-<section id="adjusting-for-covariates-the-right-way" class="level3">
-<h3 class="anchored" data-anchor-id="adjusting-for-covariates-the-right-way">Adjusting for Covariates: The Right Way</h3>
-<p>Instead, this should be done using a semi-parametric partially linear regression model. This is achieved by modeling the conditional mean function as</p>
-<p><span class="math display">\[Y = \mu_0(X) + W \gamma_0 + \varepsilon,\]</span></p>
-<p>where <span class="math inline">\(\mu_0(X)\)</span> captures the main effect of <span class="math inline">\(X\)</span>, and <span class="math inline">\(W' \gamma_0\)</span> adjusts for the influence of additional covariates. Rather than residualizing, we estimate <span class="math inline">\(\mu_0(X)\)</span> using the least-squares approach:</p>
-<p><span class="math display">\[(\hat{\beta}, \hat{\gamma}) = \arg\min_{\beta, \gamma} \sum (Y- b(X)' \beta - W' \gamma)^2,\]</span></p>
-<p>where <span class="math inline">\(b(X)\)</span> represents the binning basis functions. The final binscatter plot displays the estimated conditional mean function</p>
-<p><span class="math display">\[\hat{\mu}(X_k) = b(X_k)' \hat{\beta}\]</span></p>
-<p>against <span class="math inline">\(\bar{X}_k\)</span>, ensuring a correct visualization of the relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> after accounting for the covariates <span class="math inline">\(W\)</span>.</p>
-</section>
-<section id="practical-considerations" class="level3">
-<h3 class="anchored" data-anchor-id="practical-considerations">Practical Considerations</h3>
-<p>A key decision is the choice of the number of bins <span class="math inline">\(K\)</span>. Too few bins can oversmooth the data, masking important features, while too many bins can lead to undersmoothing, resulting in a noisy and less interpretable plot. An optimal choice of <span class="math inline">\(K\)</span> balances bias and variance, often determined using data-driven methods. To address this, <a href="https://www.aeaweb.org/articles?id=10.1257/aer.20221576">Cattaneo et al.&nbsp;(2024)</a> propose an adaptive, Integrated Mean Squared Error (IMSE)-optimal choice of <span class="math inline">\(K\)</span> for which get a plug-in formula.</p>
-<p>Thoughtful data scientist always have variance in their mind. If, for instance, we see some linear relationship between <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span>, how can we determine whether it is statistically significant? Quantifying the uncertainty around binscatter estimates is crucial. The authors also discuss constructing confidence bands, which can be added to the plot to visually represent estimation uncertainty, enhancing both interpretability and reliability.</p>
-</section>
-</section>
-<section id="an-example" class="level2">
-<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<p>As an example let’s examine the relationship between the variables <code>Sepal.Length</code> and <code>Petal.Length</code> in the popular iris dataset. We will use a fixed number of ten bins. Alternatively, the package <code>binsreg</code> will automatically calculate the optimal <span class="math inline">\(K\)</span>.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clear the workspace and load libraries</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(binsreg)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># define the number of bins</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># create binned data</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>iris_binned <span class="ot">&lt;-</span> iris <span class="sc">%&gt;%</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">bin =</span> <span class="fu">cut</span>(Sepal.Length, <span class="at">breaks =</span> bins, <span class="at">include.lowest =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(bin) <span class="sc">%&gt;%</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">bin_mid =</span> <span class="fu">mean</span>(<span class="fu">as.numeric</span>(<span class="fu">as.character</span>(bin))),</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_petal_length =</span> <span class="fu">mean</span>(Petal.Length)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a panel label for the raw scatter plot</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>iris_raw <span class="ot">&lt;-</span> iris <span class="sc">%&gt;%</span> </span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">panel =</span> <span class="st">"1. Raw Scatter Plot"</span>)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a panel label for the binned scatter plot</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>iris_binned <span class="ot">&lt;-</span> iris_binned <span class="sc">%&gt;%</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">panel =</span> <span class="st">"2. Binned Scatter Plot"</span>)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine raw and binned data into a single dataset for plotting</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>iris_raw <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">x =</span> Sepal.Length, <span class="at">y =</span> Petal.Length),</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  iris_binned <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">x =</span> bin_mid, <span class="at">y =</span> mean_petal_length)</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plot</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> panel, <span class="at">scales =</span> <span class="st">"free_x"</span>, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Comparison of Raw and Binned Scatter Plots"</span>,</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="st">"Sepal Length"</span>,</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="st">"Petal Length"</span>) <span class="sc">+</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the iris dataset</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> load_iris</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>iris_data <span class="op">=</span> load_iris(as_frame<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>iris <span class="op">=</span> iris_data[<span class="st">'data'</span>]</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>iris.columns <span class="op">=</span> [<span class="st">'Sepal.Length'</span>, <span class="st">'Sepal.Width'</span>, <span class="st">'Petal.Length'</span>, <span class="st">'Petal.Width'</span>]</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of bins</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create binned data</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>iris[<span class="st">'bin'</span>] <span class="op">=</span> pd.cut(iris[<span class="st">'Sepal.Length'</span>], bins<span class="op">=</span>bins, include_lowest<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>iris_binned <span class="op">=</span> iris.groupby(<span class="st">'bin'</span>).agg(</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    bin_mid<span class="op">=</span>(<span class="st">'Sepal.Length'</span>, <span class="kw">lambda</span> x: (x.<span class="bu">min</span>() <span class="op">+</span> x.<span class="bu">max</span>()) <span class="op">/</span> <span class="dv">2</span>),</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    mean_petal_length<span class="op">=</span>(<span class="st">'Petal.Length'</span>, <span class="st">'mean'</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>).reset_index()</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Add panel labels</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>iris_raw <span class="op">=</span> iris[[<span class="st">'Sepal.Length'</span>, <span class="st">'Petal.Length'</span>]].copy()</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>iris_raw[<span class="st">'panel'</span>] <span class="op">=</span> <span class="st">"1. Raw Scatter Plot"</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>iris_binned <span class="op">=</span> iris_binned.rename(columns<span class="op">=</span>{<span class="st">'bin_mid'</span>: <span class="st">'Sepal.Length'</span>, <span class="st">'mean_petal_length'</span>: <span class="st">'Petal.Length'</span>})</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>iris_binned[<span class="st">'panel'</span>] <span class="op">=</span> <span class="st">"2. Binned Scatter Plot"</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine raw and binned data</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>plot_data <span class="op">=</span> pd.concat([iris_raw, iris_binned], ignore_index<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>sns.set_theme(style<span class="op">=</span><span class="st">"whitegrid"</span>)</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Raw scatter plot</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>plot_data[plot_data[<span class="st">'panel'</span>] <span class="op">==</span> <span class="st">"1. Raw Scatter Plot"</span>],</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'Sepal.Length'</span>, y<span class="op">=</span><span class="st">'Petal.Length'</span>, ax<span class="op">=</span>axes[<span class="dv">0</span>]</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"1. Raw Scatter Plot"</span>)</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">"Sepal Length"</span>)</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"Petal Length"</span>)</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Binned scatter plot</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>plot_data[plot_data[<span class="st">'panel'</span>] <span class="op">==</span> <span class="st">"2. Binned Scatter Plot"</span>],</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'Sepal.Length'</span>, y<span class="op">=</span><span class="st">'Petal.Length'</span>, ax<span class="op">=</span>axes[<span class="dv">1</span>]</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"2. Binned Scatter Plot"</span>)</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"Sepal Length"</span>)</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust layout</span></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Comparison of Raw and Binned Scatter Plots"</span>)</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-<p>Here is the resulting image. The left scatter plot displays the raw data and the right one shows the binscatter. Binscatter removes some of the clutter and highlights the linear relationship more directly.</p>
-<p><img src="../images/binscatter.png" class="img-fluid"></p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li><p>Binscatter simplifies scatterplots by aggregating data into bins and plotting means.</p></li>
-<li><p>It is a powerful tool for visualizing relationships in large or noisy datasets.</p></li>
-<li><p>Conditional and residualized binscatter extend its utility to controlling for covariates.</p></li>
-<li><p>While intuitive, binscatter is sensitive to binning choices and may obscure nuances.</p></li>
+<li>Pearson’s <span class="math inline">\(r\)</span>, Spearman’s <span class="math inline">\(\rho\)</span>, and Kendall’s <span class="math inline">\(\tau\)</span> measure different aspects of association—none is a catch-all indicator.</li>
+<li>The “monotonic vs.&nbsp;linear” framing is a helpful heuristic, but it can break down in some real-world scenarios.</li>
+<li>Rodgers and Nicewander’s thirteen perspectives on correlation reveal its multifaceted nature and limitations.</li>
+<li>Always visualize your data—correlation coefficients should not replace your eyes or your understanding of the domain.</li>
 </ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Both papers cited below are relatively accessible and will answer your questions. Start with Starr and Goldfarb (2020).</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Cattaneo, M. D., Crump, R. K., Farrell, M. H., &amp; Feng, Y. (2024). On Binscatter Regressions. American Economic Review, 111(3), 718–748.</p>
-<p>Starr, E., &amp; Goldfarb, B. (2020). Binned scatterplots: A simple tool to make research easier and better. Strategic Management Journal, 41(12), 2261-2274.</p>
+<p>van den Heuvel, E., &amp; Zhan, Z. (2022). Myths about linear and monotonic associations: Pearson’s <span class="math inline">\(r\)</span>, Spearman’s <span class="math inline">\(\rho\)</span>, and Kendall’s <span class="math inline">\(\tau\)</span>. <em>The American Statistician</em>, 76(1), 44–52.</p>
+<p>Lee Rodgers, J., &amp; Nicewander, W. A. (1988). Thirteen ways to look at the correlation coefficient. <em>The American Statistician</em>, 42(1), 59–66.</p>
 
 
 </section>

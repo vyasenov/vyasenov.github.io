@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-06-11">
 
-<title>FOCI: A New Variable Selection Method – Vasco Yasenov</title>
+<title>Visualizing the World of Causal Inference – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,26 +23,26 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -85,37 +84,8 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <script src="../code/back-to-top.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="../code/styles.css">
+<link rel="stylesheet" href="code/styles.css">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -284,7 +254,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Vasco Yasenov</span>
     </a>
   </div>
@@ -295,27 +265,27 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../about.html"> 
+    <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About Me</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../cv.html"> 
+    <a class="nav-link" href="./cv.html"> 
 <span class="menu-text">CV</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../blog/index.html"> 
+    <a class="nav-link" href="./blog/index.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../research.html"> 
+    <a class="nav-link" href="./research.html"> 
 <span class="menu-text">Research</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../mind-map.html"> 
+    <a class="nav-link active" href="./mind-map.html" aria-current="page"> 
 <span class="menu-text">Methods Map</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../childrenbook.html"> 
+    <a class="nav-link" href="./childrenbook.html"> 
 <span class="menu-text">Children’s Book</span></a>
   </li>  
   <li class="nav-item compact">
@@ -350,49 +320,21 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
-  <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
-  <ul class="collapse">
-  <li><a href="#conditional-and-unconditional-correlation" id="toc-conditional-and-unconditional-correlation" class="nav-link" data-scroll-target="#conditional-and-unconditional-correlation">Conditional and Unconditional Correlation</a></li>
-  <li><a href="#quantile-regression" id="toc-quantile-regression" class="nav-link" data-scroll-target="#quantile-regression">Quantile Regression</a></li>
-  <li><a href="#new-coefficient-of-conditional-independence" id="toc-new-coefficient-of-conditional-independence" class="nav-link" data-scroll-target="#new-coefficient-of-conditional-independence">New Coefficient of Conditional Independence</a></li>
-  <li><a href="#the-variable-selection-algorithm" id="toc-the-variable-selection-algorithm" class="nav-link" data-scroll-target="#the-variable-selection-algorithm">The Variable Selection Algorithm</a></li>
-  </ul></li>
-  <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
-  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">FOCI: A New Variable Selection Method</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">variable selection</div>
-    <div class="quarto-category">machine learning</div>
-  </div>
-  </div>
+<h1 class="title">Visualizing the World of Causal Inference</h1>
+</div>
 
 
 
-<div class="quarto-title-meta column-page-left">
+<div class="quarto-title-meta column-page">
 
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">June 11, 2024</p>
-    </div>
-  </div>
   
     
   </div>
@@ -402,108 +344,37 @@ window.Quarto = {
 </header>
 
 
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
+<p>This interactive mind map presents a structured overview of methods for <strong>treatment effect estimation</strong> in causal inference grouped by its <strong>core identification strategy</strong>.</p>
+<p>Click on each node to learn more about each method. Use it as a <strong>learning aid</strong>, a <strong>reference guide</strong>, or simply a way to explore the landscape of modern causal inference from a statistical viewpoint.</p>
+<iframe src="files/mind-map.html" width="100%" height="700" frameborder="0"></iframe>
+<div style="max-width: 400px; margin-left: 0; margin-right: auto;">
+  <div class="card mt-3 mb-3">
+    <div class="card-header bg-light fw-bold">
+      Glossary
+    </div>
+    <div class="card-body" style="font-size: 14px;">
+      <ul class="list-unstyled mb-0">
+        <li><strong>PS</strong>: Propensity Score</li>
+        <li><strong>FE</strong>: Fixed Effects</li>
+        <li><strong>RE</strong>: Random Effects</li>
+        <li><strong>ML</strong>: Machine Learning</li>
+        <li><strong>DiD</strong>: Difference-in-Differences</li>
+        <li><strong>IV</strong>: Instrumental Variables</li>
+        <li><strong>SC</strong>: Synthetic Control</li>
+        <li><strong>GMM</strong>: Generalized Method of Moments</li>
+        <li><strong>TWFE</strong>: Two-Way Fixed Effects</li>
+        <li><strong>ATE</strong>: Average Treatment Effect</li>
+        <li><strong>CATE</strong>: Conditional Average Treatment Effect</li>
+        <li><strong>QTE</strong>: Quantile Treatment Effect</li>
+        <li><strong>CF</strong>: Control Function</li>
+        <li><strong>2SLS</strong>: Two-Stage Least Squares</li>
+        <li><strong>RD</strong>: Regression Discontinuity</li>
+      </ul>
+    </div>
+  </div>
 </div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>In our data-abundant world, we often have access to tens, hundreds, or even thousands of variables. Most of these features are usually irrelevant or redundant, leading to increased computational complexity and potentially overfit models. Variable selection algorithms are designed to mitigate these challenges by selecting the subset of columns that is most relevant to the problem at hand. This, in turn, can result in simplified, more efficient, and interpretable machine learning (ML) models. Examples of such methods abound—lasso, ridge, elastic net utilizing <span class="math inline">\(L1\)</span> and <span class="math inline">\(L2\)</span> regularization or a linear combination of both; forward/backward stepwise regression algorithms, etc.</p>
-<p>In this article, I will describe a new variable selection method built on the idea of Chatterjee’s correlation coefficient, which has been a hot topic of discussion among statisticians. The new method goes by the abbreviation FOCI, which stands for Feature Ordering by Conditional Independence. It is somewhat similar to forward stepwise regression but overcomes some of the critiques most often associated with it.</p>
-<p>Let’s start with setting up some basic notation. We are focused on studying the correlation between (<span class="math inline">\(Y\)</span>) (e.g., income) and (<span class="math inline">\(X\)</span>) (education level) while interested in conditioning on/controlling for (<span class="math inline">\(Z\)</span>) (parental education and other factors). As always, we are armed with a random sample of size n of all these variables and assume everything is well-behaved. If you have not had a chance, I recommend you first read my earlier post on Chatterjee’s correlation measure, which lays some of the foundations necessary to understand the algorithm under the hood.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<p>I will be being with taking you on a tour of conditional and unconditional statistics. What’s the deal with conditional versus unconditional correlation, and is one of them always a better choice than the other?</p>
-<section id="conditional-and-unconditional-correlation" class="level3">
-<h3 class="anchored" data-anchor-id="conditional-and-unconditional-correlation">Conditional and Unconditional Correlation</h3>
-<p>Most times, when we talk about the correlation between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, knowingly or not, we mean unconditional correlation. This is the correlation between two variables without considering any additional or contextual factors. As such, it describes their relationship “in general.” In my previous post, I illustrated several ways to measure such unconditional correlations, including the well-known Spearman correlation coefficient.</p>
-<p>In some cases, however, we like to go one step further and consider contextual factors. This is where conditional correlation comes in. It considers the influence of one or more additional variables when measuring the relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. Thus, it provides information on how their relationship changes under specific conditions.</p>
-<p>Conditional correlation is hard (pun intended); it’s even <a href="https://doi.org/10.1016/0004-3702(93)90036-B">NP-hard</a> in some contexts.</p>
-<p>Under certain assumptions, it might be possible to go from conditional to unconditional correlation. Simplifying the example above, let’s say that <span class="math inline">\(Z\)</span> (parental education) can take on two values—low and high. If we have measures of the correlation between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> for each of these values (i.e., for families with low and high parental education), we can weigh these by their relative proportion and arrive at an estimate of the unconditional correlation between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>.</p>
-<p>To answer my own question above, it’s difficult to say that one is always better than the other. It really depends on your goal. If you want to know how <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> vary in general, unconditional correlation is your friend; if, instead, you are interested in incorporating contextual information or simply controlling for other factors, you really want conditional correlation. My take is that most often we are after conditional correlations but use tools for measuring unconditional ones.</p>
-</section>
-<section id="quantile-regression" class="level3">
-<h3 class="anchored" data-anchor-id="quantile-regression">Quantile Regression</h3>
-<div class="callout callout-style-default callout-note callout-titled" title="Side Note on Quantile Regression">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Side Note on Quantile Regression
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><a href="https://doi.org/10.1146/annurev-economics-063016-103651">Quantile regression</a> is another setting where most often people confuse conditional and <a href="https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6822">unconditional statistical inference</a>. Interestingly, though, the situation is flipped. The classical quantile regression estimator, which most people utilize, measures the impact of <span class="math inline">\(X\)</span> on the <em>conditional</em> quantile of <span class="math inline">\(Y\)</span>, but there results are <a href="https://doi.org/10.1002/hec.2927">commonly</a> <a href="interpreted">interpreted</a> as having unconditional interpretation.</p>
-</div>
-</div>
-</section>
-<section id="new-coefficient-of-conditional-independence" class="level3">
-<h3 class="anchored" data-anchor-id="new-coefficient-of-conditional-independence">New Coefficient of Conditional Independence</h3>
-<p><a href="http://10.0.4.190/21-AOS2073">Azadkia and Chatterjee (2021)</a> develop a new coefficient of conditional correlation. The math behind is in extremely involved and I will not even be discussing its formula here. For simplicity, let’s just call it <span class="math inline">\(T(\cdot)\)</span>:</p>
-<p><span class="math display">\[T(Y,X|Z) = \text{corr} (Y, X | Z).\]</span></p>
-<p><span class="math inline">\(T(\cdot)\)</span> enjoys the following attractive properties:</p>
-<ul>
-<li>It is an extension of Chatterjee’s unconditional correlation coefficient.</li>
-<li>It is non-parametric.</li>
-<li>It has no tuning parameters.</li>
-<li>It can be estimated quickly, in <span class="math inline">\(O(n \text{ log}n)\)</span> time.</li>
-<li>Asymptotically converges to a limit in <span class="math inline">\([0,1]\)</span>. It’s limit is <span class="math inline">\(0\)</span> when <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span> are conditionally independent, and it is <span class="math inline">\(1\)</span> when <span class="math inline">\(Y\)</span> is a measurable function of <span class="math inline">\(X\)</span>, conditionally.</li>
-<li>It is a nonlinear generalization of the partial <span class="math inline">\(R^2\)</span> coefficient in a linear regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span>.</li>
-</ul>
-<p>All this is to say – <span class="math inline">\(T(\cdot)\)</span> has many things going for it, and it is a pretty good measure of conditional correlation.</p>
-</section>
-<section id="the-variable-selection-algorithm" class="level3">
-<h3 class="anchored" data-anchor-id="the-variable-selection-algorithm">The Variable Selection Algorithm</h3>
-<p>The key idea is to integrate <span class="math inline">\(T(\cdot)\)</span> into a forward stepwise variable selection procedure. Let’s add the <span class="math inline">\(Z\)</span> variables into <span class="math inline">\(X\)</span>, so we only have <span class="math inline">\(Y\in \mathbb{R}\)</span> and <span class="math inline">\(X\in \mathbb{R}^p\)</span>. Then the algorithm goes as follows:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Start with the index <span class="math inline">\(j\)</span> that maximizes <span class="math inline">\(T(Y \mid X_j)\)</span>.</li>
-<li>Given <span class="math inline">\(j_1, \dots j_k\)</span>, select <span class="math inline">\(j_{k+1}\)</span> as the index <span class="math inline">\(\notin (j_1, \dots j_k)\)</span> that maximizes <span class="math inline">\(T(Y,X_j \mid X_{j_1}, \dots, X_{j_k})\)</span>.</li>
-<li>Continue until finding the first <span class="math inline">\(k\)</span> such that <span class="math inline">\(T(Y, X_{j_{k+1}} \mid X_{j_1}, \dots, X_{j_k}) \leq 0\)</span>.</li>
-<li>Declare the set of selected variables <span class="math inline">\(\hat{S} ={X_{j_1}, \dots, X_{j_k}}\)</span>.</li>
-</ol>
-</div>
-</div>
-<p><em>Software Package</em>: <a href="https://www.rdocumentation.org/packages/FOCI">FOCI</a></p>
-<p>In words, we start with the variable j that maximizes <span class="math inline">\(T(Y\mid X_j)\)</span>. In each subsequent step we select the variable that has not yet been selected and has the highest <span class="math inline">\(T(Y \mid \cdot)\)</span> value up until <span class="math inline">\(T(Y \mid \cdot)\)</span> is positive. That’s it. We then have the set of FOCI selected variables.</p>
-<p>Although it is not required theoretically, the predictor variables be standardized before running the algorithm. If computational time is not an issue, one can try to add <span class="math inline">\(m \geq  2\)</span> variables at each step instead of just one.</p>
-<p>There you have it. Grab your data and see whether and how much FOCI improves on your favorite feature selection method.</p>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li><p>Azadkia and Chatterjee (2021) develop a new coefficient of conditional correlation featuring a host of attractive properties.</p></li>
-<li><p>This coefficient can be used in a stepwise inclusion fashion as a variable selection algorithm potentially improving on well-established methods in the field.</p></li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>My earlier post on Chatterjee’s bivariate coefficient of (unconditional) correlation is a good starting point. Data scientists more deeply interested in FOCI should read Azadkia and Chatterjee’s paper which describes in detail the mathematics behind the new algorithm.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Alejo, J., Favata, F., Montes-Rojas, G., &amp; Trombetta, M. (2021). Conditional vs Unconditional Quantile Regression Models: A Guide to Practitioners. Economia, 44(88), 76-93.</p>
-<p>Azadkia, M., &amp; Chatterjee, S. (2021). A simple measure of conditional dependence. The Annals of Statistics, 49(6), 3070-3102.</p>
-<p>Borah, B. J., &amp; Basu, A. (2013). Highlighting differences between conditional and unconditional quantile regression approaches through an application to assess medication adherence. Health economics, 22(9), 1052-1070.</p>
-<p>Chatterjee, S. (2021). A new coefficient of correlation. Journal of the American Statistical Association, 116(536), 2009-2022.</p>
-<p>Dagum, P., &amp; Luby, M. (1993). Approximating probabilistic inference in Bayesian belief networks is NP-hard. Artificial intelligence, 60(1), 141-153.</p>
-<p>Firpo, S., Fortin, N. M., &amp; Lemieux, T. (2009). Unconditional quantile regressions. Econometrica, 77(3), 953-973.</p>
-<p>Koenker, R. (2017). Quantile regression: 40 years on. Annual review of economics, 9, 155-176.</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

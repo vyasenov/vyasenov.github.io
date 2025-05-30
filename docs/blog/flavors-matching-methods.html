@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2023-10-27">
+<meta name="dcterms.date" content="2025-05-27">
 
-<title>New Developments in False Discovery Rate – Vasco Yasenov</title>
+<title>The Many Flavors of Matching for Causal Inference – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -311,6 +311,10 @@ window.Quarto = {
 <span class="menu-text">Research</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="../mind-map.html"> 
+<span class="menu-text">Methods Map</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="../childrenbook.html"> 
 <span class="menu-text">Children’s Book</span></a>
   </li>  
@@ -355,12 +359,16 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#fdr-control-with-mirror-statistics" id="toc-fdr-control-with-mirror-statistics" class="nav-link" data-scroll-target="#fdr-control-with-mirror-statistics">FDR Control with Mirror Statistics</a></li>
-  <li><a href="#constructing-the-mirror-statistics" id="toc-constructing-the-mirror-statistics" class="nav-link" data-scroll-target="#constructing-the-mirror-statistics">Constructing the Mirror Statistics</a></li>
-  <li><a href="#constructing-the-regression-coefficients" id="toc-constructing-the-regression-coefficients" class="nav-link" data-scroll-target="#constructing-the-regression-coefficients">Constructing the Regression Coefficients</a></li>
-  <li><a href="#putting-it-all-together" id="toc-putting-it-all-together" class="nav-link" data-scroll-target="#putting-it-all-together">Putting it All Together</a></li>
+  <li><a href="#exact-matching" id="toc-exact-matching" class="nav-link" data-scroll-target="#exact-matching">Exact Matching</a></li>
+  <li><a href="#mahalanobis-distance-matching" id="toc-mahalanobis-distance-matching" class="nav-link" data-scroll-target="#mahalanobis-distance-matching">Mahalanobis Distance Matching</a></li>
+  <li><a href="#propensity-score-matching" id="toc-propensity-score-matching" class="nav-link" data-scroll-target="#propensity-score-matching">Propensity Score Matching</a></li>
+  <li><a href="#coarsened-exact-matching" id="toc-coarsened-exact-matching" class="nav-link" data-scroll-target="#coarsened-exact-matching">Coarsened Exact Matching</a></li>
+  <li><a href="#optimal-matching" id="toc-optimal-matching" class="nav-link" data-scroll-target="#optimal-matching">Optimal Matching</a></li>
+  <li><a href="#genetic-matching" id="toc-genetic-matching" class="nav-link" data-scroll-target="#genetic-matching">Genetic Matching</a></li>
+  <li><a href="#caliper-matching" id="toc-caliper-matching" class="nav-link" data-scroll-target="#caliper-matching">Caliper Matching</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
+  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -371,10 +379,10 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">New Developments in False Discovery Rate</h1>
+<h1 class="title">The Many Flavors of Matching for Causal Inference</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">multiple testing</div>
-    <div class="quarto-category">statistical inference</div>
+    <div class="quarto-category">causal inference</div>
+    <div class="quarto-category">matching methods</div>
   </div>
   </div>
 
@@ -386,7 +394,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 27, 2023</p>
+      <p class="date">May 27, 2025</p>
     </div>
   </div>
   
@@ -404,101 +412,170 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>A while back I wrote an article summarizing various approaches to correcting for multiple hypothesis testing. The dominant framework, False Discovery Rate (FDR), controls the share of hypotheses that are incorrectly rejected at a pre-specified level . Its foundations were laid out in 1995 by Benjamini and Hochberg (BH) and to date, their method remains the most popular approach for controlling FDR. Since then, the literature has gone in a few directions.</p>
-<p>One <a href="https://www.jstor.org/stable/2674075">strand of research</a> generalizes the BH procedure to accommodate cases in which there is a dependency (i.e., correlation) among the hypotheses being tested. Another <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1716-1?ref=https://githubhelp.com">group of papers</a> makes use of covariates that carry information about whether a given hypothesis is likely to be false. While intuitive in theory, in practice this idea is of limited use as such covariates are not often available.</p>
-<p>Finally, a relatively new class of methods builds on the notion of “<a href="https://projecteuclid.org/journals/annals-of-statistics/volume-43/issue-5/Controlling-the-false-discovery-rate-via-knockoffs/10.1214/15-AOS1337.full">knockoff</a>” (or fake) variables and performs variable selection while controlling FDR. The underlying idea is based on creating a fake variable and comparing its test statistics to that of the original variable. Since the fake one is, by definition, null, a small discrepancy between the two test statistics signals the original variable does not belong in the model. The baseline model-X knockoff method requires knowledge of the joint distribution of all covariates. Recent simulations show if this distribution is unknown and misspecified (which in practice it almost always is) there is a loss of statistical power and FDR increase.</p>
-<p>In this article I will discuss a few new papers which aim to build on and improve the knockoff method. Like knockoffs, they are based on “mirror statistics”, but unlike them they do not require exact knowledge or consistent estimation of any distribution. Specifically, I will discuss <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.2021.1923510">Gaussian Mirrors</a> and <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.2022.2060113">Data Splitting</a> for FDR control.</p>
+<p>If you’ve worked on causal inference with observational data, you’ve likely faced the fundamental challenge: the treated and control groups often look very different. Matching methods aim to fix that. The idea is simple and intuitive—let’s compare treated units to similar control units and mimic the conditions of a randomized experiment as best as we can.</p>
+<p>But here’s the twist: there multiple ways to define “similar.” Should we look for exact matches? Should we match on covariates directly or on some summary score like the propensity score? Should we optimize the matches globally or locally? Over the years, researchers have developed a wide variety of matching methods, each with its own advantages and pitfalls. The landscape can be overwhelming, especially if you’re new to causal inference.</p>
+<p>In this article, I’ll walk through the most popular matching strategies for causal inference. I’ll talk about what each method does, when to use it, and where it might lead you astray. The focus is on the intuition and technical description—not on the code. Whether you’re doing matching for the first time or looking to expand your toolkit, you will find something useful here.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Although many of the results generalize to more complex settings, I will work with the simple linear model:</p>
-<p><span class="math display">\[Y = X\beta + \epsilon.\]</span></p>
-<p>We have n observations of an outcome <span class="math inline">\(Y\)</span>, and a covariate vector <span class="math inline">\(X\in \mathbb{R}^p\)</span> with <span class="math inline">\(p &lt; n\)</span>. (Again, some of these results generalize to high-dimensional settings, but let’s keep it simple here.) I will index the variables in <span class="math inline">\(X\)</span> by <span class="math inline">\(j\)</span>. My goal is to find a subset of relevant features from $ X$ while controlling the FDR at some level <span class="math inline">\(\alpha\)</span>. In other words, I wil be testing the series of <span class="math inline">\(p\)</span> null hypotheses of the kind <span class="math inline">\(\beta_j=0\)</span>.</p>
+<p>Let’s set up the basic framework with minimal fluff. Suppose we have <span class="math inline">\(n\)</span> units indexed by <span class="math inline">\(i = 1, \dots, n\)</span>. Each unit has:</p>
+<ul>
+<li>A binary treatment indicator <span class="math inline">\(D_i \in \{0, 1\}\)</span>, where <span class="math inline">\(D_i = 1\)</span> for treated units and <span class="math inline">\(D_i = 0\)</span> for controls.</li>
+<li>A vector of observed covariates <span class="math inline">\(X_i\)</span>.</li>
+<li>Potential outcomes <span class="math inline">\(Y_i(1)\)</span> and <span class="math inline">\(Y_i(0)\)</span>, where <span class="math inline">\(Y_i(1)\)</span> is the outcome if treated, and <span class="math inline">\(Y_i(0)\)</span> if untreated. We observe only their realized outcome <span class="math inline">\(Y_i = D_i Y_i(1) + (1 - D_i) Y_i(0)\)</span>.</li>
+</ul>
+<p>We impose the usual assumptions of <strong>unconfoundedness</strong> (treatment assignment is independent of potential outcomes given covariates) and <strong>overlap</strong> (treated and control units have similar covariate distributions).</p>
+<p>Our goal is to estimate treatment effects like the Average Treatment Effect (ATE) or the ATE on the Treated (ATT): <span class="math display">\[
+\text{ATT} = \mathbb{E}[Y(1) - Y(0) \mid D = 1].
+\]</span></p>
+<p>The core idea behind matching is to find comparable untreated units for each treated unit so we can approximate <span class="math inline">\(Y(0)\)</span> for the treated group. We then look discard the unmatched units and look at the difference in outcomes between treated and matched controls to estimate the treatment effect.</p>
+<p>Let’s abuse notation a bit and define the sample-analogue of the ATT as:</p>
+<p><span class="math display">\[\widehat{\text{ATT}}=\frac{1}{N_{\text{treated}}}\sum_{i:D=1} Y(1)_i - \hat{Y}(0)^{\text{imputed}}_i.\]</span></p>
+<p>These methods can be, and often are, combined with regression adjustments to reduce bias and improve efficiency and robustness, but I will leave that aside here.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="fdr-control-with-mirror-statistics" class="level3">
-<h3 class="anchored" data-anchor-id="fdr-control-with-mirror-statistics">FDR Control with Mirror Statistics</h3>
-<p>The building block of these methods are the so-called mirror statistics, <span class="math inline">\(M_j\)</span>. They have the following two properties:</p>
-<ul>
-<li>Variables with larger mirror statistics (<span class="math inline">\(M_j\)</span>’s) are more likely to be relevant.</li>
-<li>Their distribution under the null hypothesis is (asymptotically) symmetric around <span class="math inline">\(0\)</span>.</li>
-</ul>
-<p>These properties are simple and intuitive. For instance, the commonly used t-statistic for hypothesis testing in the linear model satisfies both. The first property suggests we can order the features and select ones with a mirror statistic exceeding some pre-defined threshold. The second one leads to an approximate upper bound on the number of false positives for any cutoff <span class="math inline">\(t\)</span>:</p>
-<p><span class="math display">\[FDP(t) = \frac{\#\{j: \text{j is irrelevant, but } M_j &gt; t\}}{\# \{j:M_j &gt; t\}} \leq \frac{\# \{j:M_j &lt;- t\}}{\# \{j:M_j &gt; t\}}. \]</span></p>
-<p>Now that we know the mirror statistics’ properties, I will discuss various ways of calculating them.</p>
+<p>We are now ready to go through seven of the most popular matching approaches.</p>
+<section id="exact-matching" class="level3">
+<h3 class="anchored" data-anchor-id="exact-matching">Exact Matching</h3>
+<p>Exact matching is the simplest—and most restrictive—approach to causal inference:</p>
+<blockquote class="blockquote">
+<p>Match treated and control units <em>exactly</em> on all observed covariates <span class="math inline">\(X\)</span>.</p>
+</blockquote>
+<p>That is, if a treated unit has <span class="math inline">\(X = x\)</span>, we look for <strong>control units with the exact same</strong> <span class="math inline">\(X = x\)</span>. While this method is conceptually elegant and easy to understand, it’s rarely practical.</p>
+<p>Exact matches become increasingly unlikely in high-dimensional settings or when covariates are continuous, where no two units are likely to be identical. In those cases, exact matching often fails to find matches for many treated units, leading to loss of sample size or biased estimates. Despite its limitations, exact matching is an important baseline: it helps clarify the assumptions behind more flexible methods.</p>
+<p><strong>When to use it?</strong> When covariates are discrete and there aren’t too many of them. Great overlap between the treated and control groups.</p>
+<p><strong>Strengths:</strong> Conceptually clear, no modeling assumptions, perfect balance on matched covariates.</p>
+<p><strong>Weaknesses:</strong> Infeasible with continuous variables or many covariates (the curse of dimensionality); can lead to lots of unmatched units.</p>
+<hr>
 </section>
-<section id="constructing-the-mirror-statistics" class="level3">
-<h3 class="anchored" data-anchor-id="constructing-the-mirror-statistics">Constructing the Mirror Statistics</h3>
-<p>The mirror statistics <span class="math inline">\(M_j\)</span> take the following general form:</p>
-<p><span class="math display">\[M_j = sign(\tilde{\beta}_j^1, \tilde{\beta}_j^2) f(|\tilde{\beta}_j^1|, |\tilde{\beta}_j^2|),\]</span></p>
-<p>where the <span class="math inline">\(\tilde{\beta}\)</span> denote (standardized) estimates of the true coefficient <span class="math inline">\(\beta\)</span> and <span class="math inline">\(f(\cdot)\)</span> is a nonnegative, exchangeable and monotonically increasing function. For instance, convenient choices for <span class="math inline">\(f(\cdot)\)</span> include <span class="math inline">\(f(a,b) = 2min(a,b)\)</span> (Xing et al.&nbsp;2019), <span class="math inline">\(f(a,b) = ab\)</span>, and <span class="math inline">\(f(a,b) = a+b\)</span> (Dai et al.&nbsp;2022).</p>
-<p>Let’s now turn to calculating the <span class="math inline">\(\tilde{\beta}\)</span>’s.</p>
+<section id="mahalanobis-distance-matching" class="level3">
+<h3 class="anchored" data-anchor-id="mahalanobis-distance-matching">Mahalanobis Distance Matching</h3>
+<p>Instead of requiring exact equality between covariates, Mahalanobis matching</p>
+<blockquote class="blockquote">
+<p>Uses a <em>continuous distance metric</em> to find treated and control units that are similar in terms of their covariate values.</p>
+</blockquote>
+<p>The Mahalanobis distance between two units <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, with covariates <span class="math inline">\(X_i\)</span> and <span class="math inline">\(X_j\)</span>, is defined as:</p>
+<p><span class="math display">\[
+d(X_i, X_j) = \sqrt{(X_i - X_j)^\top S^{-1} (X_i - X_j)},
+\]</span></p>
+<p>where <span class="math inline">\(S\)</span> is the sample covariance matrix of the covariates <span class="math inline">\(X\)</span>.</p>
+<p>This metric accounts for both the scale and the correlation structure of the covariates. Unlike Euclidean distance, which treats each covariate as equally important and independent, Mahalanobis distance adjusts for the fact that some variables may be more variable than others, or may be correlated.</p>
+<p>Intuitively, Mahalanobis distance answers the question: <strong>how many standard deviations apart are these two vectors</strong>, once we’ve accounted for the spread and correlation of the variables? A small Mahalanobis distance indicates that the two units are close in the joint covariate space, even if they differ somewhat along individual dimensions. It still becomes less reliable in high dimensions, where all units tend to be far from one another.</p>
+<p><strong>When to use it?</strong> When covariates are continuous and moderately low-dimensional.</p>
+<p><strong>Strengths:</strong> Handles continuous variables well, accounts for correlation between covariates.</p>
+<p><strong>Weaknesses:</strong> Sensitive to high dimensionality; doesn’t work well with mixed discrete and continuous variables.</p>
+<hr>
 </section>
-<section id="constructing-the-regression-coefficients" class="level3">
-<h3 class="anchored" data-anchor-id="constructing-the-regression-coefficients">Constructing the Regression Coefficients</h3>
-<p>The coefficients <span class="math inline">\(\tilde{\beta}\)</span> ought to satisfy the following two conditions:</p>
-<ul>
-<li><strong>Independence</strong> – The two regression coefficients are (asymptotically) independent.</li>
-<li><strong>Symmetry</strong> – Under the null hypothesis, the (marginal) distribution of either of the two coefficients is (asymptotically) symmetric around zero.</li>
-</ul>
-<p>I will now describe two approaches in constructing them.</p>
-<section id="method-1-gaussian-mirrors" class="level4">
-<h4 class="anchored" data-anchor-id="method-1-gaussian-mirrors">Method #1 – Gaussian Mirrors</h4>
-<p><em>Software Package</em>: <a href="https://github.com/BioAlgs/GM">GM</a>.</p>
-<p>The main idea is to create a set of two perturbed mirror features for each variable <span class="math inline">\(X_j\)</span>. Namely,</p>
-<p><span class="math display">\[X_j^+ = X_j + a_jZ_j, \text{      and      } X_j^-=X_j -a_jZ_j,\]</span></p>
-<p>where <span class="math inline">\(a_j\)</span> is a scalar and <span class="math inline">\(Z_j \approx N(0,1)\)</span>. The authors provide some guidance on how to select <span class="math inline">\(a_j\)</span>, but I will not get into that here.</p>
-<p>While it is possible to generate the mirror features for all columns in <span class="math inline">\(X\)</span> simultaneously, the one-fit-per-feature approach shows better performance in simulations. So, the <span class="math inline">\(\tilde{\beta}\)</span> are the estimates of <span class="math inline">\(\beta\)</span> in the following model:</p>
-<p><span class="math display">\[ y = \frac{\beta_j}{2}X_j^+ +\frac{\beta_j}{2}X_j^- + X_{\text{non-j}}\beta_{\text{non-j}} + \epsilon. \]</span></p>
+<section id="propensity-score-matching" class="level3">
+<h3 class="anchored" data-anchor-id="propensity-score-matching">Propensity Score Matching</h3>
+<p>Propensity Score Matching (PSM) is one of the most influential ideas in observational causal inference. Rosenbaum and Rubin’s foundational result shows that if treatment assignment is unconfounded given covariates <span class="math inline">\(X\)</span>, then it is also unconfounded given the propensity score:</p>
+<p><span class="math display">\[
+e(X) = \mathbb{P}(D = 1 \mid X),
+\]</span></p>
+<p>the probability of receiving treatment conditional on observed covariates. In other words,</p>
+<blockquote class="blockquote">
+<p>Instead of matching on the full covariate vector <span class="math inline">\(X\)</span>, we can just match on a <em>single scalar summary—</em>the estimated propensity score.</p>
+</blockquote>
+<p>This is the key idea: propensity scores <strong>reduce the curse of dimensionality</strong>. By summarizing the information in <span class="math inline">\(X\)</span> into one number that captures the likelihood of treatment, we make matching more feasible and scalable, especially when <span class="math inline">\(X\)</span> includes many variables.</p>
+<p>In practice, the propensity score is rarely known and must be estimated—typically using logistic regression, probit models, or machine learning methods like random forests or gradient boosting. Once estimated, treated and control units are matched based on the closeness of their propensity scores, often using nearest-neighbor matching, caliper matching, or kernel methods. Trimming is therefore an important aspect of the process, where units with very high or very low propensity scores are excluded to improve balance and reduce bias.</p>
+<p>PSM improves comparability between groups by balancing the covariates in expectation, but it comes with trade-offs. Matching on the propensity score alone does not guarantee covariate balance in any particular dataset, so it’s important to assess and diagnose balance post-matching. Moreover, PSM is sensitive to model misspecification and can perform poorly if the propensity score is estimated inaccurately or if the overlap between groups is weak.</p>
+<p>Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks.</p>
+<p><strong>When to use it?</strong> When the number of covariates is large or mostly continuous.</p>
+<p><strong>Strengths:</strong> Reduces a multivariate problem to a one-dimensional one. Flexible.</p>
+<p><strong>Weaknesses:</strong> Balance on the propensity score does not guarantee balance on covariates. Sensitive to propensity model misspecification.</p>
+<hr>
 </section>
-<section id="method-2-data-splitting" class="level4">
-<h4 class="anchored" data-anchor-id="method-2-data-splitting">Method #2 – Data Splitting</h4>
-<p>An alternative approach for getting two independent coefficient estimates <span class="math inline">\(\tilde{\beta}\)</span> is through data splitting. When estimating the linear model, we can get <span class="math inline">\(\tilde{\beta}^1\)</span> from one half of the data and $ ^2$ from the other half of the data. While this is simple and intuitive it can result in loss of statistical power. To alleviate this concern, we can do repeated data splitting and aggregate the results in the end. This is reminiscent of the procedure suggested by <a href="https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.tm08647">Meinheusen et al.&nbsp;(2012)</a> in the context of hypothesis testing in for high-dimensional regression. We can then determine the feature importance based on the share of data splits in which it ends up being included. I will omit the technical details here.</p>
-<p>There is a technical wrinkle I have omitted – the regression coefficients have to be standardized so that the <span class="math inline">\(M_j\)</span>’s have comparable variances across variables. Check the original papers for details on exactly how to do that. Instead, I will now turn to the final algorithm for variable selection with FDR control using the approaches outlined above.</p>
+<section id="coarsened-exact-matching" class="level3">
+<h3 class="anchored" data-anchor-id="coarsened-exact-matching">Coarsened Exact Matching</h3>
+<p>Coarsened Exact Matching (CEM) offers a practical compromise between the rigidity of exact matching and the flexibility needed for real-world data. The core idea is to</p>
+<blockquote class="blockquote">
+<p>Coarsen continuous covariates into broader, meaningful categories and then perform exact matching on these coarsened values.</p>
+</blockquote>
+<p>Formally, each covariate is discretized into bins, and treated and control units are matched only if they fall into the <strong>same bin across all coarsened covariates</strong>. This process reduces the granularity of the match criteria, increasing the likelihood of finding matches, while still ensuring comparability within the matched groups. Examples are turning age into 5-year intervals or income into quantile-based brackets.</p>
+<p>By construction, CEM guarantees balance on the coarsened covariates—unlike propensity score matching, where balance must be checked and cannot be guaranteed a priori. CEM also allows researchers to control the level of approximation: the finer the bins, the closer it is to exact matching; the coarser the bins, the more matches you retain but the more heterogeneity you permit within matched pairs. Researchers can apply finer coarsening to critical variables and coarser groupings to less central ones.</p>
+<p>However, CEM’s effectiveness depends heavily on the choice of binning. Poorly chosen coarsening can either lead to very few matches (if too fine) or poor covariate balance (if too coarse). There is a trade-off between retaining sample size and improving covariate similarity, and CEM makes this trade-off explicit and user-controllable.</p>
+<p><strong>When to use it?</strong> When you can meaningfully coarsen your covariates and want to retain interpretability.</p>
+<p><strong>Strengths:</strong> Improves balance while avoiding the curse of dimensionality. You control the coarsening.</p>
+<p><strong>Weaknesses:</strong> Requires subjective choices about how to coarsen. Coarsening too much can reduce matching quality; coarsening too little can lead to few matches.</p>
+<hr>
 </section>
+<section id="optimal-matching" class="level3">
+<h3 class="anchored" data-anchor-id="optimal-matching">Optimal Matching</h3>
+<p>Optimal matching takes a <strong>global approach</strong> to the matching problem. Rather than matching each treated unit to its nearest control in isolation (as in nearest neighbor matching), it</p>
+<blockquote class="blockquote">
+<p>Finds the set of matched pairs that <em>minimizes the total distance</em> across all matched units.</p>
+</blockquote>
+<p>Formally, it solves:</p>
+<p><span class="math display">\[
+\min_{\text{matching}} \sum_{(i, j) \in \text{pairs}} d(X_i, X_j),
+\]</span></p>
+<p>where <span class="math inline">\(d(X_i, X_j)\)</span> is a distance measure between treated unit <span class="math inline">\(i\)</span> and control unit <span class="math inline">\(j\)</span>.</p>
+<p>The key benefit is that it avoids poor global matches that can arise when matching is done greedily or locally, one unit at a time. Optimal matching is especially useful when treatment and control groups differ significantly in size or distribution, and when you want to minimize overall imbalance rather than optimize matches for individual units.</p>
+<p>However, because it solves a global optimization problem, it can be computationally intensive for large datasets. Also, while it minimizes overall distance, it doesn’t necessarily guarantee good covariate balance unless combined with preprocessing (e.g., matching on propensity scores or coarsened covariates).</p>
+<p>Still, optimal matching is a powerful and principled method, particularly when used with careful distance choices and diagnostics.</p>
+<p><strong>When to use it?</strong> When you care about global match quality rather than greedy, local matching.</p>
+<p><strong>Strengths:</strong> Finds globally optimal matches (not just nearest neighbor).</p>
+<p><strong>Weaknesses:</strong> Computationally intensive for large datasets. Sensitive to distance metric choice.</p>
+<hr>
 </section>
-<section id="putting-it-all-together" class="level3">
-<h3 class="anchored" data-anchor-id="putting-it-all-together">Putting it All Together</h3>
-<p>This framework sets the stage for the following general algorithm for variable selection with FDR control:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Calculate the <span class="math inline">\(j\)</span> mirror statistics, <span class="math inline">\(M_j\)</span>.</li>
-<li>Given a FDR level <span class="math inline">\(\alpha\)</span>, set a threshold <span class="math inline">\(\tau(\alpha)\)</span> such that <span class="math display">\[\tau(\alpha)= min\{t &gt; 0 : \hat{FDP}(t) \leq \alpha\}.\]</span></li>
-<li>Select the features <span class="math inline">\(\{ j : M_j &gt;  \tau(\alpha) \}\)</span>.</li>
-</ol>
-</div>
-</div>
-<p>In words, given <span class="math inline">\(\alpha\)</span> calculate the <span class="math inline">\(M_j\)</span>’s, find the magical threshold <span class="math inline">\(\tau(\alpha)\)</span> and include the variables with <span class="math inline">\(M_j &gt; \tau(\alpha)\)</span>.</p>
+<section id="genetic-matching" class="level3">
+<h3 class="anchored" data-anchor-id="genetic-matching">Genetic Matching</h3>
+<p>Genetic matching is an advanced matching method that uses a genetic algorithm to find an optimal weighting of covariates in the distance metric. The idea is to</p>
+<blockquote class="blockquote">
+<p>Automate the process of choosing how much weight each covariate should receive when determining similarity between treated and control units.</p>
+</blockquote>
+<p>Rather than manually selecting a distance metric like Mahalanobis or Euclidean, genetic matching searches over a space of weighted Mahalanobis distances, adjusting the weights to minimize covariate imbalance after matching. The optimization goal is to improve covariate balance. The result is a <strong>customized distance metric</strong> that gives higher weight to variables that are harder to balance and less to those that are already balanced.</p>
+<p>Genetic matching can be used with or without propensity score preprocessing, and can accommodate interactions or higher-order terms. It’s especially powerful in settings with many covariates or complex imbalance patterns that simple metrics fail to capture.</p>
+<p>However, the method is computationally intensive, often requiring many iterations of matching and balance assessment. Its performance also depends on the choice of balance metrics and tuning parameters in the genetic algorithm.</p>
+<p><strong>When to use it?</strong> When achieving good balance is critical and standard matching methods struggle.</p>
+<p><strong>Strengths:</strong> Excellent balance across covariates; data-driven weighting.</p>
+<p><strong>Weaknesses:</strong> Computationally heavy. May require tuning. Randomness in the genetic algorithm introduces some variability.</p>
+<hr>
+</section>
+<section id="caliper-matching" class="level3">
+<h3 class="anchored" data-anchor-id="caliper-matching">Caliper Matching</h3>
+<p>Caliper matching introduces a <strong>distance threshold</strong> to restrict which treated and control units can be matched. Specifically,</p>
+<blockquote class="blockquote">
+<p>A treated unit is only matched to a control unit if the distance between them is <em>within a pre-specified caliper</em>.</p>
+</blockquote>
+<p>That is, if the difference falls below a set limit. For example, when matching on propensity scores, a common rule is to match only if the absolute difference in propensity scores is less than 0.1:</p>
+<p><span class="math display">\[
+|e(X_i^{\text{treated}}) - e(X_j^{\text{control}})| &lt; \text{caliper}
+\]</span></p>
+<p>This constraint helps <strong>avoid poor matches</strong>, especially when treated and control groups have limited overlap. Without calipers, nearest neighbor matching might pair units with very different covariate profiles, particularly in the tails of the propensity score distribution. These poor matches can increase bias and undermine the credibility of causal estimates.</p>
+<p>Caliper matching is not a matching method on its own but rather a modification to existing strategies—most often to nearest neighbor matching. It can also be combined with optimal matching or Mahalanobis distance.</p>
+<p>Choosing the right caliper width is important: too wide, and the constraint has little effect; too narrow, and many treated units may be left unmatched, reducing sample size and precision.</p>
+<p>Caliper matching is particularly useful when the common support assumption is questionable—i.e., when treated and control groups do not overlap well in covariate space. In such cases, calipers serve as a safeguard to maintain the quality of matches by explicitly enforcing local comparability.</p>
+<p><strong>When to use it?</strong> When you want to avoid poor matches with big distance gaps.</p>
+<p><strong>Strengths:</strong> Prevents bad matches. Easy to implement alongside other methods.</p>
+<p><strong>Weaknesses:</strong> May leave some treated units unmatched if no control falls within the caliper.</p>
+<hr>
 </section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li><p>The Benjamini-Hochberg approach is still the most popular way to control FDR.</p></li>
-<li><p>I discuss two novel approaches for variable selection and FDR control aimed at improving the knockoff filter.</p></li>
+<li>Matching methods are powerful tools for causal inference.</li>
+<li>They come in many flavors, each with its own strengths and weaknesses.</li>
+<li>No single method is best for all situations; the choice depends on the data, the research question, and the assumptions you are willing to make.</li>
 </ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>The book <em>Causal Inference for Statistics, Social, and Biomedical Sciences</em> by Imbens and Rubin (2015) provides excellent coverage of matching and its theoretical underpinnings. I also recommend Stuart (2010)’s seminal review paper cited below. The <code>MatchIt</code> and <code>Matching</code> <code>R</code> packages documentation are also goldmines for practical implementation details.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Barber, R. F., &amp; Candès, E. J. (2018). Controlling the false discovery rate via knockoffs. Annals of Statistics</p>
-<p>Benjamini, Y., &amp; Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological), 57(1), 289-300.</p>
-<p>Benjamini, Y., &amp; Yekutieli, D. (2001). The control of the false discovery rate in multiple testing under dependency. Annals of statistics, 1165-1188.</p>
-<p>Dai, C., Lin, B., Xing, X., &amp; Liu, J. S. (2022). False discovery rate control via data splitting. Journal of the American Statistical Association, 1-18.</p>
-<p>Dai, C., Lin, B., Xing, X., &amp; Liu, J. S. (2023). A scale-free approach for false discovery rate control in generalized linear models. Journal of the American Statistical Association, 1-15.</p>
-<p>Ignatiadis, N., Klaus, B., Zaugg, J. B., &amp; Huber, W. (2016). Data-driven hypothesis weighting increases detection power in genome-scale multiple testing. Nature methods, 13(7), 577-580.</p>
-<p>Korthauer, K., Kimes, P. K., Duvallet, C., Reyes, A., Subramanian, A., Teng, M., … &amp; Hicks, S. C. (2019). A practical guide to methods controlling false discoveries in computational biology. Genome biology, 20(1), 1-21.</p>
-<p>Scott, J. G., Kelly, R. C., Smith, M. A., Zhou, P., &amp; Kass, R. E. (2015). False discovery rate regression: an application to neural synchrony detection in primary visual cortex. Journal of the American Statistical Association, 110(510), 459-471.</p>
-<p>Xing, X., Zhao, Z., &amp; Liu, J. S. (2023). Controlling false discovery rate using gaussian mirrors. Journal of the American Statistical Association, 118(541), 222-241.</p>
+<p>Abadie, A., &amp; Imbens, G. W. (2016). Matching on the estimated propensity score. Econometrica, 84(2), 781-807.</p>
+<p>Ben-Michael, E., Feller, A., Hirshberg, D. A., &amp; Zubizarreta, J. R. (2021). The balancing act in causal inference. arXiv preprint arXiv:2110.14831.</p>
+<p>Diamond, A., &amp; Sekhon, J. S. (2013). Genetic matching for estimating causal effects: A general multivariate matching method for achieving balance in observational studies. Review of Economics and Statistics, 95(3), 932-945.</p>
+<p>Iacus, S. M., King, G., &amp; Porro, G. (2012). Causal inference without balance checking: Coarsened exact matching. Political analysis, 20(1), 1-24.</p>
+<p>Imbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.</p>
+<p>Imbens, G. W., &amp; Rubin, D. B. (2015). <em>Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction</em>. Cambridge University Press.</p>
+<p>Rosenbaum, P. R., &amp; Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. <em>Biometrika</em>, 70(1), 41–55.</p>
+<p>Stuart, E. A. (2010). Matching methods for causal inference: A review and a look forward. <em>Statistical Science</em>, 25(1), 1–21.</p>
+<p>Rosenbaum, P. R. (2002). <em>Observational Studies</em>. Springer.</p>
 
 
 </section>

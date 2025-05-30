@@ -1,5 +1,5 @@
 ---
-title: "New Developments in False Discovery Rate"
+title: "Recent Developments in False Discovery Rate"
 date: "2023-10-27"
 categories: [multiple testing, statistical inference]
 ---

@@ -1,0 +1,89 @@
+---
+title: "The Secret Life of Correlation: Myths and Thirteen Views"
+date: "2025-05-24"
+categories: [statistical inference, correlation]
+---
+
+## Background
+
+Statistical correlation has long captivated me—it’s probably the topic I’ve written about most on this blog. What makes it so compelling is the combination of theoretical richness and deceptive simplicity. In an age dominated by deep learning and opaque models, correlation remains a refreshingly transparent and interpretable quantity. When I encounter a new dataset, it's often the first tool I reach for to explore relationships among variables.
+
+Despite its familiarity, correlation is also one of the most frequently misunderstood and misapplied concepts in statistics. It seems straightforward: a value between –1 and 1 that quantifies the strength and direction of a relationship between two variables. But beneath that tidy number lies a complex web of assumptions, limitations, and interpretations—many of which are overlooked even by seasoned practitioners.
+
+In this article, I revisit two insightful papers—van den Heuvel and Zhan (2022), and Rodgers and Nicewander (1988)—that peel back the layers of meaning surrounding correlation. My aim is to deepen our intuition and clear up common misconceptions about three of the most widely used correlation measures: Pearson’s *r*, Spearman’s *ρ*, and Kendall’s *τ*. Along the way, I’ll explore thirteen different lenses through which correlation can be understood.
+
+## Notation
+
+Let $X$ and $Y$ be two random variables with realizations $(x_i, y_i)$ for a random sample indexed by $i = 1, \ldots, n$. I assume all variables are centered (i.e., de-meaned) unless stated otherwise. Below are the three most commonly used correlation coefficients in practice. 
+
+As a refresher, here are the three correlation coefficients I’ll focus on:
+
+- **Pearson’s $r$** is defined as:
+  $$r(X,Y) = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2} \sqrt{\sum (y_i - \bar{y})^2}}.$$
+- **Spearman’s $\rho$** is Pearson’s $r$ computed on the ranks of the data:
+$$\rho(X,Y)=r(\text{rank}(X), \text{rank}(Y)).$$
+- **Kendall’s $\tau$** is based on the number of concordant and discordant pairs:
+  $$\tau = \frac{\#\text{concordant} - \#\text{discordant}}{\binom{n}{2}}.$$
+
+Concordant pairs of observations refer to pairs where the ranks of both variables move in the same direction. For example, if one observation is higher than another in both variables, they are concordant. Conversely, discordant pairs occur when the ranks of the variables move in opposite directions; one observation is higher in one variable but lower in the other. 
+
+## A Closer Look
+
+### Some Myths
+
+Pearson’s $r$ is traditionally described as a measure of linear association, while Spearman’s $\rho$ and Kendall’s $\tau$ are thought to capture monotonic relationships. This textbook distinction often leads analysts to default to rank-based methods when faced with nonlinear relationships. But as appealing as this neat categorization may be, it oversimplifies the reality.
+
+Van den Heuvel and Zhan (2022) challenge this conventional wisdom. They argue that none of these three correlation coefficients are intrinsically limited to detecting “linear” or “monotonic” associations. Instead, their sensitivity depends on the underlying distributional structure, presence of heteroskedasticity, and even how the data were transformed. Through carefully constructed counterexamples, they demonstrate that Pearson’s $r$ can sometimes outperform Spearman’s $\rho$ and Kendall’s $\tau$ even when the association is nonlinear. Conversely, rank-based methods can be more powerful than $r$ even when the association is linear—particularly in distributions outside the bivariate normal family.
+
+Another persistent myth is that rank correlations are categorically “more robust.” While it’s true that $\rho$ and $\tau$ are less sensitive to outliers in marginal distributions, this robustness has limits. Rank-based methods can still underperform or behave erratically in the presence of non-monotonic relationships or certain forms of heteroskedasticity. For instance, a $U$-shaped relationship will likely elude all three measures.
+
+### New Framework for Association
+
+To overcome these misconceptions and some of the counterexamples previously suggested in the literature, the authors propose a more nuanced framework for understanding linear and monotonic associations. They developed the following extended definitions: 
+
+**Linear Association:** $X$ and $Y$ are linearly associated if there exist known monotone functions $\phi(\cdot)$ and $\psi(\cdot)$ such that:
+$$\mathbb{E}[\psi(Y) \mid \phi(X)] = \beta_0 + \beta_1 \phi(X).$$
+
+Similarly, 
+
+**Monotonic Association:** $X$ and $Y$ are monotonically associated if there exist two potentially unknown monotonic functions $\phi(\cdot)$ and $\psi(\cdot)$ such that
+$$\mathbb{E}[\psi(Y) \mid \phi(X)] = \phi(X).$$
+
+Under these updated definitions, the conventional understanding of which correlation coefficient is best suited for linear or monotonic relationships holds better ground. These definitions capture a richer set of relationships by accounting for transformations, rather than relying on raw scale comparisons. They also emphasize the importance of conditional expectation as the lens through which to define association, rather than relying solely on scatter plot geometry or regression output.
+
+Overall, what becomes clear is that no correlation coefficient offers a complete or universally superior summary of association. Each captures different aspects of dependence. They are tools, not truths—and should be interpreted in context. Visualizations and complementary diagnostic tests remain indispensable.
+
+### Thirteen Ways to Look at Pearson's $r$
+
+If this wasn't enough for you, Rodgers and Nicewander (1988) offer a brilliant framing of correlation by listing thirteen distinct ways to interpret Pearson’s $r$. Here’s a quick tour, each providing a slightly different angle:
+
+1. **As a measure of standardized covariance**, it tells you how two variables co-vary after accounting for their units.
+2. **As a regression slope between standardized variables**, it equals the slope of the line predicting $z$-scored $Y$ from $z$-scored $X$.
+3. **As the centered and standardized sum** of cross-product of two variables. This is merely the definition of Pearson’s $r$ shown above.
+4. **As the cosine of the angle between two vectors**, showing their geometric alignment.
+5. **As a geometric mean of the two regression slopes**. It equals the square root of the product of the slopes of the regression of $Y$ on $X$ and $X$ on $Y$. 
+6. **As a square root of the ratio of two variances**, where $r^2$ is the proportion of variance in $Y$ explained by $X$ by linear regression.
+7. **As a function of the angle between the two standardized regression lines**, where it equals the sum of the inverse of the cosine and the tangent of the angle between the two lines.
+8. **As an average cross-product of standardized variables**, which is obtained by dividing both the numerator and the denominator by the product
+of the two sample standard deviations.
+9. **As a rescaled variance of the difference between standardized scores**
+10. **As a balloon rule**: A visual approximation of r using the ellipse-shaped scatterplot “balloon” width and height.
+11. **As a geometric property of elliptical contours (isoconcentration ellipses)** in a bivariate distribution—essentially more precise versions of the "balloon" idea from the prior rule.
+12. **As a test statistic in randomized experiments**, $r$ can be computed from a t-statistic or F-statistic (e.g., from ANOVA). 
+13. **As a ratio of two means** following Galton, $r$ reflects how the mean of Y changes with selected values of X.
+
+Each interpretation highlights a different trade-off or caveat. For example, the geometric view gives a great intuition, but the regression slope interpretation connects more directly to causal inference. And perhaps most importantly, several of these views are **not invariant to nonlinear transformations**, which matters a lot in real data.
+
+## Bottom Line
+
+- Pearson’s $r$, Spearman’s $\rho$, and Kendall’s $\tau$ measure different aspects of association—none is a catch-all indicator.
+- The “monotonic vs. linear” framing is a helpful heuristic, but it can break down in some real-world scenarios.
+- Rodgers and Nicewander's thirteen perspectives on correlation reveal its multifaceted nature and limitations.
+- Always visualize your data—correlation coefficients should not replace your eyes or your understanding of the domain.
+
+## References
+
+van den Heuvel, E., & Zhan, Z. (2022). Myths about linear and monotonic associations: Pearson’s $r$, Spearman’s $\rho$, and Kendall’s $\tau$. *The American Statistician*, 76(1), 44–52.
+
+Lee Rodgers, J., & Nicewander, W. A. (1988). Thirteen ways to look at the correlation coefficient. *The American Statistician*, 42(1), 59–66.
+

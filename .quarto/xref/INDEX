@@ -526,5 +526,41 @@
   },
   "blog/ks-test-one-sample.qmd": {
     "ks-test-one-sample.html": "3be97ecd"
+  },
+  "mind-map.qmd": {
+    "mind-map.html": "c3f4cd43"
+  },
+  "mermaid.qmd": {
+    "mermaid.html": "ae538bb3"
+  },
+  "blog/corr-myths-13-views.qmd": {
+    "corr-myths-13-views.html": "b64f4352"
+  },
+  "blog/flavors-bootstrap.qmd": {
+    "flavors-bootstrap.html": "6b9f7d8f"
+  },
+  "blog/flavors-var-selection.qmd": {
+    "flavors-var-selection.html": "1a0ecfb9"
+  },
+  "blog/NEXT-flavors-matching-methods.qmd": {
+    "NEXT-flavors-matching-methods.html": "95f371e2"
+  },
+  "blog/flavors-matching-methods.qmd": {
+    "flavors-matching-methods.html": "25936437"
+  },
+  "blog/NEW-flavors-matching-methods.qmd": {
+    "NEW-flavors-matching-methods.html": "32ed788b"
+  },
+  "blog/NEW-corr-myths-13-views.qmd": {
+    "NEW-corr-myths-13-views.html": "66ee0fce"
+  },
+  "blog/NEW-flavors-var-selection.qmd": {
+    "NEW-flavors-var-selection.html": "c382b8d3"
+  },
+  "blog/NEW-flavors-bootstrap.qmd": {
+    "NEW-flavors-bootstrap.html": "5caf8675"
+  },
+  "blog/recent-dev-fdr.qmd": {
+    "recent-dev-fdr.html": "f3a950b4"
   }
 }
