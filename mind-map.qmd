@@ -8,7 +8,7 @@ toc: false
 
 This interactive mind map presents a structured overview of methods for **treatment effect estimation** in causal inference grouped by its **core identification strategy**.  
 
-Click on each node to learn more about each method. Use it as a **learning aid**, a **reference guide**, or simply a way to explore the landscape of modern causal inference from a statistical viewpoint. 
+Hover over each node to learn more about the method. Use it as a **learning aid**, a **reference guide**, or simply a way to explore the landscape of modern causal inference from a statistical viewpoint. 
 
 ```{=html}
 <iframe src="files/mind-map.html" width="100%" height="700" frameborder="0"></iframe>
