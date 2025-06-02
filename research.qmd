@@ -71,11 +71,9 @@ format: html
     * [**Economics Letters**](https://www.sciencedirect.com/science/article/abs/pii/S0165176515005182?via%3Dihub){target="_blank"} Vol.139, pp36-39 (2016); [latest version](files/late_start.pdf){target="_blank"}; [replication package](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6AYLVO){target="_blank"}
     * _Summary_: Students achieve slightly higher grades when taking classes in the morning compared to the afternoon.
 :::
-
-## Working Papers
  
 ::: {.research-item}
- - "Who Can Work from Home?' (2020)
+ - "Who Can Work from Home?' (2020) [NOT PEER-REVIEWED]
     * [IZA WP No. 13197](https://www.iza.org/en/publications/dp/13197/imprint); [replication package](https://github.com/vyasenov/who-can-work-from-home).
 :::
 
