@@ -77,8 +77,11 @@ Each interpretation highlights a different trade-off or caveat. For example, the
 ## Bottom Line
 
 - Pearson’s $r$, Spearman’s $\rho$, and Kendall’s $\tau$ measure different aspects of association—none is a catch-all indicator.
+  
 - The “monotonic vs. linear” framing is a helpful heuristic, but it can break down in some real-world scenarios.
+  
 - Rodgers and Nicewander's thirteen perspectives on correlation reveal its multifaceted nature and limitations.
+  
 - Always visualize your data—correlation coefficients should not replace your eyes or your understanding of the domain.
 
 ## References
