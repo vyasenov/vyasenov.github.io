@@ -1,7 +1,7 @@
 ---
 title: "The Alphabet of Learners for Heterogeneous Treatment Effects"
 date: "2023-07-28"
-categories: [machine learning, randomized experiments, heterogeneous treatment effects]
+categories: [machine learning, randomized experiments, heterogeneous treatment effects, flavors]
 ---
 
 ## Background

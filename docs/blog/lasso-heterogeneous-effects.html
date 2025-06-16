@@ -361,7 +361,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#heterogeneous-treatment-effects-in-linear-models" id="toc-heterogeneous-treatment-effects-in-linear-models" class="nav-link" data-scroll-target="#heterogeneous-treatment-effects-in-linear-models">Heterogeneous Treatment Effects in Linear Models</a></li>
   <li><a href="#lasso-with-treatment-variable-interactions" id="toc-lasso-with-treatment-variable-interactions" class="nav-link" data-scroll-target="#lasso-with-treatment-variable-interactions">Lasso with Treatment Variable Interactions</a></li>
-  <li><a href="#lasso-with-knockoffs" id="toc-lasso-with-knockoffs" class="nav-link" data-scroll-target="#lasso-with-knockoffs">Lasso with Knockoffs</a></li>
+  <li><a href="#lasso-with-transformed-outcomes" id="toc-lasso-with-transformed-outcomes" class="nav-link" data-scroll-target="#lasso-with-transformed-outcomes">Lasso with Transformed Outcomes</a></li>
   </ul></li>
   <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
@@ -380,6 +380,7 @@ window.Quarto = {
   <div class="quarto-categories">
     <div class="quarto-category">heterogeneous treatment effects</div>
     <div class="quarto-category">causal inference</div>
+    <div class="quarto-category">lasso</div>
   </div>
   </div>
 
@@ -461,9 +462,17 @@ Algorithm:
 </div>
 <p>Two notes. First, this requires some assurance that we are not overfitting, so that some form of sample splitting or cross validation is necessary. On top of this, <a href="https://www.aeaweb.org/articles?id=10.1257/jep.31.2.3">Athey and Imbens (2017)</a> suggest comparing these results with post-lasso OLS estimates to further guard against overfitting. Second, multiple testing is an issue as is the case with ML algorithms more generally. (You can check my <a href="https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html">earlier post</a> on multiple hypothesis testing in linear machine learning models.) Options to take care of this include <a href="https://www.tandfonline.com/doi/abs/10.1198/jasa.2009.tm08647">sample splitting</a> and <a href="https://www.tandfonline.com/doi/abs/10.1198/jasa.2011.tm10159">bootstrap</a>, among others.</p>
 <p><em>Software Package</em>: <a href="https://github.com/kosukeimai/FindIt">FindIt</a>.</p>
+<p>An alternative is to apply the lasso to the linear model that includes treatment–covariate interactions. Although conceptually simple, this approach faces four key challenges:</p>
+<ol type="1">
+<li><strong>Shrinkage bias</strong>, which can distort coefficient estimates.</li>
+<li><strong>Invalid p-values</strong>, since the penalization breaks standard inferential assumptions.</li>
+<li><strong>Multiple testing</strong>, arising from the large number of candidate interactions.</li>
+<li><strong>Hierarchical violations</strong>, specific to interaction models: the lasso may select an interaction term without its corresponding main effect.</li>
+</ol>
+<p>While solutions exist for the first three issues—de-biased (or “de-sparsified) lasso, selective inference frameworks, knockoff filters, and so on—enforcing the hierarchy between main effects and interactions requires a different solution. Standard lasso does not guarantee that a selected interaction implies inclusion of its main term, but newer <a href="https://doi.org/10.1214/13-AOS1096">“hierarchical</a> <a href="https://doi.org/10.1080/10618600.2014.938812">lasso”</a> variants <a href="https://doi.org/10.1002/sim.9132">explicitly impose these constraints</a>.</p>
 </section>
-<section id="lasso-with-knockoffs" class="level3">
-<h3 class="anchored" data-anchor-id="lasso-with-knockoffs">Lasso with Knockoffs</h3>
+<section id="lasso-with-transformed-outcomes" class="level3">
+<h3 class="anchored" data-anchor-id="lasso-with-transformed-outcomes">Lasso with Transformed Outcomes</h3>
 <p>An alternative approach directly regresses the unit-level treatment effects on <span class="math inline">\(X\)</span>. To get there, we first model the outcome function and impute the missing potential outcome for each unit. See my <a href="https://vyasenov.github.io/blog/flavors-ml-methods-ci.html">previous post</a> on using Machine Learning tools for causal inference for more information on how we might do that.</p>
 <p>This approach was developed by <a href="https://dl.acm.org/doi/abs/10.1145/3219819.3219860?casa_token=prn79eBrsBMAAAAA:hWN_3s9f9DcTlWu4DtQlnU4bdJfchGOWFabAGa20TaAeJ660LWtC0rdcj5Gf62BSQmtER-T6wMDq">Xie et al.&nbsp;(2018)</a>. They recognized the multiple hypothesis issue and suggested using <a href="https://projecteuclid.org/journals/annals-of-statistics/volume-43/issue-5/Controlling-the-false-discovery-rate-via-knockoffs/10.1214/15-AOS1337.full">knockoffs</a> to control the False Discovery Rate. This is still not completely kosher, as it does not account for the fact that the outcome variable is estimated in an earlier step. Oh well. My guess and hope are that this is more of a theoretical concern, and empirically the inference we get is still “correct.”</p>
 <p>Here is a simplified version of their algorithm:</p>
@@ -514,9 +523,13 @@ Algorithm:
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <p>Barber, R. F., &amp; Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. The Annals of Statistics: 2055-2085.</p>
 <p>Barber, R. F., &amp; Candès, E. J. (2019). A knockoff filter for high-dimensional selective inference. The Annals of Statistics, 47(5), 2504-2537.</p>
+<p>Bien, J., Taylor, J., &amp; Tibshirani, R. (2013). A lasso for hierarchical interactions. Annals of statistics, 41(3), 1111.</p>
 <p>Chatterjee, A., &amp; Lahiri, S. N. (2011). Bootstrapping lasso estimators. Journal of the American Statistical Association, 106(494), 608-625.</p>
+<p>Deng, C., Koch, B., Vock, D. M., &amp; Koopmeiners, J. S. (2023). Group LASSO Variable Selection Method for Treatment Effect Generalization. arXiv preprint arXiv:2302.03832.</p>
+<p>Du, Y., Chen, H., &amp; Varadhan, R. (2021). Lasso estimation of hierarchical interactions for analyzing heterogeneity of treatment effect. Statistics in Medicine, 40(25), 5417-5433.</p>
 <p>Hu, A. (2022). Heterogeneous treatment effects analysis for social scientists: A review. Social Science Research, 102810.</p>
 <p>Imai, K., &amp; Ratkovic, M. (2013). Estimating treatment effect heterogeneity in randomized program evaluation. The Annals of Applied Statistics (2013): 443-470.</p>
+<p>Lim, M., &amp; Hastie, T. (2015). Learning interactions via hierarchical group-lasso regularization. Journal of Computational and Graphical Statistics, 24(3), 627-654.</p>
 <p>Nie, X., &amp; Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319.</p>
 <p>Meinshausen, N., Meier, L., &amp; Bühlmann, P. (2009). P-values for high-dimensional regression. Journal of the American Statistical Association, 104(488), 1671-1681.</p>
 <p>Tian, L., Alizadeh, A. A., Gentles, A. J., &amp; Tibshirani, R. (2014). A simple method for estimating interactions between a treatment and a large number of covariates. Journal of the American Statistical Association, 109(508), 1517-1532.</p>

@@ -1,7 +1,7 @@
 ---
 title: "Causal Inference with Residualized Regressions"
 date: "2025-05-01"
-categories: [causal inference, linear models]
+categories: [causal inference]
 ---
 
 ## Background

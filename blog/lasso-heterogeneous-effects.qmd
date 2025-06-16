@@ -1,7 +1,7 @@
 ---
 title: "Lasso for Heterogeneous Treatment Effects Estimation"
 date: "2023-06-30"
-categories: [heterogeneous treatment effects, causal inference]
+categories: [heterogeneous treatment effects, causal inference, lasso]
 ---
 
 ## Background
@@ -69,7 +69,16 @@ Two notes. First, this requires some assurance that we are not overfitting, so t
 
 *Software Package*: [FindIt](https://github.com/kosukeimai/FindIt).
 
-### Lasso with Knockoffs
+An alternative is to apply the lasso to the linear model that includes treatment–covariate interactions. Although conceptually simple, this approach faces four key challenges:
+
+1. **Shrinkage bias**, which can distort coefficient estimates.
+2. **Invalid p-values**, since the penalization breaks standard inferential assumptions.
+3. **Multiple testing**, arising from the large number of candidate interactions.
+4. **Hierarchical violations**, specific to interaction models: the lasso may select an interaction term without its corresponding main effect.
+
+While solutions exist for the first three issues—de-biased (or “de-sparsified) lasso, selective inference frameworks, knockoff filters, and so on—enforcing the hierarchy between main effects and interactions requires a different solution. Standard lasso does not guarantee that a selected interaction implies inclusion of its main term, but newer [“hierarchical](https://doi.org/10.1214/13-AOS1096) [lasso”](https://doi.org/10.1080/10618600.2014.938812) variants [explicitly impose these constraints](https://doi.org/10.1002/sim.9132).
+
+### Lasso with Transformed Outcomes
 
 An alternative approach directly regresses the unit-level treatment effects on $X$. To get there, we first model the outcome function and impute the missing potential outcome for each unit. See my [previous post](https://vyasenov.github.io/blog/flavors-ml-methods-ci.html) on using Machine Learning tools for causal inference for more information on how we might do that.
 
@@ -119,11 +128,19 @@ Barber, R. F., & Candès, E. J. (2015). Controlling the false discovery rate via
 
 Barber, R. F., & Candès, E. J. (2019). A knockoff filter for high-dimensional selective inference. The Annals of Statistics, 47(5), 2504-2537.
 
+Bien, J., Taylor, J., & Tibshirani, R. (2013). A lasso for hierarchical interactions. Annals of statistics, 41(3), 1111.
+
 Chatterjee, A., & Lahiri, S. N. (2011). Bootstrapping lasso estimators. Journal of the American Statistical Association, 106(494), 608-625.
+
+Deng, C., Koch, B., Vock, D. M., & Koopmeiners, J. S. (2023). Group LASSO Variable Selection Method for Treatment Effect Generalization. arXiv preprint arXiv:2302.03832.
+
+Du, Y., Chen, H., & Varadhan, R. (2021). Lasso estimation of hierarchical interactions for analyzing heterogeneity of treatment effect. Statistics in Medicine, 40(25), 5417-5433.
 
 Hu, A. (2022). Heterogeneous treatment effects analysis for social scientists: A review. Social Science Research, 102810.
 
 Imai, K., & Ratkovic, M. (2013). Estimating treatment effect heterogeneity in randomized program evaluation. The Annals of Applied Statistics (2013): 443-470.
+
+Lim, M., & Hastie, T. (2015). Learning interactions via hierarchical group-lasso regularization. Journal of Computational and Graphical Statistics, 24(3), 627-654.
 
 Nie, X., & Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319.
 

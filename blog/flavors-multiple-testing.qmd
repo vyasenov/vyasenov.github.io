@@ -1,7 +1,7 @@
 ---
-title: "Multiple Testing: Methods Overview"
+title: "The Many Flavors of Multiple Testing Adjustments"
 date: "2022-10-22"
-categories: [multiple testing, statistical inference]
+categories: [multiple testing, statistical inference, flavors]
 ---
 
 ## Background

@@ -1,7 +1,7 @@
 ---
 title: "The Many Flavors of Bootstrap"
 date: "2025-05-26"
-categories: [bootstrap, statistical inference]
+categories: [bootstrap, statistical inference, flavors]
 ---
 
 ## Background

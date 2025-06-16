@@ -1,7 +1,7 @@
 ---
 title: "Hypothesis Testing in Linear Machine Learning Models"
 date: "2022-11-06"
-categories: [statistical inference, machine learning, linear models]
+categories: [statistical inference, machine learning, lasso]
 ---
 
 ## Background
