@@ -1,24 +1,80 @@
 ---
-title: "Causal Inference for Toddlers"
+title: "Children's Books"
 format: html
 ---
 
-<div class="text-center">
+<style>
+  .two-column {
+    display: flex;
+    gap: 2rem;
+  }
+  .column {
+    flex: 1;
+    text-align: center;
+  }
+  .column-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  .column img {
+    max-width: 350px;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+    border-radius: 12px;
+  }
+  .btn-group {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .btn {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 20px;
+    padding: 10px 20px;
+    border: none;
+    text-decoration: none;
+  }
+</style>
 
+
+<div class="two-column">
+
+  <!-- LEFT COLUMN -->
+  <div class="column">
 <a href="files/ci-toddlers-eng-reduced.pdf" target="_blank">
-  <img src="images/childrens-book-cover.jpg" alt="Book Cover" style="max-width: 350px; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); border-radius: 12px;">
+  <img src="images/childrens-book-cover.jpg" alt="Book Cover">
 </a>
-
 <div class="btn-group mt-3" role="group" aria-label="Book links">
-  <a class="btn" href="files/ci-toddlers-eng-reduced.pdf" download target="_blank" style="background-color: #007bff; color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
+  <a class="btn" href="files/ci-toddlers-eng-reduced.pdf" download target="_blank">
     English (pdf)
   </a>
-  <a class="btn" href="files/ci-toddlers-bg-reduced.pdf" download target="_blank" style="background-color:#007bff; color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
+  <a class="btn" href="files/ci-toddlers-bg-reduced.pdf" download target="_blank">
     Български (pdf)
   </a>
-  <a class="btn" href="https://www.amazon.com/dp/B0BLG6SWZJ?ref_=pe_3052080_397514860" download target="_blank" style="background-color: #007bff; color: #fff; border-radius: 20px; padding: 10px 20px; border: none;">
+  <a class="btn" href="https://www.amazon.com/dp/B0BLG6SWZJ?ref_=pe_3052080_397514860" download target="_blank">
     Amazon (paperback)
   </a>
 </div>
+  </div>
+
+  <!-- RIGHT COLUMN (duplicate of left) -->
+  <div class="column">
+<a href="files/ci-toddlers-eng-reduced.pdf" target="_blank">
+  <img src="images/childrens-book-cover2.png" alt="Book Cover">
+</a>
+<div class="btn-group mt-3" role="group" aria-label="Book links">
+  <a class="btn" href="files/ci-toddlers-eng-reduced.pdf" download target="_blank" >
+    English (pdf)
+  </a>
+  <a class="btn" href="files/ci-toddlers-bg-reduced.pdf" download target="_blank" >
+    Български (pdf)
+  </a>
+  <a class="btn" href="https://www.amazon.com/dp/B0BLG6SWZJ?ref_=pe_3052080_397514860" download target="_blank" >
+    Amazon (paperback)
+  </a>
+</div>
+  </div>
 
 </div>
+

@@ -9,15 +9,15 @@ _________
 
 I'm currently a Staff Data Scientist at [Adobe](https://business.adobe.com){target="_blank"}.
 
-Previously, I held postdoctoral positions at UC Berkeley and Stanford. My PhD dissertation (2017) combined natural experiments with innovative statistical methods to study the wage/employment effects of immigration and the consequences of [double-shift](https://en.wikipedia.org/wiki/Double_shift_school){target="_blank"} schooling systems.
+Previously, I held postdoctoral positions at UC Berkeley and Stanford. My PhD dissertation (Econ '17) combined natural experiments with innovative statistical methods to study the wage/employment effects of immigration and the consequences of [double-shift](https://en.wikipedia.org/wiki/Double_shift_school){target="_blank"} schooling systems.
 
-Throughout my career, I’ve been fortunate to work closely with mentors who were students of Nobel Prize laureates. As a way to give back, I maintain [a blog](https://yasenov.com/blog/){target="_blank"} that makes cutting-edge academic research in data science accessible to a broader audience.
+Throughout my career, I’ve been fortunate to work closely with mentors who were students of Nobel Prize laureates. As a way to give back, I maintain [a blog](https://vyasenov.github.io/blog/){target="_blank"} that makes cutting-edge academic research in data science accessible to a broader audience.
 
 ******
 
-My [academic research](https://yasenov.com/research/){target="_blank"} has been published in leading peer-reviewed journals in *labor economics*, *political science*, *medicine*, and *general science* and has been featured by most major media outlets such as [The New York Times](https://www.nytimes.com/2017/10/24/business/economy/immigration-jobs.html){target="_blank"}, [The Washington Post](https://www.washingtonpost.com/politics/2020/04/07/trump-administration-is-raising-application-fee-us-citizenship-that-will-cost-us-later/){target="_blank"}, and [The Wall Street Journal](https://www.wsj.com/articles/new-evidence-on-immigrants-and-jobs-1453162462){target="_blank"}, among many others.
+My [academic research](https://vyasenov.github.io/research/){target="_blank"} has been published in leading peer-reviewed journals in *labor economics*, *political science*, *medicine*, and *general science* and has been featured by most major media outlets such as [The New York Times](https://www.nytimes.com/2017/10/24/business/economy/immigration-jobs.html){target="_blank"}, [The Washington Post](https://www.washingtonpost.com/politics/2020/04/07/trump-administration-is-raising-application-fee-us-citizenship-that-will-cost-us-later/){target="_blank"}, and [The Wall Street Journal](https://www.wsj.com/articles/new-evidence-on-immigrants-and-jobs-1453162462){target="_blank"}, among many others.
 
-My [children’s book](https://yasenov.com/childrens-book/){target="_blank"} on causal inference reached $\#2$ on Amazon’s *New Releases in Probability and Statistics* list.
+My [children’s book](https://vyasenov.github.io/childrens-book/){target="_blank"} on causal inference reached $\#2$ on Amazon’s *New Releases in Probability and Statistics* list.
 
 ******
 

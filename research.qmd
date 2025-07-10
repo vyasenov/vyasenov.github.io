@@ -1,9 +1,9 @@
 ---
-title: "Research"
+title: "Research Publications"
 format: html
 ---
 
-## Publications
+## Peer-Reviewed
 
 ::: {.research-item}
 - “The Labor Market Effects of Mexican Repatriations: Longitudinal Evidence from the 1930s” (w/ JongKwan Lee and Giovanni Peri)
@@ -77,7 +77,7 @@ format: html
     * [IZA WP No. 13197](https://www.iza.org/en/publications/dp/13197/imprint); [replication package](https://github.com/vyasenov/who-can-work-from-home).
 :::
 
-## Non-Academic Publications
+## Non-Academic
 
 ::: {.research-item}
 - “Immigration in Local US Economies was Associated with Strong Native Wage Growth for 40 Years” (w/ Giovanni Peri) [Global Migration Center](https://globalmigration.ucdavis.edu/immigration-local-us-economies-was-associated-strong-native-wage-growth-40-years){target="_blank"} (UC Davis) 03/2020

@@ -562,5 +562,17 @@
   },
   "blog/recent-dev-fdr.qmd": {
     "recent-dev-fdr.html": "f3a950b4"
+  },
+  "software.qmd": {
+    "software.html": "0ad71824"
+  },
+  "childrenbook-novo.qmd": {
+    "childrenbook-novo.html": "76ed1309"
+  },
+  "childrenbook-staro.qmd": {
+    "childrenbook-staro.html": "3a583e04"
+  },
+  "childrenbook-old.qmd": {
+    "childrenbook-old.html": "b61b2955"
   }
 }

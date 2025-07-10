@@ -19,8 +19,10 @@ website:
         href: research.qmd
       - text: Methods Map
         href: mind-map.qmd
-      - text: Children's Book
-        href: childrenbook.qmd        
+      - text: Kids Books
+        href: childrenbook.qmd
+      - text: Software
+        href: software.qmd                   
       - icon: github
         href: https://github.com/vyasenov
         target: _blank

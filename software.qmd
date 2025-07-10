@@ -1,0 +1,20 @@
+---
+title: "Python Packages"
+format: html
+toc: false
+---
+
+#### RIF Regressions
+
+[pyrifreg](https://github.com/vyasenov/pyrifreg) - Recentered Influence Function (RIF) regression analysis following Firpo et al. (2008)
+
+#### Changes-in-Changes
+
+[pycinc](https://github.com/vyasenov/pycinc) - Changes-in-Changes (CiC) model introduced by Athey and Imbens (2006)
+
+#### Lee Bounds
+
+[pyleebounds](https://github.com/vyasenov/pyleebounds) - Treatment effect bounds account for sample selection developed by Lee (2009)
+
+#### Double Post-Lasso
+[pydoublelasso](https://github.com/vyasenov/pydoublelasso) - Double-post lasso treatment effect estimation based on Belloni et al. (2014)
