@@ -6,15 +6,20 @@ toc: false
 
 #### RIF Regressions
 
-[pyrifreg](https://github.com/vyasenov/pyrifreg) - Recentered Influence Function (RIF) regression analysis following Firpo et al. (2008)
+[pyrifreg](https://github.com/vyasenov/pyrifreg) - Recentered Influence Function (RIF) regression analysis following [Firpo et al. (2008)](https://doi.org/10.3982/ECTA6822)
 
 #### Changes-in-Changes
 
-[pycinc](https://github.com/vyasenov/pycinc) - Changes-in-Changes (CiC) model introduced by Athey and Imbens (2006)
+[pycinc](https://github.com/vyasenov/pycinc) - Changes-in-Changes (CiC) model introduced by [Athey and Imbens (2006)](https://doi.org/10.1111/j.1468-0262.2006.00668.x)
 
 #### Lee Bounds
 
-[pyleebounds](https://github.com/vyasenov/pyleebounds) - Treatment effect bounds account for sample selection developed by Lee (2009)
+[pyleebounds](https://github.com/vyasenov/pyleebounds) - Treatment effect bounds account for sample selection developed by [Lee (2009)](https://doi.org/10.1111/j.1467-937X.2009.00536.x)
 
 #### Double Post-Lasso
-[pydoublelasso](https://github.com/vyasenov/pydoublelasso) - Double-post lasso treatment effect estimation based on Belloni et al. (2014)
+
+[pydoublelasso](https://github.com/vyasenov/pydoublelasso) - Double-post lasso treatment effect estimation based on [Belloni et al. (2014)](https://doi.org/10.1093/restud/rdt044)
+
+#### Lasso for Heterogeneous Treatment Effects
+
+[pyhtelasso](https://github.com/vyasenov/pyhtelasso) - Debiased lasso for simple detection of treatment effect heterogeneity in randomized experiments.
