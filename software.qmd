@@ -22,4 +22,4 @@ toc: false
 
 #### Lasso for Heterogeneous Treatment Effects
 
-[pyhtelasso](https://github.com/vyasenov/pyhtelasso) - Debiased lasso for simple detection of treatment effect heterogeneity in randomized experiments.
+[pyhtelasso](https://github.com/vyasenov/pyhtelasso) - [Debiased lasso](https://dl.acm.org/doi/10.5555/2627435.2697057) for simple detection of treatment effect heterogeneity in randomized experiments

@@ -382,6 +382,25 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
     border: none;
     text-decoration: none;
   }
+  
+  /* Responsive design for mobile devices */
+  @media (max-width: 768px) {
+    .two-column {
+      flex-direction: column;
+      gap: 3rem;
+    }
+    .column img {
+      max-width: 280px;
+    }
+    .btn-group {
+      flex-direction: column;
+      align-items: center;
+    }
+    .btn {
+      width: 200px;
+      text-align: center;
+    }
+  }
 </style>
 <div class="two-column">
 <!-- LEFT COLUMN -->
