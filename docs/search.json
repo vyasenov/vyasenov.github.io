@@ -1008,11 +1008,11 @@
     "text": "While my real name is Vasil, most people call me Vasco. I am an applied statistician."
   },
   {
-    "objectID": "childrenbook.html",
-    "href": "childrenbook.html",
-    "title": "Children’s Books",
+    "objectID": "mind-map.html",
+    "href": "mind-map.html",
+    "title": "Visualizing the World of Causal Inference",
     "section": "",
-    "text": "English (pdf)   Български (pdf)   Amazon (paperback) \n\n\n\n\n  \n\n English (pdf)   Български (pdf)   Amazon (paperback)"
+    "text": "This interactive mind map presents a structured overview of methods for treatment effect estimation in causal inference grouped by its core identification strategy.\nHover over each node to learn more about the method. Use it as a learning aid, a reference guide, or simply a way to explore the landscape of modern causal inference from a statistical viewpoint.\n\n\n  \n    \n      Glossary\n    \n    \n      \n        PS: Propensity Score\n        FE: Fixed Effects\n        RE: Random Effects\n        ML: Machine Learning\n        DiD: Difference-in-Differences\n        IV: Instrumental Variables\n        SC: Synthetic Control\n        GMM: Generalized Method of Moments\n        TWFE: Two-Way Fixed Effects\n        ATE: Average Treatment Effect\n        CATE: Conditional Average Treatment Effect\n        QTE: Quantile Treatment Effect\n        CF: Control Function\n        2SLS: Two-Stage Least Squares\n        RD: Regression Discontinuity"
   },
   {
     "objectID": "research.html",
@@ -1036,18 +1036,11 @@
     "text": "Non-Academic\n\n\n“Immigration in Local US Economies was Associated with Strong Native Wage Growth for 40 Years” (w/ Giovanni Peri) Global Migration Center (UC Davis) 03/2020\n\n\n\n\n“New Evidence on Immigration and Jobs” (w/ Giovanni Peri) The Wall Street Journal, 01/2016"
   },
   {
-    "objectID": "mind-map.html",
-    "href": "mind-map.html",
-    "title": "Visualizing the World of Causal Inference",
+    "objectID": "childrenbook.html",
+    "href": "childrenbook.html",
+    "title": "Children’s Books",
     "section": "",
-    "text": "This interactive mind map presents a structured overview of methods for treatment effect estimation in causal inference grouped by its core identification strategy.\nHover over each node to learn more about the method. Use it as a learning aid, a reference guide, or simply a way to explore the landscape of modern causal inference from a statistical viewpoint.\n\n\n  \n    \n      Glossary\n    \n    \n      \n        PS: Propensity Score\n        FE: Fixed Effects\n        RE: Random Effects\n        ML: Machine Learning\n        DiD: Difference-in-Differences\n        IV: Instrumental Variables\n        SC: Synthetic Control\n        GMM: Generalized Method of Moments\n        TWFE: Two-Way Fixed Effects\n        ATE: Average Treatment Effect\n        CATE: Conditional Average Treatment Effect\n        QTE: Quantile Treatment Effect\n        CF: Control Function\n        2SLS: Two-Stage Least Squares\n        RD: Regression Discontinuity"
-  },
-  {
-    "objectID": "childrenbook-old.html",
-    "href": "childrenbook-old.html",
-    "title": "Causal Inference for Toddlers",
-    "section": "",
-    "text": "English (pdf)   Български (pdf)   Amazon (paperback)"
+    "text": "English (pdf)   Български (pdf)   Amazon (paperback) \n\n\n\n\n  \n\n English (pdf)   Български (pdf)   Amazon (paperback)"
   },
   {
     "objectID": "blog/flavors-ml-methods-ci.html#background",
@@ -1929,6 +1922,6 @@
     "href": "software.html",
     "title": "Python Packages",
     "section": "",
-    "text": "RIF Regressions\npyrifreg - Recentered Influence Function (RIF) regression analysis following Firpo et al. (2008)\n\n\nChanges-in-Changes\npycinc - Changes-in-Changes (CiC) model introduced by Athey and Imbens (2006)\n\n\nLee Bounds\npyleebounds - Treatment effect bounds account for sample selection developed by Lee (2009)\n\n\nDouble Post-Lasso\npydoublelasso - Double-post lasso treatment effect estimation based on Belloni et al. (2014)\n\n\nLasso for Heterogeneous Treatment Effects\npyhtelasso - Debiased lasso for simple detection of treatment effect heterogeneity in randomized experiments"
+    "text": "RIF Regressions\npyrifreg - Recentered Influence Function (RIF) regression analysis following Firpo et al. (2008)\n\n\nChanges-in-Changes\npycinc - Changes-in-Changes (CiC) model introduced by Athey and Imbens (2006)\n\n\nLee Bounds\npyleebounds - Treatment effect bounds accounting for sample selection developed by Lee (2009)\n\n\nDouble Post-Lasso\npydoublelasso - Double-post lasso treatment effect estimation based on Belloni et al. (2014)\n\n\nLasso for Heterogeneous Treatment Effects\npyhtelasso - Debiased lasso for simple detection of treatment effect heterogeneity in randomized experiments"
   }
 ]

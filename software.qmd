@@ -14,7 +14,7 @@ toc: false
 
 #### Lee Bounds
 
-[pyleebounds](https://github.com/vyasenov/pyleebounds) - Treatment effect bounds account for sample selection developed by [Lee (2009)](https://doi.org/10.1111/j.1467-937X.2009.00536.x)
+[pyleebounds](https://github.com/vyasenov/pyleebounds) - Treatment effect bounds accounting for sample selection developed by [Lee (2009)](https://doi.org/10.1111/j.1467-937X.2009.00536.x)
 
 #### Double Post-Lasso
 
