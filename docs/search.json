@@ -1922,6 +1922,6 @@
     "href": "software.html",
     "title": "Python Packages",
     "section": "",
-    "text": "RIF Regressions\npyrifreg - Recentered Influence Function (RIF) regression analysis following Firpo et al. (2008)\n\n\nChanges-in-Changes\npycinc - Changes-in-Changes (CiC) model introduced by Athey and Imbens (2006)\n\n\nLee Bounds\npyleebounds - Treatment effect bounds accounting for sample selection developed by Lee (2009)\n\n\nDouble Post-Lasso\npydoublelasso - Double-post lasso treatment effect estimation based on Belloni et al. (2014)\n\n\nLasso for Heterogeneous Treatment Effects\npyhtelasso - Debiased lasso for simple detection of treatment effect heterogeneity in randomized experiments"
+    "text": "ML Adjustments to RCTs\npyregadj - Regression and machine learning adjustments to treatment effect estimates in randomized experiments as in List et al. (2024)\n\n\nRIF Regressions\npyrifreg - Recentered Influence Function (RIF) regression analysis following Firpo et al. (2008)\n\n\nChanges-in-Changes\npycinc - Changes-in-Changes (CiC) model introduced by Athey and Imbens (2006)\n\n\nLee Bounds\npyleebounds - Treatment effect bounds accounting for sample selection developed by Lee (2009)\n\n\nDouble Post-Lasso\npydoublelasso - Double-post lasso treatment effect estimation based on Belloni et al. (2014)"
   }
 ]
