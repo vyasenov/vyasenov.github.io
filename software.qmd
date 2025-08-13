@@ -8,6 +8,10 @@ toc: false
 
 [pyregadj](https://github.com/vyasenov/pyregadj) - Regression and machine learning adjustments to treatment effect estimates in randomized experiments as in [List et al. (2024)](https://doi.org/10.1080/07474938.2024.2373446)
 
+#### Lasso for Heterogeneous Treatment Effects
+
+[pyhtelasso](https://github.com/vyasenov/pyhtelasso) - [Debiased lasso](https://dl.acm.org/doi/10.5555/2627435.2697057) for simple detection of treatment effect heterogeneity in randomized experiments 
+
 #### RIF Regressions
 
 [pyrifreg](https://github.com/vyasenov/pyrifreg) - Recentered Influence Function (RIF) regression analysis following [Firpo et al. (2008)](https://doi.org/10.3982/ECTA6822)
@@ -23,9 +27,3 @@ toc: false
 #### Double Post-Lasso
 
 [pydoublelasso](https://github.com/vyasenov/pydoublelasso) - Double-post lasso treatment effect estimation based on [Belloni et al. (2014)](https://doi.org/10.1093/restud/rdt044)
-
-<!-- 
-#### Lasso for Heterogeneous Treatment Effects
-
-[pyhtelasso](https://github.com/vyasenov/pyhtelasso) - [Debiased lasso](https://dl.acm.org/doi/10.5555/2627435.2697057) for simple detection of treatment effect heterogeneity in randomized experiments 
--->
