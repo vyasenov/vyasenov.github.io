@@ -6,9 +6,9 @@ categories: [randomized experiments, causal inference]
 
 ## Background
 
-Properly implemented randomized experiments—such as randomized controlled trials (RCTs) and A/B tests—guarantee unbiased estimates of the causal effect of a treatment $T$ on an outcome $Y$. A natural question that arises is whether information on covariates $X$ is still useful in these settings. This is a question I often get from data scientists.
+Properly implemented randomized experiments (such as randomized controlled trials (RCTs) and A/B tests) guarantee unbiased estimates of the causal effect of a treatment $T$ on an outcome $Y$. A natural question that arises is whether information on covariates $X$ is still useful in these settings. This is a question I often get from data scientists.
 
-The short answer is: **yes, covariates are often essential**—not for identifying causal effects per se, but for enhancing precision, robustness, and interpretability.
+The short answer is: *yes*, covariates are often essential not for identifying causal effects per se, but for enhancing precision, robustness, and interpretability.
 
 This short blog post outlines the most common and important roles covariates play in randomized experiments.
 

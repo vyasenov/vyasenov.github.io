@@ -36,9 +36,9 @@ Now, enter the world of causal inference. The rules are completely different. De
 
 > "I would rather understand one cause than be King of Persia."
 
-In causal modeling, the goal is not prediction, but isolation of the effect of a treatment $T$ on $Y$. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here's the catch: **not all variables should be controlled for**.
+In causal modeling, the goal is not prediction, but isolation of the effect of a treatment $T$ on $Y$. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here's the catch: not all variables should be controlled for.
 
-This is where the concept of **bad controls** comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.
+This is where the concept of *bad controls* comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.
 
 In other words, in causal inference:
 
@@ -54,21 +54,21 @@ One place where this confusion often plays out is in propensity score modeling.
 
 To recap, the propensity score $e(X) = P(T = 1 \mid X)$ is the probability of receiving treatment given covariates. It’s often estimated via a logistic regression or ML model. Then, you use this score to adjust for differences between treated and control groups (e.g., via weighting or matching).
 
-And here’s the key point: **your goal is not to get the best prediction of treatment.** Your goal is to use the propensity score to balance covariates between groups. That’s it.
+And here’s the key point: your goal is not to get the best prediction of treatment. Your goal is to use the propensity score to balance covariates between groups. That’s it.
 
 So even if a fancy `XGBoost` model gives you higher prediction accuracy, it may overfit or fail to achieve covariate balance—which defeats the purpose. In fact, some of the best-performing PS models (for causal purposes) may have terrible predictive accuracy but excel at achieving balance.
 
 There’s a trade-off here:
 
 - Predictive ML models focus on minimizing error.
-- Propensity score models should optimize **covariate balance**.
+- Propensity score models should optimize *covariate balance*.
 
 And that trade-off is why a more accurate model is not necessarily better for causal inference.
 
 
 ## An Example
 
-The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success ($Y$), and we find that hard work ($T$) has a causal effect on academic achievement. This means that if we were to increase a given student's effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about **what will happen if we intervene** (i.e., manipulate $T$). Intervene is the key word here. Here's the [crazy thing](https://vyasenov.github.io/blog/causation-without-correlation.html) - in observational data, student success and effort might not even be correlated! 
+The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success ($Y$), and we find that hard work ($T$) has a causal effect on academic achievement. This means that if we were to increase a given student's effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about what will happen if we *intervene* (i.e., manipulate $T$). Intervene is the key word here. Here's the [crazy thing](https://vyasenov.github.io/blog/causation-without-correlation.html) - in observational data, student success and effort might not even be correlated! 
 
 So, this doesn't necessarily help us predict with high accuracy which students will be most successful. For that task, other variables—like parental income ($X_1$), neighborhood quality ($X_2$), or prior test scores ($X_3$)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.
 

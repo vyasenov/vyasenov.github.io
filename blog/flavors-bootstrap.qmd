@@ -34,13 +34,13 @@ Let’s start with the jackknife, developed back in the 1950s by Quenouille and 
 ::: {.callout-note title="Algorithm:"}
 For $i = 1, \dots, n$:
 
-1. **Drop observation $i$** at a time and recompute your estimate. 
+1. Drop observation $i$ at a time and recompute your estimate. 
 2. Compute the jackknife estimate, $\hat{\theta}_{(i)} = T(\hat{F}_{n,-i})$, on the remaining $n-1$ observations.
 :::
 
-Here $\hat{F}_{n,-i}$ is the empirical distribution leaving out the $i$-th observation. We then use the variability across these "leave-one-out" estimates to approximate the variance of $\hat{\theta}$ following the formula above.
+Here $\hat{F}_{n,-i}$ is the empirical distribution leaving out the $i$-th observation. We then use the variability across these "leave-one-out" estimates to approximate the variance of $\hat{\theta}$ following the formula above. 
 
-**When to use it?** The jackknife works well for smooth statistics like the mean or regression coefficients. But it can fail miserably for non-smooth functionals like the median or quantiles.
+The jackknife works well for smooth statistics like the mean or regression coefficients. But it can fail miserably for non-smooth functionals like the median or quantiles.
 
 **Strengths:** Fast, easy to implement, no randomness involved.
 
@@ -73,7 +73,7 @@ print(jackknife_variance)
 
 ### Classic Nonparametric Bootstrap
 
-The classic bootstrap, introduced by Bradley Efron in 1979, takes the idea of resampling and turns it up a notch. Instead of dropping one observation at a time, we repeatedly resample **with replacement** from our data to create many "new" datasets, each the same size as the original.
+The classic bootstrap, introduced by Bradley Efron in 1979, takes the idea of resampling and turns it up a notch. Instead of dropping one observation at a time, we repeatedly resample *with replacement* from our data to create many "new" datasets, each the same size as the original.
 
 ::: {.callout-note title="Algorithm:"}
 For each bootstrap sample $b = 1, \dots, B$:
@@ -81,8 +81,6 @@ For each bootstrap sample $b = 1, \dots, B$:
 1. Sample $n$ observations with replacement from your data.
 2. Compute the statistic $\hat{\theta}^*_b = T(\hat{F}^*_b)$.
 :::
-
-**When to use it?** Whenever the sample size is moderate or large and you can safely assume i.i.d. observations.
 
 **Strengths:** Flexible, broadly applicable, works well for non-smooth statistics.
 
@@ -115,7 +113,7 @@ print(boot_variance)
 
 ### Parametric Bootstrap
 
-The parametric bootstrap is a natural extension of the classic idea with a minor twist. Instead of sampling from the empirical distribution $\hat{F}_n$, you **assume a parametric model** $F_\theta$ for the data, fit it to the sample, and then generate new data from the fitted model.
+The parametric bootstrap is a natural extension of the classic idea with a minor twist. Instead of sampling from the empirical distribution $\hat{F}_n$, you *assume a parametric model* $F_\theta$ for the data, fit it to the sample, and then generate new data from the fitted model.
 
 ::: {.callout-note title="Algorithm:"}
 For each bootstrap sample $b = 1, \dots, B$:
@@ -126,7 +124,7 @@ For each bootstrap sample $b = 1, \dots, B$:
 
 For example, if you assume $Y_i \sim N(\mu, \sigma^2)$, estimate $\hat{\mu}$ and $\hat{\sigma}^2$, and then generate bootstrap samples from $N(\hat{\mu}, \hat{\sigma}^2)$.
 
-**When to use it?** When you trust your parametric model (or at least trust it more than the empirical distribution) and want to leverage that structure.
+The parametric bootstrap can be a good idea when you trust your parametric model (or at least trust it more than the empirical distribution) and want to leverage that structure.
 
 **Strengths:** More efficient than nonparametric bootstrap if the model is well-specified. Can handle small samples better.
 
@@ -159,7 +157,7 @@ print(param_boot_variance)
 
 ### Bayesian Bootstrap
 
-Invented by Rubin in 1981, the Bayesian bootstrap doesn’t resample data points directly. Instead, it puts a **Dirichlet prior** on the weights assigned to each observation.
+Invented by Rubin in 1981, the Bayesian bootstrap doesn’t resample data points directly. Instead, it puts a *Dirichlet prior* on the weights assigned to each observation.
 
 Whereas the classical bootstrap simulates sampling from a population by creating new samples from the observed data, the Bayesian bootstrap simulates uncertainty about the population distribution itself using the Bayesian framework—specifically by placing a nonparametric prior over the unknown distribution (implicitly, a Dirichlet process prior).
 
@@ -170,8 +168,6 @@ For each bootstrap replicate $b = 1, \dots, B$:
 2. Construct the weighted empirical distribution $\hat{F}^*_b = \sum_{i=1}^n w_i^{(b)} \delta_{Y_i}$, where $\delta_{Y_i}$ is a point mass at observation $Y_i$.
 3. Compute the weighted statistic: $\hat{\theta}^*_b = T(\hat{F}^*_b)$.
 :::
-
-**When to use it?** When you're in a Bayesian mood or want a resampling scheme without discrete resampling (i.e., no repeated observations).
 
 **Strengths:** Smooth, avoids ties from discrete resampling, easy to implement.
 
@@ -207,7 +203,7 @@ np.var(bayes_boot_means, ddof=1)
 
 ### Wild Bootstrap
 
-The wild bootstrap is a lifesaver when dealing with **heteroskedasticity** or few clusters. Rather than resampling entire observations (which breaks the structure of heteroskedastic errors), the wild bootstrap keeps the design matrix $X$ fixed and perturbs only the residuals—in a way that maintains heteroskedasticity-consistent variability. Some versions modify instead the score function instead of the residuals.
+The wild bootstrap is a lifesaver when dealing with *heteroskedasticity* or few clusters. Rather than resampling entire observations (which breaks the structure of heteroskedastic errors), the wild bootstrap keeps the design matrix $X$ fixed and perturbs only the residuals—in a way that maintains heteroskedasticity-consistent variability. Some versions modify instead the score function instead of the residuals.
 
 Suppose you’re estimating a regression model:
 $$
@@ -228,8 +224,6 @@ where $v_i$ are random variables with mean zero and variance one (e.g., Rademach
 
 2. Refit the model using the perturbed outcomes and compute the statistic $\hat{\theta}^*_b = T(\hat{F}^*_b)$.
 :::
-
-**When to use it?** Heteroskedastic models, clustered data with few clusters.
 
 **Strengths:** Handles heteroskedasticity gracefully, robust in small-sample settings.
 
@@ -277,7 +271,7 @@ np.var(wild_boot_coefs, ddof=1)
 ### Cluster Bootstrap
 
 
-The cluster bootstrap is essential when working with **clustered data**, where observations within the same group (e.g., students in schools, workers in firms) may be correlated. Unlike standard bootstrap methods that resample individuals, the cluster bootstrap resamples **entire clusters**, preserving the internal dependence structure of the data.
+The cluster bootstrap is essential when working with clustered data, where observations within the same group (e.g., students in schools, workers in firms) may be correlated. Unlike standard bootstrap methods that resample individuals, the cluster bootstrap resamples *entire clusters*, preserving the internal dependence structure of the data.
 
 Suppose you're estimating a model like:
 
@@ -296,8 +290,6 @@ For each bootstrap sample $b = 1, \dots, B$:
 3. Compute the statistic $\hat{\theta}^*_b = T(\hat{F}^*_b)$.
 :::
 
-**When to use it?** Any time your data is grouped and intra-cluster correlation may bias standard errors (e.g., multi-site studies, geographic clustering, panel data with group effects).
-
 **Strengths:** Simple to implement, preserves cluster dependence, consistent under many forms of within-cluster correlation.
 
 **Weaknesses:** Requires a reasonably large number of clusters (typically $G \geq 30$). Can be biased or unstable with few clusters. (Luckily, the United States was broken down in 50 states. The Swiss were not as fortunate.)
@@ -306,7 +298,7 @@ For each bootstrap sample $b = 1, \dots, B$:
 
 ### Moving Block Bootstrap
 
-If your data are **dependent**, like time series, the classic bootstrap fails because it breaks the correlation structure. The moving block bootstrap fixes this by resampling blocks of adjacent observations instead of individual data points. You can easily see how this makes sense for time seires: you want to maintain the local dependence structure while still resampling.
+If your data are *dependent*, like time series, the classic bootstrap fails because it breaks the correlation structure. The moving block bootstrap fixes this by resampling blocks of adjacent observations instead of individual data points. You can easily see how this makes sense for time seires: you want to maintain the local dependence structure while still resampling.
 
 You choose a block length $l$ and create overlapping blocks of data:
 $$
@@ -321,8 +313,6 @@ For each bootstrap sample $b = 1, \dots, B$:
 1. Sample these blocks with replacement to form a new dataset.
 2. Compute the statistic $\hat{\theta}^*_b = T(\hat{F}^*_b)$.
 ::: 
-
-**When to use it?** Time series or spatial data with short-range dependence.
 
 **Strengths:** Maintains local dependence within blocks.
 

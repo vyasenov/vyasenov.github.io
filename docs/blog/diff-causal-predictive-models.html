@@ -436,8 +436,8 @@ window.Quarto = {
 <blockquote class="blockquote">
 <p>“I would rather understand one cause than be King of Persia.”</p>
 </blockquote>
-<p>In causal modeling, the goal is not prediction, but isolation of the effect of a treatment <span class="math inline">\(T\)</span> on <span class="math inline">\(Y\)</span>. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here’s the catch: <strong>not all variables should be controlled for</strong>.</p>
-<p>This is where the concept of <strong>bad controls</strong> comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.</p>
+<p>In causal modeling, the goal is not prediction, but isolation of the effect of a treatment <span class="math inline">\(T\)</span> on <span class="math inline">\(Y\)</span>. And to do that, you need to control for confounders—variables that affect both the treatment and the outcome. But here’s the catch: not all variables should be controlled for.</p>
+<p>This is where the concept of <em>bad controls</em> comes in—variables that are affected by the treatment (post-treatment variables), or colliders that open up backdoor paths and induce spurious associations.</p>
 <p>In other words, in causal inference:</p>
 <ul>
 <li>Including the wrong variable can make things worse.</li>
@@ -450,19 +450,19 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="propensity-scores">Propensity Scores</h3>
 <p>One place where this confusion often plays out is in propensity score modeling.</p>
 <p>To recap, the propensity score <span class="math inline">\(e(X) = P(T = 1 \mid X)\)</span> is the probability of receiving treatment given covariates. It’s often estimated via a logistic regression or ML model. Then, you use this score to adjust for differences between treated and control groups (e.g., via weighting or matching).</p>
-<p>And here’s the key point: <strong>your goal is not to get the best prediction of treatment.</strong> Your goal is to use the propensity score to balance covariates between groups. That’s it.</p>
+<p>And here’s the key point: your goal is not to get the best prediction of treatment. Your goal is to use the propensity score to balance covariates between groups. That’s it.</p>
 <p>So even if a fancy <code>XGBoost</code> model gives you higher prediction accuracy, it may overfit or fail to achieve covariate balance—which defeats the purpose. In fact, some of the best-performing PS models (for causal purposes) may have terrible predictive accuracy but excel at achieving balance.</p>
 <p>There’s a trade-off here:</p>
 <ul>
 <li>Predictive ML models focus on minimizing error.</li>
-<li>Propensity score models should optimize <strong>covariate balance</strong>.</li>
+<li>Propensity score models should optimize <em>covariate balance</em>.</li>
 </ul>
 <p>And that trade-off is why a more accurate model is not necessarily better for causal inference.</p>
 </section>
 </section>
 <section id="an-example" class="level2">
 <h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<p>The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success (<span class="math inline">\(Y\)</span>), and we find that hard work (<span class="math inline">\(T\)</span>) has a causal effect on academic achievement. This means that if we were to increase a given student’s effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about <strong>what will happen if we intervene</strong> (i.e., manipulate <span class="math inline">\(T\)</span>). Intervene is the key word here. Here’s the <a href="https://vyasenov.github.io/blog/causation-without-correlation.html">crazy thing</a> - in observational data, student success and effort might not even be correlated!</p>
+<p>The distinction between machine learning and causal inference is best illustrated with an example. Suppose we build a causal model to understand what drives student success (<span class="math inline">\(Y\)</span>), and we find that hard work (<span class="math inline">\(T\)</span>) has a causal effect on academic achievement. This means that if we were to increase a given student’s effort, we would expect—on average—a corresponding improvement in that student’s success. Causality is about what will happen if we <em>intervene</em> (i.e., manipulate <span class="math inline">\(T\)</span>). Intervene is the key word here. Here’s the <a href="https://vyasenov.github.io/blog/causation-without-correlation.html">crazy thing</a> - in observational data, student success and effort might not even be correlated!</p>
 <p>So, this doesn’t necessarily help us predict with high accuracy which students will be most successful. For that task, other variables—like parental income (<span class="math inline">\(X_1\)</span>), neighborhood quality (<span class="math inline">\(X_2\)</span>), or prior test scores (<span class="math inline">\(X_3\)</span>)—might outperform hard work as predictors, even if they are not causes. In short, causal inference answers what-if questions about interventions, while machine learning focuses on associational patterns that are useful for prediction, regardless of whether they are causal.</p>
 </section>
 <section id="bottom-line" class="level2">

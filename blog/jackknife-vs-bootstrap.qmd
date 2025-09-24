@@ -6,7 +6,7 @@ categories: [bootstrap, statistical inference]
 
 ## Background
 
-If you've ever dived into resampling methods, you've likely come across the **jackknife** and the **bootstrap**. They both aim to help us estimate uncertainty or bias without relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, what made the bootstrap, developed decades after the jackknife, such a big deal? Aren't they too similar to be considered separate methods and have distinct properties?
+If you've ever dived into resampling methods, you've likely come across the jackknife and the bootstrap. They both aim to help us estimate uncertainty or bias without relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, what made the bootstrap, developed decades after the jackknife, such a big deal? Aren't they too similar to be considered separate methods and have distinct properties?
 
 This article walks through the key intuition behind these methods and explains why the bootstrap was a genuine innovation.
 
@@ -22,7 +22,7 @@ Our upcoming discussion will evolve around the concept of smoothness. What does 
 
 ### The Jackknife
 
-The jackknife, introduced by Quenouille and popularized by Tukey in the 1950s, works by **systematically leaving out one observation at a time**. For each $i$, we compute $\hat{\theta}^{(-i)}$, the estimator based on the dataset with the $i$th observation removed.
+The jackknife, introduced by Quenouille and popularized by Tukey in the 1950s, works by systematically leaving out one observation at a time. For each $i$, we compute $\hat{\theta}^{(-i)}$, the estimator based on the dataset with the $i$th observation removed.
 
 This gives us $n$ estimates to work with:
 $$
@@ -33,7 +33,7 @@ These can be used to estimate the bias or variance of $\hat{\theta}$. But the me
 
 ### The Bootstrap
 
-The bootstrap, invented by Bradley Efron in 1979, made a conceptual leap: instead of deleting one observation at a time, **draw samples of size $n$ from the data, *with replacement*.** Each resample is like a new dataset:
+The bootstrap, invented by Bradley Efron in 1979, made a conceptual leap: instead of deleting one observation at a time, draw samples of size $n$ from the data, *with replacement*. Each resample is like a new dataset:
 $$
 X_1^*, X_2^*, \dots, X_n^* \sim \text{Empirical distribution of } \{X_1, \dots, X_n\}
 $$

@@ -20,7 +20,7 @@ Let’s set up the basic framework with minimal fluff. Suppose we have $n$ units
 - A vector of observed covariates $X_i$.
 - Potential outcomes $Y_i(1)$ and $Y_i(0)$, where $Y_i(1)$ is the outcome if treated, and $Y_i(0)$ if untreated. We observe only their realized outcome $Y_i = D_i Y_i(1) + (1 - D_i) Y_i(0)$.
 
-We impose the usual assumptions of **unconfoundedness** (treatment assignment is independent of potential outcomes given covariates) and **overlap** (treated and control units have similar covariate distributions).
+We impose the usual assumptions of unconfoundedness (treatment assignment is independent of potential outcomes given covariates) and overlap (treated and control units have similar covariate distributions).
 
 Our goal is to estimate treatment effects like the Average Treatment Effect (ATE) or the ATE on the Treated (ATT):
 $$
@@ -45,11 +45,11 @@ Exact matching is the simplest—and most restrictive—approach to causal infer
 
 > Match treated and control units *exactly* on all observed covariates $X$. 
 
-That is, if a treated unit has $X = x$, we look for **control units with the exact same** $X = x$. While this method is conceptually elegant and easy to understand, it’s rarely practical. 
+That is, if a treated unit has $X = x$, we look for control units with the exact same $X = x$. While this method is conceptually elegant and easy to understand, it’s rarely practical. 
 
 Exact matches become increasingly unlikely in high-dimensional settings or when covariates are continuous, where no two units are likely to be identical. In those cases, exact matching often fails to find matches for many treated units, leading to loss of sample size or biased estimates. Despite its limitations, exact matching is an important baseline: it helps clarify the assumptions behind more flexible methods.
 
-**When to use it?** When covariates are discrete and there aren’t too many of them. Great overlap between the treated and control groups.
+Exact matching works when covariates are discrete and there aren’t too many of them and there is decent overlap between the treated and control groups.
 
 **Strengths:** Conceptually clear, no modeling assumptions, perfect balance on matched covariates.
 
@@ -73,9 +73,7 @@ where $S$ is the sample covariance matrix of the covariates $X$.
 
 This metric accounts for both the scale and the correlation structure of the covariates. Unlike Euclidean distance, which treats each covariate as equally important and independent, Mahalanobis distance adjusts for the fact that some variables may be more variable than others, or may be correlated.
 
-Intuitively, Mahalanobis distance answers the question: **how many standard deviations apart are these two vectors**, once we’ve accounted for the spread and correlation of the variables? A small Mahalanobis distance indicates that the two units are close in the joint covariate space, even if they differ somewhat along individual dimensions. It still becomes less reliable in high dimensions, where all units tend to be far from one another.
-
-**When to use it?** When covariates are continuous and moderately low-dimensional.
+Intuitively, Mahalanobis distance answers the question: how many standard deviations apart are these two vectors, once we’ve accounted for the spread and correlation of the variables? A small Mahalanobis distance indicates that the two units are close in the joint covariate space, even if they differ somewhat along individual dimensions. It still becomes less reliable in high dimensions, where all units tend to be far from one another.
 
 **Strengths:** Handles continuous variables well, accounts for correlation between covariates.
 
@@ -95,15 +93,13 @@ the probability of receiving treatment conditional on observed covariates. In ot
 
 > Instead of matching on the full covariate vector $X$, we can just match on a *single scalar summary—*the estimated propensity score.
 
-This is the key idea: propensity scores **reduce the curse of dimensionality**. By summarizing the information in $X$ into one number that captures the likelihood of treatment, we make matching more feasible and scalable, especially when $X$ includes many variables.
+This is the key idea: propensity scores reduce the curse of dimensionality. By summarizing the information in $X$ into one number that captures the likelihood of treatment, we make matching more feasible and scalable, especially when $X$ includes many variables.
 
 In practice, the propensity score is rarely known and must be estimated—typically using logistic regression, probit models, or machine learning methods like random forests or gradient boosting. Once estimated, treated and control units are matched based on the closeness of their propensity scores, often using nearest-neighbor matching, caliper matching, or kernel methods. Trimming is therefore an important aspect of the process, where units with very high or very low propensity scores are excluded to improve balance and reduce bias.
 
 PSM improves comparability between groups by balancing the covariates in expectation, but it comes with trade-offs. Matching on the propensity score alone does not guarantee covariate balance in any particular dataset, so it’s important to assess and diagnose balance post-matching. Moreover, PSM is sensitive to model misspecification and can perform poorly if the propensity score is estimated inaccurately or if the overlap between groups is weak. 
 
-Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks.
-
-**When to use it?** When the number of covariates is large or mostly continuous.
+Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks. It can be particularly helpful when the number of covariates is large or mostly continuous.
 
 **Strengths:** Reduces a multivariate problem to a one-dimensional one. Flexible.
 
@@ -117,13 +113,11 @@ Coarsened Exact Matching (CEM) offers a practical compromise between the rigidit
 
 > Coarsen continuous covariates into broader, meaningful categories and then perform exact matching on these coarsened values.
 
-Formally, each covariate is discretized into bins, and treated and control units are matched only if they fall into the **same bin across all coarsened covariates**. This process reduces the granularity of the match criteria, increasing the likelihood of finding matches, while still ensuring comparability within the matched groups. Examples are turning age into 5-year intervals or income into quantile-based brackets. 
+Formally, each covariate is discretized into bins, and treated and control units are matched only if they fall into the *same bin across all coarsened covariates*. This process reduces the granularity of the match criteria, increasing the likelihood of finding matches, while still ensuring comparability within the matched groups. Examples are turning age into 5-year intervals or income into quantile-based brackets. 
 
 By construction, CEM guarantees balance on the coarsened covariates—unlike propensity score matching, where balance must be checked and cannot be guaranteed a priori. CEM also allows researchers to control the level of approximation: the finer the bins, the closer it is to exact matching; the coarser the bins, the more matches you retain but the more heterogeneity you permit within matched pairs. Researchers can apply finer coarsening to critical variables and coarser groupings to less central ones. 
 
 However, CEM's effectiveness depends heavily on the choice of binning. Poorly chosen coarsening can either lead to very few matches (if too fine) or poor covariate balance (if too coarse). There is a trade-off between retaining sample size and improving covariate similarity, and CEM makes this trade-off explicit and user-controllable.
-
-**When to use it?** When you can meaningfully coarsen your covariates and want to retain interpretability.
 
 **Strengths:** Improves balance while avoiding the curse of dimensionality. You control the coarsening.
 
@@ -133,7 +127,7 @@ However, CEM's effectiveness depends heavily on the choice of binning. Poorly ch
 
 ### Optimal Matching
 
-Optimal matching takes a **global approach** to the matching problem. Rather than matching each treated unit to its nearest control in isolation (as in nearest neighbor matching), it 
+Optimal matching takes a *global approach* to the matching problem. Rather than matching each treated unit to its nearest control in isolation (as in nearest neighbor matching), it 
 
 > Finds the set of matched pairs that *minimizes the total distance* across all matched units. 
 
@@ -165,13 +159,11 @@ Genetic matching is an advanced matching method that uses a genetic algorithm to
 
 > Automate the process of choosing how much weight each covariate should receive when determining similarity between treated and control units.
 
-Rather than manually selecting a distance metric like Mahalanobis or Euclidean, genetic matching searches over a space of weighted Mahalanobis distances, adjusting the weights to minimize covariate imbalance after matching. The optimization goal is to improve covariate balance. The result is a **customized distance metric** that gives higher weight to variables that are harder to balance and less to those that are already balanced.
+Rather than manually selecting a distance metric like Mahalanobis or Euclidean, genetic matching searches over a space of weighted Mahalanobis distances, adjusting the weights to minimize covariate imbalance after matching. The optimization goal is to improve covariate balance. The result is a *customized distance metric* that gives higher weight to variables that are harder to balance and less to those that are already balanced.
 
 Genetic matching can be used with or without propensity score preprocessing, and can accommodate interactions or higher-order terms. It’s especially powerful in settings with many covariates or complex imbalance patterns that simple metrics fail to capture.
 
 However, the method is computationally intensive, often requiring many iterations of matching and balance assessment. Its performance also depends on the choice of balance metrics and tuning parameters in the genetic algorithm.
-
-**When to use it?** When achieving good balance is critical and standard matching methods struggle.
 
 **Strengths:** Excellent balance across covariates; data-driven weighting.
 
@@ -181,7 +173,7 @@ However, the method is computationally intensive, often requiring many iteration
 
 ### Caliper Matching
 
-Caliper matching introduces a **distance threshold** to restrict which treated and control units can be matched. Specifically, 
+Caliper matching introduces a distance threshold to restrict which treated and control units can be matched. Specifically, 
 
 > A treated unit is only matched to a control unit if the distance between them is *within a pre-specified caliper*.
 
@@ -191,15 +183,13 @@ $$
 |e(X_i^{\text{treated}}) - e(X_j^{\text{control}})| < \text{caliper}
 $$
 
-This constraint helps **avoid poor matches**, especially when treated and control groups have limited overlap. Without calipers, nearest neighbor matching might pair units with very different covariate profiles, particularly in the tails of the propensity score distribution. These poor matches can increase bias and undermine the credibility of causal estimates.
+This constraint helps *avoid poor matches*, especially when treated and control groups have limited overlap. Without calipers, nearest neighbor matching might pair units with very different covariate profiles, particularly in the tails of the propensity score distribution. These poor matches can increase bias and undermine the credibility of causal estimates.
 
 Caliper matching is not a matching method on its own but rather a modification to existing strategies—most often to nearest neighbor matching. It can also be combined with optimal matching or Mahalanobis distance. 
 
 Choosing the right caliper width is important: too wide, and the constraint has little effect; too narrow, and many treated units may be left unmatched, reducing sample size and precision. 
 
 Caliper matching is particularly useful when the common support assumption is questionable—i.e., when treated and control groups do not overlap well in covariate space. In such cases, calipers serve as a safeguard to maintain the quality of matches by explicitly enforcing local comparability.
-
-**When to use it?** When you want to avoid poor matches with big distance gaps.
 
 **Strengths:** Prevents bad matches. Easy to implement alongside other methods.
 

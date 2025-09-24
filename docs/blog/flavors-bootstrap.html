@@ -482,13 +482,13 @@ Algorithm:
 <div class="callout-body-container callout-body">
 <p>For <span class="math inline">\(i = 1, \dots, n\)</span>:</p>
 <ol type="1">
-<li><strong>Drop observation <span class="math inline">\(i\)</span></strong> at a time and recompute your estimate.</li>
+<li>Drop observation <span class="math inline">\(i\)</span> at a time and recompute your estimate.</li>
 <li>Compute the jackknife estimate, <span class="math inline">\(\hat{\theta}_{(i)} = T(\hat{F}_{n,-i})\)</span>, on the remaining <span class="math inline">\(n-1\)</span> observations.</li>
 </ol>
 </div>
 </div>
 <p>Here <span class="math inline">\(\hat{F}_{n,-i}\)</span> is the empirical distribution leaving out the <span class="math inline">\(i\)</span>-th observation. We then use the variability across these “leave-one-out” estimates to approximate the variance of <span class="math inline">\(\hat{\theta}\)</span> following the formula above.</p>
-<p><strong>When to use it?</strong> The jackknife works well for smooth statistics like the mean or regression coefficients. But it can fail miserably for non-smooth functionals like the median or quantiles.</p>
+<p>The jackknife works well for smooth statistics like the mean or regression coefficients. But it can fail miserably for non-smooth functionals like the median or quantiles.</p>
 <p><strong>Strengths:</strong> Fast, easy to implement, no randomness involved.</p>
 <p><strong>Weaknesses:</strong> Limited to statistics that are smooth in the data. Doesn’t handle complex dependency structures or non-smooth parameters well.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -515,7 +515,7 @@ Algorithm:
 </section>
 <section id="classic-nonparametric-bootstrap" class="level3">
 <h3 class="anchored" data-anchor-id="classic-nonparametric-bootstrap">Classic Nonparametric Bootstrap</h3>
-<p>The classic bootstrap, introduced by Bradley Efron in 1979, takes the idea of resampling and turns it up a notch. Instead of dropping one observation at a time, we repeatedly resample <strong>with replacement</strong> from our data to create many “new” datasets, each the same size as the original.</p>
+<p>The classic bootstrap, introduced by Bradley Efron in 1979, takes the idea of resampling and turns it up a notch. Instead of dropping one observation at a time, we repeatedly resample <em>with replacement</em> from our data to create many “new” datasets, each the same size as the original.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -533,7 +533,6 @@ Algorithm:
 </ol>
 </div>
 </div>
-<p><strong>When to use it?</strong> Whenever the sample size is moderate or large and you can safely assume i.i.d. observations.</p>
 <p><strong>Strengths:</strong> Flexible, broadly applicable, works well for non-smooth statistics.</p>
 <p><strong>Weaknesses:</strong> Can struggle with small samples or dependent data (like time series). Resampling with replacement assumes independence.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -560,7 +559,7 @@ Algorithm:
 </section>
 <section id="parametric-bootstrap" class="level3">
 <h3 class="anchored" data-anchor-id="parametric-bootstrap">Parametric Bootstrap</h3>
-<p>The parametric bootstrap is a natural extension of the classic idea with a minor twist. Instead of sampling from the empirical distribution <span class="math inline">\(\hat{F}_n\)</span>, you <strong>assume a parametric model</strong> <span class="math inline">\(F_\theta\)</span> for the data, fit it to the sample, and then generate new data from the fitted model.</p>
+<p>The parametric bootstrap is a natural extension of the classic idea with a minor twist. Instead of sampling from the empirical distribution <span class="math inline">\(\hat{F}_n\)</span>, you <em>assume a parametric model</em> <span class="math inline">\(F_\theta\)</span> for the data, fit it to the sample, and then generate new data from the fitted model.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -579,7 +578,7 @@ Algorithm:
 </div>
 </div>
 <p>For example, if you assume <span class="math inline">\(Y_i \sim N(\mu, \sigma^2)\)</span>, estimate <span class="math inline">\(\hat{\mu}\)</span> and <span class="math inline">\(\hat{\sigma}^2\)</span>, and then generate bootstrap samples from <span class="math inline">\(N(\hat{\mu}, \hat{\sigma}^2)\)</span>.</p>
-<p><strong>When to use it?</strong> When you trust your parametric model (or at least trust it more than the empirical distribution) and want to leverage that structure.</p>
+<p>The parametric bootstrap can be a good idea when you trust your parametric model (or at least trust it more than the empirical distribution) and want to leverage that structure.</p>
 <p><strong>Strengths:</strong> More efficient than nonparametric bootstrap if the model is well-specified. Can handle small samples better.</p>
 <p><strong>Weaknesses:</strong> Garbage in, garbage out—if the parametric model is wrong, so are your bootstrap results.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -607,7 +606,7 @@ Algorithm:
 </section>
 <section id="bayesian-bootstrap" class="level3">
 <h3 class="anchored" data-anchor-id="bayesian-bootstrap">Bayesian Bootstrap</h3>
-<p>Invented by Rubin in 1981, the Bayesian bootstrap doesn’t resample data points directly. Instead, it puts a <strong>Dirichlet prior</strong> on the weights assigned to each observation.</p>
+<p>Invented by Rubin in 1981, the Bayesian bootstrap doesn’t resample data points directly. Instead, it puts a <em>Dirichlet prior</em> on the weights assigned to each observation.</p>
 <p>Whereas the classical bootstrap simulates sampling from a population by creating new samples from the observed data, the Bayesian bootstrap simulates uncertainty about the population distribution itself using the Bayesian framework—specifically by placing a nonparametric prior over the unknown distribution (implicitly, a Dirichlet process prior).</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
@@ -627,7 +626,6 @@ Algorithm:
 </ol>
 </div>
 </div>
-<p><strong>When to use it?</strong> When you’re in a Bayesian mood or want a resampling scheme without discrete resampling (i.e., no repeated observations).</p>
 <p><strong>Strengths:</strong> Smooth, avoids ties from discrete resampling, easy to implement.</p>
 <p><strong>Weaknesses:</strong> Interpretation may feel less intuitive if you’re used to classical frequentist bootstrap.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -658,7 +656,7 @@ Algorithm:
 </section>
 <section id="wild-bootstrap" class="level3">
 <h3 class="anchored" data-anchor-id="wild-bootstrap">Wild Bootstrap</h3>
-<p>The wild bootstrap is a lifesaver when dealing with <strong>heteroskedasticity</strong> or few clusters. Rather than resampling entire observations (which breaks the structure of heteroskedastic errors), the wild bootstrap keeps the design matrix <span class="math inline">\(X\)</span> fixed and perturbs only the residuals—in a way that maintains heteroskedasticity-consistent variability. Some versions modify instead the score function instead of the residuals.</p>
+<p>The wild bootstrap is a lifesaver when dealing with <em>heteroskedasticity</em> or few clusters. Rather than resampling entire observations (which breaks the structure of heteroskedastic errors), the wild bootstrap keeps the design matrix <span class="math inline">\(X\)</span> fixed and perturbs only the residuals—in a way that maintains heteroskedasticity-consistent variability. Some versions modify instead the score function instead of the residuals.</p>
 <p>Suppose you’re estimating a regression model: <span class="math display">\[
 Y_i = X_i \beta + \varepsilon_i.
 \]</span></p>
@@ -685,7 +683,6 @@ Y^*_i = X_i \hat{\beta} + v_i \hat{\varepsilon}_i,
 </ol>
 </div>
 </div>
-<p><strong>When to use it?</strong> Heteroskedastic models, clustered data with few clusters.</p>
 <p><strong>Strengths:</strong> Handles heteroskedasticity gracefully, robust in small-sample settings.</p>
 <p><strong>Weaknesses:</strong> Mostly designed for regression contexts. Choice of perturbation distribution matters.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -727,7 +724,7 @@ Y^*_i = X_i \hat{\beta} + v_i \hat{\varepsilon}_i,
 </section>
 <section id="cluster-bootstrap" class="level3">
 <h3 class="anchored" data-anchor-id="cluster-bootstrap">Cluster Bootstrap</h3>
-<p>The cluster bootstrap is essential when working with <strong>clustered data</strong>, where observations within the same group (e.g., students in schools, workers in firms) may be correlated. Unlike standard bootstrap methods that resample individuals, the cluster bootstrap resamples <strong>entire clusters</strong>, preserving the internal dependence structure of the data.</p>
+<p>The cluster bootstrap is essential when working with clustered data, where observations within the same group (e.g., students in schools, workers in firms) may be correlated. Unlike standard bootstrap methods that resample individuals, the cluster bootstrap resamples <em>entire clusters</em>, preserving the internal dependence structure of the data.</p>
 <p>Suppose you’re estimating a model like:</p>
 <p><span class="math display">\[
 Y_{ig} = X_{ig} \beta + \varepsilon_{ig},
@@ -751,14 +748,13 @@ Algorithm:
 </ol>
 </div>
 </div>
-<p><strong>When to use it?</strong> Any time your data is grouped and intra-cluster correlation may bias standard errors (e.g., multi-site studies, geographic clustering, panel data with group effects).</p>
 <p><strong>Strengths:</strong> Simple to implement, preserves cluster dependence, consistent under many forms of within-cluster correlation.</p>
 <p><strong>Weaknesses:</strong> Requires a reasonably large number of clusters (typically <span class="math inline">\(G \geq 30\)</span>). Can be biased or unstable with few clusters. (Luckily, the United States was broken down in 50 states. The Swiss were not as fortunate.)</p>
 <hr>
 </section>
 <section id="moving-block-bootstrap" class="level3">
 <h3 class="anchored" data-anchor-id="moving-block-bootstrap">Moving Block Bootstrap</h3>
-<p>If your data are <strong>dependent</strong>, like time series, the classic bootstrap fails because it breaks the correlation structure. The moving block bootstrap fixes this by resampling blocks of adjacent observations instead of individual data points. You can easily see how this makes sense for time seires: you want to maintain the local dependence structure while still resampling.</p>
+<p>If your data are <em>dependent</em>, like time series, the classic bootstrap fails because it breaks the correlation structure. The moving block bootstrap fixes this by resampling blocks of adjacent observations instead of individual data points. You can easily see how this makes sense for time seires: you want to maintain the local dependence structure while still resampling.</p>
 <p>You choose a block length <span class="math inline">\(l\)</span> and create overlapping blocks of data: <span class="math display">\[
 \{Y_1, \dots, Y_l\}, \{Y_2, \dots, Y_{l+1}\}, \dots, \{Y_{n-l+1}, \dots, Y_n\}.
 \]</span></p>
@@ -780,7 +776,6 @@ Algorithm:
 </ol>
 </div>
 </div>
-<p><strong>When to use it?</strong> Time series or spatial data with short-range dependence.</p>
 <p><strong>Strengths:</strong> Maintains local dependence within blocks.</p>
 <p><strong>Weaknesses:</strong> Choice of block size can be tricky; too small loses dependence, too big reduces variability.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">

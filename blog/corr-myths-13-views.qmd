@@ -72,7 +72,7 @@ of the two sample standard deviations.
 12. **As a test statistic in randomized experiments**, $r$ can be computed from a t-statistic or F-statistic (e.g., from ANOVA). 
 13. **As a ratio of two means** following Galton, $r$ reflects how the mean of Y changes with selected values of X.
 
-Each interpretation highlights a different trade-off or caveat. For example, the geometric view gives a great intuition, but the regression slope interpretation connects more directly to causal inference. And perhaps most importantly, several of these views are **not invariant to nonlinear transformations**, which matters a lot in real data.
+Each interpretation highlights a different trade-off or caveat. For example, the geometric view gives a great intuition, but the regression slope interpretation connects more directly to causal inference. And perhaps most importantly, several of these views are not invariant to nonlinear transformations, which matters a lot in real data.
 
 ## Bottom Line
 

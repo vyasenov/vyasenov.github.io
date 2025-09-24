@@ -465,7 +465,7 @@ window.Quarto = {
 Y = X \beta + \varepsilon,
 \]</span></p>
 <p>where <span class="math inline">\(\beta \in \mathbb{R}^p\)</span> is the vector of coefficients and <span class="math inline">\(\varepsilon\)</span> is the error term.</p>
-<p>In high-dimensional settings, <span class="math inline">\(p\)</span> may be large—possibly even larger than <span class="math inline">\(n\)</span>. The core task of variable selection is to identify <strong>which components of <span class="math inline">\(\beta\)</span> are nonzero</strong> (or, more generally, which features matter for predicting <span class="math inline">\(Y\)</span>).</p>
+<p>In high-dimensional settings, <span class="math inline">\(p\)</span> may be large—possibly even larger than <span class="math inline">\(n\)</span>. The core task of variable selection is to identify which components of <span class="math inline">\(\beta\)</span> are nonzero (or, more generally, which features matter for predicting <span class="math inline">\(Y\)</span>).</p>
 <p>(Distinguishing prediction and inference is crucial here: we focus on the former, so we ignore things like confidence intervals or <span class="math inline">\(p\)</span>-values for coefficients altogether. The latter is a much <a href="https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html">more complex problem</a>.)</p>
 </section>
 <section id="a-closer-look" class="level2">
@@ -473,7 +473,7 @@ Y = X \beta + \varepsilon,
 <section id="stepwise-selection-forward-backward-both" class="level3">
 <h3 class="anchored" data-anchor-id="stepwise-selection-forward-backward-both">Stepwise Selection (Forward, Backward, Both)</h3>
 <p>The classic workhorse of variable selection, stepwise procedures iteratively add or remove variables based on some criterion like AIC (Aikake Information Criterion), BIC (Bayesian Information Criterion), or <span class="math inline">\(p\)</span>-values. In forward selection, you start with no variables and add the one that improves the model the most. In backward elimination with <span class="math inline">\(p&lt;n\)</span>, you start with all variables and remove the least significant one at each step. Both methods can also be combined in a bidirectional stepwise approach. In either case, you stop when adding or removing variables no longer improves the model according to your chosen criterion.</p>
-<p><strong>When to use it?</strong> For smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side).</p>
+<p>Stepwise selection can work well for smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side).</p>
 <p><strong>Strengths:</strong> Simple, interpretable, available in every stats package.</p>
 <p><strong>Weaknesses:</strong> Can be unstable, prone to overfitting, ignores model uncertainty. The statistical community looks down on it, and I find it underappreciated.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -528,7 +528,7 @@ Y = X \beta + \varepsilon,
 \]</span></p>
 <p>The magic of the <span class="math inline">\(\ell_1\)</span> penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. It’s theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios.</p>
 <p>Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of flavors, including group lasso, adaptive lasso, and fused lasso, which I will probably cover in a future blog post. Be careful, though, lasso is known to be biased, so it’s great for prediction, but don’t take its coefficients at face value.</p>
-<p><strong>When to use it?</strong> When you believe that only a subset of predictors are relevant and want an interpretable model.</p>
+<p>Lasso is a good idea when you believe that only a subset of predictors are relevant and want an interpretable model.</p>
 <p><strong>Strengths:</strong> Sparse solutions, automatic variable selection, computationally efficient.</p>
 <p><strong>Weaknesses:</strong> Can struggle with groups of correlated predictors (tends to pick one arbitrarily), biased estimates due to shrinkage.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -567,7 +567,7 @@ Y = X \beta + \varepsilon,
 <p>Here, <span class="math inline">\(\lambda \ge 0\)</span> is a tuning parameter that controls the strength of the penalty. As <span class="math inline">\(\lambda\)</span> increases, the solution is increasingly biased toward zero, but the variance decreases, which can improve out-of-sample performance.</p>
 <p>Unlike the lasso, Ridge regression does not produce sparse solutions—none of the coefficients are exactly zero. Instead, it distributes shrinkage smoothly across all variables, which can be helpful when all predictors contribute weakly and roughly equally.</p>
 <p>Ridge is also computationally convenient. The modified normal equations involve the matrix <span class="math inline">\(X^\top X + \lambda I\)</span>, which is always invertible when <span class="math inline">\(\lambda &gt; 0\)</span>, even if <span class="math inline">\(X^\top X\)</span> is singular. As a result, Ridge provides a unique and stable solution even in high-dimensional settings where <span class="math inline">\(p &gt; n\)</span>—a situation where ordinary least squares (OLS) fails due to non-identifiability.</p>
-<p><strong>When to use it?</strong> When multicollinearity is a problem or when you prefer stability over sparsity. Ridge is especially good when many small effects contribute to the outcome.</p>
+<p>Ridge is especially good when multicollinearity is a problem; when you prefer stability over sparsity; or when many small effects contribute to the outcome.</p>
 <p><strong>Strengths:</strong> Stabilizes estimates, handles multicollinearity gracefully.</p>
 <p><strong>Weaknesses:</strong> Does not produce sparse solutions; all coefficients remain in the model.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -609,7 +609,6 @@ Y = X \beta + \varepsilon,
 \lambda_1 = \lambda \alpha, \quad \lambda_2 = \lambda (1 - \alpha).
 \]</span></p>
 <p>This makes it easy to interpolate between Ridge (<span class="math inline">\(\alpha = 0\)</span>) and Lasso (<span class="math inline">\(\alpha = 1\)</span>), giving you a continuum of models with different regularization characteristics.</p>
-<p><strong>When to use it?</strong> When predictors are correlated, and you want both sparsity and stability.</p>
 <p><strong>Strengths:</strong> Handles groups of correlated variables better than Lasso alone.</p>
 <p><strong>Weaknesses:</strong> Adds an extra tuning parameter to balance the ℓ₁ and ℓ₂ penalties.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -650,7 +649,6 @@ Y = X \beta + \varepsilon,
 \hat{\beta}_{\text{PCR}} = V_k (Z^\top Z)^{-1} Z^\top y
 \]</span></p>
 <p>PCA is among the most popular methods for dimensionality reduction even among junior data scientists, so I won’t spend too much time on it here. PCA lives in dual nature, with one foot in unsupervised learning (finding components) and the other in supervised learning (variable selection).</p>
-<p><strong>When to use it?</strong> When predictors are highly correlated or when dimensionality reduction is needed before regression.</p>
 <p><strong>Strengths:</strong> Reduces dimensionality, handles multicollinearity.</p>
 <p><strong>Weaknesses:</strong> Components may be hard to interpret; variable selection is indirect since it selects combinations of variables, not individual variables.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -696,7 +694,6 @@ Algorithm:
 </div>
 <p>The result is a sequence of models, each with one more active variable—just like in forward stepwise regression, but using geometry rather than brute force.</p>
 <p>Geometrically, LAR moves along piecewise linear paths toward the least squares solution, and its trajectory closely tracks that of Lasso. In fact, with a small modification, LAR can be used to compute the entire Lasso solution path.</p>
-<p><strong>When to use it?</strong> When you want a fast, interpretable selection process similar to forward selection.</p>
 <p><strong>Strengths:</strong> Computationally efficient, provides the full regularization path.</p>
 <p><strong>Weaknesses:</strong> Like Lasso, can behave poorly with correlated predictors.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -731,7 +728,6 @@ P'_\lambda(\beta) = \lambda \left[ I(|\beta| \leq \lambda) + \frac{(a \lambda - 
 <li>For large coefficients <span class="math inline">\(|\beta| \ge a\lambda\)</span>, the penalty becomes flat—effectively applying no further shrinkage.</li>
 </ul>
 <p>This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and oracle-like properties under certain conditions.</p>
-<p><strong>When to use it?</strong> When you need a sparse model but want to reduce shrinkage bias on strong signals.</p>
 <p><strong>Strengths:</strong> Encourages sparsity, less biased than Lasso, asymptotically unbiased under certain conditions.</p>
 <p><strong>Weaknesses:</strong> The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -781,7 +777,6 @@ P'_\lambda(\beta) = \lambda \left[ I(|\beta| \leq \lambda) + \frac{(a \lambda - 
 <h3 class="anchored" data-anchor-id="knockoffs">Knockoffs</h3>
 <p>Knockoffs, introduced by Barber and Candès (2015), is a clever framework for variable selection with <strong>false discovery rate (FDR) control</strong>. The method constructs “knockoff copies” of each feature—artificial variables that mimic the correlation structure of the real ones but are known to be null. Then it tests whether the real variables outperform their knockoffs.</p>
 <p>I have <a href="https://vyasenov.github.io/blog/flavors-multiple-testing.html">written about knockoffs</a> in more detail in previous posts, so I won’t go into the details here. Just like PCA, knockoffs live in dual nature, with one foot in the multiple testing literature (constructing knockoffs) and the other in supervised learning world (variable selection).</p>
-<p><strong>When to use it?</strong> When you care about valid statistical guarantees like FDR control.</p>
 <p><strong>Strengths:</strong> Controls FDR rigorously; applicable even in high-dimensional settings.</p>
 <p><strong>Weaknesses:</strong> Requires construction of knockoff variables, which can be challenging for non-Gaussian designs.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -835,7 +830,6 @@ P'_\lambda(\beta) = \lambda \left[ I(|\beta| \leq \lambda) + \frac{(a \lambda - 
 <section id="foci-feature-ordering-by-conditional-independence" class="level3">
 <h3 class="anchored" data-anchor-id="foci-feature-ordering-by-conditional-independence">FOCI (Feature Ordering by Conditional Independence)</h3>
 <p>FOCI is a recent, information-theoretic method that orders features by how much conditional mutual information they contribute to the outcome. It’s model-free and does not assume a particular parametric form. I have also writtn about FOCI in a <a href="https://vyasenov.github.io/blog/foci.html">previous post</a>, so I won’t repeat the details here.</p>
-<p><strong>When to use it?</strong> When you suspect nonlinear relationships or want model-agnostic feature screening.</p>
 <p><strong>Strengths:</strong> Handles nonlinearities, no need for parametric models.</p>
 <p><strong>Weaknesses:</strong> More computationally intensive; newer and less widely used in practice.</p>
 <hr>

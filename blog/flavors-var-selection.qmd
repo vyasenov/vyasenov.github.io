@@ -23,7 +23,7 @@ $$
 
 where $\beta \in \mathbb{R}^p$ is the vector of coefficients and $\varepsilon$ is the error term.
 
-In high-dimensional settings, $p$ may be large—possibly even larger than $n$. The core task of variable selection is to identify **which components of $\beta$ are nonzero** (or, more generally, which features matter for predicting $Y$). 
+In high-dimensional settings, $p$ may be large—possibly even larger than $n$. The core task of variable selection is to identify which components of $\beta$ are nonzero (or, more generally, which features matter for predicting $Y$). 
 
 (Distinguishing prediction and inference is crucial here: we focus on the former, so we ignore things like confidence intervals or $p$-values for coefficients altogether. The latter is a much [more complex problem](https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html).)
 
@@ -34,7 +34,7 @@ In high-dimensional settings, $p$ may be large—possibly even larger than $n$. 
 
 The classic workhorse of variable selection, stepwise procedures iteratively add or remove variables based on some criterion like AIC (Aikake Information Criterion), BIC (Bayesian Information Criterion), or $p$-values. In forward selection, you start with no variables and add the one that improves the model the most. In backward elimination with $p<n$, you start with all variables and remove the least significant one at each step. Both methods can also be combined in a bidirectional stepwise approach. In either case, you stop when adding or removing variables no longer improves the model according to your chosen criterion.
 
-**When to use it?** For smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side).
+Stepwise selection can work well for smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side).
 
 **Strengths:** Simple, interpretable, available in every stats package.
 
@@ -98,7 +98,7 @@ The magic of the $\ell_1$ penalty is that it can shrink some coefficients exactl
 
 Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of flavors, including group lasso, adaptive lasso, and fused lasso, which I will probably cover in a future blog post. Be careful, though, lasso is known to be biased, so it's great for prediction, but don't take its coefficients at face value.
 
-**When to use it?** When you believe that only a subset of predictors are relevant and want an interpretable model.
+Lasso is a good idea when you believe that only a subset of predictors are relevant and want an interpretable model.
 
 **Strengths:** Sparse solutions, automatic variable selection, computationally efficient.
 
@@ -147,7 +147,7 @@ Unlike the lasso, Ridge regression does not produce sparse solutions—none of t
 
 Ridge is also computationally convenient. The modified normal equations involve the matrix $X^\top X + \lambda I$, which is always invertible when $\lambda > 0$, even if $X^\top X$ is singular. As a result, Ridge provides a unique and stable solution even in high-dimensional settings where $p > n$—a situation where ordinary least squares (OLS) fails due to non-identifiability.
 
-**When to use it?** When multicollinearity is a problem or when you prefer stability over sparsity. Ridge is especially good when many small effects contribute to the outcome.
+Ridge is especially good when multicollinearity is a problem; when you prefer stability over sparsity; or when many small effects contribute to the outcome.
 
 **Strengths:** Stabilizes estimates, handles multicollinearity gracefully.
 
@@ -200,8 +200,6 @@ $$
 
 This makes it easy to interpolate between Ridge ($\alpha = 0$) and Lasso ($\alpha = 1$), giving you a continuum of models with different regularization characteristics.
 
-**When to use it?** When predictors are correlated, and you want both sparsity and stability.
-
 **Strengths:** Handles groups of correlated variables better than Lasso alone.
 
 **Weaknesses:** Adds an extra tuning parameter to balance the ℓ₁ and ℓ₂ penalties.
@@ -251,8 +249,6 @@ $$
 
 PCA is among the most popular methods for dimensionality reduction even among junior data scientists, so I won't spend too much time on it here. PCA lives in dual nature, with one foot in unsupervised learning (finding components) and the other in supervised learning (variable selection).
 
-**When to use it?** When predictors are highly correlated or when dimensionality reduction is needed before regression.
-
 **Strengths:** Reduces dimensionality, handles multicollinearity.
 
 **Weaknesses:** Components may be hard to interpret; variable selection is indirect since it selects combinations of variables, not individual variables.
@@ -293,8 +289,6 @@ Least Angle Regression (LAR) is a greedy, stepwise variable selection algorithm 
 The result is a sequence of models, each with one more active variable—just like in forward stepwise regression, but using geometry rather than brute force.
 
 Geometrically, LAR moves along piecewise linear paths toward the least squares solution, and its trajectory closely tracks that of Lasso. In fact, with a small modification, LAR can be used to compute the entire Lasso solution path.
-
-**When to use it?** When you want a fast, interpretable selection process similar to forward selection.
 
 **Strengths:** Computationally efficient, provides the full regularization path.
 
@@ -338,8 +332,6 @@ where $a > 2$ (typically $a = 3.7$) and $(x)_+ = \max(0, x)$ denotes the positiv
 * For large coefficients $|\beta| \ge a\lambda$, the penalty becomes flat—effectively applying no further shrinkage.
 
 This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and oracle-like properties under certain conditions.
-
-**When to use it?** When you need a sparse model but want to reduce shrinkage bias on strong signals.
 
 **Strengths:** Encourages sparsity, less biased than Lasso, asymptotically unbiased under certain conditions.
 
@@ -396,8 +388,6 @@ print("Estimated coefficients:", model.coef_)
 Knockoffs, introduced by Barber and Candès (2015), is a clever framework for variable selection with **false discovery rate (FDR) control**. The method constructs “knockoff copies” of each feature—artificial variables that mimic the correlation structure of the real ones but are known to be null. Then it tests whether the real variables outperform their knockoffs. 
 
 I have [written about knockoffs](https://vyasenov.github.io/blog/flavors-multiple-testing.html) in more detail in previous posts, so I won't go into the details here. Just like PCA, knockoffs live in dual nature, with one foot in the multiple testing literature (constructing knockoffs) and the other in supervised learning world (variable selection).
-
-**When to use it?** When you care about valid statistical guarantees like FDR control.
 
 **Strengths:** Controls FDR rigorously; applicable even in high-dimensional settings.
 
@@ -456,8 +446,6 @@ print(feature_names[selected])
 ### FOCI (Feature Ordering by Conditional Independence)
 
 FOCI is a recent, information-theoretic method that orders features by how much conditional mutual information they contribute to the outcome. It’s model-free and does not assume a particular parametric form. I have also writtn about FOCI in a [previous post](https://vyasenov.github.io/blog/foci.html), so I won't repeat the details here.
-
-**When to use it?** When you suspect nonlinear relationships or want model-agnostic feature screening.
 
 **Strengths:** Handles nonlinearities, no need for parametric models.
 

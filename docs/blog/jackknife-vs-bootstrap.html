@@ -413,7 +413,7 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>If you’ve ever dived into resampling methods, you’ve likely come across the <strong>jackknife</strong> and the <strong>bootstrap</strong>. They both aim to help us estimate uncertainty or bias without relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, what made the bootstrap, developed decades after the jackknife, such a big deal? Aren’t they too similar to be considered separate methods and have distinct properties?</p>
+<p>If you’ve ever dived into resampling methods, you’ve likely come across the jackknife and the bootstrap. They both aim to help us estimate uncertainty or bias without relying on strong parametric assumptions. And they sound similar: both create new datasets from the original one, and both involve recalculating the estimator across these datasets. So, what made the bootstrap, developed decades after the jackknife, such a big deal? Aren’t they too similar to be considered separate methods and have distinct properties?</p>
 <p>This article walks through the key intuition behind these methods and explains why the bootstrap was a genuine innovation.</p>
 </section>
 <section id="notation" class="level2">
@@ -428,7 +428,7 @@ window.Quarto = {
 </section>
 <section id="the-jackknife" class="level3">
 <h3 class="anchored" data-anchor-id="the-jackknife">The Jackknife</h3>
-<p>The jackknife, introduced by Quenouille and popularized by Tukey in the 1950s, works by <strong>systematically leaving out one observation at a time</strong>. For each <span class="math inline">\(i\)</span>, we compute <span class="math inline">\(\hat{\theta}^{(-i)}\)</span>, the estimator based on the dataset with the <span class="math inline">\(i\)</span>th observation removed.</p>
+<p>The jackknife, introduced by Quenouille and popularized by Tukey in the 1950s, works by systematically leaving out one observation at a time. For each <span class="math inline">\(i\)</span>, we compute <span class="math inline">\(\hat{\theta}^{(-i)}\)</span>, the estimator based on the dataset with the <span class="math inline">\(i\)</span>th observation removed.</p>
 <p>This gives us <span class="math inline">\(n\)</span> estimates to work with: <span class="math display">\[
 \hat{\theta}^{(-1)}, \hat{\theta}^{(-2)}, \dots, \hat{\theta}^{(-n)}
 \]</span></p>
@@ -436,7 +436,7 @@ window.Quarto = {
 </section>
 <section id="the-bootstrap" class="level3">
 <h3 class="anchored" data-anchor-id="the-bootstrap">The Bootstrap</h3>
-<p>The bootstrap, invented by Bradley Efron in 1979, made a conceptual leap: instead of deleting one observation at a time, <strong>draw samples of size <span class="math inline">\(n\)</span> from the data, <em>with replacement</em>.</strong> Each resample is like a new dataset: <span class="math display">\[
+<p>The bootstrap, invented by Bradley Efron in 1979, made a conceptual leap: instead of deleting one observation at a time, draw samples of size <span class="math inline">\(n\)</span> from the data, <em>with replacement</em>. Each resample is like a new dataset: <span class="math display">\[
 X_1^*, X_2^*, \dots, X_n^* \sim \text{Empirical distribution of } \{X_1, \dots, X_n\}
 \]</span></p>
 <p>Compute <span class="math inline">\(\hat{\theta}^*\)</span> for each resample. Repeat this many times—hundreds or thousands—and you get a full approximation of the sampling distribution of <span class="math inline">\(\hat{\theta}\)</span>.</p>
