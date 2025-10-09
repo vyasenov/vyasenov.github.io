@@ -1,0 +1,45 @@
+---
+title: "TV Drama Series Visualizer"
+format: html
+---
+
+
+<style>
+  .btn-group {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .btn {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 20px;
+    padding: 10px 20px;
+    border: none;
+    text-decoration: none;
+  }
+  
+  /* Responsive design for mobile devices */
+  @media (max-width: 768px) {
+    .btn-group {
+      flex-direction: column;
+      align-items: center;
+    }
+    .btn {
+      width: 200px;
+      text-align: center;
+    }
+  }
+</style>
+
+Explore your favorite TV dramas in a new light with interactive visualizations of IMDb episode ratings. Each season is plotted as a smooth, normalized timeline to clearly reveal rating trends. You can:
+
+- Compare multiple TV shows side-by-side to see how they stack up against each other.
+- Track rises and dips in quality across seasons to discover when shows peak or falter.
+- Spot standout sections and seasons.
+
+<a class="btn" href="https://tv-series-viz-eknffyu22xaca69wzv8av5.streamlit.app/" download target="_blank">
+Try The App
+</a> <a class="btn" href="https://github.com/vyasenov/tv-series-viz" download target="_blank">
+GitHub
+</a>

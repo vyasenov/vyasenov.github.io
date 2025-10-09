@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>About Me – Vasco Yasenov</title>
+<title>TV Drama Series Visualizer – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -84,35 +84,6 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <script src="../code/back-to-top.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="code/styles.css">
 </head>
@@ -294,7 +265,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" aria-current="page"> 
+    <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About Me</span></a>
   </li>  
   <li class="nav-item">
@@ -373,7 +344,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">About Me</h1>
+<h1 class="title">TV Drama Series Visualizer</h1>
 </div>
 
 
@@ -390,18 +361,40 @@ window.Quarto = {
 </header>
 
 
-<p>I develop and apply <strong>causal inference</strong> and <strong>machine learning</strong> tools to solve complex and ambiguous problems with data.</p>
-<hr>
-<p>I’m currently a Staff Data Scientist at <a href="https://business.adobe.com" target="_blank">Adobe</a>.</p>
-<p>Previously, I held postdoctoral positions at UC Berkeley and Stanford. My PhD dissertation (Econ ’17) combined natural experiments with innovative statistical methods to study the wage/employment effects of immigration and the consequences of <a href="https://en.wikipedia.org/wiki/Double_shift_school" target="_blank">double-shift</a> schooling systems.</p>
-<p>Throughout my career, I’ve been fortunate to work closely with mentors who were students of Nobel Prize laureates. As a way to give back, I maintain <a href="https://vyasenov.github.io/blog/" target="_blank">a blog</a> that makes cutting-edge academic research in data science accessible to a broader audience.</p>
-<hr>
-<p>My <a href="https://vyasenov.github.io/research.html" target="_blank">academic research</a> has been published in leading peer-reviewed journals in <em>labor economics</em>, <em>political science</em>, <em>medicine</em>, and <em>general science</em> and has been featured by most major media outlets such as <a href="https://www.nytimes.com/2017/10/24/business/economy/immigration-jobs.html" target="_blank">The New York Times</a>, <a href="https://www.washingtonpost.com/politics/2020/04/07/trump-administration-is-raising-application-fee-us-citizenship-that-will-cost-us-later/" target="_blank">The Washington Post</a>, and <a href="https://www.wsj.com/articles/new-evidence-on-immigrants-and-jobs-1453162462" target="_blank">The Wall Street Journal</a>, among many others.</p>
-<p>My <a href="https://vyasenov.github.io/childrenbook.html" target="_blank">children’s book</a> on causal inference reached <span class="math inline">\(\#2\)</span> on Amazon’s <em>New Releases in Probability and Statistics</em> list.</p>
-<hr>
-<p>Outside of work, I’m an avid mushroom picker and mountain biker—but most of all, I love spending time with my family away from concrete. Originally from <a href="https://en.wikipedia.org/wiki/Asenovgrad" target="_blank">Asenovgrad</a>, Bulgaria, I now live in the San Francisco Bay Area with my wife and our son, Luca.</p>
-<hr>
-<p>Oh, and my <a href="https://en.wikipedia.org/wiki/Erd%C5%91s_number" target="_blank">Erdős number</a> is <span class="math inline">\(8\)</span>.</p>
+<style>
+  .btn-group {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .btn {
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 20px;
+    padding: 10px 20px;
+    border: none;
+    text-decoration: none;
+  }
+  
+  /* Responsive design for mobile devices */
+  @media (max-width: 768px) {
+    .btn-group {
+      flex-direction: column;
+      align-items: center;
+    }
+    .btn {
+      width: 200px;
+      text-align: center;
+    }
+  }
+</style>
+<p>Explore your favorite TV dramas in a new light with interactive visualizations of IMDb episode ratings. Each season is plotted as a smooth, normalized timeline to clearly reveal rating trends. You can:</p>
+<ul>
+<li>Compare multiple TV shows side-by-side to see how they stack up against each other.</li>
+<li>Track rises and dips in quality across seasons to discover when shows peak or falter.</li>
+<li>Spot standout sections and seasons.</li>
+</ul>
+<p><a class="btn" href="https://tv-series-viz-eknffyu22xaca69wzv8av5.streamlit.app/" download="" target="_blank"> Try The App </a> <a class="btn" href="https://github.com/vyasenov/tv-series-viz" download="" target="_blank"> GitHub </a></p>
 
 
 

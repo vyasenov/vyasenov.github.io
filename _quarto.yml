@@ -26,7 +26,7 @@ website:
         - text: Kids Books
           href: childrenbook.qmd
         - text: TV Series Ratings
-          href: https://tv-series-viz-eknffyu22xaca69wzv8av5.streamlit.app/
+          href: tv-series.qmd
       - icon: github
         href: https://github.com/vyasenov
         target: _blank
