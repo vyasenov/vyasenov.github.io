@@ -26,7 +26,7 @@ website:
         - text: Kids Books
           href: childrenbook.qmd
         - text: TV Series Ratings
-          href: tv-series.qmd
+          href: https://huggingface.co/spaces/yasenov/tv-series-viz
       - icon: github
         href: https://github.com/vyasenov
         target: _blank
