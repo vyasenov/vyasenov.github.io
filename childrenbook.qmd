@@ -62,13 +62,13 @@ format: html
   <!-- LEFT COLUMN -->
   <div class="column">
 <a href="files/ci-toddlers-eng-reduced.pdf" target="_blank">
-  <img src="images/childrens-book-cover.jpg" alt="Book Cover">
+  <img src="images/childrens-book-cover2.png" alt="Book Cover">
 </a>
 <div class="btn-group mt-3" role="group" aria-label="Book links">
-  <a class="btn" href="files/ci-toddlers-eng-reduced.pdf" download target="_blank">
+  <a class="btn" href="files/ml-toddlers-eng-reduced.pdf" download target="_blank">
     English (pdf)
   </a>
-  <a class="btn" href="files/ci-toddlers-bg-reduced.pdf" download target="_blank">
+  <a class="btn" href="files/ml-toddlers-bg-reduced.pdf" download target="_blank">
     Български (pdf)
   </a>
   <a class="btn" href="https://www.amazon.com/dp/B0BLG6SWZJ?ref_=pe_3052080_397514860" download target="_blank">
@@ -80,7 +80,7 @@ format: html
   <!-- RIGHT COLUMN (duplicate of left) -->
   <div class="column">
 <a href="files/ci-toddlers-eng-reduced.pdf" target="_blank">
-  <img src="images/childrens-book-cover2.png" alt="Book Cover">
+  <img src="images/childrens-book-cover.jpg" alt="Book Cover">
 </a>
 <div class="btn-group mt-3" role="group" aria-label="Book links">
   <a class="btn" href="files/ci-toddlers-eng-reduced.pdf" download target="_blank" >

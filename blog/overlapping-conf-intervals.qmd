@@ -12,7 +12,7 @@ It typically begins with a bar graph showing two sample means side by side, each
 
 This intuitive but flawed approach to evaluating significance is surprisingly common. Here's why it doesn’t hold up.
 
-## Diving Deeper 
+## A Closer Look
 
 ### The Basics of Confidence Intervals
 
@@ -34,7 +34,6 @@ Crucially, we can also construct a confidence interval for the difference:
 $$ (\hat{Y_1} - \hat{Y_2}) \pm 1.96 \times \sqrt{ \hat{SE}(Y_1)^2+ \hat{SE}(Y_2)^2}. $$
 
 This is the interval we should be analyzing when testing whether $Y_1$ and $Y_2$ differ significantly. Gelman and Stern (2006) make the same point from a slightly different angle.
-
 
 ### Two Approaches, One Mistake
 
@@ -69,6 +68,33 @@ $$ \frac{\hat{SE}(Y_1)+ \hat{SE}(Y_2)}{\sqrt{\hat{SE}(Y_1)^2 + \hat{SE}(Y_2)^2}}
 This ratio is always greater than 1, meaning the naïve method uses a wider interval. It is more conservative when the null hypothesis is true (i.e., less likely to reject it), and less conservative when the null is false (i.e., more prone to false positives).
 
 The discrepancy is largest when the standard errors are similar, and smallest when one standard error dominates.
+
+
+### The 83.4% Confidence Interval Rule
+
+So we learned that overlapping 95% confidence intervals do not imply non-significance — because each interval reflects uncertainty about one mean, not about the difference between them.
+
+In fact, using non-overlap of 95% CIs as a rule for significance is too conservative: it roughly corresponds to a *p*-value closer to 0.01 than 0.05.
+
+There’s a neat visual trick that captures this idea more precisely in the case when the two groups have roughly equal standard errors, $\hat{SE}(Y_1)=\hat{SE}(Y_2)$.
+
+Statistical significance requires: 
+
+$$
+|\bar{X}_1 - \bar{X}_2| > 1.96 \times \sqrt{2} \times SE \approx 2.77 \times SE.
+$$
+
+Now, suppose we visualize each group mean with its own confidence interval. If we want non-overlapping intervals to correspond exactly to this 0.05 significance threshold, each half-interval should be half the total required separation:
+
+$$
+z \times SE = \frac{2.77 \times SE}{2} \Rightarrow z = 1.385.
+$$
+
+A *z*-score of 1.385 corresponds to a two-sided confidence level of 83.4%.
+
+Hence the heuristic:
+
+> Non-overlapping 83.4% confidence intervals correspond approximately to a statistically significant difference ($p$ < 0.05) between two means.
 
 ## An Example
 

@@ -371,11 +371,12 @@ window.Quarto = {
    
   <ul>
   <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
-  <li><a href="#diving-deeper" id="toc-diving-deeper" class="nav-link" data-scroll-target="#diving-deeper">Diving Deeper</a>
+  <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
   <li><a href="#the-basics-of-confidence-intervals" id="toc-the-basics-of-confidence-intervals" class="nav-link" data-scroll-target="#the-basics-of-confidence-intervals">The Basics of Confidence Intervals</a></li>
   <li><a href="#two-approaches-one-mistake" id="toc-two-approaches-one-mistake" class="nav-link" data-scroll-target="#two-approaches-one-mistake">Two Approaches, One Mistake</a></li>
   <li><a href="#why-the-naïve-method-fails" id="toc-why-the-naïve-method-fails" class="nav-link" data-scroll-target="#why-the-naïve-method-fails">Why the Naïve Method Fails</a></li>
+  <li><a href="#the-83.4-confidence-interval-rule" id="toc-the-83.4-confidence-interval-rule" class="nav-link" data-scroll-target="#the-83.4-confidence-interval-rule">The 83.4% Confidence Interval Rule</a></li>
   </ul></li>
   <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
@@ -427,8 +428,8 @@ window.Quarto = {
 <p>It typically begins with a bar graph showing two sample means side by side, each accompanied by error bars representing 95% confidence intervals. The side-by-side placement suggests a comparison is imminent. Naturally, we check whether the confidence intervals overlap. If they don’t, we may quickly (and incorrectly) conclude that the difference between the means is statistically significant—and therefore meaningful.</p>
 <p>This intuitive but flawed approach to evaluating significance is surprisingly common. Here’s why it doesn’t hold up.</p>
 </section>
-<section id="diving-deeper" class="level2">
-<h2 class="anchored" data-anchor-id="diving-deeper">Diving Deeper</h2>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="the-basics-of-confidence-intervals" class="level3">
 <h3 class="anchored" data-anchor-id="the-basics-of-confidence-intervals">The Basics of Confidence Intervals</h3>
 <p>Let’s use a simplified example adapted from Schenker and Gentleman (2001). Suppose we are comparing two quantities—<span class="math inline">\(Y_1\)</span> and <span class="math inline">\(Y_2\)</span>—such as average user engagement on Android vs.&nbsp;iOS or sales in two different regions. We assume ideal conditions: large, random samples; well-behaved distributions; and reliable estimators.</p>
@@ -488,6 +489,25 @@ Algorithm:
 <p><span class="math display">\[ \frac{\hat{SE}(Y_1)+ \hat{SE}(Y_2)}{\sqrt{\hat{SE}(Y_1)^2 + \hat{SE}(Y_2)^2}} \]</span></p>
 <p>This ratio is always greater than 1, meaning the naïve method uses a wider interval. It is more conservative when the null hypothesis is true (i.e., less likely to reject it), and less conservative when the null is false (i.e., more prone to false positives).</p>
 <p>The discrepancy is largest when the standard errors are similar, and smallest when one standard error dominates.</p>
+</section>
+<section id="the-83.4-confidence-interval-rule" class="level3">
+<h3 class="anchored" data-anchor-id="the-83.4-confidence-interval-rule">The 83.4% Confidence Interval Rule</h3>
+<p>So we learned that overlapping 95% confidence intervals do not imply non-significance — because each interval reflects uncertainty about one mean, not about the difference between them.</p>
+<p>In fact, using non-overlap of 95% CIs as a rule for significance is too conservative: it roughly corresponds to a <em>p</em>-value closer to 0.01 than 0.05.</p>
+<p>There’s a neat visual trick that captures this idea more precisely in the case when the two groups have roughly equal standard errors, <span class="math inline">\(\hat{SE}(Y_1)=\hat{SE}(Y_2)\)</span>.</p>
+<p>Statistical significance requires:</p>
+<p><span class="math display">\[
+|\bar{X}_1 - \bar{X}_2| &gt; 1.96 \times \sqrt{2} \times SE \approx 2.77 \times SE.
+\]</span></p>
+<p>Now, suppose we visualize each group mean with its own confidence interval. If we want non-overlapping intervals to correspond exactly to this 0.05 significance threshold, each half-interval should be half the total required separation:</p>
+<p><span class="math display">\[
+z \times SE = \frac{2.77 \times SE}{2} \Rightarrow z = 1.385.
+\]</span></p>
+<p>A <em>z</em>-score of 1.385 corresponds to a two-sided confidence level of 83.4%.</p>
+<p>Hence the heuristic:</p>
+<blockquote class="blockquote">
+<p>Non-overlapping 83.4% confidence intervals correspond approximately to a statistically significant difference (<span class="math inline">\(p\)</span> &lt; 0.05) between two means.</p>
+</blockquote>
 </section>
 </section>
 <section id="an-example" class="level2">

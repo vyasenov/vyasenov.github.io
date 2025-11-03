@@ -6,8 +6,13 @@ format: html
 
 ::: {.grid}
 ::: {.g-col-6}
-<div style="text-align: left; font-size: 1.5em;">
-  While my real name is Vasil, most people call me Vasco. I am an applied statistician.
+<div style="text-align: left; font-size: 1.2em;">
+  While my real name is Vasil, most people call me Vasco. 
+  
+  <!-- 
+  I'm an applied economist specializing in labor and immigration economics. 
+  -->
+  I work as a Staff Data Scientist at Adobe and maintain research affiliations at Stanford's Immigration Policy Lab.
 </div>
 :::
 
