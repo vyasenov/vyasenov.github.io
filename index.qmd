@@ -6,7 +6,8 @@ format: html
 
 ::: {.grid}
 ::: {.g-col-6}
-<div style="text-align: left; font-size: 1.2em;">
+<div style="text-align: left; font-size: 1.2
+em;">
   While my real name is Vasil, most people call me Vasco. 
   
   <!-- 
