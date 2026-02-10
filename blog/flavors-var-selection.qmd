@@ -32,13 +32,9 @@ In high-dimensional settings, $p$ may be large—possibly even larger than $n$. 
 
 ### Stepwise Selection (Forward, Backward, Both)
 
-The classic workhorse of variable selection, stepwise procedures iteratively add or remove variables based on some criterion like AIC (Aikake Information Criterion), BIC (Bayesian Information Criterion), or $p$-values. In forward selection, you start with no variables and add the one that improves the model the most. In backward elimination with $p<n$, you start with all variables and remove the least significant one at each step. Both methods can also be combined in a bidirectional stepwise approach. In either case, you stop when adding or removing variables no longer improves the model according to your chosen criterion.
+The classic workhorse of variable selection, stepwise procedures iteratively add or remove variables based on some criterion like AIC (Aikake Information Criterion), BIC (Bayesian Information Criterion), or $p$-values. In forward selection, you start with no variables and add the one that improves the model the most. In backward elimination with $p<n$, you start with all variables and remove the least significant one at each step. Both methods can also be combined in a bidirectional stepwise approach. In either case, you stop when adding or removing variables no longer sufficiently improves the model according to your chosen criterion.
 
-Stepwise selection can work well for smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side).
-
-**Strengths:** Simple, interpretable, available in every stats package.
-
-**Weaknesses:** Can be unstable, prone to overfitting, ignores model uncertainty. The statistical community looks down on it, and I find it underappreciated.
+Stepwise selection can work well for smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side). However, they it is unstable and prone to overfitting. 
 
 :::: {.panel-tabset}
 
@@ -94,15 +90,11 @@ $$
 \hat{\beta}^{\text{lasso}} = \arg\min_{\beta} \left\{ \| Y - X \beta \|_2^2 + \lambda \| \beta \|_1 \right\}.
 $$
 
-The magic of the $\ell_1$ penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. It's theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios. 
+The magic of the $\ell_1$ penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. It's theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios.
 
 Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of flavors, including group lasso, adaptive lasso, and fused lasso, which I will probably cover in a future blog post. Be careful, though, lasso is known to be biased, so it's great for prediction, but don't take its coefficients at face value.
 
-Lasso is a good idea when you believe that only a subset of predictors are relevant and want an interpretable model.
-
-**Strengths:** Sparse solutions, automatic variable selection, computationally efficient.
-
-**Weaknesses:** Can struggle with groups of correlated predictors (tends to pick one arbitrarily), biased estimates due to shrinkage.
+Lasso is a good idea when you believe that only a subset of predictors are relevant and want an interpretable model. It can struggle with groups of correlated predictors (tends to pick one arbitrarily), and is known to be biased due to shrinkage.
 
 ::::{.panel-tabset}
 
@@ -148,10 +140,6 @@ Unlike the lasso, Ridge regression does not produce sparse solutions—none of t
 Ridge is also computationally convenient. The modified normal equations involve the matrix $X^\top X + \lambda I$, which is always invertible when $\lambda > 0$, even if $X^\top X$ is singular. As a result, Ridge provides a unique and stable solution even in high-dimensional settings where $p > n$—a situation where ordinary least squares (OLS) fails due to non-identifiability.
 
 Ridge is especially good when multicollinearity is a problem; when you prefer stability over sparsity; or when many small effects contribute to the outcome.
-
-**Strengths:** Stabilizes estimates, handles multicollinearity gracefully.
-
-**Weaknesses:** Does not produce sparse solutions; all coefficients remain in the model.
 
 ::::{.panel-tabset}
 
@@ -200,10 +188,6 @@ $$
 
 This makes it easy to interpolate between Ridge ($\alpha = 0$) and Lasso ($\alpha = 1$), giving you a continuum of models with different regularization characteristics.
 
-**Strengths:** Handles groups of correlated variables better than Lasso alone.
-
-**Weaknesses:** Adds an extra tuning parameter to balance the ℓ₁ and ℓ₂ penalties.
-
 :::: {.panel-tabset}
 
 ### R
@@ -247,11 +231,7 @@ $$
 \hat{\beta}_{\text{PCR}} = V_k (Z^\top Z)^{-1} Z^\top y
 $$
 
-PCA is among the most popular methods for dimensionality reduction even among junior data scientists, so I won't spend too much time on it here. PCA lives in dual nature, with one foot in unsupervised learning (finding components) and the other in supervised learning (variable selection).
-
-**Strengths:** Reduces dimensionality, handles multicollinearity.
-
-**Weaknesses:** Components may be hard to interpret; variable selection is indirect since it selects combinations of variables, not individual variables.
+PCA is among the most popular methods for dimensionality reduction even among junior data scientists, so I won't spend too much time on it here. PCA lives in dual nature, with one foot in unsupervised learning (finding components) and the other in supervised learning (variable selection). Note how the term variable selection here is used indirectly, since it selects combinations of variables, not individual variables. Its main strength is its incredible versatility and ability to handle high-dimensional data, but its output can be challenging to interpret.
 
 :::: {.panel-tabset}
 
@@ -290,10 +270,6 @@ The result is a sequence of models, each with one more active variable—just li
 
 Geometrically, LAR moves along piecewise linear paths toward the least squares solution, and its trajectory closely tracks that of Lasso. In fact, with a small modification, LAR can be used to compute the entire Lasso solution path.
 
-**Strengths:** Computationally efficient, provides the full regularization path.
-
-**Weaknesses:** Like Lasso, can behave poorly with correlated predictors.
-
 :::: {.panel-tabset}
 
 #### R
@@ -331,11 +307,7 @@ where $a > 2$ (typically $a = 3.7$) and $(x)_+ = \max(0, x)$ denotes the positiv
 * For moderate coefficients $\lambda < |\beta| < a \lambda$, the penalty decreases gradually.
 * For large coefficients $|\beta| \ge a\lambda$, the penalty becomes flat—effectively applying no further shrinkage.
 
-This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and oracle-like properties under certain conditions.
-
-**Strengths:** Encourages sparsity, less biased than Lasso, asymptotically unbiased under certain conditions.
-
-**Weaknesses:** The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.
+This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and oracle-like properties under certain conditions. The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.
 
 ::: {.panel-tabset}
 
@@ -388,10 +360,6 @@ print("Estimated coefficients:", model.coef_)
 Knockoffs, introduced by Barber and Candès (2015), is a clever framework for variable selection with **false discovery rate (FDR) control**. The method constructs “knockoff copies” of each feature—artificial variables that mimic the correlation structure of the real ones but are known to be null. Then it tests whether the real variables outperform their knockoffs. 
 
 I have [written about knockoffs](https://vyasenov.github.io/blog/flavors-multiple-testing.html) in more detail in previous posts, so I won't go into the details here. Just like PCA, knockoffs live in dual nature, with one foot in the multiple testing literature (constructing knockoffs) and the other in supervised learning world (variable selection).
-
-**Strengths:** Controls FDR rigorously; applicable even in high-dimensional settings.
-
-**Weaknesses:** Requires construction of knockoff variables, which can be challenging for non-Gaussian designs.
 
 :::: {.panel-tabset}
 

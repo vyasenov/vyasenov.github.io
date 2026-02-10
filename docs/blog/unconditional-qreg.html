@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-05-27">
+<meta name="dcterms.date" content="2025-12-21">
 
-<title>The Many Flavors of Matching for Causal Inference – Vasco Yasenov</title>
+<title>Unconditional Quantile Regression and Treatment Effects – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -374,13 +409,14 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#exact-matching" id="toc-exact-matching" class="nav-link" data-scroll-target="#exact-matching">Exact Matching</a></li>
-  <li><a href="#mahalanobis-distance-matching" id="toc-mahalanobis-distance-matching" class="nav-link" data-scroll-target="#mahalanobis-distance-matching">Mahalanobis Distance Matching</a></li>
-  <li><a href="#propensity-score-matching" id="toc-propensity-score-matching" class="nav-link" data-scroll-target="#propensity-score-matching">Propensity Score Matching</a></li>
-  <li><a href="#coarsened-exact-matching" id="toc-coarsened-exact-matching" class="nav-link" data-scroll-target="#coarsened-exact-matching">Coarsened Exact Matching</a></li>
-  <li><a href="#optimal-matching" id="toc-optimal-matching" class="nav-link" data-scroll-target="#optimal-matching">Optimal Matching</a></li>
-  <li><a href="#genetic-matching" id="toc-genetic-matching" class="nav-link" data-scroll-target="#genetic-matching">Genetic Matching</a></li>
-  <li><a href="#caliper-matching" id="toc-caliper-matching" class="nav-link" data-scroll-target="#caliper-matching">Caliper Matching</a></li>
+  <li><a href="#unconditional-quantile-regression" id="toc-unconditional-quantile-regression" class="nav-link" data-scroll-target="#unconditional-quantile-regression">Unconditional Quantile Regression</a></li>
+  <li><a href="#unconditional-quantile-treatment-effects" id="toc-unconditional-quantile-treatment-effects" class="nav-link" data-scroll-target="#unconditional-quantile-treatment-effects">Unconditional Quantile Treatment Effects</a></li>
+  <li><a href="#rank-invariance-in-qtes" id="toc-rank-invariance-in-qtes" class="nav-link" data-scroll-target="#rank-invariance-in-qtes">Rank Invariance in QTEs</a></li>
+  </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a>
+  <ul class="collapse">
+  <li><a href="#bitler-et-al.-2006" id="toc-bitler-et-al.-2006" class="nav-link" data-scroll-target="#bitler-et-al.-2006">Bitler et al.&nbsp;(2006)</a></li>
+  <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">Code</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -394,11 +430,10 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">The Many Flavors of Matching for Causal Inference</h1>
+<h1 class="title"><em>Unconditional</em> Quantile Regression and Treatment Effects</h1>
   <div class="quarto-categories">
     <div class="quarto-category">causal inference</div>
-    <div class="quarto-category">matching methods</div>
-    <div class="quarto-category">flavors</div>
+    <div class="quarto-category">quantile regression</div>
   </div>
   </div>
 
@@ -410,7 +445,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 27, 2025</p>
+      <p class="date">December 21, 2025</p>
     </div>
   </div>
   
@@ -428,151 +463,205 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>If you’ve worked on causal inference with observational data, you’ve likely faced the fundamental challenge: the treated and control groups often look very different. Matching methods aim to fix that. The idea is simple and intuitive—let’s compare treated units to similar control units and mimic the conditions of a randomized experiment as best as we can.</p>
-<p>But here’s the twist: there multiple ways to define “similar.” Should we look for exact matches? Should we match on covariates directly or on some summary score like the propensity score? Should we optimize the matches globally or locally? Over the years, researchers have developed a wide variety of matching methods, each with its own advantages and pitfalls. The landscape can be overwhelming, especially if you’re new to causal inference.</p>
-<p>In this article, I’ll walk through the most popular matching strategies for causal inference. I’ll talk about what each method does, when to use it, and where it might lead you astray. The focus is on the intuition and technical description—not on the code. Whether you’re doing matching for the first time or looking to expand your toolkit, you will find something useful here.</p>
+<p>Quantile regression has become a widely used tool in econometrics and statistics, thanks to its ability to model the entire distribution of an outcome variable rather than just its mean. Traditional quantile regression (Koenker and Bassett, 1978), however, is <em>conditional</em> as it models quantiles of the outcome given a set of covariates. But in many policy and causal inference applications, we are interested in changes to the <em>unconditional</em> distribution of the outcome variable.</p>
+<p>For example, suppose we want to understand the effect of a job training program on wage inequality. A standard quantile regression would tell us how the program shifts quantiles <em>given</em> certain characteristics like education or experience. In other words, focus is on the quantile of the residual term in the linear model. But we might instead want to estimate how the program shifts quantiles <em>in the population as a whole</em>. This is where <em>Unconditional Quantile Regression (UQR)</em> comes in.</p>
+<p>The key breakthrough in this space was provided by Firpo, Fortin, and Lemieux (2009), who introduced a method based on the Recentered Influence Function (RIF). This allows us to estimate the effect of covariates on unconditional quantiles using simple linear regressions. Later, Frölich and Melly (2013) extended this framework to account for endogeneity, providing a way to estimate Unconditional Quantile Treatment Effects (UQTEs) in settings where treatment is not randomly assigned.</p>
+<p>In this article, we’ll unpack the key ideas behind UQR, discuss how to estimate unconditional quantile treatment effects, and illustrate these concepts with an example in <code>R</code> and <code>python</code>.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let’s set up the basic framework with minimal fluff. Suppose we have <span class="math inline">\(n\)</span> units indexed by <span class="math inline">\(i = 1, \dots, n\)</span>. Each unit has:</p>
-<ul>
-<li>A binary treatment indicator <span class="math inline">\(D_i \in \{0, 1\}\)</span>, where <span class="math inline">\(D_i = 1\)</span> for treated units and <span class="math inline">\(D_i = 0\)</span> for controls.</li>
-<li>A vector of observed covariates <span class="math inline">\(X_i\)</span>.</li>
-<li>Potential outcomes <span class="math inline">\(Y_i(1)\)</span> and <span class="math inline">\(Y_i(0)\)</span>, where <span class="math inline">\(Y_i(1)\)</span> is the outcome if treated, and <span class="math inline">\(Y_i(0)\)</span> if untreated. We observe only their realized outcome <span class="math inline">\(Y_i = D_i Y_i(1) + (1 - D_i) Y_i(0)\)</span>.</li>
-</ul>
-<p>We impose the usual assumptions of unconfoundedness (treatment assignment is independent of potential outcomes given covariates) and overlap (treated and control units have similar covariate distributions).</p>
-<p>Our goal is to estimate treatment effects like the Average Treatment Effect (ATE) or the ATE on the Treated (ATT): <span class="math display">\[
-\text{ATT} = \mathbb{E}[Y(1) - Y(0) \mid D = 1].
+<p>As a refresher, the <span class="math inline">\(\tau\)</span>-th quantile of an outcome variable <span class="math inline">\(Y\)</span> is defined as: <span class="math display">\[
+Q_\tau(Y) = \inf \{ q : P(Y \leq q) \geq \tau \}.
 \]</span></p>
-<p>The core idea behind matching is to find comparable untreated units for each treated unit so we can approximate <span class="math inline">\(Y(0)\)</span> for the treated group. We then look discard the unmatched units and look at the difference in outcomes between treated and matched controls to estimate the treatment effect.</p>
-<p>Let’s abuse notation a bit and define the sample-analogue of the ATT as:</p>
-<p><span class="math display">\[\widehat{\text{ATT}}=\frac{1}{N_{\text{treated}}}\sum_{i:D=1} Y(1)_i - \hat{Y}(0)^{\text{imputed}}_i.\]</span></p>
-<p>These methods can be, and often are, combined with regression adjustments to reduce bias and improve efficiency and robustness, but I will leave that aside here.</p>
+<p>UQR allows us to estimate how covariates influence these unconditional quantiles.</p>
+<p>Now consider adding a set of covariates <span class="math inline">\(X\)</span>. In traditional quantile regression, we estimate the conditional quantile function:</p>
+<p><span class="math display">\[Q_\tau(Y | X) = \inf \{ q : P(Y \leq q | X) \geq \tau \}.\]</span></p>
+<p>This tells us how the <span class="math inline">\(\tau\)</span>-th quantile of <span class="math inline">\(Y\)</span> changes with <span class="math inline">\(X\)</span>. Traditional quantile regression models the impact on this conditional quantile.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<p>We are now ready to go through seven of the most popular matching approaches.</p>
-<section id="exact-matching" class="level3">
-<h3 class="anchored" data-anchor-id="exact-matching">Exact Matching</h3>
-<p>Exact matching is the simplest—and most restrictive—approach to causal inference:</p>
-<blockquote class="blockquote">
-<p>Match treated and control units <em>exactly</em> on all observed covariates <span class="math inline">\(X\)</span>.</p>
-</blockquote>
-<p>That is, if a treated unit has <span class="math inline">\(X = x\)</span>, we look for control units with the exact same <span class="math inline">\(X = x\)</span>. While this method is conceptually elegant and easy to understand, it’s rarely practical.</p>
-<p>Exact matches become increasingly unlikely in high-dimensional settings or when covariates are continuous, where no two units are likely to be identical. In those cases, exact matching often fails to find matches for many treated units, leading to loss of sample size or biased estimates. Despite its limitations, exact matching is an important baseline: it helps clarify the assumptions behind more flexible methods.</p>
-<p>Exact matching works when covariates are discrete, there aren’t too many of them and there is decent overlap between the treated and control groups. It becomes much more difficult (theoretically infeasible) to find matches as the number of covariates increases or in settings with continuous covariates. In practice, it can often lead to lots of unmatched units which often results in discarded data.</p>
-<hr>
+<section id="unconditional-quantile-regression" class="level3">
+<h3 class="anchored" data-anchor-id="unconditional-quantile-regression">Unconditional Quantile Regression</h3>
+<section id="definition" class="level4">
+<h4 class="anchored" data-anchor-id="definition">Definition</h4>
+<p>Firpo et al.&nbsp;(2009) introduced an elegant way to estimate UQR using influence functions. The influence function of a statistic measures how much that statistic changes when an observation is perturbed. The recentered influence function (RIF) for a quantile <span class="math inline">\(Q_\tau\)</span> is given by:</p>
+<p><span class="math display">\[RIF(Y; Q_\tau) = Q_\tau + \frac{\tau - 1\{Y \leq Q_\tau\}}{f_Y(Q_\tau)}.\]</span></p>
+<p>Here, <span class="math inline">\(f_Y(Q_\tau)\)</span> is the density of <span class="math inline">\(Y\)</span> at <span class="math inline">\(Q_\tau\)</span>, which can be estimated nonparametrically. This nonparametric density estimation is often done via kernel density estimation but may be imprecise in the tails.</p>
+<p>Firpo et al.&nbsp;showed that regressing <span class="math inline">\(RIF(Y; Q_\tau)\)</span> on covariates <span class="math inline">\(X\)</span> via OLS provides a valid estimate of how <span class="math inline">\(X\)</span> affects the <span class="math inline">\(\tau\)</span>-th quantile of <span class="math inline">\(Y\)</span>. This method is remarkably simple but powerful—it transforms a quantile regression problem into a standard linear regression problem.</p>
+<p>This idea also generalizes to other distributional statistics (Gini, variance) by using the corresponding influence functions.</p>
 </section>
-<section id="mahalanobis-distance-matching" class="level3">
-<h3 class="anchored" data-anchor-id="mahalanobis-distance-matching">Mahalanobis Distance Matching</h3>
-<p>Instead of requiring exact equality between covariates, Mahalanobis matching</p>
-<blockquote class="blockquote">
-<p>Uses a <em>continuous distance metric</em> to find treated and control units that are similar in terms of their covariate values.</p>
-</blockquote>
-<p>The Mahalanobis distance between two units <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, with covariates <span class="math inline">\(X_i\)</span> and <span class="math inline">\(X_j\)</span>, is defined as:</p>
-<p><span class="math display">\[
-d(X_i, X_j) = \sqrt{(X_i - X_j)^\top S^{-1} (X_i - X_j)},
+<section id="estimation" class="level4">
+<h4 class="anchored" data-anchor-id="estimation">Estimation</h4>
+<p>The estimation proceeds in three steps:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Algorithm:
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Estimate the sample quantile <span class="math inline">\(q_{\tau}\)</span>.</li>
+<li>Estimate the density <span class="math inline">\(f_Y(q_{\tau})\)</span>, typically via kernel density estimation.</li>
+<li>Construct the RIF for each observation and regress it on the covariates.</li>
+</ol>
+</div>
+</div>
+<p>The basic regression is: <span class="math display">\[
+RIF(Y; q_{\tau}) = X' \beta + \varepsilon,
 \]</span></p>
-<p>where <span class="math inline">\(S\)</span> is the sample covariance matrix of the covariates <span class="math inline">\(X\)</span>.</p>
-<p>This metric accounts for both the scale and the correlation structure of the covariates. Unlike Euclidean distance, which treats each covariate as equally important and independent, Mahalanobis distance adjusts for the fact that some variables may be more variable than others, or may be correlated.</p>
-<p>Intuitively, Mahalanobis distance answers the question: how many standard deviations apart are these two vectors, once we’ve accounted for the spread and correlation of the variables? A small Mahalanobis distance indicates that the two units are close in the joint covariate space, even if they differ somewhat along individual dimensions. It still becomes less reliable in high dimensions, where all units tend to be far from one another.</p>
-<p>Unlike exact matching, Mahalanobis matching can handle continuous covariates and works well in high dimensions. It is also more flexible than exact matching, in that it can handle mixed discrete and continuous variables.</p>
-<hr>
+<p>where <span class="math inline">\(\beta\)</span> now captures the effect of <span class="math inline">\(X\)</span> on the <span class="math inline">\(\tau\)</span>-th unconditional quantile.</p>
+<p>The most common implementation is RIF-OLS, though alternatives include RIF-Logit and nonparametric first stages (RIF-NP).</p>
 </section>
-<section id="propensity-score-matching" class="level3">
-<h3 class="anchored" data-anchor-id="propensity-score-matching">Propensity Score Matching</h3>
-<p>Propensity Score Matching (PSM) is one of the most influential ideas in observational causal inference. Rosenbaum and Rubin’s foundational result shows that if treatment assignment is unconfounded given covariates <span class="math inline">\(X\)</span>, then it is also unconfounded given the propensity score:</p>
-<p><span class="math display">\[
-e(X) = \mathbb{P}(D = 1 \mid X),
-\]</span></p>
-<p>the probability of receiving treatment conditional on observed covariates. In other words,</p>
-<blockquote class="blockquote">
-<p>Instead of matching on the full covariate vector <span class="math inline">\(X\)</span>, we can just match on a <em>single scalar summary—</em>the estimated propensity score.</p>
-</blockquote>
-<p>This is the key idea: propensity scores reduce the curse of dimensionality. By summarizing the information in <span class="math inline">\(X\)</span> into one number that captures the likelihood of treatment, we make matching more feasible and scalable, especially when <span class="math inline">\(X\)</span> includes many variables.</p>
-<p>In practice, the propensity score is rarely known and must be estimated—typically using logistic regression, probit models, or machine learning methods like random forests or gradient boosting. Once estimated, treated and control units are matched based on the closeness of their propensity scores, often using nearest-neighbor matching, caliper matching, or kernel methods. Trimming is therefore an important aspect of the process, where units with very high or very low propensity scores are excluded to improve balance and reduce bias.</p>
-<p>PSM improves comparability between groups by balancing the covariates in expectation, but it comes with trade-offs. Matching on the propensity score alone does not guarantee covariate balance in any particular dataset, so it’s important to assess and diagnose balance post-matching. Moreover, PSM is sensitive to model misspecification and can perform poorly if the propensity score is estimated inaccurately or if the overlap between groups is weak.</p>
-<p>Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks. It can be particularly helpful when the number of covariates is large or mostly continuous.</p>
-<hr>
+<section id="inference" class="level4">
+<h4 class="anchored" data-anchor-id="inference">Inference</h4>
+<p>Density estimation is a critical step that affects the quality of inference as poor estimates at the quantile point can lead to noisy estimates. Because of the multi-step estimation (quantile, density, RIF), standard error computation is more complex. Bootstrapping is commonly used and has been shown to perform well in pracice.</p>
 </section>
-<section id="coarsened-exact-matching" class="level3">
-<h3 class="anchored" data-anchor-id="coarsened-exact-matching">Coarsened Exact Matching</h3>
-<p>Coarsened Exact Matching (CEM) offers a practical compromise between the rigidity of exact matching and the flexibility needed for real-world data. The core idea is to</p>
-<blockquote class="blockquote">
-<p>Coarsen continuous covariates into broader, meaningful categories and then perform exact matching on these coarsened values.</p>
-</blockquote>
-<p>Formally, each covariate is discretized into bins, and treated and control units are matched only if they fall into the <em>same bin across all coarsened covariates</em>. This process reduces the granularity of the match criteria, increasing the likelihood of finding matches, while still ensuring comparability within the matched groups. Examples are turning age into 5-year intervals or income into quantile-based brackets.</p>
-<p>By construction, CEM guarantees balance on the coarsened covariates—unlike propensity score matching, where balance must be checked and cannot be guaranteed a priori. CEM also allows researchers to control the level of approximation: the finer the bins, the closer it is to exact matching; the coarser the bins, the more matches you retain but the more heterogeneity you permit within matched pairs. Researchers can apply finer coarsening to critical variables and coarser groupings to less central ones.</p>
-<p>However, CEM’s effectiveness depends heavily on the choice of binning. Poorly chosen coarsening can either lead to very few matches (if too fine) or poor covariate balance (if too coarse). There is a trade-off between retaining sample size and improving covariate similarity, and CEM makes this trade-off explicit and user-controllable.</p>
-<hr>
+<section id="challenges" class="level4">
+<h4 class="anchored" data-anchor-id="challenges">Challenges</h4>
+<p>RIF-OLS is a linear model and as such it assumes a linear relationship between the RIF and covariates. If the true relationship is nonlinear, flexible methods (logit, nonparametric) are preferred. UQR is especially appealing for estimating treatment effects on the distribution of outcomes in quasi-experimental settings. When treatment is exogenous (conditional on the covariates), including treatment indicators in the RIF regression yields estimates of the treatment effect at various unconditional quantiles. This is a perfect segway for the next section.</p>
 </section>
-<section id="optimal-matching" class="level3">
-<h3 class="anchored" data-anchor-id="optimal-matching">Optimal Matching</h3>
-<p>Optimal matching takes a <em>global approach</em> to the matching problem. Rather than matching each treated unit to its nearest control in isolation (as in nearest neighbor matching), it</p>
-<blockquote class="blockquote">
-<p>Finds the set of matched pairs that <em>minimizes the total distance</em> across all matched units.</p>
-</blockquote>
-<p>Formally, it solves:</p>
-<p><span class="math display">\[
-\min_{\text{matching}} \sum_{(i, j) \in \text{pairs}} d(X_i, X_j),
-\]</span></p>
-<p>where <span class="math inline">\(d(X_i, X_j)\)</span> is a distance measure between treated unit <span class="math inline">\(i\)</span> and control unit <span class="math inline">\(j\)</span>.</p>
-<p>The key benefit is that it avoids poor global matches that can arise when matching is done greedily or locally, one unit at a time. Optimal matching is especially useful when treatment and control groups differ significantly in size or distribution, and when you want to minimize overall imbalance rather than optimize matches for individual units.</p>
-<p>However, because it solves a global optimization problem, it can be computationally intensive for large datasets. Also, while it minimizes overall distance, it doesn’t necessarily guarantee good covariate balance unless combined with preprocessing (e.g., matching on propensity scores or coarsened covariates).</p>
-<p>Still, optimal matching is a powerful and principled method, particularly when used with careful distance choices and diagnostics.</p>
-<hr>
 </section>
-<section id="genetic-matching" class="level3">
-<h3 class="anchored" data-anchor-id="genetic-matching">Genetic Matching</h3>
-<p>Genetic matching is an advanced matching method that uses a genetic algorithm to find an optimal weighting of covariates in the distance metric. The idea is to</p>
-<blockquote class="blockquote">
-<p>Automate the process of choosing how much weight each covariate should receive when determining similarity between treated and control units.</p>
-</blockquote>
-<p>Rather than manually selecting a distance metric like Mahalanobis or Euclidean, genetic matching searches over a space of weighted Mahalanobis distances, adjusting the weights to minimize covariate imbalance after matching. The optimization goal is to improve covariate balance. The result is a <em>customized distance metric</em> that gives higher weight to variables that are harder to balance and less to those that are already balanced.</p>
-<p>Genetic matching can be used with or without propensity score preprocessing, and can accommodate interactions or higher-order terms. It’s especially powerful in settings with many covariates or complex imbalance patterns that simple metrics fail to capture.</p>
-<p>However, the method is computationally intensive, often requiring many iterations of matching and balance assessment. Its performance also depends on the choice of balance metrics and tuning parameters in the genetic algorithm.</p>
-<hr>
+<section id="unconditional-quantile-treatment-effects" class="level3">
+<h3 class="anchored" data-anchor-id="unconditional-quantile-treatment-effects">Unconditional Quantile Treatment Effects</h3>
+<p>One limitation of UQR as formulated by Firpo et al.&nbsp;is that it assumes covariates are exogenous. But in many causal inference settings, treatment assignment is endogenous (e.g., workers self-select into training programs). Frölich and Melly (2013) extended the UQR framework to handle endogeneity using instrumental variables (IV). The authors built on earlier work by Chernozhukov and Hansen (2005) which pioneered the estimation of (conditional) quantile treatment effects in the presence of endogeneity.</p>
+<p>Frölich and Melly showed that under standard IV assumptions—relevance and exclusion—the unconditional quantile treatment effect (UQTE) can be estimated using a two-step approach:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Algorithm:
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Estimate a propensity score model (or an instrumented version of <span class="math inline">\(D\)</span>) to account for selection bias.</li>
+<li>Use IV-based weighting to recover the counterfactual unconditional outcome distributions for compliers, and apply RIF methods to estimate UQTEs.</li>
+</ol>
+</div>
+</div>
+<p>This approach provides a way to estimate distributional treatment effects while addressing selection bias—a crucial tool in policy evaluation and applied econometrics.</p>
 </section>
-<section id="caliper-matching" class="level3">
-<h3 class="anchored" data-anchor-id="caliper-matching">Caliper Matching</h3>
-<p>Caliper matching introduces a distance threshold to restrict which treated and control units can be matched. Specifically,</p>
-<blockquote class="blockquote">
-<p>A treated unit is only matched to a control unit if the distance between them is <em>within a pre-specified caliper</em>.</p>
-</blockquote>
-<p>That is, if the difference falls below a set limit. For example, when matching on propensity scores, a common rule is to match only if the absolute difference in propensity scores is less than 0.1:</p>
-<p><span class="math display">\[
-|e(X_i^{\text{treated}}) - e(X_j^{\text{control}})| &lt; \text{caliper}
-\]</span></p>
-<p>This constraint helps <em>avoid poor matches</em>, especially when treated and control groups have limited overlap. Without calipers, nearest neighbor matching might pair units with very different covariate profiles, particularly in the tails of the propensity score distribution. These poor matches can increase bias and undermine the credibility of causal estimates.</p>
-<p>Caliper matching is not a matching method on its own but rather a modification to existing strategies—most often to nearest neighbor matching. It can also be combined with optimal matching or Mahalanobis distance.</p>
-<p>Choosing the right caliper width is important: too wide, and the constraint has little effect; too narrow, and many treated units may be left unmatched, reducing sample size and precision.</p>
-<p>Caliper matching is particularly useful when the common support assumption is questionable—i.e., when treated and control groups do not overlap well in covariate space. In such cases, calipers serve as a safeguard to maintain the quality of matches by explicitly enforcing local comparability.</p>
-<hr>
+<section id="rank-invariance-in-qtes" class="level3">
+<h3 class="anchored" data-anchor-id="rank-invariance-in-qtes">Rank Invariance in QTEs</h3>
+<p>A crucial assumption often invoked in the estimation of quantile treatment effects (QTEs) is rank invariance. This assumption states that units maintain their rank in the outcome distribution after receiving the treatment. In other words, if a treated unit was at the 30th percentile of the untreated outcome distribution, it would remain at the 30th percentile of the treated distribution.</p>
+<p>While this assumption simplifies identification and interpretation of QTEs, it can be highly restrictive. It rules out the possibility that treatment reshuffles individuals across the distribution—a scenario that might be not only plausible but central in many applications.</p>
+<p>Consider a school voucher program that offers private school access to low-income students. The effect of such a program may be heterogeneous: for high-performing students, access might enhance performance due to better environments. But for low-performing students, the same access could lead to worse outcomes due to higher academic pressure or poor fit. As a result, the program could re-rank students in the outcome distribution, violating rank invariance.</p>
+<p>In such settings, assuming rank invariance could lead to misleading conclusions about who benefits and who loses from treatment. Alternative approaches, like those based on quantile treatment effect bounds (e.g., Melly, 2005; Chernozhukov &amp; Hansen, 2005), are more robust to such violations.</p>
+</section>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<section id="bitler-et-al.-2006" class="level3">
+<h3 class="anchored" data-anchor-id="bitler-et-al.-2006">Bitler et al.&nbsp;(2006)</h3>
+<p>When evaluating the effects of welfare reform, traditional analyses often focus on mean impacts, which can obscure critical insights into the distributional effects of policy changes. ​ Quantile Treatment Effects (QTE) provide a powerful tool for understanding how reforms impact different segments of the population, revealing heterogeneity that mean impacts fail to capture. ​ For example, the study “<em>What Mean Impacts Miss: Distributional Effects of Welfare Reform Experiments</em>” by Bitler, Gelbach, and Hoynes uses QTE to analyze Connecticut’s Jobs First program, a welfare reform initiative.</p>
+<p>The authors find that while mean impacts suggest modest income gains, QTE reveal substantial variation: earnings effects are zero at the bottom, positive in the middle, and negative at the top of the distribution before time limits take effect. ​ After time limits, income effects are mixed, with gains concentrated in higher quantiles and losses at the lower end. ​ This nuanced approach highlights the importance of QTE in uncovering the true breadth of policy impacts, enabling data scientists to better inform decision-making and address equity concerns in policy design.</p>
+</section>
+<section id="code" class="level3">
+<h3 class="anchored" data-anchor-id="code">Code</h3>
+<p>Let’s illustrate these ideas with an example in <code>R</code> and <code>python</code>. We’ll use the <code>iris</code> dataset to estimate the effect of <code>Sepal.Length</code> on different quantiles of <code>Petal.Length</code> using UQR.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quantreg)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load dataset</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate unconditional quantiles</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>taus <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.50</span>, <span class="fl">0.75</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>q_vals <span class="ot">&lt;-</span> <span class="fu">quantile</span>(iris<span class="sc">$</span>Petal.Length, <span class="at">probs =</span> taus)  <span class="co"># Estimate quantiles</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>f_hat <span class="ot">&lt;-</span> <span class="fu">density</span>(iris<span class="sc">$</span>Petal.Length)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute RIF values</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>rif_values <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="cf">function</span>(i) {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  q <span class="ot">&lt;-</span> q_vals[i]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  f <span class="ot">&lt;-</span> f_hat<span class="sc">$</span>y[<span class="fu">which.min</span>(<span class="fu">abs</span>(f_hat<span class="sc">$</span>x <span class="sc">-</span> q))]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  q <span class="sc">+</span> ((taus[i] <span class="sc">-</span> (iris<span class="sc">$</span>Petal.Length <span class="sc">&lt;=</span> q)) <span class="sc">/</span> f)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Run RIF regression</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">lapply</span>(rif_values, <span class="cf">function</span>(rif) <span class="fu">lm</span>(rif <span class="sc">~</span> Sepal.Length, <span class="at">data =</span> iris))</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(models, summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> gaussian_kde</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Load dataset</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> load_iris</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>iris_data <span class="op">=</span> load_iris(as_frame<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>iris <span class="op">=</span> iris_data[<span class="st">'data'</span>]</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>iris.columns <span class="op">=</span> [<span class="st">'Sepal.Length'</span>, <span class="st">'Sepal.Width'</span>, <span class="st">'Petal.Length'</span>, <span class="st">'Petal.Width'</span>]</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate unconditional quantiles</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>taus <span class="op">=</span> [<span class="fl">0.25</span>, <span class="fl">0.50</span>, <span class="fl">0.75</span>]</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>q_vals <span class="op">=</span> np.quantile(iris[<span class="st">'Petal.Length'</span>], taus)  <span class="co"># Estimate quantiles</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>f_hat <span class="op">=</span> gaussian_kde(iris[<span class="st">'Petal.Length'</span>])</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute RIF values</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>rif_values <span class="op">=</span> []</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, tau <span class="kw">in</span> <span class="bu">enumerate</span>(taus):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> q_vals[i]</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    f <span class="op">=</span> f_hat(q)  <span class="co"># Density at the quantile</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    rif <span class="op">=</span> q <span class="op">+</span> ((tau <span class="op">-</span> (iris[<span class="st">'Petal.Length'</span>] <span class="op">&lt;=</span> q).astype(<span class="bu">int</span>)) <span class="op">/</span> f)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    rif_values.append(rif)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Run RIF regression</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> []</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> rif <span class="kw">in</span> rif_values:</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> LinearRegression(fit_intercept<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    model.fit(iris[[<span class="st">'Sepal.Length'</span>]], rif)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    models.append(model)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Print results</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, model <span class="kw">in</span> <span class="bu">enumerate</span>(models):</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Model </span><span class="sc">{</span>i <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss">:"</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Coefficient for Sepal.Length: </span><span class="sc">{</span>model<span class="sc">.</span>coef_[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Intercept: </span><span class="sc">{</span>model<span class="sc">.</span>intercept_<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>This simple example demonstrates how to estimate the effect of a covariate on unconditional quantiles using the RIF regression approach.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li>Matching methods are powerful tools for causal inference.</li>
-<li>They come in many flavors, each with its own strengths and weaknesses.</li>
-<li>No single method is best for all situations; the choice depends on the data, the research question, and the assumptions you are willing to make.</li>
+<li>UQR allows us to estimate the effect of covariates on unconditional quantiles, capturing total effects.</li>
+<li>The RIF regression method transforms a quantile regression problem into a simple linear regression.</li>
+<li>Frölich and Melly (2013) extend UQR to address endogeneity using instrumental variables.</li>
+<li>These tools are invaluable for policy evaluation and causal inference.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The book <em>Causal Inference for Statistics, Social, and Biomedical Sciences</em> by Imbens and Rubin (2015) provides excellent coverage of matching and its theoretical underpinnings. I also recommend Stuart (2010)’s seminal review paper cited below. The <code>MatchIt</code> and <code>Matching</code> <code>R</code> packages documentation are also goldmines for practical implementation details.</p>
+<p>For a deeper dive into these methods, the foundational paper by Firpo, Fortin, and Lemieux (2009) provides a detailed introduction to UQR, while Frölich and Melly (2013) extend the framework to address endogeneity concerns. For a broader perspective on quantile regression, Koenker’s book <em>Quantile Regression</em> (2005) is a must-read.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Abadie, A., &amp; Imbens, G. W. (2016). Matching on the estimated propensity score. Econometrica, 84(2), 781-807.</p>
-<p>Ben-Michael, E., Feller, A., Hirshberg, D. A., &amp; Zubizarreta, J. R. (2021). The balancing act in causal inference. arXiv preprint arXiv:2110.14831.</p>
-<p>Diamond, A., &amp; Sekhon, J. S. (2013). Genetic matching for estimating causal effects: A general multivariate matching method for achieving balance in observational studies. Review of Economics and Statistics, 95(3), 932-945.</p>
-<p>Iacus, S. M., King, G., &amp; Porro, G. (2012). Causal inference without balance checking: Coarsened exact matching. Political analysis, 20(1), 1-24.</p>
-<p>Imbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.</p>
-<p>Imbens, G. W., &amp; Rubin, D. B. (2015). <em>Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction</em>. Cambridge University Press.</p>
-<p>Rosenbaum, P. R., &amp; Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. <em>Biometrika</em>, 70(1), 41–55.</p>
-<p>Stuart, E. A. (2010). Matching methods for causal inference: A review and a look forward. <em>Statistical Science</em>, 25(1), 1–21.</p>
-<p>Rosenbaum, P. R. (2002). <em>Observational Studies</em>. Springer.</p>
+<p>Alejo, J., Favata, F., Montes-Rojas, G., &amp; Trombetta, M. (2021). Conditional vs unconditional quantile regression models: A guide to practitioners. Economía, 44(88), 76-93.</p>
+<p>Bitler, M. P., Gelbach, J. B., &amp; Hoynes, H. W. (2006). What mean impacts miss: Distributional effects of welfare reform experiments. American Economic Review, 96(4), 988-1012.</p>
+<p>Borah, B. J., &amp; Basu, A. (2013). Highlighting differences between conditional and unconditional quantile regression approaches through an application to assess medication adherence. Health economics, 22(9), 1052-1070.</p>
+<p>Borgen, N. T. (2016). Fixed effects in unconditional quantile regression. The Stata Journal, 16(2), 403-415.</p>
+<p>Chernozhukov, V., &amp; Hansen, C. (2005). An IV model of quantile treatment effects. Econometrica, 73(1), 245-261.</p>
+<p>Firpo, S., Fortin, N. M., &amp; Lemieux, T. (2009). Unconditional quantile regressions. Econometrica, 77(3), 953-973.</p>
+<p>Frölich, M., &amp; Melly, B. (2013). Unconditional quantile treatment effects under endogeneity. Journal of Business &amp; Economic Statistics, 31(3), 346-357.</p>
+<p>Koenker, R. (2017). Quantile regression: 40 years on. Annual review of economics, 9(1), 155-176.</p>
+<p>Koenker, R., &amp; Hallock, K. F. (2001). Quantile regression. Journal of economic perspectives, 15(4), 143-156.</p>
+<p>Koenker, R., &amp; Bassett Jr, G. (1978). Regression quantiles. Econometrica: journal of the Econometric Society, 33-50.</p>
+<p>Sasaki, Y., Ura, T., &amp; Zhang, Y. (2022). Unconditional quantile regression with high‐dimensional data. Quantitative Economics, 13(3), 955-978.</p>
 
 
 </section>

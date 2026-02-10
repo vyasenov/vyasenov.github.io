@@ -5,20 +5,20 @@ format: html
 
 ## Employment
 
-- Staff Data Scientist, **Adobe** (2021 – )
-- Data Scientist, Immigration Policy Lab, **Stanford University** (2020 – )
-- Consultant, **Ministry of Employment**, Copenhagen, Denmark (2017)
-- Research Intern, **Ministry of Labor and Social Policy**, Sofia, Bulgaria (2014)
+- Staff Data Scientist, Adobe Inc. (2021 – )
+- Data Scientist, Immigration Policy Lab, Stanford University (2020 – )
+- Consultant, Ministry of Employment, Copenhagen, Denmark (2017)
+- Research Intern, Ministry of Labor and Social Policy, Sofia, Bulgaria (2014)
 
 
 ## Education / Training
 
-- Postdoctoral Fellow, Immigration Policy Lab, **Stanford University** (2018 – 2020)
-- Postdoctoral Fellow, Goldman School of Public Policy, **UC Berkeley** (2017 – 2018)
-- Ph.D. Economics, **UC Davis** (2017)
-- M.A. Economics, **UC Davis** (2013)
-- B.S. Mathematics-Economics, **UC San Diego** (magna cum laude) (2012)
-- H.S. Diploma, **“Св. Княз Борис I”**, Asenovgrad, Bulgaria (2007)
+- Postdoctoral Fellow, Immigration Policy Lab, Stanford University (2018 – 2020)
+- Postdoctoral Fellow, Goldman School of Public Policy, UC Berkeley (2017 – 2018)
+- Ph.D. Economics, UC Davis (2017)
+- M.A. Economics, UC Davis (2013)
+- B.S. Mathematics-Economics, UC San Diego (magna cum laude) (2012)
+- H.S. Diploma, “Св. Княз Борис I”, Asenovgrad, Bulgaria (2007)
 
 ## Teaching
 
@@ -31,7 +31,7 @@ I have taught lectures on applications of quasi-experimental methods at:
 
 ## Awards
 
-- US 2050 Initiative Grant, **Peter G. Peterson Foundation**, and **Ford Foundation** (2018)
-- Early Career Research Grant, **W.E. Upjohn Institute** for Employment Research (2018)
-- Ray Beaumont Memorial Award, **Economics Department, UC Davis** (2017)
-- Excellence in Joint Mathematics-Economics Major Award Nominee, **UC San Diego** (2012)
+- US 2050 Initiative Grant, Peter G. Peterson Foundation, and Ford Foundation (2018)
+- Early Career Research Grant, W.E. Upjohn Institute for Employment Research (2018)
+- Ray Beaumont Memorial Award, Economics Department, UC Davis (2017)
+- Excellence in Joint Mathematics-Economics Major Award Nominee, UC San Diego (2012)

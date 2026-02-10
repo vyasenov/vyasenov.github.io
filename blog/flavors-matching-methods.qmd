@@ -49,11 +49,7 @@ That is, if a treated unit has $X = x$, we look for control units with the exact
 
 Exact matches become increasingly unlikely in high-dimensional settings or when covariates are continuous, where no two units are likely to be identical. In those cases, exact matching often fails to find matches for many treated units, leading to loss of sample size or biased estimates. Despite its limitations, exact matching is an important baseline: it helps clarify the assumptions behind more flexible methods.
 
-Exact matching works when covariates are discrete and there aren’t too many of them and there is decent overlap between the treated and control groups.
-
-**Strengths:** Conceptually clear, no modeling assumptions, perfect balance on matched covariates.
-
-**Weaknesses:** Infeasible with continuous variables or many covariates (the curse of dimensionality); can lead to lots of unmatched units.
+Exact matching works when covariates are discrete, there aren’t too many of them and there is decent overlap between the treated and control groups. It becomes much more difficult (theoretically infeasible) to find matches as the number of covariates increases or in settings with continuous covariates. In practice, it can often lead to lots of unmatched units which often results in discarded data.
 
 ---
 
@@ -75,9 +71,7 @@ This metric accounts for both the scale and the correlation structure of the cov
 
 Intuitively, Mahalanobis distance answers the question: how many standard deviations apart are these two vectors, once we’ve accounted for the spread and correlation of the variables? A small Mahalanobis distance indicates that the two units are close in the joint covariate space, even if they differ somewhat along individual dimensions. It still becomes less reliable in high dimensions, where all units tend to be far from one another.
 
-**Strengths:** Handles continuous variables well, accounts for correlation between covariates.
-
-**Weaknesses:** Sensitive to high dimensionality; doesn’t work well with mixed discrete and continuous variables.
+Unlike exact matching, Mahalanobis matching can handle continuous covariates and works well in high dimensions. It is also more flexible than exact matching, in that it can handle mixed discrete and continuous variables.
 
 ---
 
@@ -101,10 +95,6 @@ PSM improves comparability between groups by balancing the covariates in expecta
 
 Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks. It can be particularly helpful when the number of covariates is large or mostly continuous.
 
-**Strengths:** Reduces a multivariate problem to a one-dimensional one. Flexible.
-
-**Weaknesses:** Balance on the propensity score does not guarantee balance on covariates. Sensitive to propensity model misspecification.
-
 ---
 
 ### Coarsened Exact Matching
@@ -118,10 +108,6 @@ Formally, each covariate is discretized into bins, and treated and control units
 By construction, CEM guarantees balance on the coarsened covariates—unlike propensity score matching, where balance must be checked and cannot be guaranteed a priori. CEM also allows researchers to control the level of approximation: the finer the bins, the closer it is to exact matching; the coarser the bins, the more matches you retain but the more heterogeneity you permit within matched pairs. Researchers can apply finer coarsening to critical variables and coarser groupings to less central ones. 
 
 However, CEM's effectiveness depends heavily on the choice of binning. Poorly chosen coarsening can either lead to very few matches (if too fine) or poor covariate balance (if too coarse). There is a trade-off between retaining sample size and improving covariate similarity, and CEM makes this trade-off explicit and user-controllable.
-
-**Strengths:** Improves balance while avoiding the curse of dimensionality. You control the coarsening.
-
-**Weaknesses:** Requires subjective choices about how to coarsen. Coarsening too much can reduce matching quality; coarsening too little can lead to few matches.
 
 ---
 
@@ -145,12 +131,6 @@ However, because it solves a global optimization problem, it can be computationa
 
 Still, optimal matching is a powerful and principled method, particularly when used with careful distance choices and diagnostics.
 
-**When to use it?** When you care about global match quality rather than greedy, local matching.
-
-**Strengths:** Finds globally optimal matches (not just nearest neighbor).
-
-**Weaknesses:** Computationally intensive for large datasets. Sensitive to distance metric choice.
-
 ---
 
 ### Genetic Matching
@@ -164,10 +144,6 @@ Rather than manually selecting a distance metric like Mahalanobis or Euclidean, 
 Genetic matching can be used with or without propensity score preprocessing, and can accommodate interactions or higher-order terms. It’s especially powerful in settings with many covariates or complex imbalance patterns that simple metrics fail to capture.
 
 However, the method is computationally intensive, often requiring many iterations of matching and balance assessment. Its performance also depends on the choice of balance metrics and tuning parameters in the genetic algorithm.
-
-**Strengths:** Excellent balance across covariates; data-driven weighting.
-
-**Weaknesses:** Computationally heavy. May require tuning. Randomness in the genetic algorithm introduces some variability.
 
 ---
 
@@ -190,10 +166,6 @@ Caliper matching is not a matching method on its own but rather a modification t
 Choosing the right caliper width is important: too wide, and the constraint has little effect; too narrow, and many treated units may be left unmatched, reducing sample size and precision. 
 
 Caliper matching is particularly useful when the common support assumption is questionable—i.e., when treated and control groups do not overlap well in covariate space. In such cases, calipers serve as a safeguard to maintain the quality of matches by explicitly enforcing local comparability.
-
-**Strengths:** Prevents bad matches. Easy to implement alongside other methods.
-
-**Weaknesses:** May leave some treated units unmatched if no control falls within the caliper.
 
 ---
 

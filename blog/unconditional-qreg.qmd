@@ -1,0 +1,219 @@
+---
+title: "*Unconditional* Quantile Regression and Treatment Effects"
+date: "2025-12-21"
+categories: [causal inference, quantile regression]
+---
+
+## Background
+
+Quantile regression has become a widely used tool in econometrics and statistics, thanks to its ability to model the entire distribution of an outcome variable rather than just its mean. Traditional quantile regression (Koenker and Bassett, 1978), however, is *conditional* as it models quantiles of the outcome given a set of covariates. But in many policy and causal inference applications, we are interested in changes to the *unconditional* distribution of the outcome variable.
+
+For example, suppose we want to understand the effect of a job training program on wage inequality. A standard quantile regression would tell us how the program shifts quantiles *given* certain characteristics like education or experience. In other words, focus is on the quantile of the residual term in the linear model. But we might instead want to estimate how the program shifts quantiles *in the population as a whole*. This is where *Unconditional Quantile Regression (UQR)* comes in.
+
+The key breakthrough in this space was provided by Firpo, Fortin, and Lemieux (2009), who introduced a method based on the Recentered Influence Function (RIF). This allows us to estimate the effect of covariates on unconditional quantiles using simple linear regressions. Later, Frölich and Melly (2013) extended this framework to account for endogeneity, providing a way to estimate Unconditional Quantile Treatment Effects (UQTEs) in settings where treatment is not randomly assigned.
+
+In this article, we’ll unpack the key ideas behind UQR, discuss how to estimate unconditional quantile treatment effects, and illustrate these concepts with an example in `R` and `python`.
+
+## Notation
+
+As a refresher, the $\tau$-th quantile of an outcome variable $Y$ is defined as:
+$$
+Q_\tau(Y) = \inf \{ q : P(Y \leq q) \geq \tau \}.
+$$
+
+UQR allows us to estimate how covariates influence these unconditional quantiles. 
+
+Now consider adding a set of covariates $X$. In traditional quantile regression, we estimate the conditional quantile function:
+
+  $$Q_\tau(Y | X) = \inf \{ q : P(Y \leq q | X) \geq \tau \}.$$
+
+This tells us how the $\tau$-th quantile of $Y$ changes with $X$. Traditional quantile regression models the impact on this conditional quantile.
+
+
+## A Closer Look
+
+### Unconditional Quantile Regression
+
+#### Definition
+
+Firpo et al. (2009) introduced an elegant way to estimate UQR using influence functions. The influence function of a statistic measures how much that statistic changes when an observation is perturbed. The recentered influence function (RIF) for a quantile $Q_\tau$ is given by:
+
+  $$RIF(Y; Q_\tau) = Q_\tau + \frac{\tau - 1\{Y \leq Q_\tau\}}{f_Y(Q_\tau)}.$$
+
+Here, $f_Y(Q_\tau)$ is the density of $Y$ at $Q_\tau$, which can be estimated nonparametrically. This nonparametric density estimation is often done via kernel density estimation but may be imprecise in the tails.
+
+Firpo et al. showed that regressing $RIF(Y; Q_\tau)$ on covariates $X$ via OLS provides a valid estimate of how $X$ affects the $\tau$-th quantile of $Y$. This method is remarkably simple but powerful—it transforms a quantile regression problem into a standard linear regression problem.
+
+This idea also generalizes to other distributional statistics (Gini, variance) by using the corresponding influence functions.
+
+#### Estimation
+
+The estimation proceeds in three steps:
+
+::: {.callout-note title="Algorithm:"}
+1. Estimate the sample quantile $q_{\tau}$.
+2. Estimate the density $f_Y(q_{\tau})$, typically via kernel density estimation.
+3. Construct the RIF for each observation and regress it on the covariates.
+:::
+
+The basic regression is:
+$$
+RIF(Y; q_{\tau}) = X' \beta + \varepsilon,
+$$
+
+where $\beta$ now captures the effect of $X$ on the $\tau$-th unconditional quantile.
+
+The most common implementation is RIF-OLS, though alternatives include RIF-Logit and nonparametric first stages (RIF-NP).
+
+#### Inference
+
+Density estimation is a critical step that affects the quality of inference as poor estimates at the quantile point can lead to noisy estimates. Because of the multi-step estimation (quantile, density, RIF), standard error computation is more complex. Bootstrapping is commonly used and has been shown to perform well in pracice. 
+
+#### Challenges
+
+RIF-OLS is a linear model and as such it assumes a linear relationship between the RIF and covariates. If the true relationship is nonlinear, flexible methods (logit, nonparametric) are preferred. UQR is especially appealing for estimating treatment effects on the distribution of outcomes in quasi-experimental settings. When treatment is exogenous (conditional on the covariates), including treatment indicators in the RIF regression yields estimates of the treatment effect at various unconditional quantiles. This is a perfect segway for the next section.
+
+### Unconditional Quantile Treatment Effects
+
+One limitation of UQR as formulated by Firpo et al. is that it assumes covariates are exogenous. But in many causal inference settings, treatment assignment is endogenous (e.g., workers self-select into training programs). Frölich and Melly (2013) extended the UQR framework to handle endogeneity using instrumental variables (IV). The authors built on earlier work by Chernozhukov and Hansen (2005) which pioneered the estimation of (conditional) quantile treatment effects in the presence of endogeneity.
+
+Frölich and Melly showed that under standard IV assumptions—relevance and exclusion—the unconditional quantile treatment effect (UQTE) can be estimated using a two-step approach:
+
+::: {.callout-note title="Algorithm:"}
+1. Estimate a propensity score model (or an instrumented version of $D$) to account for selection bias.
+2. Use IV-based weighting to recover the counterfactual unconditional outcome distributions for compliers, and apply RIF methods to estimate UQTEs.
+:::
+
+This approach provides a way to estimate distributional treatment effects while addressing selection bias—a crucial tool in policy evaluation and applied econometrics.
+
+### Rank Invariance in QTEs
+
+A crucial assumption often invoked in the estimation of quantile treatment effects (QTEs) is rank invariance. This assumption states that units maintain their rank in the outcome distribution after receiving the treatment. In other words, if a treated unit was at the 30th percentile of the untreated outcome distribution, it would remain at the 30th percentile of the treated distribution.
+
+While this assumption simplifies identification and interpretation of QTEs, it can be highly restrictive. It rules out the possibility that treatment reshuffles individuals across the distribution—a scenario that might be not only plausible but central in many applications.
+
+Consider a school voucher program that offers private school access to low-income students. The effect of such a program may be heterogeneous: for high-performing students, access might enhance performance due to better environments. But for low-performing students, the same access could lead to worse outcomes due to higher academic pressure or poor fit. As a result, the program could re-rank students in the outcome distribution, violating rank invariance.
+
+In such settings, assuming rank invariance could lead to misleading conclusions about who benefits and who loses from treatment. Alternative approaches, like those based on quantile treatment effect bounds (e.g., Melly, 2005; Chernozhukov & Hansen, 2005), are more robust to such violations.
+
+## Examples
+
+### Bitler et al. (2006)
+
+When evaluating the effects of welfare reform, traditional analyses often focus on mean impacts, which can obscure critical insights into the distributional effects of policy changes. ​ Quantile Treatment Effects (QTE) provide a powerful tool for understanding how reforms impact different segments of the population, revealing heterogeneity that mean impacts fail to capture. ​ For example, the study "*What Mean Impacts Miss: Distributional Effects of Welfare Reform Experiments*" by Bitler, Gelbach, and Hoynes uses QTE to analyze Connecticut's Jobs First program, a welfare reform initiative. 
+
+The authors find that while mean impacts suggest modest income gains, QTE reveal substantial variation: earnings effects are zero at the bottom, positive in the middle, and negative at the top of the distribution before time limits take effect. ​ After time limits, income effects are mixed, with gains concentrated in higher quantiles and losses at the lower end. ​ This nuanced approach highlights the importance of QTE in uncovering the true breadth of policy impacts, enabling data scientists to better inform decision-making and address equity concerns in policy design.
+
+### Code
+
+Let’s illustrate these ideas with an example in `R` and `python`. We’ll use the `iris` dataset to estimate the effect of `Sepal.Length` on different quantiles of `Petal.Length` using UQR.
+
+:::: {.panel-tabset}
+
+### R
+
+```r
+rm(list=ls())
+library(quantreg)
+
+# Load dataset
+data(iris)
+
+# Estimate unconditional quantiles
+taus <- c(0.25, 0.50, 0.75)
+q_vals <- quantile(iris$Petal.Length, probs = taus)  # Estimate quantiles
+f_hat <- density(iris$Petal.Length)
+
+# Compute RIF values
+rif_values <- lapply(1:3, function(i) {
+  q <- q_vals[i]
+  f <- f_hat$y[which.min(abs(f_hat$x - q))]
+  q + ((taus[i] - (iris$Petal.Length <= q)) / f)
+})
+
+# Run RIF regression
+models <- lapply(rif_values, function(rif) lm(rif ~ Sepal.Length, data = iris))
+
+# Print results
+lapply(models, summary)
+```
+
+### Python
+
+```python
+import numpy as np
+import pandas as pd
+from scipy.stats import gaussian_kde
+from sklearn.linear_model import LinearRegression
+
+# Load dataset
+from sklearn.datasets import load_iris
+iris_data = load_iris(as_frame=True)
+iris = iris_data['data']
+iris.columns = ['Sepal.Length', 'Sepal.Width', 'Petal.Length', 'Petal.Width']
+
+# Estimate unconditional quantiles
+taus = [0.25, 0.50, 0.75]
+q_vals = np.quantile(iris['Petal.Length'], taus)  # Estimate quantiles
+f_hat = gaussian_kde(iris['Petal.Length'])
+
+# Compute RIF values
+rif_values = []
+for i, tau in enumerate(taus):
+    q = q_vals[i]
+    f = f_hat(q)  # Density at the quantile
+    rif = q + ((tau - (iris['Petal.Length'] <= q).astype(int)) / f)
+    rif_values.append(rif)
+
+# Run RIF regression
+models = []
+for rif in rif_values:
+    model = LinearRegression(fit_intercept=True)
+    model.fit(iris[['Sepal.Length']], rif)
+    models.append(model)
+
+# Print results
+for i, model in enumerate(models):
+    print(f"Model {i + 1}:")
+    print(f"Coefficient for Sepal.Length: {model.coef_[0]}")
+    print(f"Intercept: {model.intercept_}")
+```
+
+::::
+
+This simple example demonstrates how to estimate the effect of a covariate on unconditional quantiles using the RIF regression approach.
+
+## Bottom Line
+
+- UQR allows us to estimate the effect of covariates on unconditional quantiles, capturing total effects.
+- The RIF regression method transforms a quantile regression problem into a simple linear regression.
+- Frölich and Melly (2013) extend UQR to address endogeneity using instrumental variables.
+- These tools are invaluable for policy evaluation and causal inference.
+
+## Where to Learn More
+
+For a deeper dive into these methods, the foundational paper by Firpo, Fortin, and Lemieux (2009) provides a detailed introduction to UQR, while Frölich and Melly (2013) extend the framework to address endogeneity concerns. For a broader perspective on quantile regression, Koenker’s book *Quantile Regression* (2005) is a must-read.
+
+## References
+
+Alejo, J., Favata, F., Montes-Rojas, G., & Trombetta, M. (2021). Conditional vs unconditional quantile regression models: A guide to practitioners. Economía, 44(88), 76-93.
+
+Bitler, M. P., Gelbach, J. B., & Hoynes, H. W. (2006). What mean impacts miss: Distributional effects of welfare reform experiments. American Economic Review, 96(4), 988-1012.
+
+Borah, B. J., & Basu, A. (2013). Highlighting differences between conditional and unconditional quantile regression approaches through an application to assess medication adherence. Health economics, 22(9), 1052-1070.
+
+Borgen, N. T. (2016). Fixed effects in unconditional quantile regression. The Stata Journal, 16(2), 403-415.
+
+Chernozhukov, V., & Hansen, C. (2005). An IV model of quantile treatment effects. Econometrica, 73(1), 245-261.
+
+Firpo, S., Fortin, N. M., & Lemieux, T. (2009). Unconditional quantile regressions. Econometrica, 77(3), 953-973.
+
+Frölich, M., & Melly, B. (2013). Unconditional quantile treatment effects under endogeneity. Journal of Business & Economic Statistics, 31(3), 346-357.
+
+Koenker, R. (2017). Quantile regression: 40 years on. Annual review of economics, 9(1), 155-176.
+
+Koenker, R., & Hallock, K. F. (2001). Quantile regression. Journal of economic perspectives, 15(4), 143-156.
+
+Koenker, R., & Bassett Jr, G. (1978). Regression quantiles. Econometrica: journal of the Econometric Society, 33-50.
+
+Sasaki, Y., Ura, T., & Zhang, Y. (2022). Unconditional quantile regression with high‐dimensional data. Quantitative Economics, 13(3), 955-978.

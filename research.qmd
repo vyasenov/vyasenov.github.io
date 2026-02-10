@@ -4,13 +4,13 @@ format: html
 ---
 
 ## Peer-Reviewed
-<!-- 
+
 ::: {.research-item}
-- “Does Access to Citizenship Confer Socioeconomic Returns? Evidence from a Randomized Controlled Trial” (w/ J. Hainmueller, E. Cascardi, M. Hotard, R. Koslowski, D. Lawrence, and D. Laitin)
-  * [**PNAS**](https://www.pnas.org/) (revise and resubmit); [first version](https://www.iza.org/publications/dp/16173);
+- “The socioeconomic returns to citizenship: A randomized controlled trial” (w/ J. Hainmueller, E. Cascardi, M. Hotard, R. Koslowski, D. Lawrence, and D. Laitin)
+  * [**PNAS**](https://www.pnas.org/doi/10.1073/pnas.2516178123) (2026) Vol 123(5); [first version](https://www.iza.org/publications/dp/16173);  [replication package](https://zenodo.org/records/18501422)
   * _Summary_: A randomized trial of citizenship fee vouchers for New York’s low‑income, permanent residents reveals that citizenship does not improve economic or integration outcomes, except for reducing deportation fears.
 :::
--->
+
 
 ::: {.research-item}
 - “The Labor Market Effects of Mexican Repatriations: Longitudinal Evidence from the 1930s” (w/ JongKwan Lee and Giovanni Peri)

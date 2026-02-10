@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-05-27">
+<meta name="dcterms.date" content="2026-01-20">
 
-<title>The Many Flavors of Matching for Causal Inference – Vasco Yasenov</title>
+<title>The Wilcoxon-Mann-Whitney Test is Not a Test of Medians – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -374,14 +409,12 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#exact-matching" id="toc-exact-matching" class="nav-link" data-scroll-target="#exact-matching">Exact Matching</a></li>
-  <li><a href="#mahalanobis-distance-matching" id="toc-mahalanobis-distance-matching" class="nav-link" data-scroll-target="#mahalanobis-distance-matching">Mahalanobis Distance Matching</a></li>
-  <li><a href="#propensity-score-matching" id="toc-propensity-score-matching" class="nav-link" data-scroll-target="#propensity-score-matching">Propensity Score Matching</a></li>
-  <li><a href="#coarsened-exact-matching" id="toc-coarsened-exact-matching" class="nav-link" data-scroll-target="#coarsened-exact-matching">Coarsened Exact Matching</a></li>
-  <li><a href="#optimal-matching" id="toc-optimal-matching" class="nav-link" data-scroll-target="#optimal-matching">Optimal Matching</a></li>
-  <li><a href="#genetic-matching" id="toc-genetic-matching" class="nav-link" data-scroll-target="#genetic-matching">Genetic Matching</a></li>
-  <li><a href="#caliper-matching" id="toc-caliper-matching" class="nav-link" data-scroll-target="#caliper-matching">Caliper Matching</a></li>
+  <li><a href="#what-does-wmw-actually-test" id="toc-what-does-wmw-actually-test" class="nav-link" data-scroll-target="#what-does-wmw-actually-test">What Does WMW Actually Test?</a></li>
+  <li><a href="#understanding-stochastic-dominance" id="toc-understanding-stochastic-dominance" class="nav-link" data-scroll-target="#understanding-stochastic-dominance">Understanding Stochastic Dominance</a></li>
+  <li><a href="#when-does-it-coincide-with-a-median-test" id="toc-when-does-it-coincide-with-a-median-test" class="nav-link" data-scroll-target="#when-does-it-coincide-with-a-median-test">When Does It Coincide with a Median Test?</a></li>
+  <li><a href="#alternative-tests" id="toc-alternative-tests" class="nav-link" data-scroll-target="#alternative-tests">Alternative Tests</a></li>
   </ul></li>
+  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -394,11 +427,10 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">The Many Flavors of Matching for Causal Inference</h1>
+<h1 class="title">The Wilcoxon-Mann-Whitney Test is Not a Test of Medians</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">causal inference</div>
-    <div class="quarto-category">matching methods</div>
-    <div class="quarto-category">flavors</div>
+    <div class="quarto-category">statistical inference</div>
+    <div class="quarto-category">hypothesis testing</div>
   </div>
   </div>
 
@@ -410,7 +442,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 27, 2025</p>
+      <p class="date">January 20, 2026</p>
     </div>
   </div>
   
@@ -428,151 +460,105 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>If you’ve worked on causal inference with observational data, you’ve likely faced the fundamental challenge: the treated and control groups often look very different. Matching methods aim to fix that. The idea is simple and intuitive—let’s compare treated units to similar control units and mimic the conditions of a randomized experiment as best as we can.</p>
-<p>But here’s the twist: there multiple ways to define “similar.” Should we look for exact matches? Should we match on covariates directly or on some summary score like the propensity score? Should we optimize the matches globally or locally? Over the years, researchers have developed a wide variety of matching methods, each with its own advantages and pitfalls. The landscape can be overwhelming, especially if you’re new to causal inference.</p>
-<p>In this article, I’ll walk through the most popular matching strategies for causal inference. I’ll talk about what each method does, when to use it, and where it might lead you astray. The focus is on the intuition and technical description—not on the code. Whether you’re doing matching for the first time or looking to expand your toolkit, you will find something useful here.</p>
+<p>Nonparametric tests like the Wilcoxon-Mann-Whitney (WMW) are among the most popular alternatives to the <span class="math inline">\(t\)</span>- and <span class="math inline">\(z\)</span>-tests in settings where normality assumptions break down. Often described as a “test of medians,” WMW is used when comparing two independent groups without making strong assumptions about the underlying distributions. It is also known as the Mann-Whitney-Wilcoxon (MWW) test or the Wilcoxon rank-sum test.</p>
+<p>Despite this common interpretation, the WMW test is <em>not</em> a test of medians—at least not in general. <a href="https://www.tandfonline.com/doi/full/10.1080/00031305.2017.1305291">Divine et al.&nbsp;(2018)</a> dive deep into this misconception and show convincingly how the WMW test can lead you astray if you’re specifically interested in comparing medians.</p>
+<p>This article explains why that happens, provides some intuition and math, and shows you how to think more clearly about what the WMW test actually does.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let’s set up the basic framework with minimal fluff. Suppose we have <span class="math inline">\(n\)</span> units indexed by <span class="math inline">\(i = 1, \dots, n\)</span>. Each unit has:</p>
-<ul>
-<li>A binary treatment indicator <span class="math inline">\(D_i \in \{0, 1\}\)</span>, where <span class="math inline">\(D_i = 1\)</span> for treated units and <span class="math inline">\(D_i = 0\)</span> for controls.</li>
-<li>A vector of observed covariates <span class="math inline">\(X_i\)</span>.</li>
-<li>Potential outcomes <span class="math inline">\(Y_i(1)\)</span> and <span class="math inline">\(Y_i(0)\)</span>, where <span class="math inline">\(Y_i(1)\)</span> is the outcome if treated, and <span class="math inline">\(Y_i(0)\)</span> if untreated. We observe only their realized outcome <span class="math inline">\(Y_i = D_i Y_i(1) + (1 - D_i) Y_i(0)\)</span>.</li>
-</ul>
-<p>We impose the usual assumptions of unconfoundedness (treatment assignment is independent of potential outcomes given covariates) and overlap (treated and control units have similar covariate distributions).</p>
-<p>Our goal is to estimate treatment effects like the Average Treatment Effect (ATE) or the ATE on the Treated (ATT): <span class="math display">\[
-\text{ATT} = \mathbb{E}[Y(1) - Y(0) \mid D = 1].
-\]</span></p>
-<p>The core idea behind matching is to find comparable untreated units for each treated unit so we can approximate <span class="math inline">\(Y(0)\)</span> for the treated group. We then look discard the unmatched units and look at the difference in outcomes between treated and matched controls to estimate the treatment effect.</p>
-<p>Let’s abuse notation a bit and define the sample-analogue of the ATT as:</p>
-<p><span class="math display">\[\widehat{\text{ATT}}=\frac{1}{N_{\text{treated}}}\sum_{i:D=1} Y(1)_i - \hat{Y}(0)^{\text{imputed}}_i.\]</span></p>
-<p>These methods can be, and often are, combined with regression adjustments to reduce bias and improve efficiency and robustness, but I will leave that aside here.</p>
+<p>Let <span class="math inline">\(X_1, \ldots, X_m \sim F\)</span> and <span class="math inline">\(Y_1, \ldots, Y_n \sim G\)</span> be two independent random samples from distributions <span class="math inline">\(F\)</span> and <span class="math inline">\(G\)</span>, respectively. The Wilcoxon-Mann-Whitney statistic is based on the probability:</p>
+<p><span class="math display">\[P(X &lt; Y) + \frac{1}{2}P(X = Y)\]</span></p>
+<p>This quantity is sometimes referred to as the <em>probability of superiority</em>.</p>
+<p>Let <span class="math inline">\(\theta_F\)</span> and <span class="math inline">\(\theta_G\)</span> denote the medians of <span class="math inline">\(F\)</span> and <span class="math inline">\(G\)</span>. We often want to test:</p>
+<p><span class="math display">\[H_0: \theta_F = \theta_G\]</span></p>
+<p>But WMW does not directly test this hypothesis unless very specific conditions are met.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<p>We are now ready to go through seven of the most popular matching approaches.</p>
-<section id="exact-matching" class="level3">
-<h3 class="anchored" data-anchor-id="exact-matching">Exact Matching</h3>
-<p>Exact matching is the simplest—and most restrictive—approach to causal inference:</p>
-<blockquote class="blockquote">
-<p>Match treated and control units <em>exactly</em> on all observed covariates <span class="math inline">\(X\)</span>.</p>
-</blockquote>
-<p>That is, if a treated unit has <span class="math inline">\(X = x\)</span>, we look for control units with the exact same <span class="math inline">\(X = x\)</span>. While this method is conceptually elegant and easy to understand, it’s rarely practical.</p>
-<p>Exact matches become increasingly unlikely in high-dimensional settings or when covariates are continuous, where no two units are likely to be identical. In those cases, exact matching often fails to find matches for many treated units, leading to loss of sample size or biased estimates. Despite its limitations, exact matching is an important baseline: it helps clarify the assumptions behind more flexible methods.</p>
-<p>Exact matching works when covariates are discrete, there aren’t too many of them and there is decent overlap between the treated and control groups. It becomes much more difficult (theoretically infeasible) to find matches as the number of covariates increases or in settings with continuous covariates. In practice, it can often lead to lots of unmatched units which often results in discarded data.</p>
-<hr>
+<section id="what-does-wmw-actually-test" class="level3">
+<h3 class="anchored" data-anchor-id="what-does-wmw-actually-test">What Does WMW Actually Test?</h3>
+<p>The WMW test assesses whether one distribution tends to produce larger values than the other. More formally, it tests:</p>
+<p><span class="math display">\[H_0: P(X &lt; Y) + \frac{1}{2}P(X = Y) = 0.5\]</span></p>
+<p>This is equivalent to testing whether the distributions are stochastically equal, not whether the medians are equal.</p>
+<p>The WMW test can be performed via rank sums. After combining both samples, we rank all observations from smallest to largest. The test statistic <span class="math inline">\(W\)</span> is the sum of ranks assigned to the first sample:</p>
+<p><span class="math display">\[W = \sum_{i=1}^m R(X_i)\]</span></p>
+<p>where <span class="math inline">\(R(X_i)\)</span> is the rank of <span class="math inline">\(X_i\)</span> in the combined sample.</p>
+<p>This rank-based formulation is mathematically equivalent to counting how many pairs <span class="math inline">\((X_i, Y_j)\)</span> have <span class="math inline">\(X_i &lt; Y_j\)</span>, which relates to the probability interpretation above. Under the null hypothesis, the expected rank sum is approximately <span class="math inline">\(m(m+n+1)/2\)</span>.</p>
 </section>
-<section id="mahalanobis-distance-matching" class="level3">
-<h3 class="anchored" data-anchor-id="mahalanobis-distance-matching">Mahalanobis Distance Matching</h3>
-<p>Instead of requiring exact equality between covariates, Mahalanobis matching</p>
-<blockquote class="blockquote">
-<p>Uses a <em>continuous distance metric</em> to find treated and control units that are similar in terms of their covariate values.</p>
-</blockquote>
-<p>The Mahalanobis distance between two units <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, with covariates <span class="math inline">\(X_i\)</span> and <span class="math inline">\(X_j\)</span>, is defined as:</p>
-<p><span class="math display">\[
-d(X_i, X_j) = \sqrt{(X_i - X_j)^\top S^{-1} (X_i - X_j)},
-\]</span></p>
-<p>where <span class="math inline">\(S\)</span> is the sample covariance matrix of the covariates <span class="math inline">\(X\)</span>.</p>
-<p>This metric accounts for both the scale and the correlation structure of the covariates. Unlike Euclidean distance, which treats each covariate as equally important and independent, Mahalanobis distance adjusts for the fact that some variables may be more variable than others, or may be correlated.</p>
-<p>Intuitively, Mahalanobis distance answers the question: how many standard deviations apart are these two vectors, once we’ve accounted for the spread and correlation of the variables? A small Mahalanobis distance indicates that the two units are close in the joint covariate space, even if they differ somewhat along individual dimensions. It still becomes less reliable in high dimensions, where all units tend to be far from one another.</p>
-<p>Unlike exact matching, Mahalanobis matching can handle continuous covariates and works well in high dimensions. It is also more flexible than exact matching, in that it can handle mixed discrete and continuous variables.</p>
-<hr>
+<section id="understanding-stochastic-dominance" class="level3">
+<h3 class="anchored" data-anchor-id="understanding-stochastic-dominance">Understanding Stochastic Dominance</h3>
+<p>When we say the WMW test examines “stochastic dominance,” we mean it tests whether values from one distribution tend to exceed values from the other. Specifically, distribution <span class="math inline">\(G\)</span> stochastically dominates distribution <span class="math inline">\(F\)</span> if:</p>
+<p><span class="math display">\[G(x) \leq F(x) \text{ for all } x\]</span></p>
+<p>with strict inequality for at least some values of <span class="math inline">\(x\)</span>. Intuitively, this means a randomly selected value from <span class="math inline">\(G\)</span> is more likely to be larger than a randomly selected value from <span class="math inline">\(F\)</span>.</p>
+<p>This is quite different from comparing medians. Two distributions can have identical medians but exhibit stochastic dominance, or they can have different medians but neither stochastically dominates the other.</p>
 </section>
-<section id="propensity-score-matching" class="level3">
-<h3 class="anchored" data-anchor-id="propensity-score-matching">Propensity Score Matching</h3>
-<p>Propensity Score Matching (PSM) is one of the most influential ideas in observational causal inference. Rosenbaum and Rubin’s foundational result shows that if treatment assignment is unconfounded given covariates <span class="math inline">\(X\)</span>, then it is also unconfounded given the propensity score:</p>
-<p><span class="math display">\[
-e(X) = \mathbb{P}(D = 1 \mid X),
-\]</span></p>
-<p>the probability of receiving treatment conditional on observed covariates. In other words,</p>
-<blockquote class="blockquote">
-<p>Instead of matching on the full covariate vector <span class="math inline">\(X\)</span>, we can just match on a <em>single scalar summary—</em>the estimated propensity score.</p>
-</blockquote>
-<p>This is the key idea: propensity scores reduce the curse of dimensionality. By summarizing the information in <span class="math inline">\(X\)</span> into one number that captures the likelihood of treatment, we make matching more feasible and scalable, especially when <span class="math inline">\(X\)</span> includes many variables.</p>
-<p>In practice, the propensity score is rarely known and must be estimated—typically using logistic regression, probit models, or machine learning methods like random forests or gradient boosting. Once estimated, treated and control units are matched based on the closeness of their propensity scores, often using nearest-neighbor matching, caliper matching, or kernel methods. Trimming is therefore an important aspect of the process, where units with very high or very low propensity scores are excluded to improve balance and reduce bias.</p>
-<p>PSM improves comparability between groups by balancing the covariates in expectation, but it comes with trade-offs. Matching on the propensity score alone does not guarantee covariate balance in any particular dataset, so it’s important to assess and diagnose balance post-matching. Moreover, PSM is sensitive to model misspecification and can perform poorly if the propensity score is estimated inaccurately or if the overlap between groups is weak.</p>
-<p>Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks. It can be particularly helpful when the number of covariates is large or mostly continuous.</p>
-<hr>
+<section id="when-does-it-coincide-with-a-median-test" class="level3">
+<h3 class="anchored" data-anchor-id="when-does-it-coincide-with-a-median-test">When Does It Coincide with a Median Test?</h3>
+<p>The WMW test only functions as a test of medians under symmetric distributions with equal shape and spread. If the shapes differ—say, one is skewed left and the other right—then even if the medians are the same, WMW can reject the null. Worse, it might <em>fail</em> to reject when the medians are different but the distributions have similar overall ranks.</p>
 </section>
-<section id="coarsened-exact-matching" class="level3">
-<h3 class="anchored" data-anchor-id="coarsened-exact-matching">Coarsened Exact Matching</h3>
-<p>Coarsened Exact Matching (CEM) offers a practical compromise between the rigidity of exact matching and the flexibility needed for real-world data. The core idea is to</p>
-<blockquote class="blockquote">
-<p>Coarsen continuous covariates into broader, meaningful categories and then perform exact matching on these coarsened values.</p>
-</blockquote>
-<p>Formally, each covariate is discretized into bins, and treated and control units are matched only if they fall into the <em>same bin across all coarsened covariates</em>. This process reduces the granularity of the match criteria, increasing the likelihood of finding matches, while still ensuring comparability within the matched groups. Examples are turning age into 5-year intervals or income into quantile-based brackets.</p>
-<p>By construction, CEM guarantees balance on the coarsened covariates—unlike propensity score matching, where balance must be checked and cannot be guaranteed a priori. CEM also allows researchers to control the level of approximation: the finer the bins, the closer it is to exact matching; the coarser the bins, the more matches you retain but the more heterogeneity you permit within matched pairs. Researchers can apply finer coarsening to critical variables and coarser groupings to less central ones.</p>
-<p>However, CEM’s effectiveness depends heavily on the choice of binning. Poorly chosen coarsening can either lead to very few matches (if too fine) or poor covariate balance (if too coarse). There is a trade-off between retaining sample size and improving covariate similarity, and CEM makes this trade-off explicit and user-controllable.</p>
-<hr>
+<section id="alternative-tests" class="level3">
+<h3 class="anchored" data-anchor-id="alternative-tests">Alternative Tests</h3>
+<p>If your research question specifically concerns differences in medians, more appropriate tests include:</p>
+<ul>
+<li><strong>Mood’s median test</strong>: A true test of median equality that uses contingency tables based on counts above and below the combined median.</li>
+<li><strong>Quantile regression</strong>: For more complex designs, quantile regression directly models the median (or other quantiles) and tests differences between groups.</li>
+<li><strong>Bootstrap confidence intervals</strong>: Calculating confidence intervals for the difference in medians via bootstrapping provides both a test and measure of uncertainty.</li>
+</ul>
+<p>These approaches directly address median differences rather than the stochastic ordering tested by WMW.</p>
 </section>
-<section id="optimal-matching" class="level3">
-<h3 class="anchored" data-anchor-id="optimal-matching">Optimal Matching</h3>
-<p>Optimal matching takes a <em>global approach</em> to the matching problem. Rather than matching each treated unit to its nearest control in isolation (as in nearest neighbor matching), it</p>
-<blockquote class="blockquote">
-<p>Finds the set of matched pairs that <em>minimizes the total distance</em> across all matched units.</p>
-</blockquote>
-<p>Formally, it solves:</p>
-<p><span class="math display">\[
-\min_{\text{matching}} \sum_{(i, j) \in \text{pairs}} d(X_i, X_j),
-\]</span></p>
-<p>where <span class="math inline">\(d(X_i, X_j)\)</span> is a distance measure between treated unit <span class="math inline">\(i\)</span> and control unit <span class="math inline">\(j\)</span>.</p>
-<p>The key benefit is that it avoids poor global matches that can arise when matching is done greedily or locally, one unit at a time. Optimal matching is especially useful when treatment and control groups differ significantly in size or distribution, and when you want to minimize overall imbalance rather than optimize matches for individual units.</p>
-<p>However, because it solves a global optimization problem, it can be computationally intensive for large datasets. Also, while it minimizes overall distance, it doesn’t necessarily guarantee good covariate balance unless combined with preprocessing (e.g., matching on propensity scores or coarsened covariates).</p>
-<p>Still, optimal matching is a powerful and principled method, particularly when used with careful distance choices and diagnostics.</p>
-<hr>
 </section>
-<section id="genetic-matching" class="level3">
-<h3 class="anchored" data-anchor-id="genetic-matching">Genetic Matching</h3>
-<p>Genetic matching is an advanced matching method that uses a genetic algorithm to find an optimal weighting of covariates in the distance metric. The idea is to</p>
-<blockquote class="blockquote">
-<p>Automate the process of choosing how much weight each covariate should receive when determining similarity between treated and control units.</p>
-</blockquote>
-<p>Rather than manually selecting a distance metric like Mahalanobis or Euclidean, genetic matching searches over a space of weighted Mahalanobis distances, adjusting the weights to minimize covariate imbalance after matching. The optimization goal is to improve covariate balance. The result is a <em>customized distance metric</em> that gives higher weight to variables that are harder to balance and less to those that are already balanced.</p>
-<p>Genetic matching can be used with or without propensity score preprocessing, and can accommodate interactions or higher-order terms. It’s especially powerful in settings with many covariates or complex imbalance patterns that simple metrics fail to capture.</p>
-<p>However, the method is computationally intensive, often requiring many iterations of matching and balance assessment. Its performance also depends on the choice of balance metrics and tuning parameters in the genetic algorithm.</p>
-<hr>
-</section>
-<section id="caliper-matching" class="level3">
-<h3 class="anchored" data-anchor-id="caliper-matching">Caliper Matching</h3>
-<p>Caliper matching introduces a distance threshold to restrict which treated and control units can be matched. Specifically,</p>
-<blockquote class="blockquote">
-<p>A treated unit is only matched to a control unit if the distance between them is <em>within a pre-specified caliper</em>.</p>
-</blockquote>
-<p>That is, if the difference falls below a set limit. For example, when matching on propensity scores, a common rule is to match only if the absolute difference in propensity scores is less than 0.1:</p>
-<p><span class="math display">\[
-|e(X_i^{\text{treated}}) - e(X_j^{\text{control}})| &lt; \text{caliper}
-\]</span></p>
-<p>This constraint helps <em>avoid poor matches</em>, especially when treated and control groups have limited overlap. Without calipers, nearest neighbor matching might pair units with very different covariate profiles, particularly in the tails of the propensity score distribution. These poor matches can increase bias and undermine the credibility of causal estimates.</p>
-<p>Caliper matching is not a matching method on its own but rather a modification to existing strategies—most often to nearest neighbor matching. It can also be combined with optimal matching or Mahalanobis distance.</p>
-<p>Choosing the right caliper width is important: too wide, and the constraint has little effect; too narrow, and many treated units may be left unmatched, reducing sample size and precision.</p>
-<p>Caliper matching is particularly useful when the common support assumption is questionable—i.e., when treated and control groups do not overlap well in covariate space. In such cases, calipers serve as a safeguard to maintain the quality of matches by explicitly enforcing local comparability.</p>
-<hr>
-</section>
+<section id="an-example" class="level2">
+<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
+<p>Let’s see this in action with a small simulation.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">rexp</span>(<span class="dv">100</span>, <span class="at">rate =</span> <span class="dv">1</span>)         <span class="co"># Right-skewed</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rexp</span>(<span class="dv">100</span>, <span class="at">rate =</span> <span class="fl">1.5</span>)       <span class="co"># Also right-skewed, different rate</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(x)  <span class="co"># Median of x</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(y)  <span class="co"># Median of y</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(x, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> mannwhitneyu</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">123</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.exponential(scale<span class="op">=</span><span class="fl">1.0</span>, size<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.random.exponential(scale<span class="op">=</span><span class="dv">2</span><span class="op">/</span><span class="dv">3</span>, size<span class="op">=</span><span class="dv">100</span>)  <span class="co"># Higher scale = lower rate</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Median x:"</span>, np.median(x))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Median y:"</span>, np.median(y))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> mannwhitneyu(x, y, alternative<span class="op">=</span><span class="st">'two-sided'</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>This example demonstrates our point perfectly: The medians are clearly different (0.6334 vs.&nbsp;0.4865), and the WMW test correctly rejects the null hypothesis (p = 0.004). However, this rejection occurs because the exponential distributions with different rates create a consistent stochastic ordering, not because it’s specifically testing the medians.</p>
+<p>Despite different medians, the WMW test might not reject the null. Or it might reject it <em>because</em> of shape differences, not the medians.</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li>Matching methods are powerful tools for causal inference.</li>
-<li>They come in many flavors, each with its own strengths and weaknesses.</li>
-<li>No single method is best for all situations; the choice depends on the data, the research question, and the assumptions you are willing to make.</li>
+<li>The Wilcoxon-Mann-Whitney test is not a general test of medians.</li>
+<li>It tests for stochastic dominance or shift in distribution, not specifically median difference.</li>
+<li>It behaves like a median test only under certain conditions (e.g., identical shape).</li>
+<li>Be cautious interpreting WMW results as saying something about medians unless distributional assumptions are met.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The book <em>Causal Inference for Statistics, Social, and Biomedical Sciences</em> by Imbens and Rubin (2015) provides excellent coverage of matching and its theoretical underpinnings. I also recommend Stuart (2010)’s seminal review paper cited below. The <code>MatchIt</code> and <code>Matching</code> <code>R</code> packages documentation are also goldmines for practical implementation details.</p>
+<p>For a deeper dive, read the original Divine et al.&nbsp;(2018) paper. You might also want to look at literature on robust location tests or permutation-based alternatives that better target the median.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Abadie, A., &amp; Imbens, G. W. (2016). Matching on the estimated propensity score. Econometrica, 84(2), 781-807.</p>
-<p>Ben-Michael, E., Feller, A., Hirshberg, D. A., &amp; Zubizarreta, J. R. (2021). The balancing act in causal inference. arXiv preprint arXiv:2110.14831.</p>
-<p>Diamond, A., &amp; Sekhon, J. S. (2013). Genetic matching for estimating causal effects: A general multivariate matching method for achieving balance in observational studies. Review of Economics and Statistics, 95(3), 932-945.</p>
-<p>Iacus, S. M., King, G., &amp; Porro, G. (2012). Causal inference without balance checking: Coarsened exact matching. Political analysis, 20(1), 1-24.</p>
-<p>Imbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.</p>
-<p>Imbens, G. W., &amp; Rubin, D. B. (2015). <em>Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction</em>. Cambridge University Press.</p>
-<p>Rosenbaum, P. R., &amp; Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. <em>Biometrika</em>, 70(1), 41–55.</p>
-<p>Stuart, E. A. (2010). Matching methods for causal inference: A review and a look forward. <em>Statistical Science</em>, 25(1), 1–21.</p>
-<p>Rosenbaum, P. R. (2002). <em>Observational Studies</em>. Springer.</p>
+<p>Divine, G. W., Norton, H. J., Barón, A. E., &amp; Juarez-Colunga, E. (2018). The Wilcoxon–Mann–Whitney procedure fails as a test of medians. <em>The American Statistician</em>, 72(3), 278–286.</p>
+<p>Hollander, M., Wolfe, D. A., &amp; Chicken, E. (2013). <em>Nonparametric Statistical Methods</em> (3rd ed.). Wiley.</p>
 
 
 </section>

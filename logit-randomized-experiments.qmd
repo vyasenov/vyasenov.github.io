@@ -1,0 +1,107 @@
+---
+title: "Randomization Does Not Justify Logistic Regression: A Closer Look"
+date: "2025-05-06"
+categories: [causal inference, statistical modeling]
+---
+
+## Background
+
+Randomized controlled trials (RCTs) are the gold standard for causal inference. Because treatment assignment is random, we can attribute differences in outcomes to the treatment rather than to confounders. But does this justify fitting a logistic regression model to the resulting data, especially when outcomes are binary?
+
+David Freedman's provocative and widely cited article, *"Randomization Does Not Justify Logistic Regression,"* argues that the answer is no. In this post, we'll unpack Freedman's arguments, walk through the statistical intuition, and discuss what practitioners should do instead. We'll explore when logistic regression can be misleading in randomized trials—and how to fix it if you're going to use it anyway.
+
+## Notation
+
+Let there be $n$ subjects indexed by $i = 1, \dots, n$. Each has a binary treatment assignment $X_i \in {0, 1}$ and a binary response $Y_i \in {0, 1}$. Each subject also has a covariate $Z_i$.
+
+Following Neyman (1923), each unit has two potential outcomes: $Y_i^T$ (if treated) and $Y_i^C$ (if control). Only one of these is observed, depending on $X_i$.
+
+Define the average outcomes under treatment and control as:
+
+$$
+\alpha_T = \frac{1}{n} \sum_{i=1}^n Y_i^T, \quad \alpha_C = \frac{1}{n} \sum_{i=1}^n Y_i^C.
+$$
+
+The **differential log-odds** of success is:
+
+$$
+\Delta = \log\left(\frac{\alpha_T}{1 - \alpha_T}\right) - \log\left(\frac{\alpha_C}{1 - \alpha_C}\right).
+$$
+
+This is the causal estimand Freedman focuses on.
+
+## A Closer Look
+
+### Logistic Regression: What Does It Assume?
+
+In the logistic regression model:
+
+$$
+P(Y_i = 1 \mid X_i, Z_i) = \frac{\exp(\beta_1 + \beta_2 X_i + \beta_3 Z_i)}{1 + \exp(\beta_1 + \beta_2 X_i + \beta_3 Z_i)}
+$$
+
+we typically estimate $\beta_2$ as the treatment effect. But this model makes strong assumptions:
+
+* The conditional log-odds of success is linear in $X$ and $Z$.
+* The latent errors are i.i.d. with a logistic distribution.
+* The covariates are exogenous (i.e., independent of the error term).
+
+Freedman's key insight: **randomization does not validate these modeling assumptions.** In fact, it only ensures balance in $X$, not in any unmeasured $U$ or functional form.
+
+### ITT Estimators vs. Logistic Coefficients
+
+Randomization justifies *design-based* estimators. For example, the intention-to-treat (ITT) estimators:
+
+$$
+\hat{\alpha}_T = \frac{1}{n_T} \sum_{i \in T} Y_i, \quad \hat{\alpha}_C = \frac{1}{n_C} \sum_{i \in C} Y_i,
+$$
+
+and the resulting differential log-odds estimator:
+
+$$
+\hat{\Delta} = \log\left(\frac{\hat{\alpha}_T}{1 - \hat{\alpha}_T}\right) - \log\left(\frac{\hat{\alpha}_C}{1 - \hat{\alpha}_C}\right)
+$$
+
+are *consistent and unbiased*. They rely only on the randomized design.
+
+In contrast, the coefficient $\hat{\beta}_2$ from logistic regression may not estimate $\Delta$ at all—even asymptotically. It estimates the average of subject-level log-odds differences only if the model is correct.
+
+### Plug-in Estimator to the Rescue
+
+Suppose you're still tempted to use logistic regression. Freedman suggests computing **plug-in estimators** instead:
+
+:::{.callout-note title="Algorithm:"}
+
+1. Fit logistic regression and obtain $\hat{\beta}$.
+2. Predict $\hat{p}\_i^{(T)} = P(Y\_i = 1 \mid X\_i = 1, Z\_i)$ and $\hat{p}\_i^{(C)} = P(Y\_i = 1 \mid X\_i = 0, Z\_i)$.
+3. Average the predicted probabilities: $\tilde{\alpha}\_T = \frac{1}{n} \sum \hat{p}\_i^{(T)}$, and similarly for $\tilde{\alpha}\_C$.
+4. Compute:
+   $\tilde{\Delta} = \log\left(\frac{\tilde{\alpha}_T}{1 - \tilde{\alpha}_T}\right) - \log\left(\frac{\tilde{\alpha}_C}{1 - \tilde{\alpha}_C}\right)$
+:::
+
+This estimator is **consistent** for $\Delta$ even when the logistic model is mis-specified. Unlike $\hat{\beta}_2$, it matches the estimand of interest.
+
+### Simulations
+
+Freedman uses simulation to show that $\hat{\beta}_2$ is biased and unstable when the logit model is wrong, while $\tilde{\Delta}$ and $\hat{\Delta}$ are consistent and more stable.
+
+He constructs a DGP where treatment benefits depend on covariates nonlinearly. Logistic regression badly overestimates the treatment effect; plug-in and ITT estimators do not.
+
+### The Big Takeaway
+
+Even if your regression fits well and your p-values look good, the coefficient on treatment may **not** estimate what you think it does. In experiments, we have a powerful design-based inference strategy—so use it!
+
+## Bottom Line
+
+* Logistic regression is **not justified** by randomization; its assumptions must be justified separately.
+* The coefficient $\hat{\beta}_2$ is generally **not** a consistent estimator of the causal estimand $\Delta$.
+* **ITT estimators** and **plug-in estimators** are consistent and preferable.
+* If you use a model, always **check** whether it changes the substantive conclusions.
+
+## Where to Learn More
+
+To dig deeper, start with Freedman’s own *Statistical Models: Theory and Practice*, which expands on these ideas with clarity and examples. For modern extensions, look into the literature on doubly robust estimators and targeted maximum likelihood estimation (TMLE). The textbooks by Imbens & Rubin and by Rosenbaum are excellent for learning about design-based inference and randomization.
+
+## References
+
+Freedman, D. A. (2008). Randomization Does Not Justify Logistic Regression. *Statistical Science*, 23(2), 237–249. [https://doi.org/10.1214/08-STS262](https://doi.org/10.1214/08-STS262)

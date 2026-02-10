@@ -2,6 +2,9 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/flavors-prop-score-methods.html",
+      "/blog/wmw-test-fails-medians.html",
+      "/blog/unconditional-qreg.html",
       "/blog/flavors-matching-methods.html",
       "/blog/flavors-var-selection.html",
       "/blog/flavors-bootstrap.html",

@@ -1,0 +1,509 @@
+---
+title: "The Many Flavors of Propensity Score Methods"
+date: "2026-01-22"
+categories: [causal inference, propensity scores, flavors]
+---
+
+
+## Background
+
+Introduced by Rosenbaum and Rubin in 1983, the propensity score, the probability of receiving treatment given observed covariates, has become the workhorse for handling confounding in observational studies.
+
+But here's the thing: the propensity score itself is just the starting point. It designates an entire class of statistical methods for treatment effect estimation. In practice, there are tons of ways to use propensity scores. You can match on them, stratify your sample, weight your observations, or plug them into doubly robust estimators that combine modeling of both the treatment and the outcome. You can tweak how you weight the units—downweighting those with extreme scores or focusing on the region where treated and control groups overlap.
+
+In this post, we’ll explore the many flavors of propensity score methods. As always, the focus is on the intuition, the basic math, and practical considerations. Oh, there is also some `R` and `python` code.
+
+## Notation
+
+We’re operating in the familiar causal inference setup:
+
+- $D_i \in \{0, 1\}$: treatment indicator.
+- $X_i$: observed covariates.
+- $Y_i(1), Y_i(0)$: potential outcomes.
+
+We conveniently invoke the traditional identification assumptions -- conditional ignorability, overlap and SUTVA. As a refresher, the propensity score is simply:
+$$
+e(X_i) = \mathbb{P}(D_i = 1 \mid X_i).
+$$
+
+The key seminal result from Rosenbaum and Rubin (1983) states:
+$$
+(Y(1), Y(0)) \perp D \mid e(X),
+$$
+
+meaning that, conditional on the propensity score, treatment assignment is as good as random. The main implication of this theorem is dimensionality reduction -- the propensity score alone is "enough" to adjust for bias between the treatment and control groups.
+
+A crucial but often overlooked point is that different propensity score–based estimators target different causal estimands (e.g., the Average Treatment Effect (ATE), the Average Treatment Effect on the Treated (ATT), or effects defined on overlap populations) so choosing a method implicitly means choosing which population’s effect you want to estimate.
+
+## A Closer Look
+
+### Propensity Score Estimation
+
+First things first. Before we even begin to discuss propensity score methods, we need to estimate the propensity score itself. This is commonly done via logistic regression (probit has really gone out of fashion). In very, very rare cases the propensity score is known and this step can be skipped. Occasionally, machine learning methods can be employed as well, but one has to be careful there. The subtlety is that, contrary to a traditional machine learning setup, our goal here is not finding the best fit.  This is where machine learning methods can mislead us. Instead, we are after controlling for in-sample bias between the treatment and control groups.
+
+The following examples apply several popular propensity score methods to the `Iris` dataset using both `R` and `Python`. For demonstration, we define an artificial binary treatment (`D`) based on `Petal.Length`. The outcome variable is `Sepal.Length`, and the predictors are the remaining covariates.
+
+::::{.panel-tabset}
+
+#### R
+```r
+# Load necessary libraries
+library(MatchIt)
+
+# Load iris dataset and create treatment variable
+data(iris)
+iris$D <- ifelse(iris$Petal.Length > 3, 1, 0)
+
+# Fit propensity score model using logistic regression
+ps_model <- glm(D ~ Sepal.Width + Petal.Width, 
+                data = iris, 
+                family = binomial(link = "logit"))
+
+summary(ps_model)
+```
+
+#### Python
+```python
+# Import necessary libraries
+from sklearn.linear_model import LogisticRegression
+from sklearn.datasets import load_iris
+import pandas as pd
+import numpy as np
+
+# Load iris dataset and create treatment variable
+iris = load_iris(as_frame=True).frame
+iris['D'] = (iris['petal length (cm)'] > 3).astype(int)
+
+# Prepare features and fit propensity score model
+X = iris[['sepal width (cm)', 'petal width (cm)']]
+y = iris['D']
+model = LogisticRegression(max_iter=1000)
+model.fit(X, y)
+
+print(f"Coefficients: {model.coef_}")
+print(f"Intercept: {model.intercept_}")
+```
+::::
+
+### Nearest Neighbor Matching
+
+*Target Estimand*: Typically ATT.
+
+This is often the first method people try after estimating the propensity score. Once $e(X)$ is estimated, treated units are matched to control units with the closest propensity scores (nearest neighbor). You can match one-to-one, one-to-many, with or without replacement. 
+
+This class of methods tends to work well when the number of controls is large enough to find good matches for treated units. The approach is simple and intuitive, reducing high-dimensional matching to a single dimension. However, it's worth noting that balance on the propensity score doesn't guarantee balance on covariates, and the method can be sensitive to poor matches when suitable controls are scarce.
+
+Lastly, inference after matching is subtle; standard errors must account for the matching procedure, and naïve bootstrap methods are generally invalid. Matching with replacement introduces some additional complexity since some data points are used more than once. 
+
+::::{.panel-tabset}
+
+#### R
+```r
+matchit_nn <- matchit(D ~ Sepal.Width + Petal.Width, data = iris, method = "nearest")
+summary(matchit_nn)
+```
+
+#### Python
+```python
+from causalinference import CausalModel
+
+# Prepare data for CausalModel
+Y = iris['sepal length (cm)'].values
+T = iris['D'].values
+X = iris[['sepal width (cm)', 'petal width (cm)']].values
+
+# Fit causal model with nearest neighbor matching
+cm = CausalModel(Y=Y, D=T, X=X)
+cm.est_propensity_s()
+cm.est_via_matching(bias_adj=True)
+print(cm.estimates)
+```
+::::
+
+
+
+### Caliper Matching
+
+*Target Estimand*: Typically ATT.
+
+Caliper matching adds a threshold: only match treated and control units if their propensity scores are within a specified distance (the caliper). Often the caliper is set to $0.2$ times the standard deviation of the logit of the propensity score (Austin 2010).
+
+This approach is particularly useful when you want to avoid bad matches that can arise in standard nearest neighbor matching. By imposing a maximum allowable distance, caliper matching prevents extreme mismatches and generally improves balance between treatment and control groups. The main tradeoff is that it may discard treated units if no control unit falls within the caliper distance, potentially reducing sample size and raising questions about external validity for the excluded observations.
+
+::::{.panel-tabset}
+
+#### R
+```r
+# Estimate propensity scores for caliper calculation
+ps_for_caliper <- glm(D ~ Sepal.Width + Petal.Width, data = iris, family = binomial)
+ps_vals <- predict(ps_for_caliper, type = "response")
+logit_ps <- log(ps_vals / (1 - ps_vals))
+
+# Calculate caliper (0.2 * SD of logit PS, as recommended by Rosenbaum & Rubin)
+caliper_width <- 0.2 * sd(logit_ps)
+
+# Perform caliper matching
+matchit_caliper <- matchit(D ~ Sepal.Width + Petal.Width, 
+                           data = iris, 
+                           method = "nearest", 
+                           distance = "glm",
+                           caliper = caliper_width,
+                           std.caliper = FALSE)
+summary(matchit_caliper)
+```
+
+#### Python
+```python
+# Calculate propensity scores
+ps = model.predict_proba(X)[:, 1]
+
+# Calculate caliper (0.2 * SD of logit of propensity score)
+logit_ps = np.log(ps / (1 - ps + 1e-10))  # Add small constant to avoid division by zero
+caliper = 0.2 * np.std(logit_ps)
+
+# Simple 1:1 nearest neighbor matching with caliper
+matched_pairs = []
+treated_idx = iris[iris['D'] == 1].index
+control_idx = iris[iris['D'] == 0].index
+
+for t_idx in treated_idx:
+    # Calculate distances in logit space
+    t_logit = logit_ps[t_idx]
+    c_logits = logit_ps[control_idx]
+    distances = np.abs(t_logit - c_logits)
+    
+    min_dist = distances.min()
+    if min_dist <= caliper:
+        min_dist_idx = control_idx[np.argmin(distances)]
+        matched_pairs.append((t_idx, min_dist_idx))
+
+print(f"Matched {len(matched_pairs)} out of {len(treated_idx)} treated units within caliper")
+```
+::::
+
+### Stratification / Blocking
+
+*Target Estimand*: Typically ATE.
+
+Here, the range of propensity scores is divided into $K$ strata (often quintiles), and treatment effects are estimated within each stratum, then averaged across strata.
+
+Stratification is particularly appealing when matching isn't feasible or when you prefer a more aggregate approach to adjustment. The method is straightforward to implement and achieves balance on average within each stratum. However, because it discretizes the propensity score into bins, the adjustment can be somewhat coarse, and bias may not be fully eliminated within each stratum, especially if there's substantial heterogeneity in propensity scores within a given stratum.
+
+::::{.panel-tabset}
+
+#### R
+```r
+matchit_strat <- matchit(D ~ Sepal.Width + Petal.Width, data = iris, method = "subclass", subclass = 5)
+summary(matchit_strat)
+```
+
+#### Python
+```python
+# Calculate propensity scores
+if 'ps' not in iris.columns:
+    iris['ps'] = model.predict_proba(X)[:, 1]
+
+# Stratification by propensity score quintiles
+iris['ps_stratum'] = pd.qcut(iris['ps'], q=5, labels=False, duplicates='drop')
+
+# Estimate treatment effect within each stratum
+stratum_effects = []
+for stratum in iris['ps_stratum'].unique():
+    stratum_data = iris[iris['ps_stratum'] == stratum]
+    treated = stratum_data[stratum_data['D'] == 1]['sepal length (cm)']
+    control = stratum_data[stratum_data['D'] == 0]['sepal length (cm)']
+    if len(treated) > 0 and len(control) > 0:
+        effect = treated.mean() - control.mean()
+        stratum_effects.append(effect)
+
+# Overall effect (simple average across strata)
+ate_stratified = np.mean(stratum_effects)
+print(f"Stratified ATE: {ate_stratified:.3f}")
+```
+::::
+
+
+
+### Inverse Probability Weighting (IPW)
+
+*Target Estimand*: ATT/ATE.
+
+IPW turns the propensity score into weights:
+$$
+w_i = \frac{D_i}{e(X_i)} + \frac{1 - D_i}{1 - e(X_i)}.
+$$
+This reweights the sample so that treated and control groups resemble each other on observed covariates.
+
+This method is ideal when you want to utilize the entire dataset without discarding any units. IPW is conceptually simple and makes full use of all available observations. The main challenge, however, is its sensitivity to extreme propensity scores near 0 or 1. When units have very low or very high probabilities of treatment, the inverse weighting can produce extremely large weights, leading to unstable estimates with high variance. This is why trimming or other stabilization techniques are often employed alongside IPW.
+
+::::{.panel-tabset}
+
+#### R
+```r
+iris$ps <- predict(ps_model, type = "response")
+iris$weights <- ifelse(iris$D == 1, 1 / iris$ps, 1 / (1 - iris$ps))
+summary(iris$weights)
+```
+
+#### Python
+```python
+iris['ps'] = model.predict_proba(X)[:,1]
+iris['weights'] = np.where(iris['D'] == 1, 1 / iris['ps'], 1 / (1 - iris['ps']))
+iris['weights'].describe()
+```
+::::
+
+
+
+### Augmented IPW (AIPW) / Doubly Robust Estimators
+
+*Target Estimand*: ATT/ATE.
+
+Many modern estimators can be viewed as combining propensity score weighting with outcome modeling, yielding doubly robust estimators that remain consistent if either component is correctly specified. The key appeal: if either the propensity score model or the outcome model is correct (but not necessarily both), the estimator is consistent. This is called the *doubly robust* property.
+
+The AIPW estimator for the ATE looks like:
+$$
+\hat{\tau}_{\text{AIPW}} = \frac{1}{n} \sum_{i=1}^n \left[ \frac{D_i (Y_i - \hat{m}_1(X_i))}{e(X_i)} - \frac{(1 - D_i) (Y_i - \hat{m}_0(X_i))}{1 - e(X_i)} + \hat{m}_1(X_i) - \hat{m}_0(X_i) \right],
+$$
+where $\hat{m}_d(X)$ is the predicted outcome for treatment group $d$.
+
+This approach is particularly valuable when you want robust estimation but are uncertain about whether your propensity score model or outcome model is correctly specified. The doubly robust property provides a safety net: you only need one of the two models to be correct. Additionally, AIPW makes efficient use of the available data. The cost is increased computational complexity, since both the treatment and outcome models must be estimated, and careful attention must be paid to how these models interact.
+
+::::{.panel-tabset}
+
+#### R
+```r
+# Manual AIPW implementation
+# Step 1: Estimate propensity scores
+ps_fit <- glm(D ~ Sepal.Width + Petal.Width, data = iris, family = binomial)
+iris$ps <- predict(ps_fit, type = "response")
+
+# Step 2: Estimate outcome models for each treatment group
+outcome_treated <- lm(Sepal.Length ~ Sepal.Width + Petal.Width, 
+                      data = iris[iris$D == 1, ])
+outcome_control <- lm(Sepal.Length ~ Sepal.Width + Petal.Width, 
+                      data = iris[iris$D == 0, ])
+
+# Step 3: Predict potential outcomes for all units
+iris$mu1 <- predict(outcome_treated, newdata = iris)
+iris$mu0 <- predict(outcome_control, newdata = iris)
+
+# Step 4: Calculate AIPW estimator
+aipw_component <- with(iris, 
+  (D * (Sepal.Length - mu1) / ps) - 
+  ((1 - D) * (Sepal.Length - mu0) / (1 - ps)) + 
+  (mu1 - mu0)
+)
+ate_aipw <- mean(aipw_component)
+print(paste("AIPW ATE:", round(ate_aipw, 3)))
+```
+
+#### Python
+```python
+# Using EconML for Doubly Robust estimation
+from econml.dr import DRLearner
+from sklearn.linear_model import LinearRegression
+
+# Prepare data
+Y = iris['sepal length (cm)'].values
+T = iris['D'].values
+X = iris[['sepal width (cm)', 'petal width (cm)']].values
+W = X  # Covariates for confounding
+
+# Fit doubly robust learner
+dr = DRLearner(
+    model_propensity=LogisticRegression(max_iter=1000),
+    model_regression=LinearRegression(),
+    model_final=LinearRegression(),
+    cv=3
+)
+dr.fit(Y, T, X=None, W=W)  # X=None for constant treatment effect
+
+# Estimate ATE
+ate = dr.ate(X=None)
+print(f"Doubly Robust ATE: {ate:.3f}")
+```
+::::
+
+
+
+### Covariate Balancing Propensity Score (CBPS)
+
+*Target Estimand*: Typically ATE.
+
+CBPS, introduced by Imai and Ratkovic (2014), directly estimates the propensity score while optimizing covariate balance. Instead of fitting a logistic regression and then checking balance, CBPS ensures balance is achieved *as part of the estimation process*.
+
+This method shines when standard propensity score estimation leads to poor covariate balance. Rather than the typical iterate-and-check workflow, CBPS achieves good balance without requiring manual tuning, working directly toward the ultimate goal of creating comparable groups. The main drawbacks are that it's more complex to implement than standard logistic regression and less widely available in standard statistical packages, though dedicated `R` packages do exist.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(CBPS)
+cbps_fit <- CBPS(D ~ Sepal.Width + Petal.Width, data = iris)
+summary(cbps_fit)
+```
+
+#### Python
+```python
+# CBPS not directly available in Python
+# Alternative: Use standard propensity scores with balance checking
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+
+# Standardize covariates for better convergence
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Estimate propensity scores
+ps_model_cbps = LogisticRegression(penalty='l2', C=1.0, max_iter=1000)
+ps_model_cbps.fit(X_scaled, iris['D'])
+ps_cbps = ps_model_cbps.predict_proba(X_scaled)[:, 1]
+
+# Calculate IPW weights (similar to CBPS outcome)
+weights = np.where(iris['D'] == 1, 1/ps_cbps, 1/(1-ps_cbps))
+
+# Check balance
+for i, col in enumerate(['sepal width (cm)', 'petal width (cm)']):
+    treated_mean = iris[iris['D']==1][col].mean()
+    control_mean_weighted = np.average(iris[iris['D']==0][col], 
+                                       weights=weights[iris['D']==0])
+    print(f"{col}: Treated={treated_mean:.3f}, Weighted Control={control_mean_weighted:.3f}")
+```
+::::
+
+
+
+### Overlap Weights
+
+*Target Estimand*: Overlap-weighted ATE.
+
+Overlap weighting focuses on the region of common support—where treated and control units both exist—by assigning weights:
+$$
+w_i = D_i (1 - e(X_i)) + (1 - D_i) e(X_i).
+$$
+This downweights units with extreme scores near 0 or 1 and emphasizes comparability.
+
+This weighting scheme is ideal when you want to avoid extrapolation and focus inference on the region where treated and control units truly overlap. The approach naturally sidesteps the instability that plagues standard IPW when propensity scores approach the boundaries, and it targets what's sometimes called the "overlap population." The key consideration is that the resulting estimate represents the treatment effect for this overlap population, which may differ from the overall ATE or the ATT, depending on how representative the overlap region is of the full sample.
+
+::::{.panel-tabset}
+
+#### R
+```r
+
+
+# Calculate overlap weights
+iris$overlap_weights <- ifelse(iris$D == 1, 1 - iris$ps, iris$ps)
+summary(iris$overlap_weights)
+```
+
+#### Python
+```python
+# Calculate propensity scores if not already done
+if 'ps' not in iris.columns:
+    iris['ps'] = model.predict_proba(X)[:, 1]
+
+# Calculate overlap weights
+iris['overlap_weights'] = np.where(iris['D'] == 1, 1 - iris['ps'], iris['ps'])
+iris['overlap_weights'].describe()
+```
+::::
+
+### Entropy Balancing
+
+*Target Estimand*: ATT/ATE.
+
+Entropy balancing directly reweights the control group so that the moments of the covariates (mean, variance, etc.) match exactly between treated and control groups. Instead of matching or stratifying, this solves a constrained optimization problem that minimizes the Kullback-Leibler divergence of weights subject to balance constraints.
+
+This method is particularly useful when balance proves difficult to achieve with traditional weighting schemes. Entropy balancing guarantees exact balance on the chosen covariate moments and fully utilizes all available data without discarding observations. The analyst must specify which moments (typically means, and sometimes variances and skewness) should be balanced, and the results can be sensitive to these choices. Nevertheless, the method offers strong guarantees and has gained popularity for applications where precise balance is paramount.
+
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(ebal)
+
+# Separate treated and control
+control_idx <- which(iris$D == 0)
+treated_idx <- which(iris$D == 1)
+
+# Prepare covariate matrices
+X_control <- as.matrix(iris[control_idx, c("Sepal.Width", "Petal.Width")])
+X_treated <- as.matrix(iris[treated_idx, c("Sepal.Width", "Petal.Width")])
+
+# Calculate target moments (treated means)
+target_means <- colMeans(X_treated)
+
+# Fit entropy balancing
+eb_fit <- ebalance(Treatment = iris$D, X = as.matrix(iris[, c("Sepal.Width", "Petal.Width")]))
+summary(eb_fit)
+```
+
+#### Python
+```python
+# Manual entropy balancing using scipy optimization
+from scipy.optimize import minimize
+
+# Separate treatment and control groups
+control_mask = iris['D'] == 0
+treated_mask = iris['D'] == 1
+control_data = iris.loc[control_mask, ['sepal width (cm)', 'petal width (cm)']].values
+treated_data = iris.loc[treated_mask, ['sepal width (cm)', 'petal width (cm)']].values
+treated_means = treated_data.mean(axis=0)
+
+# Objective: minimize KL divergence from uniform weights
+def entropy_objective(weights):
+    # Add small constant to avoid log(0)
+    return np.sum(weights * np.log(weights + 1e-10))
+
+# Constraint: weighted control means should equal treated means
+def create_moment_constraints(treated_means, control_data):
+    constraints = []
+    for i in range(control_data.shape[1]):
+        constraints.append({
+            'type': 'eq',
+            'fun': lambda w, i=i: np.average(control_data[:, i], weights=w) - treated_means[i]
+        })
+    return constraints
+
+# Initial weights (uniform)
+n_control = len(control_data)
+w0 = np.ones(n_control) / n_control
+
+# Optimize with moment balance constraints
+constraints = create_moment_constraints(treated_means, control_data)
+constraints.append({'type': 'eq', 'fun': lambda w: np.sum(w) - 1})  # Weights sum to 1
+
+result = minimize(entropy_objective, w0, 
+                 constraints=constraints,
+                 bounds=[(0, None)] * n_control,
+                 method='SLSQP')
+
+print(f"Convergence: {result.success}")
+print(f"Final objective: {result.fun:.4f}")
+```
+::::
+
+
+## Bottom Line
+
+- Propensity score methods provide diverse approaches to estimate causal effects from observational data, each with unique strengths and trade-offs.
+- Some methods prioritize simplicity (e.g., stratification) or data retention (e.g., IPW), while others focus on robustness or balance (AIPW, CBPS).
+- Doubly robust methods like AIPW offer reliability even when one model is misspecified, while others (e.g., entropy balancing) guarantee perfect balance through optimization.
+- No single method is universally best. The choice hinges on practical considerations: sample size, covariate overlap between groups, and whether exact balance or data efficiency is prioritized.
+- All else equal, doubly robust estimators offer extra protection against biased results.
+
+## Where to Learn More
+
+For the original introduction to propensity scores, see Rosenbaum and Rubin’s (1983) landmark paper. Imai and Ratkovic’s (2014) work on CBPS is a must-read for understanding balance-focused estimation. The textbook *Causal Inference for Statistics, Social, and Biomedical Sciences* by Imbens and Rubin (2015) provides excellent coverage of these methods. There are also great tutorials and vignettes in R packages like `MatchIt`, `twang`, and `WeightIt`.
+
+## References
+
+- Rosenbaum, P. R., & Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. *Biometrika*, 70(1), 41–55.
+
+- Imai, K., & Ratkovic, M. (2014). Covariate balancing propensity score. *Journal of the Royal Statistical Society: Series B (Statistical Methodology)*, 76(1), 243–263.
+
+- Imbens, G. W., & Rubin, D. B. (2015). *Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction*. Cambridge University Press.
+
+- Hainmueller, J. (2012). Entropy balancing for causal effects. *Political Analysis*, 20(1), 25–46.
