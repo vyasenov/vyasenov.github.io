@@ -527,8 +527,7 @@ e(X_i) = \mathbb{P}(D_i = 1 \mid X_i).
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>)</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>model.fit(X, y)</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Coefficients: </span><span class="sc">{</span>model<span class="sc">.</span>coef_<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Intercept: </span><span class="sc">{</span>model<span class="sc">.</span>intercept_<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Intercept: </span><span class="sc">{</span>model<span class="sc">.</span>intercept_[<span class="dv">0</span>]<span class="sc">:.3f}</span><span class="ss">, Coef: </span><span class="sc">{</span>model<span class="sc">.</span>coef_<span class="sc">.</span>flatten()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -594,10 +593,10 @@ e(X_i) = \mathbb{P}(D_i = 1 \mid X_i).
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ps <span class="op">=</span> model.predict_proba(X)[:, <span class="dv">1</span>]</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate caliper (0.2 * SD of logit of propensity score)</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>logit_ps <span class="op">=</span> np.log(ps <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> ps <span class="op">+</span> <span class="fl">1e-10</span>))  <span class="co"># Add small constant to avoid division by zero</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>logit_ps <span class="op">=</span> np.log(ps <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> ps <span class="op">+</span> <span class="fl">1e-10</span>))  <span class="co"># Small constant to avoid division by zero</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>caliper <span class="op">=</span> <span class="fl">0.2</span> <span class="op">*</span> np.std(logit_ps)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Simple 1:1 nearest neighbor matching with caliper</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Simplified 1:1 caliper matching (with replacement)</span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>matched_pairs <span class="op">=</span> []</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>treated_idx <span class="op">=</span> iris[iris[<span class="st">'D'</span>] <span class="op">==</span> <span class="dv">1</span>].index</span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>control_idx <span class="op">=</span> iris[iris[<span class="st">'D'</span>] <span class="op">==</span> <span class="dv">0</span>].index</span>
@@ -628,7 +627,14 @@ e(X_i) = \mathbb{P}(D_i = 1 \mid X_i).
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>matchit_strat <span class="ot">&lt;-</span> <span class="fu">matchit</span>(D <span class="sc">~</span> Sepal.Width <span class="sc">+</span> Petal.Width, <span class="at">data =</span> iris, <span class="at">method =</span> <span class="st">"subclass"</span>, <span class="at">subclass =</span> <span class="dv">5</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(matchit_strat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>md <span class="ot">&lt;-</span> <span class="fu">match.data</span>(matchit_strat)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>stratum_effects <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">max</span>(md<span class="sc">$</span>subclass, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="cf">function</span>(s) {</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  sub <span class="ot">&lt;-</span> md[md<span class="sc">$</span>subclass <span class="sc">==</span> s, ]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">sum</span>(sub<span class="sc">$</span>D) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span> <span class="fu">sum</span>(<span class="dv">1</span> <span class="sc">-</span> sub<span class="sc">$</span>D) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mean</span>(sub<span class="sc">$</span>Sepal.Length[sub<span class="sc">$</span>D <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(sub<span class="sc">$</span>Sepal.Length[sub<span class="sc">$</span>D <span class="sc">==</span> <span class="dv">0</span>]) <span class="cf">else</span> <span class="cn">NA</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>ate_stratified <span class="ot">&lt;-</span> <span class="fu">mean</span>(stratum_effects, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Stratified ATE:"</span>, <span class="fu">round</span>(ate_stratified, <span class="dv">3</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate propensity scores</span></span>
@@ -734,9 +740,10 @@ w_i = \frac{D_i}{e(X_i)} + \frac{1 - D_i}{1 - e(X_i)}.
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>dr.fit(Y, T, X<span class="op">=</span><span class="va">None</span>, W<span class="op">=</span>W)  <span class="co"># X=None for constant treatment effect</span></span>
 <span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate ATE</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>ate <span class="op">=</span> dr.ate(X<span class="op">=</span><span class="va">None</span>)</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Doubly Robust ATE: </span><span class="sc">{</span>ate<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate ATE (ate() may return array; take scalar for display)</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>ate_result <span class="op">=</span> dr.ate(X<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>ate_est <span class="op">=</span> <span class="bu">float</span>(np.asarray(ate_result).flatten()[<span class="dv">0</span>])</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Doubly Robust ATE: </span><span class="sc">{</span>ate_est<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -744,40 +751,15 @@ w_i = \frac{D_i}{e(X_i)} + \frac{1 - D_i}{1 - e(X_i)}.
 <section id="covariate-balancing-propensity-score-cbps" class="level3">
 <h3 class="anchored" data-anchor-id="covariate-balancing-propensity-score-cbps">Covariate Balancing Propensity Score (CBPS)</h3>
 <p><em>Target Estimand</em>: Typically ATE.</p>
-<p>CBPS, introduced by Imai and Ratkovic (2014), directly estimates the propensity score while optimizing covariate balance. Instead of fitting a logistic regression and then checking balance, CBPS ensures balance is achieved <em>as part of the estimation process</em>.</p>
+<p>CBPS, introduced by Imai and Ratkovic (2014), directly estimates the propensity score while optimizing covariate balance. Instead of fitting a logistic regression and then checking balance, CBPS ensures balance is achieved <em>as part of the estimation process</em>. Example below in R (CBPS package); Python users can look to balance-focused weighting in other libraries.</p>
 <p>This method shines when standard propensity score estimation leads to poor covariate balance. Rather than the typical iterate-and-check workflow, CBPS achieves good balance without requiring manual tuning, working directly toward the ultimate goal of creating comparable groups. The main drawbacks are that it’s more complex to implement than standard logistic regression and less widely available in standard statistical packages, though dedicated <code>R</code> packages do exist.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">R</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CBPS)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>cbps_fit <span class="ot">&lt;-</span> <span class="fu">CBPS</span>(D <span class="sc">~</span> Sepal.Width <span class="sc">+</span> Petal.Width, <span class="at">data =</span> iris)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cbps_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
-<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CBPS not directly available in Python</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternative: Use standard propensity scores with balance checking</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize covariates for better convergence</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> scaler.fit_transform(X)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate propensity scores</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>ps_model_cbps <span class="op">=</span> LogisticRegression(penalty<span class="op">=</span><span class="st">'l2'</span>, C<span class="op">=</span><span class="fl">1.0</span>, max_iter<span class="op">=</span><span class="dv">1000</span>)</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>ps_model_cbps.fit(X_scaled, iris[<span class="st">'D'</span>])</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>ps_cbps <span class="op">=</span> ps_model_cbps.predict_proba(X_scaled)[:, <span class="dv">1</span>]</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate IPW weights (similar to CBPS outcome)</span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> np.where(iris[<span class="st">'D'</span>] <span class="op">==</span> <span class="dv">1</span>, <span class="dv">1</span><span class="op">/</span>ps_cbps, <span class="dv">1</span><span class="op">/</span>(<span class="dv">1</span><span class="op">-</span>ps_cbps))</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Check balance</span></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, col <span class="kw">in</span> <span class="bu">enumerate</span>([<span class="st">'sepal width (cm)'</span>, <span class="st">'petal width (cm)'</span>]):</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    treated_mean <span class="op">=</span> iris[iris[<span class="st">'D'</span>]<span class="op">==</span><span class="dv">1</span>][col].mean()</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    control_mean_weighted <span class="op">=</span> np.average(iris[iris[<span class="st">'D'</span>]<span class="op">==</span><span class="dv">0</span>][col], </span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>                                       weights<span class="op">=</span>weights[iris[<span class="st">'D'</span>]<span class="op">==</span><span class="dv">0</span>])</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>col<span class="sc">}</span><span class="ss">: Treated=</span><span class="sc">{</span>treated_mean<span class="sc">:.3f}</span><span class="ss">, Weighted Control=</span><span class="sc">{</span>control_mean_weighted<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -793,20 +775,18 @@ w_i = D_i (1 - e(X_i)) + (1 - D_i) e(X_i).
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
-<div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate overlap weights</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>iris<span class="sc">$</span>overlap_weights <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(iris<span class="sc">$</span>D <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> iris<span class="sc">$</span>ps, iris<span class="sc">$</span>ps)</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(iris<span class="sc">$</span>overlap_weights)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate overlap weights</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>iris<span class="sc">$</span>overlap_weights <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(iris<span class="sc">$</span>D <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span> <span class="sc">-</span> iris<span class="sc">$</span>ps, iris<span class="sc">$</span>ps)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(iris<span class="sc">$</span>overlap_weights)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
-<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate propensity scores if not already done</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'ps'</span> <span class="kw">not</span> <span class="kw">in</span> iris.columns:</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    iris[<span class="st">'ps'</span>] <span class="op">=</span> model.predict_proba(X)[:, <span class="dv">1</span>]</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate overlap weights</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>iris[<span class="st">'overlap_weights'</span>] <span class="op">=</span> np.where(iris[<span class="st">'D'</span>] <span class="op">==</span> <span class="dv">1</span>, <span class="dv">1</span> <span class="op">-</span> iris[<span class="st">'ps'</span>], iris[<span class="st">'ps'</span>])</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>iris[<span class="st">'overlap_weights'</span>].describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate propensity scores if not already done</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="st">'ps'</span> <span class="kw">not</span> <span class="kw">in</span> iris.columns:</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    iris[<span class="st">'ps'</span>] <span class="op">=</span> model.predict_proba(X)[:, <span class="dv">1</span>]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate overlap weights</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>iris[<span class="st">'overlap_weights'</span>] <span class="op">=</span> np.where(iris[<span class="st">'D'</span>] <span class="op">==</span> <span class="dv">1</span>, <span class="dv">1</span> <span class="op">-</span> iris[<span class="st">'ps'</span>], iris[<span class="st">'ps'</span>])</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>iris[<span class="st">'overlap_weights'</span>].describe()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -814,70 +794,17 @@ w_i = D_i (1 - e(X_i)) + (1 - D_i) e(X_i).
 <section id="entropy-balancing" class="level3">
 <h3 class="anchored" data-anchor-id="entropy-balancing">Entropy Balancing</h3>
 <p><em>Target Estimand</em>: ATT/ATE.</p>
-<p>Entropy balancing directly reweights the control group so that the moments of the covariates (mean, variance, etc.) match exactly between treated and control groups. Instead of matching or stratifying, this solves a constrained optimization problem that minimizes the Kullback-Leibler divergence of weights subject to balance constraints.</p>
+<p>Entropy balancing directly reweights the control group so that the moments of the covariates (mean, variance, etc.) match exactly between treated and control groups. Instead of matching or stratifying, this solves a constrained optimization problem that minimizes the Kullback-Leibler divergence of weights subject to balance constraints. Example below in R (<code>ebal</code> package).</p>
 <p>This method is particularly useful when balance proves difficult to achieve with traditional weighting schemes. Entropy balancing guarantees exact balance on the chosen covariate moments and fully utilizes all available data without discarding observations. The analyst must specify which moments (typically means, and sometimes variances and skewness) should be balanced, and the results can be sensitive to these choices. Nevertheless, the method offers strong guarantees and has gained popularity for applications where precise balance is paramount.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">R</a></li></ul>
 <div class="tab-content">
 <div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
-<div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ebal)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate treated and control</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>control_idx <span class="ot">&lt;-</span> <span class="fu">which</span>(iris<span class="sc">$</span>D <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>treated_idx <span class="ot">&lt;-</span> <span class="fu">which</span>(iris<span class="sc">$</span>D <span class="sc">==</span> <span class="dv">1</span>)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare covariate matrices</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>X_control <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(iris[control_idx, <span class="fu">c</span>(<span class="st">"Sepal.Width"</span>, <span class="st">"Petal.Width"</span>)])</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>X_treated <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(iris[treated_idx, <span class="fu">c</span>(<span class="st">"Sepal.Width"</span>, <span class="st">"Petal.Width"</span>)])</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate target moments (treated means)</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>target_means <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(X_treated)</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit entropy balancing</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>eb_fit <span class="ot">&lt;-</span> <span class="fu">ebalance</span>(<span class="at">Treatment =</span> iris<span class="sc">$</span>D, <span class="at">X =</span> <span class="fu">as.matrix</span>(iris[, <span class="fu">c</span>(<span class="st">"Sepal.Width"</span>, <span class="st">"Petal.Width"</span>)]))</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(eb_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
-<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Manual entropy balancing using scipy optimization</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.optimize <span class="im">import</span> minimize</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate treatment and control groups</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>control_mask <span class="op">=</span> iris[<span class="st">'D'</span>] <span class="op">==</span> <span class="dv">0</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>treated_mask <span class="op">=</span> iris[<span class="st">'D'</span>] <span class="op">==</span> <span class="dv">1</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>control_data <span class="op">=</span> iris.loc[control_mask, [<span class="st">'sepal width (cm)'</span>, <span class="st">'petal width (cm)'</span>]].values</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>treated_data <span class="op">=</span> iris.loc[treated_mask, [<span class="st">'sepal width (cm)'</span>, <span class="st">'petal width (cm)'</span>]].values</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>treated_means <span class="op">=</span> treated_data.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Objective: minimize KL divergence from uniform weights</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> entropy_objective(weights):</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add small constant to avoid log(0)</span></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.<span class="bu">sum</span>(weights <span class="op">*</span> np.log(weights <span class="op">+</span> <span class="fl">1e-10</span>))</span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Constraint: weighted control means should equal treated means</span></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_moment_constraints(treated_means, control_data):</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    constraints <span class="op">=</span> []</span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(control_data.shape[<span class="dv">1</span>]):</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>        constraints.append({</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">'type'</span>: <span class="st">'eq'</span>,</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">'fun'</span>: <span class="kw">lambda</span> w, i<span class="op">=</span>i: np.average(control_data[:, i], weights<span class="op">=</span>w) <span class="op">-</span> treated_means[i]</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>        })</span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> constraints</span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial weights (uniform)</span></span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>n_control <span class="op">=</span> <span class="bu">len</span>(control_data)</span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>w0 <span class="op">=</span> np.ones(n_control) <span class="op">/</span> n_control</span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimize with moment balance constraints</span></span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>constraints <span class="op">=</span> create_moment_constraints(treated_means, control_data)</span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>constraints.append({<span class="st">'type'</span>: <span class="st">'eq'</span>, <span class="st">'fun'</span>: <span class="kw">lambda</span> w: np.<span class="bu">sum</span>(w) <span class="op">-</span> <span class="dv">1</span>})  <span class="co"># Weights sum to 1</span></span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> minimize(entropy_objective, w0, </span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>                 constraints<span class="op">=</span>constraints,</span>
-<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>                 bounds<span class="op">=</span>[(<span class="dv">0</span>, <span class="va">None</span>)] <span class="op">*</span> n_control,</span>
-<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>                 method<span class="op">=</span><span class="st">'SLSQP'</span>)</span>
-<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Convergence: </span><span class="sc">{</span>result<span class="sc">.</span>success<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Final objective: </span><span class="sc">{</span>result<span class="sc">.</span>fun<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ebal)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit entropy balancing (balance covariates between treated and control)</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>eb_fit <span class="ot">&lt;-</span> <span class="fu">ebalance</span>(<span class="at">Treatment =</span> iris<span class="sc">$</span>D, <span class="at">X =</span> <span class="fu">as.matrix</span>(iris[, <span class="fu">c</span>(<span class="st">"Sepal.Width"</span>, <span class="st">"Petal.Width"</span>)]))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(eb_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>

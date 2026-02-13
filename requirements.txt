@@ -24,7 +24,6 @@ catboost==1.2.8
 jupyter==1.0.0
 ipython==9.2.0
 ipykernel==6.29.5
-
 # Utilities
 requests>=2.32.4
 beautifulsoup4==4.13.4

@@ -29,12 +29,34 @@ In high-dimensional settings, $p$ may be large—possibly even larger than $n$. 
 
 ## A Closer Look
 
+We begin by loading the data.
+
+:::: {.panel-tabset}
+
+#### Python
+```python
+from sklearn.datasets import load_iris
+import pandas as pd
+
+# Load iris data
+iris = load_iris(as_frame=True)
+df = iris.frame
+X = df[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
+y = df['sepal length (cm)']
+```
+::::
+
+Now let's examine each of the methods in turn.
 
 ### Stepwise Selection (Forward, Backward, Both)
 
 The classic workhorse of variable selection, stepwise procedures iteratively add or remove variables based on some criterion like AIC (Aikake Information Criterion), BIC (Bayesian Information Criterion), or $p$-values. In forward selection, you start with no variables and add the one that improves the model the most. In backward elimination with $p<n$, you start with all variables and remove the least significant one at each step. Both methods can also be combined in a bidirectional stepwise approach. In either case, you stop when adding or removing variables no longer sufficiently improves the model according to your chosen criterion.
 
 Stepwise selection can work well for smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side). However, they it is unstable and prone to overfitting. 
+
+
+
+We are now ready to start with the modeling part.
 
 :::: {.panel-tabset}
 
@@ -48,16 +70,8 @@ summary(step_model)
 
 #### Python
 ```python
-from sklearn.datasets import load_iris
-import pandas as pd
 from mlxtend.feature_selection import SequentialFeatureSelector as SFS
 from sklearn.linear_model import LinearRegression
-
-# Load iris data
-iris = load_iris(as_frame=True)
-df = iris.frame
-X = df[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
-y = df['sepal length (cm)']
 
 # Stepwise selection (both directions)
 sfs = SFS(LinearRegression(),
@@ -75,8 +89,7 @@ print('Selected features:', list(sfs.k_feature_names_))
 # Fit final model
 selected_X = X[list(sfs.k_feature_names_)]
 model = LinearRegression().fit(selected_X, y)
-print('Coefficients:', model.coef_)
-print('Intercept:', model.intercept_)
+print(pd.Series(model.coef_, index=X.columns))
 ```
 ::::
 
@@ -119,7 +132,7 @@ iris = load_iris(as_frame=True).frame
 X = iris[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
 y = iris['sepal length (cm)']
 lasso = LassoCV(cv=5).fit(X, y)
-lasso.coef_
+print(pd.Series(lasso.coef_, index=X.columns))
 ```
 ::::
 
@@ -164,7 +177,7 @@ iris = load_iris(as_frame=True).frame
 X = iris[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
 y = iris['sepal length (cm)']
 lasso = RidgeCV(cv=5).fit(X, y)
-lasso.coef_
+print(pd.Series(lasso.coef_, index=X.columns))
 ```
 ::::
 
@@ -211,7 +224,7 @@ iris = load_iris(as_frame=True).frame
 X = iris[['sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
 y = iris['sepal length (cm)']
 lasso = ElasticNetCV(cv=5).fit(X, y)
-lasso.coef_
+print(pd.Series(lasso.coef_, index=X.columns))
 ```
 ::::
 
@@ -249,7 +262,7 @@ from sklearn.linear_model import LinearRegression
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X)
 reg = LinearRegression().fit(X_pca, y)
-reg.coef_
+print(pd.Series(reg.coef_, index=pca.get_feature_names_out()))
 ```
 ::::
 
@@ -283,7 +296,7 @@ print(lar_model)
 ```python
 from sklearn.linear_model import Lars
 lar = Lars().fit(X, y)
-lar.coef_
+print(pd.Series(lar.coef_, index=X.columns))
 ```
 ::::
 
@@ -332,24 +345,13 @@ coef(cv, lambda = "min")
 
 #### Python
 ```python
-import numpy as np
-from sparseline.penalties import SCAD
-from sparseline.regression import PenalizedLinearRegression
-from sklearn.model_selection import train_test_split
+from skglm import GeneralizedLinearEstimator
+from skglm.datafits import Quadratic
+from skglm.penalties import SCAD
 
-# Simulate data
-np.random.seed(123)
-n, p = 100, 20
-X = np.random.randn(n, p)
-beta = np.concatenate([np.array([3, -2, 1.5]), np.zeros(p - 3)])
-y = X @ beta + np.random.randn(n)
-
-# Fit SCAD-penalized regression
-model = PenalizedLinearRegression(penalty=SCAD(lambda_=0.1, a=3.7))
-model.fit(X, y)
-
-# Coefficients
-print("Estimated coefficients:", model.coef_)
+scad = GeneralizedLinearEstimator(Quadratic(), SCAD(alpha=0.1, gamma=3.7))
+scad.fit(X, y)
+print(pd.Series(scad.coef_, index=X.columns))
 ```
 ::::
 
@@ -414,10 +416,6 @@ print(feature_names[selected])
 ### FOCI (Feature Ordering by Conditional Independence)
 
 FOCI is a recent, information-theoretic method that orders features by how much conditional mutual information they contribute to the outcome. It’s model-free and does not assume a particular parametric form. I have also writtn about FOCI in a [previous post](https://vyasenov.github.io/blog/foci.html), so I won't repeat the details here.
-
-**Strengths:** Handles nonlinearities, no need for parametric models.
-
-**Weaknesses:** More computationally intensive; newer and less widely used in practice.
 
 ---
 

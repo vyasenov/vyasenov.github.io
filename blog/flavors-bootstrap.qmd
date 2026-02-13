@@ -195,7 +195,7 @@ bayes_boot_means = []
 for _ in range(B):
     weights = dirichlet.rvs([1] * len(y))[0]
     bayes_boot_means.append(np.sum(weights * y))
-np.var(bayes_boot_means, ddof=1)
+print(np.var(bayes_boot_means, ddof=1))
 ```
 ::::
 
@@ -262,7 +262,7 @@ for _ in range(B):
     y_star = predicted + v * residuals
     coef = LinearRegression().fit(x, y_star).coef_[0]
     wild_boot_coefs.append(coef)
-np.var(wild_boot_coefs, ddof=1)
+print(np.var(wild_boot_coefs, ddof=1))
 ```
 ::::
 
@@ -339,7 +339,7 @@ y = np.random.normal(size=100)
 block_length = 5
 bs = MovingBlockBootstrap(block_length, y)
 boot_means = np.array([np.mean(data[0]) for data in bs.bootstrap(B)])
-np.var(boot_means, ddof=1)
+print(np.var(boot_means, ddof=1))
 ```
 ::::
 

@@ -659,7 +659,7 @@ Algorithm:
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(B):</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    weights <span class="op">=</span> dirichlet.rvs([<span class="dv">1</span>] <span class="op">*</span> <span class="bu">len</span>(y))[<span class="dv">0</span>]</span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    bayes_boot_means.append(np.<span class="bu">sum</span>(weights <span class="op">*</span> y))</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>np.var(bayes_boot_means, ddof<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.var(bayes_boot_means, ddof<span class="op">=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -727,7 +727,7 @@ Y^*_i = X_i \hat{\beta} + v_i \hat{\varepsilon}_i,
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    y_star <span class="op">=</span> predicted <span class="op">+</span> v <span class="op">*</span> residuals</span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    coef <span class="op">=</span> LinearRegression().fit(x, y_star).coef_[<span class="dv">0</span>]</span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    wild_boot_coefs.append(coef)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>np.var(wild_boot_coefs, ddof<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.var(wild_boot_coefs, ddof<span class="op">=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -808,7 +808,7 @@ Algorithm:
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>block_length <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>bs <span class="op">=</span> MovingBlockBootstrap(block_length, y)</span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>boot_means <span class="op">=</span> np.array([np.mean(data[<span class="dv">0</span>]) <span class="cf">for</span> data <span class="kw">in</span> bs.bootstrap(B)])</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>np.var(boot_means, ddof<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.var(boot_means, ddof<span class="op">=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>

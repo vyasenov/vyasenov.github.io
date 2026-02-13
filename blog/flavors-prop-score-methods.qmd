@@ -80,8 +80,7 @@ y = iris['D']
 model = LogisticRegression(max_iter=1000)
 model.fit(X, y)
 
-print(f"Coefficients: {model.coef_}")
-print(f"Intercept: {model.intercept_}")
+print(f"Intercept: {model.intercept_[0]:.3f}, Coef: {model.coef_.flatten()}")
 ```
 ::::
 
@@ -158,10 +157,10 @@ summary(matchit_caliper)
 ps = model.predict_proba(X)[:, 1]
 
 # Calculate caliper (0.2 * SD of logit of propensity score)
-logit_ps = np.log(ps / (1 - ps + 1e-10))  # Add small constant to avoid division by zero
+logit_ps = np.log(ps / (1 - ps + 1e-10))  # Small constant to avoid division by zero
 caliper = 0.2 * np.std(logit_ps)
 
-# Simple 1:1 nearest neighbor matching with caliper
+# Simplified 1:1 caliper matching (with replacement)
 matched_pairs = []
 treated_idx = iris[iris['D'] == 1].index
 control_idx = iris[iris['D'] == 0].index
@@ -194,7 +193,14 @@ Stratification is particularly appealing when matching isn't feasible or when yo
 #### R
 ```r
 matchit_strat <- matchit(D ~ Sepal.Width + Petal.Width, data = iris, method = "subclass", subclass = 5)
-summary(matchit_strat)
+md <- match.data(matchit_strat)
+stratum_effects <- sapply(1:max(md$subclass, na.rm = TRUE), function(s) {
+  sub <- md[md$subclass == s, ]
+  if (sum(sub$D) > 0 && sum(1 - sub$D) > 0)
+    mean(sub$Sepal.Length[sub$D == 1]) - mean(sub$Sepal.Length[sub$D == 0]) else NA
+})
+ate_stratified <- mean(stratum_effects, na.rm = TRUE)
+print(paste("Stratified ATE:", round(ate_stratified, 3)))
 ```
 
 #### Python
@@ -319,9 +325,10 @@ dr = DRLearner(
 )
 dr.fit(Y, T, X=None, W=W)  # X=None for constant treatment effect
 
-# Estimate ATE
-ate = dr.ate(X=None)
-print(f"Doubly Robust ATE: {ate:.3f}")
+# Estimate ATE (ate() may return array; take scalar for display)
+ate_result = dr.ate(X=None)
+ate_est = float(np.asarray(ate_result).flatten()[0])
+print(f"Doubly Robust ATE: {ate_est:.3f}")
 ```
 ::::
 
@@ -331,7 +338,7 @@ print(f"Doubly Robust ATE: {ate:.3f}")
 
 *Target Estimand*: Typically ATE.
 
-CBPS, introduced by Imai and Ratkovic (2014), directly estimates the propensity score while optimizing covariate balance. Instead of fitting a logistic regression and then checking balance, CBPS ensures balance is achieved *as part of the estimation process*.
+CBPS, introduced by Imai and Ratkovic (2014), directly estimates the propensity score while optimizing covariate balance. Instead of fitting a logistic regression and then checking balance, CBPS ensures balance is achieved *as part of the estimation process*. Example below in R (CBPS package); Python users can look to balance-focused weighting in other libraries.
 
 This method shines when standard propensity score estimation leads to poor covariate balance. Rather than the typical iterate-and-check workflow, CBPS achieves good balance without requiring manual tuning, working directly toward the ultimate goal of creating comparable groups. The main drawbacks are that it's more complex to implement than standard logistic regression and less widely available in standard statistical packages, though dedicated `R` packages do exist.
 
@@ -342,33 +349,6 @@ This method shines when standard propensity score estimation leads to poor covar
 library(CBPS)
 cbps_fit <- CBPS(D ~ Sepal.Width + Petal.Width, data = iris)
 summary(cbps_fit)
-```
-
-#### Python
-```python
-# CBPS not directly available in Python
-# Alternative: Use standard propensity scores with balance checking
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-
-# Standardize covariates for better convergence
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-# Estimate propensity scores
-ps_model_cbps = LogisticRegression(penalty='l2', C=1.0, max_iter=1000)
-ps_model_cbps.fit(X_scaled, iris['D'])
-ps_cbps = ps_model_cbps.predict_proba(X_scaled)[:, 1]
-
-# Calculate IPW weights (similar to CBPS outcome)
-weights = np.where(iris['D'] == 1, 1/ps_cbps, 1/(1-ps_cbps))
-
-# Check balance
-for i, col in enumerate(['sepal width (cm)', 'petal width (cm)']):
-    treated_mean = iris[iris['D']==1][col].mean()
-    control_mean_weighted = np.average(iris[iris['D']==0][col], 
-                                       weights=weights[iris['D']==0])
-    print(f"{col}: Treated={treated_mean:.3f}, Weighted Control={control_mean_weighted:.3f}")
 ```
 ::::
 
@@ -390,8 +370,6 @@ This weighting scheme is ideal when you want to avoid extrapolation and focus in
 
 #### R
 ```r
-
-
 # Calculate overlap weights
 iris$overlap_weights <- ifelse(iris$D == 1, 1 - iris$ps, iris$ps)
 summary(iris$overlap_weights)
@@ -413,7 +391,7 @@ iris['overlap_weights'].describe()
 
 *Target Estimand*: ATT/ATE.
 
-Entropy balancing directly reweights the control group so that the moments of the covariates (mean, variance, etc.) match exactly between treated and control groups. Instead of matching or stratifying, this solves a constrained optimization problem that minimizes the Kullback-Leibler divergence of weights subject to balance constraints.
+Entropy balancing directly reweights the control group so that the moments of the covariates (mean, variance, etc.) match exactly between treated and control groups. Instead of matching or stratifying, this solves a constrained optimization problem that minimizes the Kullback-Leibler divergence of weights subject to balance constraints. Example below in R (`ebal` package).
 
 This method is particularly useful when balance proves difficult to achieve with traditional weighting schemes. Entropy balancing guarantees exact balance on the chosen covariate moments and fully utilizes all available data without discarding observations. The analyst must specify which moments (typically means, and sometimes variances and skewness) should be balanced, and the results can be sensitive to these choices. Nevertheless, the method offers strong guarantees and has gained popularity for applications where precise balance is paramount.
 
@@ -424,64 +402,9 @@ This method is particularly useful when balance proves difficult to achieve with
 ```r
 library(ebal)
 
-# Separate treated and control
-control_idx <- which(iris$D == 0)
-treated_idx <- which(iris$D == 1)
-
-# Prepare covariate matrices
-X_control <- as.matrix(iris[control_idx, c("Sepal.Width", "Petal.Width")])
-X_treated <- as.matrix(iris[treated_idx, c("Sepal.Width", "Petal.Width")])
-
-# Calculate target moments (treated means)
-target_means <- colMeans(X_treated)
-
-# Fit entropy balancing
+# Fit entropy balancing (balance covariates between treated and control)
 eb_fit <- ebalance(Treatment = iris$D, X = as.matrix(iris[, c("Sepal.Width", "Petal.Width")]))
 summary(eb_fit)
-```
-
-#### Python
-```python
-# Manual entropy balancing using scipy optimization
-from scipy.optimize import minimize
-
-# Separate treatment and control groups
-control_mask = iris['D'] == 0
-treated_mask = iris['D'] == 1
-control_data = iris.loc[control_mask, ['sepal width (cm)', 'petal width (cm)']].values
-treated_data = iris.loc[treated_mask, ['sepal width (cm)', 'petal width (cm)']].values
-treated_means = treated_data.mean(axis=0)
-
-# Objective: minimize KL divergence from uniform weights
-def entropy_objective(weights):
-    # Add small constant to avoid log(0)
-    return np.sum(weights * np.log(weights + 1e-10))
-
-# Constraint: weighted control means should equal treated means
-def create_moment_constraints(treated_means, control_data):
-    constraints = []
-    for i in range(control_data.shape[1]):
-        constraints.append({
-            'type': 'eq',
-            'fun': lambda w, i=i: np.average(control_data[:, i], weights=w) - treated_means[i]
-        })
-    return constraints
-
-# Initial weights (uniform)
-n_control = len(control_data)
-w0 = np.ones(n_control) / n_control
-
-# Optimize with moment balance constraints
-constraints = create_moment_constraints(treated_means, control_data)
-constraints.append({'type': 'eq', 'fun': lambda w: np.sum(w) - 1})  # Weights sum to 1
-
-result = minimize(entropy_objective, w0, 
-                 constraints=constraints,
-                 bounds=[(0, None)] * n_control,
-                 method='SLSQP')
-
-print(f"Convergence: {result.success}")
-print(f"Final objective: {result.fun:.4f}")
 ```
 ::::
 

@@ -2,6 +2,9 @@
 .quarto/
 .vscode/
 
+# Testing code
+testing_code.ipynb
+
 # Python virtual environment
 .venv/
 
