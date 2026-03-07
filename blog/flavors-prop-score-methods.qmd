@@ -1,5 +1,5 @@
 ---
-title: "The Many Flavors of Propensity Score Methods"
+title: "The Many Flavors of Propensity Score Methods In Causal Inference"
 date: "2026-01-22"
 categories: [causal inference, propensity scores, flavors]
 ---

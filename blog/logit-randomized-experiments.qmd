@@ -1,0 +1,214 @@
+---
+title: "Logistic Regression in Randomized Trials?"
+date: "2026-02-17"
+categories: [causal inference, statistical modeling]
+---
+
+## Background
+
+Randomized controlled trials (RCTs) are the gold standard for causal inference. Random assignment guarantees that treatment is independent of potential outcomes. As a result, simple differences in observed outcomes identify causal effects without requiring outcome modeling.
+
+With binary outcomes, however, data scientists often default to logistic regression. That instinct feels natural: the outcome is binary, the logit model is standard, and regression allows covariate adjustment. But does logistic regression actually respect what randomization gives us?
+
+Freedman (2008) argues that it does not. Randomization justifies design-based estimators. Logistic regression introduces additional modeling assumptions that randomization does not validate. When those assumptions fail, the regression coefficient on treatment need not estimate the causal quantity of interest—even in large samples.
+
+## Notation
+
+Let there be $n$ subjects indexed by $i = 1, \dots, n$. Each subject has:
+
+- Treatment assignment $X_i \in \{0,1\}$
+- Binary outcome $Y_i \in \{0,1\}$
+- Covariates $Z_i$
+
+Each unit has two potential outcomes: $Y_i^T$ and $Y_i^C$. Define the finite-population averages
+
+$$
+\alpha_T = \frac{1}{n} \sum_{i=1}^n Y_i^T, 
+\quad 
+\alpha_C = \frac{1}{n} \sum_{i=1}^n Y_i^C.
+$$
+
+The causal contrast of interest is the *difference in log-odds*:
+
+$$
+\Delta 
+= \log\left(\frac{\alpha_T}{1 - \alpha_T}\right)
+- \log\left(\frac{\alpha_C}{1 - \alpha_C}\right).
+$$
+
+## A Closer Look
+### What Randomization Identifies
+
+Because treatment is randomized, the sample analogues
+
+$$
+\hat{\alpha}_T = \frac{1}{n_T}\sum_{i\in T} Y_i, 
+\quad
+\hat{\alpha}_C = \frac{1}{n_C}\sum_{i\in C} Y_i
+$$
+
+are unbiased for $\alpha_T$ and $\alpha_C$. The plug-in estimator
+
+$$
+\hat{\Delta}
+=
+\log\left(\frac{\hat{\alpha}_T}{1 - \hat{\alpha}_T}\right)
+-
+\log\left(\frac{\hat{\alpha}_C}{1 - \hat{\alpha}_C}\right)
+$$
+
+is therefore consistent and justified purely by the design.
+
+No outcome model is required.
+
+### What Logistic Regression Assumes
+
+A logistic regression specifies
+
+$$
+P(Y_i = 1 \mid X_i, Z_i)
+=
+\frac{\exp(\beta_1 + \beta_2 X_i + \beta_3 Z_i)}
+{1 + \exp(\beta_1 + \beta_2 X_i + \beta_3 Z_i)}.
+$$
+
+The coefficient $\beta_2$ is typically interpreted as the treatment effect.  This interpretation relies on strong assumptions:
+
+- The conditional log-odds is linear in $X$ and $Z$.
+- The functional form is correctly specified.
+- The model captures the true dependence of outcomes on covariates.
+
+Randomization does not validate any of these assumptions. It guarantees independence of treatment assignment—not correctness of the logit specification.
+
+If the model is misspecified, the maximum likelihood estimator converges to a pseudo-true parameter: the value that best fits the assumed model, not necessarily the causal estimand $\Delta$.
+
+### The Non-Collapsibility Problem
+
+There is a deeper issue. The logistic coefficient $\beta_2$ represents a *conditional* odds ratio. The estimand $\Delta$ is a *marginal* contrast. These quantities are generally not equal.
+
+Odds ratios are non-collapsible: adding covariates changes the estimated coefficient even when there is no confounding. As a result, adjusting for $Z$ in a logit model can change the treatment coefficient even in a perfectly randomized experiment.
+
+This is not bias from confounding. It is a structural property of the odds ratio. Thus, even with infinite data, $\hat{\beta}_2$ need not converge to $\Delta$.
+
+### A Safer Use of Logistic Regression
+
+If logistic regression is used, the coefficient itself should not be interpreted as the estimand. Instead, compute model-based plug-in predictions:
+
+1. Fit the logistic model and obtain $\hat{\beta}$.
+2. Predict probabilities under treatment and control for every unit:
+   $$
+   \hat{p}_i^{(T)}, \quad \hat{p}_i^{(C)}.
+   $$
+3. Average predicted probabilities:
+   $$
+   \tilde{\alpha}_T = \frac{1}{n}\sum \hat{p}_i^{(T)}, 
+   \quad
+   \tilde{\alpha}_C = \frac{1}{n}\sum \hat{p}_i^{(C)}.
+   $$
+4. Form
+   $$
+   \tilde{\Delta}
+   =
+   \log\left(\frac{\tilde{\alpha}_T}{1-\tilde{\alpha}_T}\right)
+   -
+   \log\left(\frac{\tilde{\alpha}_C}{1-\tilde{\alpha}_C}\right).
+   $$
+
+This estimator targets the correct marginal quantity. Even if the logit model is misspecified, it remains consistent under randomization. The coefficient $\hat{\beta}_2$ does not share this guarantee.
+
+## An Example
+
+We illustrate with a small randomized experiment. There are $n = 200$ units; half are assigned to treatment ($X_i = 1$) and half to control ($X_i = 0$) by complete randomization. Each unit has a binary outcome $Y_i$ and a single covariate $Z_i$. We compute three quantities: the design-based plug-in estimator $\hat{\Delta}$, the logistic regression coefficient $\hat{\beta}_2$ on treatment, and the adjusted estimator $\tilde{\Delta}$ that uses the fitted logit model to predict probabilities under treatment and control for every unit, then marginalizes and forms the log-odds contrast.
+
+The code below generates data (with a true treatment effect on the log-odds scale), fits a logistic regression of $Y$ on $X$ and $Z$, and reports $\hat{\Delta}$, $\hat{\beta}_2$, and $\tilde{\Delta}$. In general these three numbers differ; $\hat{\Delta}$ and $\tilde{\Delta}$ target the marginal causal contrast, while $\hat{\beta}_2$ is a conditional parameter.
+
+::::{.panel-tabset}
+
+### R
+
+```r
+set.seed(1988)
+n <- 200
+x <- sample(rep(c(1, 0), each = n / 2))   # complete randomization
+z <- rnorm(n, mean = 0, sd = 1)
+
+# True P(Y=1) depends on X and Z (logistic); treatment increases log-odds by 0.8
+beta_true <- c(0, 0.8, 0.3)   # intercept, treatment, covariate
+eta <- beta_true[1] + beta_true[2] * x + beta_true[3] * z
+p <- 1 / (1 + exp(-eta))
+y <- rbinom(n, size = 1, prob = p)
+
+# --- Design-based plug-in: delta ---
+alpha_T_hat <- mean(y[x == 1])
+alpha_C_hat <- mean(y[x == 0])
+delta_hat <- log(alpha_T_hat / (1 - alpha_T_hat)) - log(alpha_C_hat / (1 - alpha_C_hat))
+
+# --- Logistic regression: beta_2 (coefficient on treatment) ---
+fit <- glm(y ~ x + z, family = binomial)
+beta_2 <- coef(fit)["x"]
+
+# --- Adjusted estimator: marginalize fitted probs, then log-odds contrast ---
+p_under_treat <- predict(fit, newdata = data.frame(x = 1, z = z), type = "response")
+p_under_control <- predict(fit, newdata = data.frame(x = 0, z = z), type = "response")
+alpha_T_tilde <- mean(p_under_treat)
+alpha_C_tilde <- mean(p_under_control)
+delta_tilde <- log(alpha_T_tilde / (1 - alpha_T_tilde)) - log(alpha_C_tilde / (1 - alpha_C_tilde))
+
+cat("Design-based delta_hat:  ", round(delta_hat, 4), "\n")
+cat("Logistic coef (beta_2):  ", round(beta_2, 4), "\n")
+cat("Adjusted delta_tilde:    ", round(delta_tilde, 4), "\n")
+```
+
+### Python
+
+```python
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+
+np.random.seed(1988)
+n = 200
+x = np.array([1] * (n // 2) + [0] * (n - n // 2))
+np.random.shuffle(x)
+z = np.random.normal(0, 1, n)
+
+# True P(Y=1) depends on X and Z (logistic); treatment increases log-odds by 0.8
+beta_true = np.array([0, 0.8, 0.3])   # intercept, treatment, covariate
+eta = beta_true[0] + beta_true[1] * x + beta_true[2] * z
+p = 1 / (1 + np.exp(-eta))
+y = np.random.binomial(1, p, n)
+
+# Design-based plug-in: delta
+alpha_T_hat = y[x == 1].mean()
+alpha_C_hat = y[x == 0].mean()
+delta_hat = np.log(alpha_T_hat / (1 - alpha_T_hat)) - np.log(alpha_C_hat / (1 - alpha_C_hat))
+
+# Logistic regression: beta_2 (coefficient on treatment)
+X_design = np.column_stack([np.ones(n), x, z])
+fit = LogisticRegression(C=1e10).fit(X_design, y)  # no penalty
+beta_2 = fit.coef_[0][1]
+
+# Adjusted estimator: marginalize fitted probs, then log-odds contrast
+p_under_treat = fit.predict_proba(np.column_stack([np.ones(n), np.ones(n), z]))[:, 1]
+p_under_control = fit.predict_proba(np.column_stack([np.ones(n), np.zeros(n), z]))[:, 1]
+alpha_T_tilde = p_under_treat.mean()
+alpha_C_tilde = p_under_control.mean()
+delta_tilde = np.log(alpha_T_tilde / (1 - alpha_T_tilde)) - np.log(alpha_C_tilde / (1 - alpha_C_tilde))
+
+print("Design-based delta_hat:  ", round(delta_hat, 4))
+print("Logistic coef (beta_2):  ", round(beta_2, 4))
+print("Adjusted delta_tilde:    ", round(delta_tilde, 4))
+```
+
+::::
+
+## Bottom Line
+
+- Randomization identifies causal effects without modeling.
+- Design-based estimators and plug-in approaches respect the randomized design. The logit coefficient does not.
+- Logistic regression introduces functional-form assumptions that randomization does not justify. 
+- The treatment coefficient estimates a conditional odds ratio, not the marginal causal contrast defined by the experiment.
+- The logistic regression coefficient generally differs from the experimental estimand—even in large samples.
+
+## Reference
+
+Freedman, D. A. (2008). *Randomization Does Not Justify Logistic Regression*. Statistical Science, 23(2), 237–249. https://doi.org/10.1214/08-STS262

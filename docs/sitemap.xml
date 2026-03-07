@@ -37,6 +37,10 @@
     <lastmod>2025-06-16T17:39:50.000Z</lastmod>
   </url>
   <url>
+    <loc>https://vyasenov.github.io/blog/logit-randomized-experiments.html</loc>
+    <lastmod>2026-02-24T19:50:41.580Z</lastmod>
+  </url>
+  <url>
     <loc>https://vyasenov.github.io/blog/mutual-information.html</loc>
     <lastmod>2025-04-27T22:37:11.000Z</lastmod>
   </url>
@@ -49,20 +53,24 @@
     <lastmod>2025-04-27T22:48:40.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/delta-method.html</loc>
-    <lastmod>2025-04-27T22:46:35.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/randomization-inference.html</loc>
+    <lastmod>2026-02-20T22:03:31.229Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/binscatter.html</loc>
-    <lastmod>2025-05-02T03:35:47.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/correlation-is-cosine.html</loc>
+    <lastmod>2025-04-25T21:24:44.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/limits-nonparametric-models.html</loc>
-    <lastmod>2025-05-02T23:38:51.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/index.html</loc>
+    <lastmod>2025-05-02T03:23:56.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/hypothesis-testing-all-data.html</loc>
-    <lastmod>2025-04-25T21:34:40.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/roles-covariates-rtc.html</loc>
+    <lastmod>2025-09-24T21:37:30.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/overlapping-conf-intervals.html</loc>
+    <lastmod>2025-10-21T18:34:38.000Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/correlation-transitive.html</loc>
@@ -165,20 +173,24 @@
     <lastmod>2025-06-16T17:53:47.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/overlapping-conf-intervals.html</loc>
-    <lastmod>2025-10-21T18:34:38.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/correlated-random-effects.html</loc>
+    <lastmod>2026-02-14T23:16:50.902Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/roles-covariates-rtc.html</loc>
-    <lastmod>2025-09-24T21:37:30.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/hypothesis-testing-all-data.html</loc>
+    <lastmod>2025-04-25T21:34:40.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/index.html</loc>
-    <lastmod>2025-05-02T03:23:56.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/limits-nonparametric-models.html</loc>
+    <lastmod>2025-05-02T23:38:51.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/correlation-is-cosine.html</loc>
-    <lastmod>2025-04-25T21:24:44.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/binscatter.html</loc>
+    <lastmod>2025-05-02T03:35:47.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/delta-method.html</loc>
+    <lastmod>2025-04-27T22:46:35.000Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/paradox-stein.html</loc>
@@ -193,6 +205,10 @@
     <lastmod>2025-05-30T02:18:44.000Z</lastmod>
   </url>
   <url>
+    <loc>https://vyasenov.github.io/blog/generalized-additive-models.html</loc>
+    <lastmod>2026-02-20T22:01:33.818Z</lastmod>
+  </url>
+  <url>
     <loc>https://vyasenov.github.io/blog/corr-myths-13-views.html</loc>
     <lastmod>2025-09-24T21:39:22.000Z</lastmod>
   </url>
@@ -202,7 +218,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</loc>
-    <lastmod>2026-02-13T19:15:45.133Z</lastmod>
+    <lastmod>2026-02-14T23:10:04.816Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/ml-based-adjustments.html</loc>

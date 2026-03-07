@@ -2,6 +2,10 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/logit-randomized-experiments.html",
+      "/blog/randomization-inference.html",
+      "/blog/generalized-additive-models.html",
+      "/blog/correlated-random-effects.html",
       "/blog/flavors-prop-score-methods.html",
       "/blog/wmw-test-fails-medians.html",
       "/blog/unconditional-qreg.html",
