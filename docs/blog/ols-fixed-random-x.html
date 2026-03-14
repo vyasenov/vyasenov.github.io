@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-02-12">
+<meta name="dcterms.date" content="2026-03-08">
 
-<title>Generalized Additive Models: What You Need to Know – Vasco Yasenov</title>
+<title>OLS with Fixed vs Random X: What Actually Changes? – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,41 +20,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -409,13 +374,10 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#what-makes-a-gam" id="toc-what-makes-a-gam" class="nav-link" data-scroll-target="#what-makes-a-gam">What Makes a GAM?</a></li>
-  <li><a href="#how-smoothness-is-estimated" id="toc-how-smoothness-is-estimated" class="nav-link" data-scroll-target="#how-smoothness-is-estimated">How Smoothness Is Estimated</a></li>
-  <li><a href="#why-rank-reduction-matters" id="toc-why-rank-reduction-matters" class="nav-link" data-scroll-target="#why-rank-reduction-matters">Why Rank Reduction Matters</a></li>
-  <li><a href="#beyond-the-mean" id="toc-beyond-the-mean" class="nav-link" data-scroll-target="#beyond-the-mean">Beyond the Mean</a></li>
-  <li><a href="#hypothesis-testing" id="toc-hypothesis-testing" class="nav-link" data-scroll-target="#hypothesis-testing">Hypothesis Testing</a></li>
+  <li><a href="#fixed-x-classical-linear-model" id="toc-fixed-x-classical-linear-model" class="nav-link" data-scroll-target="#fixed-x-classical-linear-model">Fixed <span class="math inline">\(X\)</span>: Classical Linear Model</a></li>
+  <li><a href="#random-x-econometric-view" id="toc-random-x-econometric-view" class="nav-link" data-scroll-target="#random-x-econometric-view">Random <span class="math inline">\(X\)</span>: Econometric View</a></li>
+  <li><a href="#what-actually-changes" id="toc-what-actually-changes" class="nav-link" data-scroll-target="#what-actually-changes">What Actually Changes?</a></li>
   </ul></li>
-  <li><a href="#an-example" id="toc-an-example" class="nav-link" data-scroll-target="#an-example">An Example</a></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
@@ -428,9 +390,10 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Generalized Additive Models: What You Need to Know</h1>
+<h1 class="title">OLS with Fixed vs Random <span class="math inline">\(X\)</span>: What Actually Changes?</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">semiparametric models</div>
+    <div class="quarto-category">parametric models</div>
+    <div class="quarto-category">statistical inference</div>
   </div>
   </div>
 
@@ -442,7 +405,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 12, 2026</p>
+      <p class="date">March 8, 2026</p>
     </div>
   </div>
   
@@ -460,140 +423,76 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Generalized Additive Models (GAMs) are one of the most powerful and flexible tools in a data scientist’s toolbox for modeling complex, nonlinear relationships between covariates and an outcome. They generalize linear models by allowing smooth, nonparametric functions of the predictors while still maintaining interpretability and manageable computation. The core idea is instead of forcing relationships to be straight lines, let the data speak for itself.</p>
-<p>This article explains what you really need to know about GAMs, following the excellent review by Simon Wood (2025). We’ll go over the basics of how GAMs work, how smoothness is controlled, the computational strategies involved, and key pitfalls to watch out for. We’ll also walk through a code example in both <code>R</code> and <code>Python</code> to show how to fit and interpret these models in practice.</p>
+<p>In regression courses, you will eventually hear the phrase: “OLS works whether <span class="math inline">\(X\)</span> is fixed or random.” That statement is correct, but dangerously compressed.</p>
+<p>The distinction between fixed and random regressors is not about how you compute <span class="math inline">\(\hat\beta\)</span>. The algebra is identical. The difference is in what is random, what we condition on, and how we interpret sampling statements.</p>
+<p>The goal of this note is to make that distinction precise, and to clarify what does—and does not—depend on treating <span class="math inline">\(X\)</span> as fixed.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Consider an outcome variable <span class="math inline">\(y\)</span> and predictors <span class="math inline">\(x_1, x_2, \dots, x_p\)</span>. The simplest linear model is:</p>
-<p><span class="math display">\[
-y = \beta_0 + \sum_{j=1}^p \beta_j x_j + \varepsilon.
-\]</span></p>
-<p>The GAM replaces the linear terms <span class="math inline">\(\beta_j x_j\)</span> with smooth functions <span class="math inline">\(f_j(x_j)\)</span>:</p>
-<p><span class="math display">\[
-y = \beta_0 + \sum_{j=1}^p f_j(x_j) + \varepsilon.
-\]</span></p>
-<p>More generally, for non-Gaussian outcomes, GAMs use a link function <span class="math inline">\(g(\cdot)\)</span>:</p>
-<p><span class="math display">\[
-g(\mathbb{E}[y]) = \beta_0 + \sum_{j=1}^p f_j(x_j).
-\]</span></p>
-<p>Each <span class="math inline">\(f_j\)</span> is estimated from the data and constrained to be “smooth” through penalization.</p>
+<p>Consider the well-known linear model</p>
+<p><span class="math display">\[Y = X\beta + \varepsilon,\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Y \in \mathbb{R}^n\)</span>,</li>
+<li><span class="math inline">\(X \in \mathbb{R}^{n \times p}\)</span> with full column rank,</li>
+<li><span class="math inline">\(\beta \in \mathbb{R}^p\)</span>,</li>
+<li><span class="math inline">\(\varepsilon \in \mathbb{R}^n\)</span> with <span class="math inline">\(\mathbb{E}[\varepsilon \mid X] = 0\)</span> and <span class="math inline">\(\operatorname{Var}(\varepsilon \mid X) = \sigma^2 I\)</span>.</li>
+</ul>
+<p>The standard OLS estimator is</p>
+<p><span class="math display">\[\hat\beta = (X^\top X)^{-1} X^\top Y.\]</span></p>
+<p>The key question is: are we conditioning on <span class="math inline">\(X\)</span>, or is <span class="math inline">\(X\)</span> itself a random object in the data-generating process?</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="what-makes-a-gam" class="level3">
-<h3 class="anchored" data-anchor-id="what-makes-a-gam">What Makes a GAM?</h3>
-<p>The backbone of a GAM is its smooth terms. These are typically represented using splines — basis functions that piece together polynomials smoothly at specified knots. But not just any spline will do! In GAMs, smoothness is enforced through penalty terms that discourage excessive wiggliness.</p>
-<p>For example, for a cubic spline, the penalty is usually the integral of the squared second derivative:</p>
-<p><span class="math display">\[
-\int (f''(x))^2 \, dx.
-\]</span></p>
-<p>In coefficient form, estimation solves</p>
-<p><span class="math display">\[
-\min_{f_1,\dots,f_p} \left\{ \sum_{i=1}^n \left(y_i - \beta_0 - \sum_{j=1}^p f_j(x_{ij})\right)^2 + \sum_{j=1}^p \lambda_j \int \left(f_j''(x)\right)^2 \, dx \right\},
-\]</span></p>
-<p>where <span class="math inline">\(S_j\)</span> encodes the roughness penalty and <span class="math inline">\(\lambda_j\)</span> is the smoothing parameter.</p>
-<p>Everything in a GAM flows from this penalized least-squares (or penalized likelihood) objective. The balance between fitting the data and keeping the function smooth is controlled by smoothing parameters (<span class="math inline">\(\lambda\)</span>). This is regularization: in particular, the standard spline roughness penalties are quadratic (ridge-like). A higher <span class="math inline">\(\lambda\)</span> makes the function flatter; a lower <span class="math inline">\(\lambda\)</span> allows more flexibility.</p>
+<p>Let’s take a closer look at the two cases.</p>
+<section id="fixed-x-classical-linear-model" class="level3">
+<h3 class="anchored" data-anchor-id="fixed-x-classical-linear-model">Fixed <span class="math inline">\(X\)</span>: Classical Linear Model</h3>
+<p>In the classical setup, <span class="math inline">\(X\)</span> is treated as fixed (non-stochastic). Then, all randomness comes from the error term <span class="math inline">\(\varepsilon\)</span>.</p>
+<p>Conditional on <span class="math inline">\(X\)</span>,</p>
+<p><span class="math display">\[\mathbb{E}[\hat\beta \mid X] = \beta,\]</span> <span class="math display">\[\operatorname{Var}(\hat\beta \mid X) = \sigma^2 (X^\top X)^{-1}.\]</span></p>
+<p>Inference is therefore <em>conditional</em> inference. Confidence intervals and <span class="math inline">\(t\)</span>-tests are statements about the distribution of <span class="math inline">\(\hat\beta\)</span> given this specific design matrix, <span class="math inline">\(X\)</span>.</p>
+<p>This framework is natural in designed experiments, where <span class="math inline">\(X\)</span> is literally chosen by the researcher.</p>
 </section>
-<section id="how-smoothness-is-estimated" class="level3">
-<h3 class="anchored" data-anchor-id="how-smoothness-is-estimated">How Smoothness Is Estimated</h3>
-<p>Model selection in GAMs involves three related but distinct questions:</p>
-<ul>
-<li>How smooth should each function be? (smoothing parameter selection, <span class="math inline">\(\lambda\)</span>)</li>
-<li>How flexible is the basis? (choice of basis dimension <span class="math inline">\(k\)</span>)</li>
-<li>Which smooth terms should be included at all? (term selection, <span class="math inline">\(f_j\)</span>)</li>
-</ul>
-<p>The basis dimension <span class="math inline">\(k\)</span> controls the maximum possible flexibility (how rich the spline basis is), while the smoothing parameter <span class="math inline">\(\lambda\)</span> controls how much of that flexibility is actually used. Intuitively, <span class="math inline">\(k\)</span> sets the size of the function space you search over; <span class="math inline">\(\lambda\)</span> determines the effective degrees of freedom (wiggliness) within that space. In practice, you choose <span class="math inline">\(k\)</span> “large enough” and let <span class="math inline">\(\lambda\)</span> do the regularization; if <span class="math inline">\(k\)</span> is too small, the smooth can be forced to underfit no matter how you tune <span class="math inline">\(\lambda\)</span>.</p>
-<p>There are two main strategies to estimate <span class="math inline">\(\lambda\)</span>:</p>
-<ol type="1">
-<li><strong>Cross-validation (CV)</strong>: Minimize prediction error by holding out parts of the data. You are familiar with this from traditional machine learning models.</li>
-<li><strong>Marginal likelihood (REML)</strong>: An empirical Bayes approach that tends to perform well in practice.</li>
-</ol>
-<p>The marginal likelihood approach treats smooth coefficients as random effects with Gaussian priors (a mixed-model representation), and often yields better-behaved uncertainty quantification than ad hoc tuning.</p>
-<p>Similarly, there are two common tools for model selection. The well-known <em>Akaike Information Criterion (AIC)</em> controls the trade-off between goodness of fit and model complexity. Alternatively, one can employ <em>hypothesis testing</em> to check whether each <span class="math inline">\(f_j\)</span> is significantly different from zero.</p>
-<p>With <span class="math inline">\(\lambda\)</span>, <span class="math inline">\(k\)</span>, and <span class="math inline">\(f_j\)</span> selected, we can fit the GAM and make predictions. Let’s shift the focus on a few more nuianced, but important, topics.</p>
+<section id="random-x-econometric-view" class="level3">
+<h3 class="anchored" data-anchor-id="random-x-econometric-view">Random <span class="math inline">\(X\)</span>: Econometric View</h3>
+<p>In most observational settings, <span class="math inline">\(X\)</span> is random. We observe i.i.d. draws <span class="math inline">\((X_i, Y_i)\)</span> from an unknown joint distribution, <span class="math inline">\(F_{X,Y}\)</span>. Under standard regularity conditions, the same OLS estimator, <span class="math inline">\(\hat\beta\)</span>, satisfies</p>
+<p><span class="math display">\[\hat\beta
+\;\xrightarrow{p}\;
+\beta
+\quad \text{if} \quad
+\mathbb{E}[X_i \varepsilon_i] = 0.\]</span></p>
+<p>The asymptotic variance becomes</p>
+<p><span class="math display">\[ \operatorname{Avar}(\hat\beta)=\left( \mathbb{E}[X_i X_i^\top] \right)^{-1}\mathbb{E}[X_i X_i^\top \varepsilon_i^2]\left( \mathbb{E}[X_i X_i^\top] \right)^{-1}.\]</span></p>
+<p>Under homoskedasticity, this simplifies to</p>
+<p><span class="math display">\[\sigma^2 \left( \mathbb{E}[X_i X_i^\top] \right)^{-1}.\]</span></p>
+<p>The algebra mirrors the fixed-<span class="math inline">\(X\)</span> case, but the interpretation changes: we are no longer conditioning on a specific realization of <span class="math inline">\(X\)</span>; we are <em>averaging over its distribution</em>.</p>
 </section>
-<section id="why-rank-reduction-matters" class="level3">
-<h3 class="anchored" data-anchor-id="why-rank-reduction-matters">Why Rank Reduction Matters</h3>
-<p>Full spline bases can be large and computationally expensive. To address this, GAMs often use <em>low-rank spline bases</em> (e.g., thin plate regression splines): you represent each smooth with a modest number of basis functions (controlled by <span class="math inline">\(k\)</span>), rather than using a very large “full” basis. This keeps computation tractable while retaining most of the flexibility practitioners want. Consequently, GAM fitting scales better to larger datasets while preserving interpretability.</p>
+<section id="what-actually-changes" class="level3">
+<h3 class="anchored" data-anchor-id="what-actually-changes">What Actually Changes?</h3>
+<p>Three things matter.</p>
+<p>First, the object of inference. With fixed <span class="math inline">\(X\)</span>, inference is conditional on the design. With random <span class="math inline">\(X\)</span>, inference is about repeated sampling of <span class="math inline">\(F_{X,Y}\)</span>.</p>
+<p>Second, exogeneity assumptions. In the fixed-<span class="math inline">\(X\)</span> model, we require <span class="math inline">\(\mathbb{E}[\varepsilon \mid X] = 0\)</span>. In the random-<span class="math inline">\(X\)</span> case, we need the same condition, but it now constrains the joint distribution: it says that once we know the regressors, there is no systematic remaining signal in the error term. Violations become statements about endogeneity, meaning <span class="math inline">\(X\)</span> is statistically related to omitted factors inside <span class="math inline">\(\varepsilon\)</span>.</p>
+<p>Third, robustness. Heteroskedasticity-robust standard errors are naturally derived in the random-<span class="math inline">\(X\)</span> framework, where the conditional variance may depend on <span class="math inline">\(X_i\)</span>. In other words, different parts of the regressor distribution can come with different noise levels, so inference has to account for that variation rather than rely on a single common variance.</p>
+<p>What does not change is the formula for <span class="math inline">\(\hat\beta\)</span>. Nor does unbiasedness depend on <span class="math inline">\(X\)</span> being fixed; it depends on the conditional mean-zero assumption.</p>
 </section>
-<section id="beyond-the-mean" class="level3">
-<h3 class="anchored" data-anchor-id="beyond-the-mean">Beyond the Mean</h3>
-<p>GAMs aren’t limited to modeling the mean and naturally extend to modeling other aspects of the distribution. They can handle <em>location, scale, and shape</em> modeling — meaning that the variance, skewness, or other distributional parameters can also depend on smooth functions of predictors. This generalization brings GAMs into the world of generalized additive models for location, scale, and shape (GAMLSS).</p>
-<p>They can even be extended to quantile regression and non-exponential family distributions, making them incredibly versatile. However, while GAMs allow flexible modeling of conditional expectations, they do not by themselves address common thorny issues such as endogeneity, causal identification, or selection bias. They simply allow for more depth in modeling the relationship between the outcome and the covariates and thus should be utilized in the context of machine learning/prediction.</p>
-</section>
-<section id="hypothesis-testing" class="level3">
-<h3 class="anchored" data-anchor-id="hypothesis-testing">Hypothesis Testing</h3>
-<p>Testing whether a smooth term is zero corresponds to testing whether its associated function is identically zero. Because smooth terms are penalized, the effective degrees of freedom are estimated from the data, and the resulting test statistics rely on large-sample approximations. The reported <span class="math inline">\(p\)</span>-values are therefore approximate and should be interpreted as heuristic diagnostics rather than exact finite-sample guarantees.</p>
-</section>
-</section>
-<section id="an-example" class="level2">
-<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">200</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n, <span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">sin</span>(x) <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.3</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">gam</span>(y <span class="sc">~</span> <span class="fu">s</span>(x), <span class="at">method =</span> <span class="st">"REML"</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model, <span class="at">residuals =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.gam.api <span class="im">import</span> GLMGam, BSplines</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">200</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.uniform(<span class="dv">0</span>, <span class="dv">10</span>, n)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.sin(x) <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">0.3</span>, n)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a cubic B-spline basis for x</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> x[:, <span class="va">None</span>]</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>bs <span class="op">=</span> BSplines(X, df<span class="op">=</span>[<span class="dv">10</span>], degree<span class="op">=</span>[<span class="dv">3</span>], knot_kwds<span class="op">=</span>[{<span class="st">"lower_bound"</span>: x.<span class="bu">min</span>(), <span class="st">"upper_bound"</span>: x.<span class="bu">max</span>()}])</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Gaussian GAM (identity link) via the GLM-GAM interface</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>exog <span class="op">=</span> np.ones((n, <span class="dv">1</span>))  <span class="co"># intercept only</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>gam <span class="op">=</span> GLMGam(y, smoother<span class="op">=</span>bs, exog<span class="op">=</span>exog).fit()</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gam.summary())</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>XX <span class="op">=</span> np.linspace(x.<span class="bu">min</span>(), x.<span class="bu">max</span>(), <span class="dv">200</span>)[:, <span class="va">None</span>]</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>exog_pred <span class="op">=</span> np.ones((<span class="bu">len</span>(XX), <span class="dv">1</span>))</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>plt.plot(XX[:, <span class="dv">0</span>], gam.predict(exog<span class="op">=</span>exog_pred, exog_smooth<span class="op">=</span>XX), label<span class="op">=</span><span class="st">"GAM fit"</span>)</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>plt.scatter(x, y, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li>GAMs allow flexible, nonlinear modeling while retaining interpretability.</li>
-<li>Smoothness is controlled by penalties, estimated via CV or marginal likelihood (REML).</li>
-<li>Rank reduction makes GAMs computationally feasible even with large datasets.</li>
-<li>GAMs generalize beyond means to scale, shape, and quantile modeling.</li>
+<li>The OLS estimator is algebraically identical whether <span class="math inline">\(X\)</span> is fixed or random.</li>
+<li>Fixed-<span class="math inline">\(X\)</span> inference is conditional; random-<span class="math inline">\(X\)</span> inference averages over the joint distribution.</li>
+<li>Consistency hinges on <span class="math inline">\(\mathbb{E}[X_i \varepsilon_i] = 0\)</span>, not on whether <span class="math inline">\(X\)</span> is stochastic.</li>
+<li>Robust variance formulas arise naturally once <span class="math inline">\(X\)</span> is treated as random.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The recent review by Simon Wood (2025) is the most comprehensive and readable guide to modern GAMs. For practical hands-on work, Wood’s book <em>Generalized Additive Models: An Introduction with R</em> (2017) remains the go-to resource. See also Hastie (2017). For Bayesian extensions check Rue et al.&nbsp;(2009).</p>
+<p>For a classical treatment, see Greene’s <em>Econometric Analysis</em>, which clearly distinguishes fixed and stochastic regressors. Wooldridge’s <em>Econometric Analysis of Cross Section and Panel Data</em> provides a modern random-<span class="math inline">\(X\)</span> perspective with emphasis on exogeneity conditions and robust inference.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<ul>
-<li><p>Hastie, T. J. (2017). Generalized additive models. Statistical models in S, 249-307.</p></li>
-<li><p>Rue, H., Martino, S., &amp; Chopin, N. (2009). Approximate Bayesian inference for latent Gaussian models by using integrated nested Laplace approximations. <em>Journal of the Royal Statistical Society Series B: Statistical Methodology</em>, 71(2), 319-392.</p></li>
-<li><p>Wood, S. N. (2025). Generalized Additive Models. <em>Annual Review of Statistics and Its Application</em>, 12, 497–526.</p></li>
-<li><p>Wood, S. N. (2017). <em>Generalized Additive Models: An Introduction with R</em>. CRC Press.</p></li>
-</ul>
+<p>Greene, W. H. (2018). Econometric Analysis.</p>
+<p>Wooldridge, J. M. (2010). Econometric Analysis of Cross Section and Panel Data.</p>
 
 
 </section>

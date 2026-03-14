@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-05-06">
+<meta name="dcterms.date" content="2026-03-13">
 
-<title>Randomization Does Not Justify Logistic Regression: A Closer Look – Vasco Yasenov</title>
+<title>The Oracle Property: What It Promises (and What It Doesn’t) – Vasco Yasenov</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,26 +24,26 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -115,7 +115,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="code/styles.css">
+<link rel="stylesheet" href="../code/styles.css">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -284,7 +284,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Vasco Yasenov</span>
     </a>
   </div>
@@ -295,23 +295,23 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About Me</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./cv.html"> 
+    <a class="nav-link" href="../cv.html"> 
 <span class="menu-text">CV</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./blog/index.html"> 
+    <a class="nav-link" href="../blog/index.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./research.html"> 
+    <a class="nav-link" href="../research.html"> 
 <span class="menu-text">Research</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./software.html"> 
+    <a class="nav-link" href="../software.html"> 
 <span class="menu-text">Software</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -320,11 +320,11 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-others">    
         <li>
-    <a class="dropdown-item" href="./mind-map.html">
+    <a class="dropdown-item" href="../mind-map.html">
  <span class="dropdown-text">Methods Map</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./childrenbook.html">
+    <a class="dropdown-item" href="../childrenbook.html">
  <span class="dropdown-text">Kids Books</span></a>
   </li>  
         <li>
@@ -374,11 +374,9 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#logistic-regression-what-does-it-assume" id="toc-logistic-regression-what-does-it-assume" class="nav-link" data-scroll-target="#logistic-regression-what-does-it-assume">Logistic Regression: What Does It Assume?</a></li>
-  <li><a href="#itt-estimators-vs.-logistic-coefficients" id="toc-itt-estimators-vs.-logistic-coefficients" class="nav-link" data-scroll-target="#itt-estimators-vs.-logistic-coefficients">ITT Estimators vs.&nbsp;Logistic Coefficients</a></li>
-  <li><a href="#plug-in-estimator-to-the-rescue" id="toc-plug-in-estimator-to-the-rescue" class="nav-link" data-scroll-target="#plug-in-estimator-to-the-rescue">Plug-in Estimator to the Rescue</a></li>
-  <li><a href="#simulations" id="toc-simulations" class="nav-link" data-scroll-target="#simulations">Simulations</a></li>
-  <li><a href="#the-big-takeaway" id="toc-the-big-takeaway" class="nav-link" data-scroll-target="#the-big-takeaway">The Big Takeaway</a></li>
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#which-methods-achieve-it" id="toc-which-methods-achieve-it" class="nav-link" data-scroll-target="#which-methods-achieve-it">Which Methods Achieve It</a></li>
+  <li><a href="#practical-implications" id="toc-practical-implications" class="nav-link" data-scroll-target="#practical-implications">Practical Implications</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -392,10 +390,10 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Randomization Does Not Justify Logistic Regression: A Closer Look</h1>
+<h1 class="title">The Oracle Property: What It Promises (and What It Doesn’t)</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">causal inference</div>
-    <div class="quarto-category">statistical modeling</div>
+    <div class="quarto-category">machine learning</div>
+    <div class="quarto-category">variable selection</div>
   </div>
   </div>
 
@@ -407,7 +405,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 6, 2025</p>
+      <p class="date">March 13, 2026</p>
     </div>
   </div>
   
@@ -419,103 +417,75 @@ window.Quarto = {
 </header>
 
 
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Randomized controlled trials (RCTs) are the gold standard for causal inference. Because treatment assignment is random, we can attribute differences in outcomes to the treatment rather than to confounders. But does this justify fitting a logistic regression model to the resulting data, especially when outcomes are binary?</p>
-<p>David Freedman’s provocative and widely cited article, <em>“Randomization Does Not Justify Logistic Regression,”</em> argues that the answer is no. In this post, we’ll unpack Freedman’s arguments, walk through the statistical intuition, and discuss what practitioners should do instead. We’ll explore when logistic regression can be misleading in randomized trials—and how to fix it if you’re going to use it anyway.</p>
+<p>In high-dimensional regression, we sometimes hear that a method possesses the oracle property. The phrase sounds impressive: it suggests that an estimator behaves as if the true sparsity pattern were known in advance—hence the name, as though an oracle had revealed the true support beforehand.</p>
+<p>This note explains what the oracle property actually means, why it is considered desirable, and where its practical relevance is limited. The goal is to distinguish asymptotic guarantees from practical performance. As usual, we introduce some notation so that the discussion rests on a clear mathematical foundation and a shared framework.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let there be <span class="math inline">\(n\)</span> subjects indexed by <span class="math inline">\(i = 1, \dots, n\)</span>. Each has a binary treatment assignment <span class="math inline">\(X_i \in {0, 1}\)</span> and a binary response <span class="math inline">\(Y_i \in {0, 1}\)</span>. Each subject also has a covariate <span class="math inline">\(Z_i\)</span>.</p>
-<p>Following Neyman (1923), each unit has two potential outcomes: <span class="math inline">\(Y_i^T\)</span> (if treated) and <span class="math inline">\(Y_i^C\)</span> (if control). Only one of these is observed, depending on <span class="math inline">\(X_i\)</span>.</p>
-<p>Define the average outcomes under treatment and control as:</p>
-<p><span class="math display">\[
-\alpha_T = \frac{1}{n} \sum_{i=1}^n Y_i^T, \quad \alpha_C = \frac{1}{n} \sum_{i=1}^n Y_i^C.
-\]</span></p>
-<p>The <strong>differential log-odds</strong> of success is:</p>
-<p><span class="math display">\[
-\Delta = \log\left(\frac{\alpha_T}{1 - \alpha_T}\right) - \log\left(\frac{\alpha_C}{1 - \alpha_C}\right).
-\]</span></p>
-<p>This is the causal estimand Freedman focuses on.</p>
+<p>Consider the linear model</p>
+<p><span class="math display">\[Y = X\beta + \varepsilon, \quad \varepsilon \sim (0, \sigma^2 I_n),\]</span></p>
+<p>with <span class="math inline">\(X \in \mathbb{R}^{n \times p}\)</span> and <span class="math inline">\(p\)</span> potentially large. Let the true parameter vector be sparse:</p>
+<p><span class="math display">\[S = \{j : \beta_j \neq 0\}, \quad s = |S|.\]</span></p>
+<p>Put simply, <span class="math inline">\(S\)</span> is the set of variables that are non-zero in the true parameter vector <span class="math inline">\(\beta\)</span>, <span class="math inline">\(s\)</span> is the number of non-zero variables.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="logistic-regression-what-does-it-assume" class="level3">
-<h3 class="anchored" data-anchor-id="logistic-regression-what-does-it-assume">Logistic Regression: What Does It Assume?</h3>
-<p>In the logistic regression model:</p>
-<p><span class="math display">\[
-P(Y_i = 1 \mid X_i, Z_i) = \frac{\exp(\beta_1 + \beta_2 X_i + \beta_3 Z_i)}{1 + \exp(\beta_1 + \beta_2 X_i + \beta_3 Z_i)}
-\]</span></p>
-<p>we typically estimate <span class="math inline">\(\beta_2\)</span> as the treatment effect. But this model makes strong assumptions:</p>
+<section id="definition" class="level3">
+<h3 class="anchored" data-anchor-id="definition">Definition</h3>
+<p>An estimator <span class="math inline">\(\hat\beta\)</span> is said to have the oracle property if it can do two things:</p>
 <ul>
-<li>The conditional log-odds of success is linear in <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span>.</li>
-<li>The latent errors are i.i.d. with a logistic distribution.</li>
-<li>The covariates are exogenous (i.e., independent of the error term).</li>
+<li>Selection consistency: <span class="math display">\[\mathbb{P}(\hat S = S) \to 1, \text{ where } \hat S = \{j : \hat\beta_j \neq 0\},\]</span></li>
+<li>Asymptotic efficiency: <span class="math display">\[\sqrt{n}(\hat\beta_S - \beta_S)
+\overset{d}{\longrightarrow}
+\mathcal{N}(0, \sigma^2 (X_S^\top X_S)^{-1}),\]</span> which is the same limiting distribution as the OLS estimator that knows <span class="math inline">\(S\)</span> in advance.</li>
 </ul>
-<p>Freedman’s key insight: <strong>randomization does not validate these modeling assumptions.</strong> In fact, it only ensures balance in <span class="math inline">\(X\)</span>, not in any unmeasured <span class="math inline">\(U\)</span> or functional form.</p>
+<p>If the support <span class="math inline">\(S\)</span> were known, estimation reduces to low-dimensional OLS on <span class="math inline">\(X_S\)</span>. That estimator is unbiased, efficient, and easy to analyze. Some of you will remember the Gauss-Markov theorem from your econometrics course which states that, the OLS estimator is the best linear unbiased estimator (BLUE) under homoskedasticity.</p>
+<p>The oracle property asks: can a data-driven procedure simultaneously discover <span class="math inline">\(S\)</span> and then estimate as efficiently as if <span class="math inline">\(S\)</span> were given? This is an appealing theoretical benchmark for sparse estimators. You can hardly do better than that.</p>
 </section>
-<section id="itt-estimators-vs.-logistic-coefficients" class="level3">
-<h3 class="anchored" data-anchor-id="itt-estimators-vs.-logistic-coefficients">ITT Estimators vs.&nbsp;Logistic Coefficients</h3>
-<p>Randomization justifies <em>design-based</em> estimators. For example, the intention-to-treat (ITT) estimators:</p>
-<p><span class="math display">\[
-\hat{\alpha}_T = \frac{1}{n_T} \sum_{i \in T} Y_i, \quad \hat{\alpha}_C = \frac{1}{n_C} \sum_{i \in C} Y_i,
-\]</span></p>
-<p>and the resulting differential log-odds estimator:</p>
-<p><span class="math display">\[
-\hat{\Delta} = \log\left(\frac{\hat{\alpha}_T}{1 - \hat{\alpha}_T}\right) - \log\left(\frac{\hat{\alpha}_C}{1 - \hat{\alpha}_C}\right)
-\]</span></p>
-<p>are <em>consistent and unbiased</em>. They rely only on the randomized design.</p>
-<p>In contrast, the coefficient <span class="math inline">\(\hat{\beta}_2\)</span> from logistic regression may not estimate <span class="math inline">\(\Delta\)</span> at all—even asymptotically. It estimates the average of subject-level log-odds differences only if the model is correct.</p>
+<section id="which-methods-achieve-it" class="level3">
+<h3 class="anchored" data-anchor-id="which-methods-achieve-it">Which Methods Achieve It</h3>
+<p>Classical LASSO does not generally satisfy the oracle property. Its <span class="math inline">\(\ell_1\)</span> penalty introduces shrinkage bias that persists asymptotically.</p>
+<p>Nonconvex penalties (e.g., SCAD and MCP) were explicitly designed to achieve the oracle property under regularity conditions. Adaptive LASSO can also achieve it when weights are constructed from a root-<span class="math inline">\(n\)</span> consistent pilot estimator.</p>
+<p>The key mechanism is reduced shrinkage for large coefficients while still penalizing small ones.</p>
 </section>
-<section id="plug-in-estimator-to-the-rescue" class="level3">
-<h3 class="anchored" data-anchor-id="plug-in-estimator-to-the-rescue">Plug-in Estimator to the Rescue</h3>
-<p>Suppose you’re still tempted to use logistic regression. Freedman suggests computing <strong>plug-in estimators</strong> instead:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Fit logistic regression and obtain <span class="math inline">\(\hat{\beta}\)</span>.</li>
-<li>Predict <span class="math inline">\(\hat{p}\_i^{(T)} = P(Y\_i = 1 \mid X\_i = 1, Z\_i)\)</span> and <span class="math inline">\(\hat{p}\_i^{(C)} = P(Y\_i = 1 \mid X\_i = 0, Z\_i)\)</span>.</li>
-<li>Average the predicted probabilities: <span class="math inline">\(\tilde{\alpha}\_T = \frac{1}{n} \sum \hat{p}\_i^{(T)}\)</span>, and similarly for <span class="math inline">\(\tilde{\alpha}\_C\)</span>.</li>
-<li>Compute: <span class="math inline">\(\tilde{\Delta} = \log\left(\frac{\tilde{\alpha}_T}{1 - \tilde{\alpha}_T}\right) - \log\left(\frac{\tilde{\alpha}_C}{1 - \tilde{\alpha}_C}\right)\)</span></li>
-</ol>
-</div>
-</div>
-<p>This estimator is <strong>consistent</strong> for <span class="math inline">\(\Delta\)</span> even when the logistic model is mis-specified. Unlike <span class="math inline">\(\hat{\beta}_2\)</span>, it matches the estimand of interest.</p>
-</section>
-<section id="simulations" class="level3">
-<h3 class="anchored" data-anchor-id="simulations">Simulations</h3>
-<p>Freedman uses simulation to show that <span class="math inline">\(\hat{\beta}_2\)</span> is biased and unstable when the logit model is wrong, while <span class="math inline">\(\tilde{\Delta}\)</span> and <span class="math inline">\(\hat{\Delta}\)</span> are consistent and more stable.</p>
-<p>He constructs a DGP where treatment benefits depend on covariates nonlinearly. Logistic regression badly overestimates the treatment effect; plug-in and ITT estimators do not.</p>
-</section>
-<section id="the-big-takeaway" class="level3">
-<h3 class="anchored" data-anchor-id="the-big-takeaway">The Big Takeaway</h3>
-<p>Even if your regression fits well and your p-values look good, the coefficient on treatment may <strong>not</strong> estimate what you think it does. In experiments, we have a powerful design-based inference strategy—so use it!</p>
+<section id="practical-implications" class="level3">
+<h3 class="anchored" data-anchor-id="practical-implications">Practical Implications</h3>
+<p>The oracle property is always <em>asymptotic</em>. There are never such guarantees in finite samples. It requires conditions such as:</p>
+<ul>
+<li>correct model specification,</li>
+<li>suitable signal strength (minimum nonzero coefficient size),</li>
+<li>regularity conditions on the design matrix,</li>
+<li>appropriate tuning parameter rates.</li>
+</ul>
+<p>In finite samples, especially when signals are weak or highly correlated, procedures that theoretically satisfy the oracle property may not outperform simpler methods. In practice, prediction risk often matters more than exact support recovery.</p>
+<p>There is also a conceptual point: the oracle benchmark assumes that the “true” model is sparse and well-defined. In many modern applications, sparsity is an approximation rather than a literal truth.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li>Logistic regression is <strong>not justified</strong> by randomization; its assumptions must be justified separately.</li>
-<li>The coefficient <span class="math inline">\(\hat{\beta}_2\)</span> is generally <strong>not</strong> a consistent estimator of the causal estimand <span class="math inline">\(\Delta\)</span>.</li>
-<li><strong>ITT estimators</strong> and <strong>plug-in estimators</strong> are consistent and preferable.</li>
-<li>If you use a model, always <strong>check</strong> whether it changes the substantive conclusions.</li>
+<li>The oracle property means consistent variable selection plus asymptotically efficient estimation on the true support.</li>
+<li>Nonconvex penalties and adaptive LASSO can achieve it; standard LASSO typically does not.</li>
+<li>The property is asymptotic and depends on strong conditions (signal strength, design assumptions, tuning rates).</li>
+<li>In practice, predictive performance and stability often matter more than satisfying oracle-style guarantees.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>To dig deeper, start with Freedman’s own <em>Statistical Models: Theory and Practice</em>, which expands on these ideas with clarity and examples. For modern extensions, look into the literature on doubly robust estimators and targeted maximum likelihood estimation (TMLE). The textbooks by Imbens &amp; Rubin and by Rosenbaum are excellent for learning about design-based inference and randomization.</p>
+<p>Fan and Li (2001) introduced SCAD and formalized the oracle property in penalized likelihood estimation. Zou (2006) shows how adaptive LASSO can achieve oracle behavior. Bühlmann and van de Geer’s Statistics for High-Dimensional Data provides a modern, rigorous treatment of sparsity, regularization paths, and inference in high-dimensional regimes.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Freedman, D. A. (2008). Randomization Does Not Justify Logistic Regression. <em>Statistical Science</em>, 23(2), 237–249. <a href="https://doi.org/10.1214/08-STS262">https://doi.org/10.1214/08-STS262</a></p>
+<p>Bühlmann, P., &amp; van de Geer, S. (2011). Statistics for High-Dimensional Data.</p>
+<p>Fan, J., &amp; Li, R. (2001). Variable selection via nonconcave penalized likelihood and its oracle properties.</p>
+<p>Zhang, C. H. (2010). Nearly unbiased variable selection under minimax concave penalty.</p>
+<p>Zou, H. (2006). The adaptive LASSO and its oracle properties.</p>
 
 
 </section>

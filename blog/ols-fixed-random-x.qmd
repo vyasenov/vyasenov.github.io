@@ -1,0 +1,98 @@
+---
+title: "OLS with Fixed vs Random $X$: What Actually Changes?"
+date: "2026-03-08"
+categories: [parametric models, statistical inference]
+---
+
+## Background
+
+In regression courses, you will eventually hear the phrase: “OLS works whether $X$ is fixed or random.” That statement is correct, but dangerously compressed.
+
+The distinction between fixed and random regressors is not about how you compute $\hat\beta$. The algebra is identical. The difference is in what is random, what we condition on, and how we interpret sampling statements.
+
+The goal of this note is to make that distinction precise, and to clarify what does—and does not—depend on treating $X$ as fixed.
+
+## Notation
+
+Consider the well-known linear model
+
+$$Y = X\beta + \varepsilon,$$
+
+where:
+
+- $Y \in \mathbb{R}^n$,
+- $X \in \mathbb{R}^{n \times p}$ with full column rank,
+- $\beta \in \mathbb{R}^p$,
+- $\varepsilon \in \mathbb{R}^n$ with $\mathbb{E}[\varepsilon \mid X] = 0$ and $\operatorname{Var}(\varepsilon \mid X) = \sigma^2 I$.
+
+The standard OLS estimator is
+
+$$\hat\beta = (X^\top X)^{-1} X^\top Y.$$
+
+The key question is: are we conditioning on $X$, or is $X$ itself a random object in the data-generating process?
+
+## A Closer Look
+
+Let's take a closer look at the two cases.
+
+### Fixed $X$: Classical Linear Model
+
+In the classical setup, $X$ is treated as fixed (non-stochastic). Then, all randomness comes from the error term $\varepsilon$.
+
+Conditional on $X$,
+
+$$\mathbb{E}[\hat\beta \mid X] = \beta,$$
+$$\operatorname{Var}(\hat\beta \mid X) = \sigma^2 (X^\top X)^{-1}.$$
+
+Inference is therefore *conditional* inference. Confidence intervals and $t$-tests are statements about the distribution of $\hat\beta$ given this specific design matrix, $X$.
+
+This framework is natural in designed experiments, where $X$ is literally chosen by the researcher.
+
+### Random $X$: Econometric View
+
+In most observational settings, $X$ is random. We observe i.i.d. draws $(X_i, Y_i)$ from an unknown joint distribution, $F_{X,Y}$. Under standard regularity conditions, the same OLS estimator, $\hat\beta$, satisfies
+
+$$\hat\beta
+\;\xrightarrow{p}\;
+\beta
+\quad \text{if} \quad
+\mathbb{E}[X_i \varepsilon_i] = 0.$$
+
+The asymptotic variance becomes
+
+$$ \operatorname{Avar}(\hat\beta)=\left( \mathbb{E}[X_i X_i^\top] \right)^{-1}\mathbb{E}[X_i X_i^\top \varepsilon_i^2]\left( \mathbb{E}[X_i X_i^\top] \right)^{-1}.$$
+
+Under homoskedasticity, this simplifies to
+
+$$\sigma^2 \left( \mathbb{E}[X_i X_i^\top] \right)^{-1}.$$
+
+The algebra mirrors the fixed-$X$ case, but the interpretation changes: we are no longer conditioning on a specific realization of $X$; we are *averaging over its distribution*.
+
+### What Actually Changes?
+
+Three things matter.
+
+First, the object of inference. With fixed $X$, inference is conditional on the design. With random $X$, inference is about repeated sampling of $F_{X,Y}$.
+
+Second, exogeneity assumptions. In the fixed-$X$ model, we require $\mathbb{E}[\varepsilon \mid X] = 0$. In the random-$X$ case, we need the same condition, but it now constrains the joint distribution: it says that once we know the regressors, there is no systematic remaining signal in the error term. Violations become statements about endogeneity, meaning $X$ is statistically related to omitted factors inside $\varepsilon$.
+
+Third, robustness. Heteroskedasticity-robust standard errors are naturally derived in the random-$X$ framework, where the conditional variance may depend on $X_i$. In other words, different parts of the regressor distribution can come with different noise levels, so inference has to account for that variation rather than rely on a single common variance.
+
+What does not change is the formula for $\hat\beta$. Nor does unbiasedness depend on $X$ being fixed; it depends on the conditional mean-zero assumption.
+
+## Bottom Line
+
+- The OLS estimator is algebraically identical whether $X$ is fixed or random.
+- Fixed-$X$ inference is conditional; random-$X$ inference averages over the joint distribution.
+- Consistency hinges on $\mathbb{E}[X_i \varepsilon_i] = 0$, not on whether $X$ is stochastic.
+- Robust variance formulas arise naturally once $X$ is treated as random.
+
+## Where to Learn More
+
+For a classical treatment, see Greene’s *Econometric Analysis*, which clearly distinguishes fixed and stochastic regressors. Wooldridge’s *Econometric Analysis of Cross Section and Panel Data* provides a modern random-$X$ perspective with emphasis on exogeneity conditions and robust inference.
+
+## References
+
+Greene, W. H. (2018). Econometric Analysis.
+
+Wooldridge, J. M. (2010). Econometric Analysis of Cross Section and Panel Data.

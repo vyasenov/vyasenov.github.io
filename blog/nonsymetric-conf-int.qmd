@@ -1,0 +1,186 @@
+---
+title: "Why Some Confidence Intervals Are Not Symmetric"
+date: "2026-03-10"
+categories: [statistical inference, hypothesis testing]
+---
+
+## Background
+
+Most of us were trained to think of a $95\%$ confidence interval as
+
+$$\hat{\theta} \pm 1.96 \cdot \mathrm{SE}(\hat{\theta}).$$
+
+That template is deeply ingrained. It works beautifully for estimators whose sampling distributions are symmetric and well behaved. But have you ever come across a confidence interval with an off-center point estimate?
+
+The “$\pm$ margin of error” representation is not a defining property of confidence intervals. It is a *consequence of* symmetry. Once symmetry disappears because of skewed sampling distributions, nonlinear transformations, boundary constraints, or small-sample behavior, the interval need not be centered around the point estimate.
+
+The goal of this note is to unpack where asymmetry comes from, when it is expected, and how different construction principles lead to intervals that look very different from the textbook $t$-interval. We will also illustrate the phenomenon with a bootstrap example in `R` and `Python`.
+
+## Notation
+
+Let $\theta \in \Theta \subset \mathbb{R}$ denote a scalar parameter of interest, and let $\hat{\theta} = \hat{\theta}(X_1,\dots,X_n)$ be an estimator.
+
+A $(1-\alpha)$ confidence interval is a random set $C(X)$ such that, by definition,
+
+$$\mathbb{P}_\theta\big(\theta \in C(X)\big) \ge 1-\alpha
+\quad \text{for all } \theta \in \Theta.
+$$
+
+When $\hat{\theta}$ satisfies an asymptotic normality result, then a Wald-type interval takes the familiar form
+
+$$\hat{\theta} \pm z_{\alpha/2}\,\widehat{\mathrm{SE}}(\hat{\theta}),$$
+
+where the critical value $z_{\alpha/2}$ is the $(1-\alpha/2)$ quantile of the standard normal.
+
+This interval is symmetric around $\hat{\theta}$ by construction. Its symmetry is inherited from the symmetry of the limiting Gaussian distribution. Remove that symmetry or step outside the world where the approximation is valid, and the interval will generally no longer be symmetric.
+
+## A Closer Look
+
+We will now examine four common sources of confidence interval asymmetry.
+
+### Skewed Sampling Distributions
+
+Symmetry of the interval reflects symmetry of the sampling distribution, not symmetry of the data.
+
+Consider estimating a proportion $p$ from a binomial model. The MLE is $\hat{p} = X/n$. For moderate $n$ and $p$ near $0$ or $1$, the distribution of $\hat{p}$ is visibly skewed. A Wald interval,
+
+$$\hat{p} \pm z_{\alpha/2}\sqrt{\frac{\hat{p}(1-\hat{p})}{n}},$$
+
+may extend below $0$ or above $1$. That is a red flag: the procedure ignores the geometry of the parameter space.
+
+Score intervals and logit-transformed intervals are asymmetric in $p$ precisely because they respect this skewness and the $[0,1]$ constraint. The asymmetry is not a flaw—it is the correction.
+
+### Nonlinear Transformations
+
+Suppose $\phi = g(\theta)$ for a nonlinear $g$. Even if $\hat{\theta}$ is approximately normal, the distribution of
+
+$$\hat{\phi} = g(\hat{\theta})$$
+
+is generally not symmetric in finite samples.
+
+A first-order delta method approximation gives
+
+$$\sqrt{n}\big(\hat{\phi} - \phi\big)
+\;\overset{d}{\longrightarrow}\;
+\mathcal{N}\left(0, \big(g'(\theta)\big)^2 V(\theta)\right),
+$$
+
+which suggests a symmetric interval in $\phi$-space. However, mapping that interval back to $\theta$-space via $g^{-1}$ typically produces asymmetry.
+
+This is routine in practice. Log-scale confidence intervals for positive parameters (e.g., rate ratios, hazard ratios) are symmetric in $\log \theta$ but asymmetric in $\theta$. The asymmetry reflects curvature in $g$.
+
+### Likelihood-Based Intervals
+
+Likelihood-ratio intervals solve
+
+$$2\big(\ell(\hat{\theta}) - \ell(\theta)\big) \le \chi^2_{1,1-\alpha},$$
+
+where $\ell(\theta)$ is the log-likelihood. When $\ell(\theta)$ is not quadratic as is common in small samples or near boundaries, the resulting set is not symmetric around $\hat{\theta}$.
+
+The quadratic approximation that underlies Wald intervals is a second-order Taylor expansion. If the likelihood is skewed, the quadratic approximation inherits bias, and symmetric intervals misrepresent uncertainty.
+
+### Bootstrap Percentile Intervals
+
+Bootstrap percentile intervals are defined directly from empirical quantiles of the bootstrap distribution:
+
+$$C_{\text{perc}} = \left[
+\hat{\theta}^*_{(\alpha/2)},
+\hat{\theta}^*_{(1-\alpha/2)}
+\right],$$
+
+where $\hat{\theta}^*$ are bootstrap replicates.
+
+No symmetry is imposed. If the empirical distribution of $\hat{\theta}^*$ is skewed, the interval is skewed. This is often desirable: the procedure adapts to the shape of the sampling distribution.
+
+:::{.callout-note title="Algorithm: Percentile Bootstrap CI"}
+
+1.	Draw $B$ bootstrap samples by resampling with replacement.
+2.	Compute $\hat{\theta}^{*(b)}$ for each resample.
+3.	Form the interval from the empirical $\alpha/2$ and $1-\alpha/2$ quantiles of $\{\hat{\theta}^{*(b)}\}_{b=1}^B$.
+
+:::
+
+The percentile method is not universally optimal, but it makes the asymmetry explicit instead of suppressing it.
+
+## An Example
+
+We simulate from an exponential distribution, which is right-skewed. Even the (asymptotically normal) sample mean can have a noticeably skewed sampling distribution at moderate $n$.
+
+::::{.panel-tabset}
+
+## R
+
+```r
+set.seed(1988)
+
+# Generate 50 observations from Exp(1)
+x <- rexp(50, rate = 1)
+sample_mean <- mean(x)
+
+# Bootstrap distribution of the mean
+boot_means <- replicate(10000, mean(sample(x, replace = TRUE)))
+
+# Percentile CI
+ci_percentile <- quantile(boot_means, c(0.025, 0.975))
+
+# Symmetric normal approximation
+se <- sd(x) / sqrt(length(x))
+ci_symmetric <- c(sample_mean - 1.96 * se,
+                  sample_mean + 1.96 * se)
+
+lower_distance <- sample_mean - ci_percentile[1]
+upper_distance <- ci_percentile[2] - sample_mean
+
+print(lower_distance, upper_distance)
+```
+
+## Python
+
+```python
+import numpy as np
+
+np.random.seed(1988)
+
+# Generate 50 observations from Exp(1)
+x = np.random.exponential(scale=1.0, size=50)
+sample_mean = np.mean(x)
+
+# Bootstrap distribution of the mean
+boot_means = [
+    np.mean(np.random.choice(x, size=50, replace=True))
+    for _ in range(10000)
+]
+
+# Percentile CI
+ci_percentile = np.percentile(boot_means, [2.5, 97.5])
+
+# Symmetric normal approximation
+se = np.std(x, ddof=1) / np.sqrt(len(x))
+ci_symmetric = [
+    sample_mean - 1.96 * se,
+    sample_mean + 1.96 * se
+]
+
+lower_distance = sample_mean - ci_percentile[0]
+upper_distance = ci_percentile[1] - sample_mean
+
+print(lower_distance, upper_distance)
+```
+::::
+
+In typical runs, the upper distance exceeds the lower distance. The right tail of the exponential distribution propagates into the bootstrap distribution of the mean. The percentile interval reflects that skewness; the Wald interval does not.
+
+As $n$ grows, the central limit theorem compresses this asymmetry. At $n=50$, it is still visible. At $n=5000$, it is largely gone. The interval geometry tracks the sampling distribution geometry.
+
+## Bottom Line
+
+- Symmetric intervals arise from symmetric (often Gaussian) approximations; they are not a universal property of confidence intervals.
+- Skewness, nonlinear transformations, and boundary constraints naturally induce asymmetric intervals.
+- Likelihood-based and bootstrap methods often expose asymmetry that Wald intervals conceal.
+- If the parameter space or sampling distribution is asymmetric, an asymmetric interval is typically more faithful to the underlying uncertainty.
+
+## References
+
+Casella, G., & Berger, R. L. (2002). Statistical Inference.
+
+Efron, B., & Tibshirani, R. J. (1993). An Introduction to the Bootstrap.

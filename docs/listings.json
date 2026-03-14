@@ -2,6 +2,9 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/oracle-property.html",
+      "/blog/nonsymetric-conf-int.html",
+      "/blog/ols-fixed-random-x.html",
       "/blog/logit-randomized-experiments.html",
       "/blog/randomization-inference.html",
       "/blog/generalized-additive-models.html",
