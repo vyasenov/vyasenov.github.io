@@ -47,6 +47,7 @@ website:
 resources:
   - ../code/open-links-new-tab.js
   - ../code/back-to-top.js
+  - ../code/random-article.js
 
 format:
   html:
@@ -59,6 +60,7 @@ format:
       <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&product=inline-share-buttons' async='async'></script>
       <script src="../code/open-links-new-tab.js"></script>  
       <script src="../code/back-to-top.js"></script>
+      <script src="../code/random-article.js"></script>
       <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Source+Code+Pro&display=swap" rel="stylesheet">
     toc: true
     page-layout: full

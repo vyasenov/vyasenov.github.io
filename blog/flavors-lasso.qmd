@@ -1,0 +1,649 @@
+---
+title: "The Many Flavors of Lasso"
+date: "2026-03-14"
+categories: [machine learning, flavors]
+---
+
+## Background
+
+The Lasso (Least Absolute Shrinkage and Selection Operator), introduced by Tibshirani in 1996, has become one of the go-to tools for variable selection and shrinkage in regression problems. But the classic Lasso is just the starting point. Over the years, researchers have developed many variants of Lasso, each designed to address specific limitations or tailor the method to different kinds of data structures.
+
+This article provides a tour of the most popular flavors of Lasso — from standard $\ell_1$-penalized regression to modern adaptations like Adaptive Lasso, Elastic Net, Square-root Lasso, and more. For each version, we'll lay out the objective function, describe when it's applicable, and summarize its key characteristics.
+
+## Notation
+
+Before diving into the variants, let's revisit what makes Lasso special. In a standard linear regression setup, we model 
+$$y = X\beta + \epsilon,$$ 
+
+where:
+
+- $y$ is the outcome, 
+- $X$ is our design matrix, 
+- $\beta$ are the coefficients, and 
+- $\epsilon$ is the error term. 
+
+Traditional ordinary least squares (OLS) minimizes the sum of squared residuals without any constraint on the coefficients.
+
+## A Closer Look
+
+### Standard Lasso
+
+The standard Lasso solves the following optimization problem:
+$$
+\hat{\beta} = \arg \min_{\beta} \left( \frac{1}{2n} \| y - X \beta \|_2^2 + \lambda \| \beta \|_1 \right)
+$$
+
+The appeal of Lasso is straightforward: it trades a convex penalty for exact zeros in the solution. In moderately high dimensions, this often works surprisingly well as a first pass.
+
+The main issue shows up when predictors are correlated. Lasso will typically pick one variable from a correlated group and ignore the rest, and which one it picks can be unstable across folds or small perturbations of the data. At the same time, all coefficients are shrunk, including the large ones, which introduces bias that doesn’t go away even with large samples.
+
+In practice, I treat standard Lasso as a baseline rather than a final model. If it’s stable and predictive, great. If not, it’s usually pointing to a structural issue in the design.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(glmnet)
+
+# Simulate data
+set.seed(1988)
+n <- 100
+p <- 20
+X <- matrix(rnorm(n * p), n, p)
+beta_true <- c(3, -2, 1.5, rep(0, p - 3))  # Only 3 non-zero coefficients
+y <- X %*% beta_true + rnorm(n)
+
+# Fit standard Lasso
+lasso_fit <- glmnet(X, y, alpha = 1)  # alpha = 1 for Lasso
+
+# Cross-validation to select lambda
+cv_fit <- cv.glmnet(X, y, alpha = 1)
+lambda_opt <- cv_fit$lambda.min
+
+# Get coefficients at optimal lambda
+coef(cv_fit, s = "lambda.min")
+```
+
+#### Python
+```python
+from sklearn.linear_model import Lasso, LassoCV
+from sklearn.datasets import make_regression
+import numpy as np
+
+# Simulate data
+np.random.seed(1988)
+X, y, coef_true = make_regression(n_samples=100, n_features=20, 
+                                   n_informative=3, coef=True, 
+                                   noise=1.0, random_state=123)
+
+# Fit Lasso with cross-validation
+lasso = LassoCV(cv=5, random_state=123)
+lasso.fit(X, y)
+
+# Display results
+print(f"Optimal lambda: {lasso.alpha_:.4f}")
+print(f"Number of non-zero coefficients: {np.sum(lasso.coef_ != 0)}")
+print(f"Selected coefficients:\n{lasso.coef_[lasso.coef_ != 0]}")
+```
+::::
+
+### Adaptive Lasso
+
+Adaptive Lasso extends the standard Lasso by using data-driven weights for each coefficient:
+$$
+\hat{\beta} = \arg \min_{\beta} \left( \frac{1}{2n} \| y - X \beta \|_2^2 + \lambda \sum_{j=1}^p w_j | \beta_j | \right)
+$$
+where $w_j = 1 / |\hat{\beta}_j^{\text{init}}|^\gamma$ and $\hat{\beta}_j^{\text{init}}$ comes from an initial estimator like OLS or Ridge.
+
+The idea here is to penalize coefficients unevenly. Variables that look important in a first-stage model get penalized less, while weaker ones get pushed harder toward zero. This reduces the bias on large coefficients and improves variable selection consistency under certain conditions.
+
+In practice, Adaptive Lasso is less about prediction and more about recovering a meaningful support. If you care about which variables are selected—not just the predictive accuracy—it’s often worth the extra step.
+
+::::{.panel-tabset}
+
+#### R
+```r
+# Continue from previous example
+library(glmnet)
+
+# Step 1: Get initial estimates using Ridge
+ridge_fit <- glmnet(X, y, alpha = 0)  # alpha = 0 for Ridge
+cv_ridge <- cv.glmnet(X, y, alpha = 0)
+beta_init <- as.vector(coef(cv_ridge, s = "lambda.min"))[-1]  # Remove intercept
+
+# Step 2: Compute adaptive weights
+gamma <- 1  # Common choice
+weights <- 1 / (abs(beta_init) + 1e-8)^gamma  # Add small constant to avoid division by zero
+
+# Step 3: Fit Adaptive Lasso
+adaptive_lasso <- glmnet(X, y, alpha = 1, penalty.factor = weights)
+cv_adaptive <- cv.glmnet(X, y, alpha = 1, penalty.factor = weights)
+
+# Compare coefficients
+cat("Standard Lasso non-zero:", sum(coef(cv_fit, s = "lambda.min")[-1] != 0), "\n")
+cat("Adaptive Lasso non-zero:", sum(coef(cv_adaptive, s = "lambda.min")[-1] != 0), "\n")
+```
+
+#### Python
+```python
+from sklearn.linear_model import Ridge, Lasso
+
+# Step 1: Get initial estimates using Ridge
+ridge = Ridge(alpha=1.0)
+ridge.fit(X, y)
+beta_init = ridge.coef_
+
+# Step 2: Compute adaptive weights
+gamma = 1
+weights = 1 / (np.abs(beta_init) + 1e-8)**gamma
+
+# Step 3: Fit Adaptive Lasso (manual implementation via weighted penalty)
+# Scale features by weights
+X_weighted = X / weights
+
+# Fit Lasso on weighted features
+adaptive_lasso = Lasso(alpha=0.1)
+adaptive_lasso.fit(X_weighted, y)
+
+# Transform back to original scale
+adaptive_coef = adaptive_lasso.coef_ / weights
+
+print(f"Standard Lasso non-zero: {np.sum(lasso.coef_ != 0)}")
+print(f"Adaptive Lasso non-zero: {np.sum(adaptive_coef != 0)}")
+```
+::::
+
+### Relaxed Lasso
+
+Relaxed Lasso separates selection from estimation. First, run Lasso to pick variables; then refit on that subset, either with OLS or partial shrinkage via a parameter $\phi \in [0,1]$. At $\phi=0$ you recover Lasso, and at $\phi=1$ you get post-selection OLS.
+
+The point is to reduce shrinkage bias. Lasso is good at finding the support but tends to underestimate large coefficients. Relaxing the penalty after selection keeps sparsity while improving estimates.
+
+In practice, this works well when you trust the selected variables but want better coefficient accuracy. The main risk is overfitting if too many variables are selected, so it’s worth tuning both $\lambda$ and $\phi$.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(glmnet)
+library(relaxnet)  # For relaxed Lasso
+
+# Fit relaxed Lasso using glmnet (has built-in support)
+relaxed_fit <- glmnet(X, y, alpha = 1, relax = TRUE)
+cv_relaxed <- cv.glmnet(X, y, alpha = 1, relax = TRUE)
+
+# Manual two-stage approach
+# Stage 1: Standard Lasso selection
+lasso_coef <- coef(cv_fit, s = "lambda.min")[-1]
+selected <- which(lasso_coef != 0)
+
+# Stage 2: OLS on selected variables
+if (length(selected) > 0) {
+  X_selected <- X[, selected]
+  ols_fit <- lm(y ~ X_selected)
+  
+  # Compare coefficients
+  cat("Lasso coefficients (selected):\n")
+  print(lasso_coef[selected])
+  cat("\nRelaxed (OLS) coefficients:\n")
+  print(coef(ols_fit)[-1])
+}
+```
+
+#### Python
+```python
+# Manual two-stage relaxed Lasso
+from sklearn.linear_model import LinearRegression
+
+# Stage 1: Lasso selection
+lasso_coef = lasso.coef_
+selected = np.where(lasso_coef != 0)[0]
+
+print(f"Lasso selected {len(selected)} variables")
+
+# Stage 2: OLS on selected variables
+if len(selected) > 0:
+    X_selected = X[:, selected]
+    ols = LinearRegression()
+    ols.fit(X_selected, y)
+    
+    # Compare coefficient magnitudes
+    print(f"\nLasso coefficients (mean abs): {np.abs(lasso_coef[selected]).mean():.4f}")
+    print(f"Relaxed coefficients (mean abs): {np.abs(ols.coef_).mean():.4f}")
+    
+    # Often relaxed coefficients are larger in magnitude
+```
+::::
+
+### Square-root Lasso
+
+Square-root Lasso, also known as Scaled Lasso, modifies the objective function to:
+$$
+\hat{\beta} = \arg \min_{\beta} \left( \frac{1}{\sqrt{n}} \| y - X \beta \|_2 + \lambda \| \beta \|_1 \right)
+$$
+
+The crucial difference from standard Lasso is using the $\ell_2$ norm directly (without squaring) in the loss term. This seemingly small change has important consequences: the estimator becomes scale-invariant, meaning you don't need to estimate or know the error variance $\sigma^2$ to set the penalty parameter $\lambda$ appropriately. In standard Lasso, the optimal choice of $\lambda$ depends on the unknown noise level, but square-root Lasso eliminates this dependence.
+
+This variant is particularly valuable when you have unknown or heteroskedastic error variance, making it robust to variance misspecification. The scale-invariance also simplifies tuning: you can use theoretically-motivated choices for $\lambda$ without prior knowledge of the noise level. In practice, this often translates to more stable selection across different datasets and makes the method especially appealing in settings where variance estimation is challenging or the homoskedasticity assumption is questionable.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(scalreg)  # For square-root Lasso
+
+# Fit square-root Lasso
+sqrt_lasso <- scalreg(X, y)
+
+# Compare with standard Lasso
+cat("Standard Lasso selected:", sum(coef(cv_fit, s = "lambda.min")[-1] != 0), "variables\n")
+cat("Square-root Lasso selected:", sum(sqrt_lasso$coefficients != 0), "variables\n")
+```
+
+#### Python
+```python
+# Square-root Lasso is not in sklearn, but we can implement a simple version
+from sklearn.linear_model import LassoLars
+from scipy.optimize import minimize
+
+# Manual implementation using CVXPY (if available)
+try:
+    import cvxpy as cp
+    
+    # Define variables
+    beta = cp.Variable(X.shape[1])
+    
+    # Define objective: ||y - X*beta||_2 + lambda * ||beta||_1
+    lambda_sqrt = 0.1
+    objective = cp.Minimize(cp.norm(y - X @ beta, 2) + lambda_sqrt * cp.norm(beta, 1))
+    
+    # Solve
+    prob = cp.Problem(objective)
+    prob.solve()
+    
+    sqrt_lasso_coef = beta.value
+    print(f"Square-root Lasso selected {np.sum(np.abs(sqrt_lasso_coef) > 1e-6)} variables")
+    
+except ImportError:
+    print("Square-root Lasso requires cvxpy package")
+    print("Install with: pip install cvxpy")
+```
+::::
+
+### Elastic Net
+
+Elastic Net blends $\ell_1$ and $\ell_2$ regularization by minimizing:
+$$
+\hat{\beta} = \arg \min_{\beta} \left( \frac{1}{2n} \| y - X \beta \|_2^2 + \lambda_1 \| \beta \|_1 + \lambda_2 \| \beta \|_2^2 \right)
+$$
+
+This is often reparametrized as $\lambda \left[ \alpha \| \beta \|_1 + (1-\alpha) \| \beta \|_2^2 \right]$ where $\alpha \in [0,1]$ controls the mixing between $\ell_1$ and $\ell_2$ penalties.
+
+Elastic Net fixes a key issue with Lasso: when predictors are highly correlated, Lasso tends to pick one arbitrarily and ignore the rest. Adding an $\ell_2$ penalty induces a grouping effect, so correlated variables enter or leave together, while the $\ell_1$ term still enforces sparsity.
+
+This makes it a better default in settings with multicollinearity—common in practice. The mixing parameter $\alpha$ controls the trade-off: closer to 1 behaves like Lasso, closer to $0$ like Ridge. In practice, moderate values (e.g. $0.5$) work well, with cross-validation refining the choice.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(glmnet)
+
+# Create correlated predictors to demonstrate Elastic Net advantage
+set.seed(1988)
+n <- 100
+X_base <- matrix(rnorm(n * 5), n, 5)
+# Add correlated predictors
+X_corr <- cbind(X_base, X_base[, 1:2] + matrix(rnorm(n * 2, sd = 0.1), n, 2))
+beta_true <- c(2, -1.5, 0, 0, 0, 2.2, -1.3)  # True coefficients for correlated pairs
+y_corr <- X_corr %*% beta_true + rnorm(n)
+
+# Fit Elastic Net with alpha = 0.5 (equal mix of $\ell_1$ and $\ell_2$)
+elastic_fit <- cv.glmnet(X_corr, y_corr, alpha = 0.5)
+
+# Compare with pure Lasso (alpha = 1)
+lasso_corr <- cv.glmnet(X_corr, y_corr, alpha = 1)
+
+cat("Elastic Net coefficients:\n")
+print(coef(elastic_fit, s = "lambda.min"))
+cat("\nLasso coefficients:\n")
+print(coef(lasso_corr, s = "lambda.min"))
+```
+
+#### Python
+```python
+from sklearn.linear_model import ElasticNet, ElasticNetCV
+
+# Create correlated predictors
+np.random.seed(1988)
+n = 100
+X_base = np.random.randn(n, 5)
+X_corr = np.hstack([X_base, X_base[:, :2] + np.random.randn(n, 2) * 0.1])
+beta_true = np.array([2, -1.5, 0, 0, 0, 2.2, -1.3])
+y_corr = X_corr @ beta_true + np.random.randn(n)
+
+# Fit Elastic Net with $\ell_1$_ratio = 0.5 (equal mix)
+elastic = ElasticNetCV($\ell_1$_ratio=0.5, cv=5)
+elastic.fit(X_corr, y_corr)
+
+# Compare with Lasso
+lasso_corr = LassoCV(cv=5)
+lasso_corr.fit(X_corr, y_corr)
+
+print("Elastic Net coefficients:")
+print(elastic.coef_)
+print(f"\nElastic Net selected {np.sum(elastic.coef_ != 0)} variables")
+print(f"Lasso selected {np.sum(lasso_corr.coef_ != 0)} variables")
+```
+::::
+
+### Group Lasso
+
+Group Lasso extends the $\ell_1$ penalty to operate on predefined groups of variables:
+$$
+\hat{\beta} = \arg \min_{\beta} \left( \frac{1}{2n} \| y - X \beta \|_2^2 + \lambda \sum_{g=1}^G \| \beta^{(g)} \|_2 \right)
+$$
+where $\beta^{(g)}$ represents the coefficients belonging to group $g$, and $\| \cdot \|_2$ is the $\ell_2$ norm applied within each group.
+
+The key insight is that the $\ell_2$ norm within groups combined with summation across groups creates a sparsity-inducing penalty at the group level. Either all coefficients in a group are set to zero, or all are kept (though possibly shrunk). This "all or nothing" behavior respects the natural grouping structure in your data.
+
+Group Lasso is useful when variables come in meaningful groups. A common example is categorical features encoded as dummies—you usually want to include or exclude the whole variable, not individual levels. Similar structure appears in multi-task settings or grouped scientific measurements.
+
+Instead of sparsity at the coefficient level, Group Lasso selects entire groups while allowing dense coefficients within them. This makes the model align better with how features are constructed.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(grpreg)
+
+# Create data with natural groups
+# Suppose we have 3 categorical variables with 3, 4, and 5 levels
+set.seed(1988)
+n <- 100
+X1 <- model.matrix(~ factor(sample(1:3, n, replace = TRUE)) - 1)
+X2 <- model.matrix(~ factor(sample(1:4, n, replace = TRUE)) - 1)
+X3 <- model.matrix(~ factor(sample(1:5, n, replace = TRUE)) - 1)
+X_grouped <- cbind(X1, X2, X3)
+
+# Define groups (which columns belong to which group)
+groups <- c(rep(1, 3), rep(2, 4), rep(3, 5))
+
+# True model: only group 1 and 3 are relevant
+beta_true <- c(2, -1, 1.5, rep(0, 4), 1, -0.5, 0.8, 1.2, -1)
+y_grouped <- X_grouped %*% beta_true + rnorm(n)
+
+# Fit Group Lasso
+group_lasso <- cv.grpreg(X_grouped, y_grouped, group = groups, penalty = "grLasso")
+
+cat("Group Lasso coefficients by group:\n")
+coefs <- coef(group_lasso, s = "lambda.min")[-1]
+for (g in unique(groups)) {
+  cat(sprintf("Group %d: %d non-zero out of %d\n", 
+              g, sum(coefs[groups == g] != 0), sum(groups == g)))
+}
+```
+
+#### Python
+```python
+from sklearn.linear_model import MultiTaskLasso
+# Note: True group Lasso requires specialized packages
+# We'll demonstrate with a simplified example
+
+# Simulate grouped structure
+np.random.seed(1988)
+n = 100
+# Create 3 groups with 3, 4, 5 features each
+X_grouped = np.random.randn(n, 12)
+groups = np.array([1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3])
+
+# True coefficients (group 1 and 3 active, group 2 zero)
+beta_true = np.array([2, -1, 1.5, 0, 0, 0, 0, 1, -0.5, 0.8, 1.2, -1])
+y_grouped = X_grouped @ beta_true + np.random.randn(n)
+
+# For true Group Lasso, would need package like 'group-lasso' or 'celer'
+# Here we show conceptual grouping with manual implementation
+print("For Python Group Lasso, install specialized packages:")
+print("  pip install group-lasso")
+print("  pip install celer")
+```
+::::
+
+### Fused Lasso
+
+Fused Lasso adds a penalty on differences between adjacent coefficients:
+$$
+\hat{\beta} = \arg \min_{\beta} \left( \frac{1}{2n} \| y - X \beta \|_2^2 + \lambda_1 \| \beta \|_1 + \lambda_2 \sum_{j=2}^p | \beta_j - \beta_{j-1} | \right)
+$$
+
+This method introduces two types of penalties: the standard $\ell_1$ penalty $\lambda_1 \| \beta \|_1$ encourages overall sparsity (setting coefficients to zero), while the fusion penalty $\lambda_2 \sum_{j=2}^p | \beta_j - \beta_{j-1} |$ encourages adjacent coefficients to be equal. The fusion penalty means that nearby coefficients in the ordering are pulled toward each other, creating piecewise-constant patterns in the coefficient profile.
+
+Fused Lasso is useful when features have a natural ordering and coefficients are expected to vary smoothly or in blocks. Instead of treating coefficients independently, it encourages both sparsity and similarity between neighbors, leading to piecewise-constant patterns.
+
+This shows up in time series, spatial data, or ordered genomic features. The two penalties control the trade-off: $\lambda_1$ drives sparsity, while $\lambda_2$ controls how strongly adjacent coefficients are fused.
+
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(genlasso)
+
+# Simulate data with ordered features (e.g., time series or spatial)
+set.seed(1988)
+n <- 100
+p <- 50
+
+# Create design matrix with ordered features
+X_ordered <- matrix(rnorm(n * p), n, p)
+
+# True coefficients with piecewise constant structure
+beta_true <- c(rep(0, 10), rep(2, 15), rep(0, 10), rep(-1.5, 10), rep(0, 5))
+y_ordered <- X_ordered %*% beta_true + rnorm(n)
+
+# Fit Fused Lasso
+fused_fit <- fusedlasso(y_ordered, X_ordered)
+
+# Get coefficients at a specific lambda
+lambda_idx <- 50  # Example index
+coefs_fused <- coef(fused_fit, lambda = fused_fit$lambda[lambda_idx])$beta
+
+# Visualize coefficient profile
+plot(coefs_fused, type = "s", 
+     main = "Fused Lasso Coefficient Profile",
+     xlab = "Feature Index", ylab = "Coefficient",
+     col = "blue", lwd = 2)
+lines(beta_true, col = "red", lty = 2, lwd = 2)
+legend("topright", c("Estimated", "True"), 
+       col = c("blue", "red"), lty = c(1, 2))
+```
+
+#### Python
+```python
+# Fused Lasso implementation using sklearn and custom penalty
+from sklearn.linear_model import Lasso
+import matplotlib.pyplot as plt
+
+# Simulate ordered features
+np.random.seed(1988)
+n, p = 100, 50
+X_ordered = np.random.randn(n, p)
+
+# Piecewise constant true coefficients
+beta_true = np.concatenate([
+    np.zeros(10), np.full(15, 2), np.zeros(10), 
+    np.full(10, -1.5), np.zeros(5)
+])
+y_ordered = X_ordered @ beta_true + np.random.randn(n)
+
+# Standard Lasso (for comparison)
+lasso_ordered = Lasso(alpha=0.1)
+lasso_ordered.fit(X_ordered, y_ordered)
+
+# For true Fused Lasso, specialized packages needed
+# Conceptual visualization
+plt.figure(figsize=(10, 5))
+plt.plot(beta_true, 'r--', label='True', linewidth=2)
+plt.plot(lasso_ordered.coef_, 'b-', label='Standard Lasso', alpha=0.7)
+plt.xlabel('Feature Index')
+plt.ylabel('Coefficient Value')
+plt.title('Coefficient Profile: Fused Lasso Encourages Piecewise Constant Structure')
+plt.legend()
+plt.grid(alpha=0.3)
+plt.show()
+
+print("For true Fused Lasso in Python, consider packages:")
+print("  skfda (functional data analysis)")
+print("  or implement using cvxpy with fusion penalty")
+```
+::::
+
+### Graphical Lasso
+
+Graphical Lasso applies $\ell_1$ penalization to the estimation of precision matrices (inverse covariance matrices):
+$$
+\hat{\Theta} = \arg \min_{\Theta \succ 0} \left( -\log \det \Theta + \text{trace}(S \Theta) + \lambda \| \Theta \|_1 \right)
+$$
+where $\Theta$ is the precision matrix, $S$ is the sample covariance matrix, and $\Theta \succ 0$ ensures positive definiteness.
+
+Graphical Lasso shifts the focus from regression to covariance structure, estimating a sparse precision matrix. A zero entry $\Theta_{ij} = 0$ means variables $i$ and $j$ are conditionally independent given the rest, so the model directly encodes a network of relationships.
+
+This is useful when the goal is to recover dependency structure rather than predict an outcome—common in genomics, finance, or neuroscience. The $\ell_1$ penalty enforces sparsity, leading to interpretable graphs where most connections are absent. In practice, the main challenge is tuning $\lambda$ to balance fit and sparsity.
+
+::::{.panel-tabset}
+
+#### R
+```r
+library(glasso)
+library(igraph)
+
+# Simulate multivariate data
+set.seed(1988)
+n <- 100
+p <- 10
+
+# Create a sparse precision matrix (true network structure)
+Theta_true <- matrix(0, p, p)
+diag(Theta_true) <- 1
+# Add some conditional dependencies
+Theta_true[1, 2] <- Theta_true[2, 1] <- 0.5
+Theta_true[2, 3] <- Theta_true[3, 2] <- 0.4
+Theta_true[4, 5] <- Theta_true[5, 4] <- 0.6
+Theta_true[7, 8] <- Theta_true[8, 7] <- 0.3
+
+# Generate data from this precision matrix
+Sigma <- solve(Theta_true)
+X_network <- MASS::mvrnorm(n, mu = rep(0, p), Sigma = Sigma)
+
+# Compute sample covariance
+S <- cov(X_network)
+
+# Fit Graphical Lasso
+glasso_fit <- glasso(S, rho = 0.1)  # rho is the penalty parameter
+
+# Extract estimated precision matrix
+Theta_est <- glasso_fit$wi
+
+# Visualize network
+# Create adjacency matrix (thresholded)
+adj_matrix <- (abs(Theta_est) > 0.01) * 1
+diag(adj_matrix) <- 0
+
+# Plot network
+graph_obj <- graph_from_adjacency_matrix(adj_matrix, mode = "undirected")
+plot(graph_obj, 
+     main = "Estimated Conditional Dependence Network",
+     vertex.size = 20,
+     vertex.label.cex = 0.8)
+```
+
+#### Python
+```python
+from sklearn.covariance import GraphicalLassoCV
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Simulate multivariate data
+np.random.seed(1988)
+n, p = 100, 10
+
+# True sparse precision matrix
+Theta_true = np.eye(p)
+Theta_true[0, 1] = Theta_true[1, 0] = 0.5
+Theta_true[1, 2] = Theta_true[2, 1] = 0.4
+Theta_true[3, 4] = Theta_true[4, 3] = 0.6
+Theta_true[6, 7] = Theta_true[7, 6] = 0.3
+
+# Generate data
+Sigma = np.linalg.inv(Theta_true)
+X_network = np.random.multivariate_normal(np.zeros(p), Sigma, size=n)
+
+# Fit Graphical Lasso with cross-validation
+glasso = GraphicalLassoCV(cv=5)
+glasso.fit(X_network)
+
+# Get estimated precision matrix
+Theta_est = glasso.precision_
+
+# Visualize network
+plt.figure(figsize=(10, 5))
+
+# Create adjacency matrix (thresholded)
+adj_matrix = (np.abs(Theta_est) > 0.01).astype(int)
+np.fill_diagonal(adj_matrix, 0)
+
+# Plot using networkx
+G = nx.from_numpy_array(adj_matrix)
+pos = nx.spring_layout(G, seed=123)
+
+plt.subplot(1, 2, 1)
+nx.draw(G, pos, with_labels=True, node_color='lightblue', 
+        node_size=500, font_size=10, font_weight='bold')
+plt.title('Estimated Network Structure')
+
+# Show precision matrix heatmap
+plt.subplot(1, 2, 2)
+plt.imshow(Theta_est, cmap='RdBu_r', vmin=-1, vmax=1)
+plt.colorbar(label='Precision Matrix Entry')
+plt.title('Estimated Precision Matrix')
+plt.tight_layout()
+plt.show()
+
+print(f"Sparsity: {np.sum(np.abs(Theta_est) < 0.01) / p**2:.2%}")
+```
+::::
+
+## Bottom Line
+
+- The Lasso family has expanded to include specialized methods (e.g., Adaptive, Elastic Net, Group Lasso) that address unique challenges like bias reduction, feature correlation, grouping structures, and network discovery.
+- Selection depends on data characteristics—correlated predictors (Elastic Net), grouped features (Group Lasso), ordered data (Fused Lasso), or bias concerns (Adaptive/Relaxed Lasso)—while all share a core principle of sparsity-promoting penalization.
+- Despite their differences, all variants rely on penalized optimization to achieve simplicity, offering tailored solutions for different modeling needs.
+- Modern tools (R: `glmnet`, `grpreg`; Python: `scikit-learn`, `group-lasso`) make these methods widely available.
+
+## Where to Learn More
+
+For a comprehensive treatment of penalized regression methods, see "The Elements of Statistical Learning" by Hastie, Tibshirani, and Friedman (2009), which covers Lasso and many variants in detail. "Statistical Learning with Sparsity" by Hastie, Tibshirani, and Wainwright (2015) provides a more recent and focused treatment. For theoretical properties and high-dimensional asymptotics, Bühlmann and van de Geer's "Statistics for High-Dimensional Data" (2011) is excellent, but too technical and dense for most readers.
+
+## References
+
+- Belloni, A., Chernozhukov, V., & Wang, L. (2011). Square-root lasso: Pivotal recovery of sparse signals via conic programming. *Biometrika*, 98(4), 791–806.
+
+- Bühlmann, P., & van de Geer, S. (2011). *Statistics for High-Dimensional Data: Methods, Theory and Applications*. Springer.
+
+- Friedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. *Biostatistics*, 9(3), 432–441.
+
+- Hastie, T., Tibshirani, R., & Friedman, J. (2009). *The Elements of Statistical Learning: Data Mining, Inference, and Prediction* (2nd ed.). Springer.
+
+- Hastie, T., Tibshirani, R., & Wainwright, M. (2015). *Statistical Learning with Sparsity: The Lasso and Generalizations*. CRC Press.
+
+- Meinshausen, N. (2007). Relaxed lasso. *Computational Statistics & Data Analysis*, 52(1), 374–393.
+
+- Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. *Journal of the Royal Statistical Society: Series B (Methodological)*, 58(1), 267–288.
+
+- Tibshirani, R., Saunders, M., Rosset, S., Zhu, J., & Knight, K. (2005). Sparsity and smoothness via the fused lasso. *Journal of the Royal Statistical Society: Series B (Statistical Methodology)*, 67(1), 91–108.
+
+- Yuan, M., & Lin, Y. (2006). Model selection and estimation in regression with grouped variables. *Journal of the Royal Statistical Society: Series B (Statistical Methodology)*, 68(1), 49–67.
+
+- Zou, H., & Hastie, T. (2005). Regularization and variable selection via the elastic net. *Journal of the Royal Statistical Society: Series B (Statistical Methodology)*, 67(2), 301–320.
+
+- Zou, H. (2006). The adaptive lasso and its oracle properties. *Journal of the American Statistical Association*, 101(476), 1418–1429.

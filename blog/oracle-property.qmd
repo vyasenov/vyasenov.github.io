@@ -38,7 +38,11 @@ which is the same limiting distribution as the OLS estimator that knows $S$ in a
 
 If the support $S$ were known, estimation reduces to low-dimensional OLS on $X_S$. That estimator is unbiased, efficient, and easy to analyze. Some of you will remember the Gauss-Markov theorem from your econometrics course which states that, the OLS estimator is the best linear unbiased estimator (BLUE) under homoskedasticity.
 
-The oracle property asks: can a data-driven procedure simultaneously discover $S$ and then estimate as efficiently as if $S$ were given? This is an appealing theoretical benchmark for sparse estimators. You can hardly do better than that.
+::: {.callout-note title="Oracle Property Definition"}
+Can a data-driven procedure simultaneously discover $S$ and then estimate as efficiently as if $S$ were given?
+:::
+
+This is an appealing theoretical benchmark for sparse estimators. You can hardly do better than that.
 
 ### Which Methods Achieve It
 

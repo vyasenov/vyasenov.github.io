@@ -2,6 +2,7 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/flavors-lasso.html",
       "/blog/oracle-property.html",
       "/blog/nonsymetric-conf-int.html",
       "/blog/ols-fixed-random-x.html",
