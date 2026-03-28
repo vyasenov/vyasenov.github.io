@@ -56,9 +56,9 @@ a:hover {
     transform: translateX(10px); /* Move slightly to the right */
 }
 
-/* Hover effect on the Quarto category within eac blog post */
+/* Hover effect on the Quarto category within each blog post */
 .quarto-category:hover {
-    transform: translateY(-5px); /* Move slightly to the right */
+    transform: translateY(-5px); /* Move slightly up */
     transition: transform 0.5s ease; /* Slow down the animation to 0.5 seconds */
 }
 
