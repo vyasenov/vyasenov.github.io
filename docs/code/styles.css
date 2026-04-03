@@ -56,9 +56,9 @@ a:hover {
     transform: translateX(10px); /* Move slightly to the right */
 }
 
-/* Hover effect on the Quarto category within eac blog post */
+/* Hover effect on the Quarto category within each blog post */
 .quarto-category:hover {
-    transform: translateY(-5px); /* Move slightly to the right */
+    transform: translateY(-5px); /* Move slightly up */
     transition: transform 0.5s ease; /* Slow down the animation to 0.5 seconds */
 }
 
@@ -153,3 +153,55 @@ ul, ol {
 .research-item:hover {
     transform: translateY(-5px); /* Move the item slightly upward on hover */
 }
+
+/* Dark mode: code block background */
+body.quarto-dark div.sourceCode,
+body.quarto-dark pre.sourceCode,
+body.quarto-dark .panel-tabset pre,
+body.quarto-dark .sourceCode pre {
+    background-color: #1e2130;
+    border: 1px solid #333;
+}
+
+/* Dark mode: inline code */
+body.quarto-dark code:not(.sourceCode) {
+    background-color: #252840;
+    color: #e0e0f0;
+}
+
+/* Dark mode: override light syntax highlighting colors */
+body.quarto-dark pre > code.sourceCode > span,
+body.quarto-dark code.sourceCode > span,
+body.quarto-dark div.sourceCode,
+body.quarto-dark div.sourceCode pre.sourceCode,
+body.quarto-dark code span { color: #f8f8f2; }
+
+body.quarto-dark code span.al { color: #f07178; font-weight: bold; }
+body.quarto-dark code span.an { color: #d4d0ab; }
+body.quarto-dark code span.at { color: #00e0e0; }
+body.quarto-dark code span.bn { color: #d4d0ab; }
+body.quarto-dark code span.bu { color: #abe338; }
+body.quarto-dark code span.cf { color: #ffa07a; font-weight: bold; }
+body.quarto-dark code span.ch { color: #abe338; }
+body.quarto-dark code span.cn { color: #ffd700; }
+body.quarto-dark code span.co { color: #8a8a8a; font-style: italic; }
+body.quarto-dark code span.cv { color: #ffd700; }
+body.quarto-dark code span.do { color: #8a8a8a; }
+body.quarto-dark code span.dt { color: #ffa07a; }
+body.quarto-dark code span.dv { color: #d4d0ab; }
+body.quarto-dark code span.er { color: #f07178; text-decoration: underline; }
+body.quarto-dark code span.ex { color: #00e0e0; font-weight: bold; }
+body.quarto-dark code span.fl { color: #d4d0ab; }
+body.quarto-dark code span.fu { color: #ffa07a; }
+body.quarto-dark code span.im { color: #abe338; }
+body.quarto-dark code span.in { color: #d4d0ab; }
+body.quarto-dark code span.kw { color: #ffa07a; font-weight: bold; }
+body.quarto-dark code span.op { color: #ffa07a; }
+body.quarto-dark code span.ot { color: #00e0e0; }
+body.quarto-dark code span.pp { color: #dcc6e0; }
+body.quarto-dark code span.sc { color: #abe338; }
+body.quarto-dark code span.ss { color: #abe338; }
+body.quarto-dark code span.st { color: #abe338; }
+body.quarto-dark code span.va { color: #00e0e0; }
+body.quarto-dark code span.vs { color: #abe338; }
+body.quarto-dark code span.wa { color: #dcc6e0; }
