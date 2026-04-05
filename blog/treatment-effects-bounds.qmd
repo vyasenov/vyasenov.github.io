@@ -1,0 +1,178 @@
+---
+title: "Brief Overview of Treatment Effect Bounds"
+date: "2026-04-02"
+categories: [causal inference]
+---
+
+## Background
+
+In applied causal work, the real problem is often not estimation but identification. Attrition, imperfect take-up, endogenous selection, and missing outcomes can all make the average treatment effect impossible to point-identify from the data at hand. In those settings, a precise estimate is not a sign of rigor. It is usually a sign that strong assumptions have been smuggled in.
+
+Bounding methods take a more honest route. Rather than asking for the exact value of a treatment effect, they ask which values remain consistent with the observed data and a stated set of assumptions. The answer is an interval, not a point. That interval may be wide, but its width is itself informative: it tells you how much the design really buys you before additional structure is imposed.
+
+This is why I think treatment effect bounds are worth knowing even for practitioners who usually work with point estimators. They are useful both as primary estimands and as a diagnostic. If weak-assumption bounds are already tight, your design is doing real work. If they are wide, that is a warning against overconfident causal claims.
+
+## Notation
+
+For each unit $i$, let $Y_i(1)$ and $Y_i(0)$ denote the potential outcomes under treatment and control, and let $D_i \in \{0,1\}$ be the treatment indicator. When needed, I use $Z$ for an ordered instrument or covariate. The observed outcome is
+
+$$
+Y_i = D_i Y_i(1) + (1-D_i)Y_i(0).
+$$
+
+The target parameter is the average treatment effect
+
+$$
+\tau = \mathbb{E}[Y(1)-Y(0)].
+$$
+
+When $\tau$ is not point-identified, the object of interest becomes an identified set
+
+$$
+\tau \in [\underline{\tau}, \overline{\tau}],
+$$
+
+where the endpoints depend on the observed distribution and the maintained assumptions. A bound is *sharp* if every value in that interval is attainable under some data-generating process consistent with those assumptions. Sharp is always good!
+
+## A Closer Look
+
+### Manski Bounds
+
+Manski (1990) is the natural starting point because it assumes almost nothing beyond bounded outcomes. Suppose $Y \in [y_{\min}, y_{\max}]$, let $p = \mathbb{P}(D=1)$, and define
+
+$$
+\mu_1 = \mathbb{E}(Y \mid D=1), \qquad \mu_0 = \mathbb{E}(Y \mid D=0).
+$$
+
+Then the missing counterfactual means satisfy
+
+$$
+\mathbb{E}[Y(1)] \in \left[p\mu_1 + (1-p)y_{\min}, \; p\mu_1 + (1-p)y_{\max}\right]
+$$
+
+and
+
+$$
+\mathbb{E}[Y(0)] \in \left[(1-p)\mu_0 + py_{\min}, \; (1-p)\mu_0 + py_{\max}\right].
+$$
+
+Combining them gives sharp bounds on the ATE:
+
+$$
+\tau \in \left[
+\underline{\tau}, \overline{\tau}
+\right].
+$$
+
+where
+
+$$
+\underline{\tau} = p\mu_1 - (1-p)\mu_0 + (1-p)y_{\min} - py_{\max}
+$$
+
+and
+
+$$
+\overline{\tau} = p\mu_1 - (1-p)\mu_0 + (1-p)y_{\max} - py_{\min}.
+$$
+
+These bounds are usually wide, and that is exactly the point. Manski bounds tell you what the data alone can support before you add structure. In practice, I treat them as the baseline honesty check.
+
+### Tightening Manski: MTR, MTS, and MIV
+
+The usual next step is to ask whether credible qualitative restrictions can narrow the interval. Manski and Pepper (2000) study three of the most useful ones. My first job market paper as a PhD candidate employed these restrictions to tighten the Manski bounds in the context of the labor market impact of immigration. 
+
+First, under *Monotone Treatment Response (MTR)*, treatment weakly helps everyone:
+$$Y(1) \ge Y(0) \text{ for every unit }.$$
+
+MTR tightens the bounds by ruling out any configuration in which treatment hurts some units, so the lower bound rises and negative treatment effects become harder or impossible to sustain. For example, under MTR, $\mathbb{E}[Y(1)\mid D=0]$ cannot be below $\mu_0$ (each control's missing $Y(1)$ is at least that unit's observed $Y(0)$), not merely $y_{\min}$; and $\mathbb{E}[Y(0)\mid D=1]$ cannot exceed $\mu_1$.
+
+Second, under *Monotone Treatment Selection (MTS)*, treated units are systematically stronger than untreated units in terms of their potential outcomes. MTS tightens the bounds by imposing an ordering on who selects into treatment, so the observed outcomes in one group become informative about the missing potential outcomes in the other. For example, under MTS, $\mathbb{E}[Y(0)\mid D=1]$ is bounded below by $\mu_0$, not merely $y_{\min}$.
+
+$$
+\mathbb{E}[Y(d)\mid D=1] \ge \mathbb{E}[Y(d)\mid D=0], \qquad d \in \{0,1\}.
+$$
+
+Third, under a *Monotone Instrumental Variable (MIV)* assumption, an ordered variable $Z$ shifts potential outcomes in a known direction:
+
+$$
+\mathbb{E}[Y(d)\mid Z=z_1] \le \mathbb{E}[Y(d)\mid Z=z_2] \quad \text{for } z_1 \le z_2,\ d \in \{0,1\}.
+$$
+
+In words, MIV lets us use the ordering in $Z$ to intersect bounds across instrument values, which can noticeably shrink the identified set. These assumptions get more powerful as the data scientist combines them together. In some cases, the resulting interval can be informative.
+
+### Balke-Pearl Bounds for Noncompliance
+
+Balke and Pearl (1997) address randomized assignment with imperfect compliance. Instead of jumping directly to LATE under exclusion and monotonicity, they ask a broader question: what does the observed joint distribution of $(Y,D,Z)$ imply about the population treatment effect under weaker assumptions?
+
+The answer is a sharp nonparametric bound obtained by optimizing over all latent compliance-response types consistent with the observed data:
+
+$$
+\min_{q \in \mathcal{Q}(P_{YDZ})} \mathbb{E}_q[Y(1)-Y(0)]
+\;\le\;
+\tau
+\;\le\;
+\max_{q \in \mathcal{Q}(P_{YDZ})} \mathbb{E}_q[Y(1)-Y(0)].
+$$
+
+This is best viewed as a separation between what the experiment identifies and what extra assumptions identify. Balke-Pearl bounds are often much wider than a LATE estimate, but they answer a different question. LATE is a point-identified effect for compliers under stronger structure. Balke-Pearl bounds are partial-identification statements about broader causal quantities. When the policy question is about the full eligible population rather than compliers, that distinction matters.
+
+### Lee Bounds for Sample Selection
+
+Lee (2009) is the method I see most often in practice because the intuition is so transparent. Suppose treatment is randomized, but outcomes are only observed for selected units. Wages observed only for employed workers is the canonical example. If treatment changes employment, comparing observed wages across treatment arms is contaminated by selection.
+
+Lee's key assumption is *monotone selection*: treatment can move selection in only one direction for every unit. If treatment raises the probability of observation, then the treated group contains some "extra" observed units relative to control. Those units must be trimmed away from one tail or the other of the treated outcome distribution.
+
+Let $S$ indicate whether the outcome is observed and suppose $$\mathbb{P}(S=1 \mid D=1) > \mathbb{P}(S=1 \mid D=0)$$. The excess selected share in the treated group is
+
+$$
+\pi = \frac{\mathbb{P}(S=1 \mid D=1) - \mathbb{P}(S=1 \mid D=0)}{\mathbb{P}(S=1 \mid D=1)}.
+$$
+
+Trimming a fraction $\pi$ from the upper tail gives one bound; trimming it from the lower tail gives the other.
+
+:::: {.callout-note title="Algorithm:"}
+1. Compute the selection rate in each treatment arm.
+2. Identify the arm with the higher selection rate.
+3. Trim the excess share from one tail and then the other of that arm's observed outcome distribution.
+4. Compare the trimmed means to the mean outcome in the arm with the lower selection rate.
+::::
+
+I like Lee bounds because they are easy to explain and easy to audit. The practical warning is equally simple: if treatment plausibly pushes some units into the sample and others out, the monotone-selection logic breaks.
+<!-- 
+### MTE-Based Extrapolation
+
+Kowalski (2016) is slightly different in spirit. She presented this paper while I was in graduate school, so the idea stuck with me. The goal is not just to bound treatment effects under weak assumptions, but to say more about populations beyond compliers by adding structure through the marginal treatment effect framework. If $u$ indexes resistance to treatment take-up and $p(z)=\mathbb{P}(D=1\mid Z=z)$, then
+
+$$
+\text{ATE} = \int_0^1 \text{MTE}(u)\,du,
+\qquad
+\text{LATE}(z,z') = \frac{1}{p(z)-p(z')} \int_{p(z')}^{p(z)} \text{MTE}(u)\,du.
+$$
+
+The intuition is that standard IV identifies an average treatment effect only over the slice of the selection margin moved by the instrument. With additional structure, you can extrapolate beyond that slice. This can be useful when the policy question is about always-takers, never-takers, or external validity more broadly. I would not treat this as a first-line bounding strategy, but it is a useful next step once the limits of LATE become the real issue.
+-->
+## Bottom Line
+
+- Bounds are not a consolation prize. They are the right estimand when the data do not support point identification.
+- Manski bounds are the benchmark because they show what your design identifies before assumptions start doing the heavy lifting.
+- Monotonicity restrictions, Lee trimming, and Balke-Pearl bounds can be very informative, but only when their substantive assumptions are defensible.
+- Wide bounds are often the most important empirical result in the paper because they reveal how little the design alone can rule out.
+
+## Where to Learn More
+
+For a broad introduction, I would start with Manski's *Partial Identification of Probability Distributions*, which remains the cleanest entry point into the logic of identification regions. Manski and Pepper (2000) is the canonical reference for monotone restrictions such as MTR and MIV. Balke and Pearl (1997) is still the core paper for noncompliance bounds, while Lee (2009) is the practical workhorse for attrition and sample selection. <!-- Kowalski (2016) is useful once the conversation shifts from partial identification toward extrapolating beyond compliers. -->
+
+## References
+
+Balke, A., & Pearl, J. (1997). Bounds on treatment effects from studies with imperfect compliance. *Journal of the American Statistical Association*, 92(439), 1171-1176.
+
+Kowalski, A. E. (2016). Doing more when you're running LATE: Applying marginal treatment effect methods to examine treatment effect heterogeneity in experiments. *American Economic Journal: Applied Economics*, 8(2), 1-17.
+
+Lee, D. S. (2009). Training, wages, and sample selection: Estimating sharp bounds on treatment effects. *Review of Economic Studies*, 76(3), 1071-1102.
+
+Manski, C. F. (1990). Nonparametric bounds on treatment effects. *American Economic Review*, 80(2), 319-323.
+
+Manski, C. F. (2003). *Partial Identification of Probability Distributions*. Springer.
+
+Manski, C. F., & Pepper, J. V. (2000). Monotone instrumental variables: With an application to the returns to schooling. *Econometrica*, 68(4), 997-1010.

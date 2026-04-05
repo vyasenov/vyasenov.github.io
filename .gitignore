@@ -29,3 +29,10 @@ prompts.txt
 
 /.quarto/
 .cursor/
+
+# R session history
+.Rhistory
+
+# Claude Code local config and worktrees
+.claude/settings.local.json
+.claude/worktrees/
