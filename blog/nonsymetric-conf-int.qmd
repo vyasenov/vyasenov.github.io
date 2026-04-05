@@ -18,7 +18,7 @@ The goal of this note is to unpack where asymmetry comes from, when it is expect
 
 ## Notation
 
-Let $\theta \in \Theta \subset \mathbb{R}$ denote a scalar parameter of interest, and let $\hat{\theta} = \hat{\theta}(X_1,\dots,X_n)$ be an estimator.
+Let $\theta \in \Theta$ denote a scalar parameter of interest, and let $\hat{\theta} = \hat{\theta}(X_1,\dots,X_n)$ be an estimator.
 
 A $(1-\alpha)$ confidence interval is a random set $C(X)$ such that, by definition,
 

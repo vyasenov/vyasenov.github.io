@@ -7,7 +7,7 @@ I develop and apply causal inference and machine learning tools to solve complex
 
 _________
 
-I'm currently a Staff Data Scientist at [Adobe](https://business.adobe.com){target="_blank"} and a researcher at [Immigration Policy Lab](https://ipolab.stanford.edu){target="_blank"} at Stanford University.
+I'm currently a Staff Data Scientist at [Adobe](https://business.adobe.com){target="_blank"} and a researcher at [Immigration Policy Lab](https://immigrationlab.org/){target="_blank"} at Stanford University.
 
 Previously, I held postdoctoral positions at UC Berkeley and Stanford. My PhD dissertation (Econ '17) combined natural experiments with innovative statistical methods to study the wage/employment effects of immigration and the consequences of [double-shift](https://en.wikipedia.org/wiki/Double_shift_school){target="_blank"} schooling systems.
 

@@ -2,6 +2,8 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/treatment-effects-bounds.html",
+      "/blog/interpret-OLS-causal-inference.html",
       "/blog/flavors-lasso.html",
       "/blog/oracle-property.html",
       "/blog/nonsymetric-conf-int.html",
