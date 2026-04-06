@@ -92,7 +92,7 @@ So if treated units are rare, OLS tends to lean toward effects for treated units
 
 This is one of those results that sounds surprising at first and obvious in hindsight. Regression learns treatment effects from residual variation in treatment status. When one group is small, comparisons involving that group carry disproportionate identifying content. The practical implication is straightforward: if you care specifically about the ATE or ATT, you should not assume OLS is giving it to you just because the regression includes controls.
 
-### Angrist: Saturated Model View
+### Angrist and Pischke: Saturated Model View
 
 The cleanest interpretation of regression comes from saturated models with discrete covariates, an approach emphasized by Angrist and coauthors. If $X$ takes only a small number of values and the regression fully saturates those cells, then OLS is just averaging within-cell treatment-control differences. In that case, regression is a dressed-up version of exact matching.
 
@@ -108,11 +108,11 @@ That perspective is helpful because it shows where the causal content comes from
 
 ## Where to Learn More
 
-Aronow and Samii (2016) is the right place to start if you want the representativeness argument behind regression adjustment. Chattopadhyay and Zubizarreta (2023) is the most useful paper for understanding exact implied weights in finite samples. Słoczyński (2022) is now the canonical reference on how heterogeneous treatment effects distort the interpretation of the OLS coefficient. For the saturated-regression perspective, I would still point readers to Angrist and Hahn (1999), which makes clear why exact matching logic breaks down once covariates become continuous.
+Aronow and Samii (2016) is the right place to start if you want the representativeness argument behind regression adjustment. Chattopadhyay and Zubizarreta (2023) is the most useful paper for understanding exact implied weights in finite samples. Słoczyński (2022) is now the canonical reference on how heterogeneous treatment effects distort the interpretation of the OLS coefficient. For the saturated-regression perspective, I would still point readers to Angrist and Pischke (2009), which makes clear why exact matching logic breaks down once covariates become continuous.
 
 ## References
 
-Angrist, J. D., & Hahn, J. (1999). When to control for covariates? Panel-asymptotic results for estimates of treatment effects. *NBER Technical Working Paper* 0241.
+Angrist, J. D., & Pischke, J. S. (2009). Mostly harmless econometrics: An empiricist's companion. *Princeton university press*.
 
 Aronow, P. M., & Samii, C. (2016). Does regression produce representative estimates of causal effects? *American Journal of Political Science*, 60(1), 250-267.
 

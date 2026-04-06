@@ -81,7 +81,7 @@ gtag('js', new Date());
 gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 </script>
 <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&amp;product=inline-share-buttons" async="async"></script>
-<script src="../code/open-links-new-tab.js"></script>  
+<script src="../code/open-links-new-tab.js"></script>
 <script src="../code/back-to-top.js"></script>
 <script src="../code/random-article.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
@@ -376,10 +376,10 @@ window.Quarto = {
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
   <li><a href="#regression-is-a-projection-not-a-causal-model" id="toc-regression-is-a-projection-not-a-causal-model" class="nav-link" data-scroll-target="#regression-is-a-projection-not-a-causal-model">Regression Is a Projection, Not a Causal Model</a></li>
-  <li><a href="#aronow-and-samii-the-effective-sample-is-weighted" id="toc-aronow-and-samii-the-effective-sample-is-weighted" class="nav-link" data-scroll-target="#aronow-and-samii-the-effective-sample-is-weighted">Aronow and Samii: The Effective Sample Is Weighted</a></li>
-  <li><a href="#chattopadhyay-and-zubizarreta-exact-finite-sample-weights" id="toc-chattopadhyay-and-zubizarreta-exact-finite-sample-weights" class="nav-link" data-scroll-target="#chattopadhyay-and-zubizarreta-exact-finite-sample-weights">Chattopadhyay and Zubizarreta: Exact Finite-Sample Weights</a></li>
-  <li><a href="#słoczyński-heterogeneous-effects-change-the-target" id="toc-słoczyński-heterogeneous-effects-change-the-target" class="nav-link" data-scroll-target="#słoczyński-heterogeneous-effects-change-the-target">Słoczyński: Heterogeneous Effects Change the Target</a></li>
-  <li><a href="#angrists-saturated-model-view" id="toc-angrists-saturated-model-view" class="nav-link" data-scroll-target="#angrists-saturated-model-view">Angrist’s Saturated-Model View</a></li>
+  <li><a href="#aronow-and-samii-asymptotic-view" id="toc-aronow-and-samii-asymptotic-view" class="nav-link" data-scroll-target="#aronow-and-samii-asymptotic-view">Aronow and Samii: Asymptotic View</a></li>
+  <li><a href="#chattopadhyay-and-zubizarreta-finite-sample-view" id="toc-chattopadhyay-and-zubizarreta-finite-sample-view" class="nav-link" data-scroll-target="#chattopadhyay-and-zubizarreta-finite-sample-view">Chattopadhyay and Zubizarreta: Finite-Sample View</a></li>
+  <li><a href="#słoczyński-heterogeneous-effects-view" id="toc-słoczyński-heterogeneous-effects-view" class="nav-link" data-scroll-target="#słoczyński-heterogeneous-effects-view">Słoczyński: Heterogeneous Effects View</a></li>
+  <li><a href="#angrist-and-pischke-saturated-model-view" id="toc-angrist-and-pischke-saturated-model-view" class="nav-link" data-scroll-target="#angrist-and-pischke-saturated-model-view">Angrist and Pischke: Saturated Model View</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -426,9 +426,11 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>OLS is still the default causal estimator in a surprising amount of applied work. That is not crazy. Regression is simple, transparent, and often a reasonable first pass. The problem is interpretation. Once we move beyond randomized experiments with additive constant effects, the coefficient on treatment is not automatically the average treatment effect, or even an average treatment effect for a population we care about.</p>
-<p>What makes this topic tricky is that there are really two separate questions. First, what population quantity does the OLS coefficient target? Second, under what assumptions can that quantity be interpreted causally? Those are not the same question. OLS itself does not assume a potential outcomes framework. It solves a least-squares projection problem. Potential outcomes enter only when we try to map that projection coefficient to objects like the ATE, ATT, or ATU.</p>
-<p>Several papers sharpen this distinction. Aronow and Samii (2016) show that regression adjustment can be understood as targeting a weighted causal estimand, but their characterization is asymptotic. Chattopadhyay and Zubizarreta (2023) derive exact finite-sample implied weights. Słoczyński (2022) shows that with heterogeneous treatment effects the OLS coefficient becomes a weighted average of group-specific effects, often interpretable as effects for treated and untreated units, with the smaller group receiving more weight. Taken together, these results explain both why OLS can be useful and why its causal interpretation is often more delicate than practitioners realize.</p>
+<p>OLS is still the default causal estimator in a surprising amount of applied work. That is often understandable. Regression is simple, transparent, and often a reasonable first pass. The problem is interpretation. Once we move beyond randomized experiments with additive constant effects, the coefficient on treatment is not automatically the average treatment effect (ATE), or even an average treatment effect for a population we care about.</p>
+<p>What makes this topic tricky is that there are really two separate questions. First, what population quantity does the OLS coefficient target? Second, under what assumptions can that quantity be interpreted causally? OLS itself does not assume a potential outcomes framework. It solves a least-squares projection problem. Potential outcomes enter only when we try to map that projection coefficient to objects like the ATE, ATT, or ATU.</p>
+<p>Several somewhat related papers sharpen this distinction. This note provides a brief overview of some of the key developments in our understanding of OLS in causal inference. Taken together, these results explain both why OLS can be useful and why its causal interpretation is often more delicate than practitioners realize.</p>
+<!-- Aronow and Samii (2016) show that regression adjustment can be understood as targeting a weighted causal estimand, but their characterization is asymptotic. Chattopadhyay and Zubizarreta (2023) derive exact finite-sample implied weights. Słoczyński (2022) shows that with heterogeneous treatment effects the OLS coefficient becomes a weighted average of group-specific effects, often interpretable as effects for treated and untreated units, with the smaller group receiving more weight. 
+-->
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
@@ -454,7 +456,8 @@ Y_i = \alpha + \tau_{\text{OLS}} D_i + X_i'\beta + u_i.
 \qquad
 V_i = D_i - \mathbb{L}(D_i\mid X_i),
 \]</span></p>
-<p>where <span class="math inline">\(\mathbb{L}(D_i\mid X_i)\)</span> is the best linear predictor of <span class="math inline">\(D_i\)</span> using <span class="math inline">\(X_i\)</span>. This expression is purely statistical. The causal question is whether <span class="math inline">\(\tau_{\text{OLS}}\)</span> coincides with a treatment effect parameter under additional assumptions.</p>
+<p>where <span class="math inline">\(\mathbb{L}(D_i\mid X_i)\)</span> is the best linear predictor of <span class="math inline">\(D_i\)</span> using <span class="math inline">\(X_i\)</span>. This expression is purely statistical.</p>
+<p>The causal question is whether <span class="math inline">\(\tau_{\text{OLS}}\)</span> coincides with a treatment effect parameter under additional assumptions.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
@@ -467,13 +470,13 @@ Y_i = \alpha + \tau D_i + X_i'\beta + u_i
 <p>does not, by itself, assume homogeneous treatment effects or even invoke potential outcomes. It simply defines the best linear predictor of <span class="math inline">\(Y\)</span> given <span class="math inline">\(D\)</span> and <span class="math inline">\(X\)</span>. If the goal is prediction, that is the end of the story.</p>
 <p>For causal interpretation, however, we need more. Under random assignment or selection on observables, plus enough structure on how outcomes vary with <span class="math inline">\(X\)</span>, the projection coefficient may line up with a causal estimand. Under constant treatment effects and correct linear adjustment, that estimand is often the ATE. Once treatment effects vary with <span class="math inline">\(X\)</span>, the coefficient generally becomes a weighted average of heterogeneous effects rather than the plain sample average.</p>
 </section>
-<section id="aronow-and-samii-the-effective-sample-is-weighted" class="level3">
-<h3 class="anchored" data-anchor-id="aronow-and-samii-the-effective-sample-is-weighted">Aronow and Samii: The Effective Sample Is Weighted</h3>
+<section id="aronow-and-samii-asymptotic-view" class="level3">
+<h3 class="anchored" data-anchor-id="aronow-and-samii-asymptotic-view">Aronow and Samii: Asymptotic View</h3>
 <p>Aronow and Samii (2016) show that regression-adjusted estimators need not be representative of the sample as a whole. In large samples, the estimand targeted by regression can be written as a weighted average of conditional treatment effects, where the weights depend on how treatment assignment varies with covariates and on the linear adjustment built into the regression.</p>
-<p>The key practical point is that OLS does not weight covariate strata equally. Covariate values where treatment residual variation is larger after adjusting for <span class="math inline">\(X\)</span> get more leverage. So even under ignorability, the regression coefficient need not correspond to the ATE for the empirical covariate distribution. It is often better understood as an ATE for an implicit reweighted population. That is a subtle point, but it matters whenever overlap is uneven or the linear model fits some regions of the covariate space much better than others.</p>
+<p>The key practical point is that OLS does not weight covariate strata equally. These weights are proportional to residualized treatment variation (via FWL), not to the precision of outcome estimates. In particular, they do not correspond to inverse-variance weights in general. So even under ignorability, the regression coefficient need not correspond to the ATE for the empirical covariate distribution. It is often better understood as an ATE for an implicit reweighted population. That is a subtle point, but it matters whenever overlap is uneven or the linear model fits some regions of the covariate space much better than others.</p>
 </section>
-<section id="chattopadhyay-and-zubizarreta-exact-finite-sample-weights" class="level3">
-<h3 class="anchored" data-anchor-id="chattopadhyay-and-zubizarreta-exact-finite-sample-weights">Chattopadhyay and Zubizarreta: Exact Finite-Sample Weights</h3>
+<section id="chattopadhyay-and-zubizarreta-finite-sample-view" class="level3">
+<h3 class="anchored" data-anchor-id="chattopadhyay-and-zubizarreta-finite-sample-view">Chattopadhyay and Zubizarreta: Finite-Sample View</h3>
 <p>One limitation of the Aronow-Samii perspective is that it is asymptotic. Chattopadhyay and Zubizarreta (2023) go further by showing that common linear regression estimators admit exact finite-sample weighting representations. For a regression-adjusted ATE estimator,</p>
 <p><span class="math display">\[
 \hat{\tau}_{\text{OLS}} = \sum_{i:D_i=1} w_i^{(1)}Y_i - \sum_{i:D_i=0} w_i^{(0)}Y_i,
@@ -481,16 +484,16 @@ Y_i = \alpha + \tau D_i + X_i'\beta + u_i
 <p>where the weights are functions of only <span class="math inline">\(D\)</span> and <span class="math inline">\(X\)</span>, not the realized outcomes.</p>
 <p>This is useful for two reasons. First, it makes regression adjustment look less mysterious: OLS is implicitly constructing a weighted comparison between treated and control outcomes. Second, the implied weights can be inspected directly. In their framework, the weights clarify when regression adjustment achieves exact balance on included covariates, how dispersed the weights are, and whether the regression is targeting a population that still looks like the observed sample. That is a much more practical diagnostic than simply reporting a coefficient table.</p>
 </section>
-<section id="słoczyński-heterogeneous-effects-change-the-target" class="level3">
-<h3 class="anchored" data-anchor-id="słoczyński-heterogeneous-effects-change-the-target">Słoczyński: Heterogeneous Effects Change the Target</h3>
+<section id="słoczyński-heterogeneous-effects-view" class="level3">
+<h3 class="anchored" data-anchor-id="słoczyński-heterogeneous-effects-view">Słoczyński: Heterogeneous Effects View</h3>
 <p>Słoczyński (2022) asks what the OLS coefficient means when treatment effects are heterogeneous. His central result is that the coefficient on treatment is generally not the ATE. Instead, it is a convex combination of two group-specific effect parameters that, under additional conditions, can be interpreted as the ATT and the ATU. The striking part is the weighting: the smaller treatment arm gets the larger implicit weight.</p>
 <p>So if treated units are rare, OLS tends to lean toward effects for treated units. If treated units are common, it leans toward effects for untreated units. The exact formula depends on the specification and on how treatment assignment varies with covariates, but the qualitative message is robust: heterogeneity changes the target, and OLS can overweight the effect for the smaller group.</p>
 <p>This is one of those results that sounds surprising at first and obvious in hindsight. Regression learns treatment effects from residual variation in treatment status. When one group is small, comparisons involving that group carry disproportionate identifying content. The practical implication is straightforward: if you care specifically about the ATE or ATT, you should not assume OLS is giving it to you just because the regression includes controls.</p>
 </section>
-<section id="angrists-saturated-model-view" class="level3">
-<h3 class="anchored" data-anchor-id="angrists-saturated-model-view">Angrist’s Saturated-Model View</h3>
+<section id="angrist-and-pischke-saturated-model-view" class="level3">
+<h3 class="anchored" data-anchor-id="angrist-and-pischke-saturated-model-view">Angrist and Pischke: Saturated Model View</h3>
 <p>The cleanest interpretation of regression comes from saturated models with discrete covariates, an approach emphasized by Angrist and coauthors. If <span class="math inline">\(X\)</span> takes only a small number of values and the regression fully saturates those cells, then OLS is just averaging within-cell treatment-control differences. In that case, regression is a dressed-up version of exact matching.</p>
-<p>That perspective is helpful because it shows where the causal content comes from. The coefficient is credible when comparisons are being made within genuinely comparable covariate cells. But it also shows the limitation immediately: with continuous or high-dimensional covariates, literal saturation is impossible. At that point, OLS is no longer exact within-cell adjustment. It is a parametric approximation that extrapolates across covariate values. That is often reasonable, but it is no longer harmless.</p>
+<p>That perspective is helpful because it shows where the causal content comes from. The coefficient is credible when comparisons are being made within genuinely comparable covariate cells. But it also shows the limitation immediately: with continuous or high-dimensional covariates, literal saturation is impossible and the argument breaks down. At that point, OLS is no longer exact within-cell adjustment. It is a parametric approximation that extrapolates across covariate values. That is often reasonable, but it is no longer harmless.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
@@ -505,11 +508,11 @@ Y_i = \alpha + \tau D_i + X_i'\beta + u_i
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Aronow and Samii (2016) is the right place to start if you want the representativeness argument behind regression adjustment. Chattopadhyay and Zubizarreta (2023) is the most useful paper for understanding exact implied weights in finite samples. Słoczyński (2022) is now the canonical reference on how heterogeneous treatment effects distort the interpretation of the OLS coefficient. For the saturated-regression perspective, I would still point readers to Angrist and Hahn (1999), which makes clear why exact matching logic breaks down once covariates become continuous.</p>
+<p>Aronow and Samii (2016) is the right place to start if you want the representativeness argument behind regression adjustment. Chattopadhyay and Zubizarreta (2023) is the most useful paper for understanding exact implied weights in finite samples. Słoczyński (2022) is now the canonical reference on how heterogeneous treatment effects distort the interpretation of the OLS coefficient. For the saturated-regression perspective, I would still point readers to Angrist and Pischke (2009), which makes clear why exact matching logic breaks down once covariates become continuous.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Angrist, J. D., &amp; Hahn, J. (1999). When to control for covariates? Panel-asymptotic results for estimates of treatment effects. <em>NBER Technical Working Paper</em> 0241.</p>
+<p>Angrist, J. D., &amp; Pischke, J. S. (2009). Mostly harmless econometrics: An empiricist’s companion. <em>Princeton university press</em>.</p>
 <p>Aronow, P. M., &amp; Samii, C. (2016). Does regression produce representative estimates of causal effects? <em>American Journal of Political Science</em>, 60(1), 250-267.</p>
 <p>Chattopadhyay, A., &amp; Zubizarreta, J. R. (2023). On the implied weights of linear regression for causal inference. <em>Biometrika</em>, 110(3), 615-629.</p>
 <p>Słoczyński, T. (2022). Interpreting OLS estimands when treatment effects are heterogeneous: Smaller groups get larger weights. <em>Review of Economics and Statistics</em>, 104(3), 501-509.</p>
