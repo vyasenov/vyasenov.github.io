@@ -18,6 +18,6 @@ em;">
 :::
 
 ::: {.g-col-6}
-![](images/vas.png){style="max-width: 250px; border-radius: 8px;"}
+![](files/vas.png){style="max-width: 250px; border-radius: 8px;"}
 :::
 :::

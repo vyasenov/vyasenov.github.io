@@ -171,7 +171,7 @@ print(f"Pearson Correlation: {cor_value:.3f}")
 
 ::::
 
-![](../images/mutual_info_overview.png)
+![](../files/mutual_info_overview.png)
 
 The left matrix displays the MI results and the right one shows the standard (Pearson) correlation values. The default scales are different, so one should compare the values and not the colors. Indeed, the variable pairs with negative linear correlation also have the lowest MI values.
 

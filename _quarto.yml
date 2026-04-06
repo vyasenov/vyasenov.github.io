@@ -57,8 +57,7 @@ format:
     css: 
       - code/styles.css
     header-includes: |
-      <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&product=inline-share-buttons' async='async'></script>
-      <script src="../code/open-links-new-tab.js"></script>  
+      <script src="../code/open-links-new-tab.js"></script>
       <script src="../code/back-to-top.js"></script>
       <script src="../code/random-article.js"></script>
       <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Source+Code+Pro&display=swap" rel="stylesheet">
@@ -66,6 +65,4 @@ format:
     page-layout: full
     includes: 
       after-body: 
-        - ../_includes/comments.html
-        - text: |
-            <button id="back-to-top" onclick="scrollToTop()">↑</button>
+        - code/site-after-body.html

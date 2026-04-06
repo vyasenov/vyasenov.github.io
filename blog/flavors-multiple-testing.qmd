@@ -205,7 +205,7 @@ Time will show whether any of these newcomers will come to dominate in practice.
 
 I used the popular Titanic dataset ($n=889$) to illustrate some of the methods I discussed above. Check the Kaggle website carefully for the descriptions of each variable. The outcome/response variable, `survived`, indicated whether the passenger survived the disaster (mean=$0.382$), while the predictors included demographic characteristics (e.g., `age`, `gender`) as well as some information about the travel ticket (e.g., `cabin number`, `fare`).
 
-![Number of Statistically Significant Variables](../images/multiple-testing.png)
+![Number of Statistically Significant Variables](../files/multiple-testing.png)
 
 Here is a table of the $p$-values for each feature and various MH adjustments.
 

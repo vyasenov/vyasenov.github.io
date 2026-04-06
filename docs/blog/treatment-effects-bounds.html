@@ -379,9 +379,7 @@ window.Quarto = {
   <li><a href="#tightening-manski-mtr-mts-and-miv" id="toc-tightening-manski-mtr-mts-and-miv" class="nav-link" data-scroll-target="#tightening-manski-mtr-mts-and-miv">Tightening Manski: MTR, MTS, and MIV</a></li>
   <li><a href="#balke-pearl-bounds-for-noncompliance" id="toc-balke-pearl-bounds-for-noncompliance" class="nav-link" data-scroll-target="#balke-pearl-bounds-for-noncompliance">Balke-Pearl Bounds for Noncompliance</a></li>
   <li><a href="#lee-bounds-for-sample-selection" id="toc-lee-bounds-for-sample-selection" class="nav-link" data-scroll-target="#lee-bounds-for-sample-selection">Lee Bounds for Sample Selection</a></li>
-  <li><a href="#mte-based-extrapolation" id="toc-mte-based-extrapolation" class="nav-link" data-scroll-target="#mte-based-extrapolation">MTE-Based Extrapolation</a></li>
   </ul></li>
-  <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -532,21 +530,19 @@ Algorithm:
 </ol>
 </div>
 </div>
-<p>I like Lee bounds because they are easy to explain and easy to audit. The practical warning is equally simple: if treatment plausibly pushes some units into the sample and others out, the monotone-selection logic breaks.</p>
-</section>
-<section id="mte-based-extrapolation" class="level3">
-<h3 class="anchored" data-anchor-id="mte-based-extrapolation">MTE-Based Extrapolation</h3>
-<p>Kowalski (2016) is slightly different in spirit. She presented this paper while I was in graduate school, so the idea stuck with me. The goal is not just to bound treatment effects under weak assumptions, but to say more about populations beyond compliers by adding structure through the marginal treatment effect framework. If <span class="math inline">\(u\)</span> indexes resistance to treatment take-up and <span class="math inline">\(p(z)=\mathbb{P}(D=1\mid Z=z)\)</span>, then</p>
-<p><span class="math display">\[
+<p>I like Lee bounds because they are easy to explain and easy to audit. The practical warning is equally simple: if treatment plausibly pushes some units into the sample and others out, the monotone-selection logic breaks. <!-- 
+### MTE-Based Extrapolation
+
+Kowalski (2016) is slightly different in spirit. She presented this paper while I was in graduate school, so the idea stuck with me. The goal is not just to bound treatment effects under weak assumptions, but to say more about populations beyond compliers by adding structure through the marginal treatment effect framework. If $u$ indexes resistance to treatment take-up and $p(z)=\mathbb{P}(D=1\mid Z=z)$, then
+
+$$
 \text{ATE} = \int_0^1 \text{MTE}(u)\,du,
 \qquad
 \text{LATE}(z,z') = \frac{1}{p(z)-p(z')} \int_{p(z')}^{p(z)} \text{MTE}(u)\,du.
-\]</span></p>
-<p>The intuition is that standard IV identifies an average treatment effect only over the slice of the selection margin moved by the instrument. With additional structure, you can extrapolate beyond that slice. This can be useful when the policy question is about always-takers, never-takers, or external validity more broadly. I would not treat this as a first-line bounding strategy, but it is a useful next step once the limits of LATE become the real issue.</p>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+$$
+
+The intuition is that standard IV identifies an average treatment effect only over the slice of the selection margin moved by the instrument. With additional structure, you can extrapolate beyond that slice. This can be useful when the policy question is about always-takers, never-takers, or external validity more broadly. I would not treat this as a first-line bounding strategy, but it is a useful next step once the limits of LATE become the real issue.
+--> ## Bottom Line</p>
 <ul>
 <li>Bounds are not a consolation prize. They are the right estimand when the data do not support point identification.</li>
 <li>Manski bounds are the benchmark because they show what your design identifies before assumptions start doing the heavy lifting.</li>
@@ -554,9 +550,10 @@ Algorithm:
 <li>Wide bounds are often the most important empirical result in the paper because they reveal how little the design alone can rule out.</li>
 </ul>
 </section>
+</section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>For a broad introduction, I would start with Manski’s <em>Partial Identification of Probability Distributions</em>, which remains the cleanest entry point into the logic of identification regions. Manski and Pepper (2000) is the canonical reference for monotone restrictions such as MTR and MIV. Balke and Pearl (1997) is still the core paper for noncompliance bounds, while Lee (2009) is the practical workhorse for attrition and sample selection. Kowalski (2016) is useful once the conversation shifts from partial identification toward extrapolating beyond compliers.</p>
+<p>For a broad introduction, I would start with Manski’s <em>Partial Identification of Probability Distributions</em>, which remains the cleanest entry point into the logic of identification regions. Manski and Pepper (2000) is the canonical reference for monotone restrictions such as MTR and MIV. Balke and Pearl (1997) is still the core paper for noncompliance bounds, while Lee (2009) is the practical workhorse for attrition and sample selection. <!-- Kowalski (2016) is useful once the conversation shifts from partial identification toward extrapolating beyond compliers. --></p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>

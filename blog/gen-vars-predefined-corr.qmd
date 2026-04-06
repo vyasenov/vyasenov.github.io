@@ -123,7 +123,7 @@ The `cor` function checks whether the generated data conforms to the target corr
 
 The two matrices match almost exactly. We can also visualize the three variables in a scatter plot matrix. Notice that higher correlation values (e.g., b/w $y_1$ and $y_2$) correspond to stronger linear associations between.
 
-![](../images/scatterplot_matrix.png)
+![](../files/scatterplot_matrix.png)
 
 ## Bottom Line
 

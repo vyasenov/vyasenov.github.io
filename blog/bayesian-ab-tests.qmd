@@ -215,7 +215,7 @@ plt.show()
 
 Here are the two posterior distributions.
 
-![](../images/bayesAB_posteriors.png)
+![](../files/bayesAB_posteriors.png)
 
 There is also a specialized `bayesAB` package in `R`. It produces some cool charts, so I definitely recommend giving it a try.
 

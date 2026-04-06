@@ -147,7 +147,7 @@ plot_kernel_smoothing(x, y, bandwidths=[0.2, 0.5, 1.0])
 
 This yields a simplified version of the following figure:
 
-![](../images/nonparametric.png)
+![](../files/nonparametric.png)
 
 The green line corresponds to the Nadaraya-Watson regression with an optimal bandwidth and features some degree of curvature. The red line has a smaller bandwidth (higher variance, lower bias), and the blue line is undersmoothed (higher bandwidth).
 

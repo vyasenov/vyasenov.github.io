@@ -1,6 +1,9 @@
-# this is for social media sharing buttons
-# https://github.com/feynlee/code-insertion
-
 filters:
-  - code-insertion
+  - ../code/code-insertion.lua
 insert-before-post: _sharebuttons.md
+
+format:
+  html:
+    include-in-header:
+      text: |
+        <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&product=inline-share-buttons' async='async'></script>

@@ -62,7 +62,7 @@ format: html
   <!-- LEFT COLUMN -->
   <div class="column">
 <a href="files/ml-toddlers-eng-reduced.pdf" target="_blank">
-  <img src="images/childrens-book-cover2.png" alt="Book Cover">
+  <img src="files/childrens-book-cover2.png" alt="Book Cover">
 </a>
 <div class="btn-group mt-3" role="group" aria-label="Book links">
   <a class="btn" href="files/ml-toddlers-eng-reduced.pdf" download target="_blank">
@@ -80,7 +80,7 @@ format: html
   <!-- RIGHT COLUMN (Causal Inference for Toddlers) -->
   <div class="column">
 <a href="files/ci-toddlers-eng-reduced.pdf" target="_blank">
-  <img src="images/childrens-book-cover.jpg" alt="Book Cover">
+  <img src="files/childrens-book-cover.jpg" alt="Book Cover">
 </a>
 <div class="btn-group mt-3" role="group" aria-label="Book links">
   <a class="btn" href="files/ci-toddlers-eng-reduced.pdf" download target="_blank" >

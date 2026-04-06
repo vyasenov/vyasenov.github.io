@@ -10,7 +10,6 @@ testing_code.ipynb
 
 # Site output (if using _site instead of docs/)
 _site/
-_extensions/
 _templates/
 lib/
 

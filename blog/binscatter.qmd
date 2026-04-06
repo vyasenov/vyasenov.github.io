@@ -206,7 +206,7 @@ plt.show()
 
 Here is the resulting image. The left scatter plot displays the raw data and the right one shows the binscatter. Binscatter removes some of the clutter and highlights the linear relationship more directly.
 
-![](../images/binscatter.png)
+![](../files/binscatter.png)
 
 ## Bottom Line
 

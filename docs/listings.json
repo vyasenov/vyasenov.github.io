@@ -2,7 +2,9 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/flavors-pca.html",
       "/blog/treatment-effects-bounds.html",
+      "/blog/six-plots-you-should-know.html",
       "/blog/interpret-OLS-causal-inference.html",
       "/blog/flavors-lasso.html",
       "/blog/oracle-property.html",

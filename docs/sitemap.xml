@@ -17,24 +17,28 @@
     <lastmod>2026-02-13T18:50:03.504Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/filling-missing-data-mcmc.html</loc>
-    <lastmod>2025-05-01T03:03:56.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ols-fixed-random-x.html</loc>
+    <lastmod>2026-03-13T18:40:10.820Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/bootstrap-limitations.html</loc>
-    <lastmod>2025-05-04T15:41:11.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/bayesian-ab-tests.html</loc>
+    <lastmod>2026-04-06T02:25:06.290Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ml-based-adjustments.html</loc>
-    <lastmod>2025-04-25T21:01:45.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/column-sampling-bootstrap.html</loc>
+    <lastmod>2025-04-27T22:51:11.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</loc>
-    <lastmod>2026-03-12T22:16:58.708Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html</loc>
+    <lastmod>2025-09-24T21:38:38.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html</loc>
-    <lastmod>2026-04-05T02:56:36.091Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ks-test-one-sample.html</loc>
+    <lastmod>2025-05-05T04:08:03.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/three-classes-stat-models.html</loc>
+    <lastmod>2026-04-06T02:24:46.386Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/ci-residualized-reg.html</loc>
@@ -46,7 +50,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/mutual-information.html</loc>
-    <lastmod>2025-04-27T22:37:11.000Z</lastmod>
+    <lastmod>2026-04-06T02:25:07.785Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-matching-methods.html</loc>
@@ -66,7 +70,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/binscatter.html</loc>
-    <lastmod>2025-05-02T03:35:47.000Z</lastmod>
+    <lastmod>2026-04-06T02:25:02.628Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/index.html</loc>
@@ -94,11 +98,11 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-multiple-testing.html</loc>
-    <lastmod>2025-06-16T17:41:22.000Z</lastmod>
+    <lastmod>2026-04-06T02:24:50.753Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/treatment-effects-bounds.html</loc>
-    <lastmod>2026-04-05T02:54:11.966Z</lastmod>
+    <lastmod>2026-04-05T02:56:06.259Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/diff-causal-predictive-models.html</loc>
@@ -122,7 +126,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/paradox-simpson.html</loc>
-    <lastmod>2025-04-25T21:37:49.000Z</lastmod>
+    <lastmod>2026-04-06T02:25:09.621Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-ml-methods-ci.html</loc>
@@ -130,7 +134,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/childrenbook.html</loc>
-    <lastmod>2026-03-28T00:57:41.937Z</lastmod>
+    <lastmod>2026-04-06T02:24:40.028Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/research.html</loc>
@@ -142,7 +146,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/index.html</loc>
-    <lastmod>2025-11-03T23:27:18.000Z</lastmod>
+    <lastmod>2026-04-06T02:24:25.877Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/two-types-weights-causality.html</loc>
@@ -174,7 +178,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/gen-vars-predefined-corr.html</loc>
-    <lastmod>2025-05-05T22:36:36.000Z</lastmod>
+    <lastmod>2026-04-06T02:24:52.870Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/limits-parametric-models.html</loc>
@@ -198,7 +202,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/limits-nonparametric-models.html</loc>
-    <lastmod>2025-05-02T23:38:51.000Z</lastmod>
+    <lastmod>2026-04-06T02:25:00.165Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/nonsymetric-conf-int.html</loc>
@@ -233,28 +237,32 @@
     <lastmod>2025-09-24T21:39:22.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/three-classes-stat-models.html</loc>
-    <lastmod>2026-03-13T18:27:24.893Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/flavors-pca.html</loc>
+    <lastmod>2026-04-05T17:44:59.228Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ks-test-one-sample.html</loc>
-    <lastmod>2025-05-05T04:08:03.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html</loc>
+    <lastmod>2026-04-05T17:37:27.549Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html</loc>
-    <lastmod>2025-09-24T21:38:38.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</loc>
+    <lastmod>2026-03-12T22:16:58.708Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/column-sampling-bootstrap.html</loc>
-    <lastmod>2025-04-27T22:51:11.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ml-based-adjustments.html</loc>
+    <lastmod>2025-04-25T21:01:45.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/bayesian-ab-tests.html</loc>
-    <lastmod>2025-04-28T16:56:59.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/bootstrap-limitations.html</loc>
+    <lastmod>2025-05-04T15:41:11.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ols-fixed-random-x.html</loc>
-    <lastmod>2026-03-13T18:40:10.820Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/filling-missing-data-mcmc.html</loc>
+    <lastmod>2025-05-01T03:03:56.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/six-plots-you-should-know.html</loc>
+    <lastmod>2026-04-06T02:44:43.943Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-het-treatment-effects.html</loc>
