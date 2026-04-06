@@ -63,6 +63,4 @@ format:
       <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Source+Code+Pro&display=swap" rel="stylesheet">
     toc: true
     page-layout: full
-    includes: 
-      after-body: 
-        - code/site-after-body.html
+    include-after-body: code/site-after-body.html

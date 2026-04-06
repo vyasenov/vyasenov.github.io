@@ -391,6 +391,19 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 
 
 </main> <!-- /main -->
+
+<button id="back-to-top" onclick="scrollToTop()">↑</button>
+<script>
+// Quarto's giscus integration uses a MutationObserver that waits for a class
+// change on <body>, but body already has quarto-light/dark at page load so the
+// observer never fires. Trigger a dummy class change after all scripts are set up.
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
+    document.body.classList.add('_giscus_init');
+    document.body.classList.remove('_giscus_init');
+  }
+});
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right

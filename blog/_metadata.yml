@@ -2,6 +2,17 @@ filters:
   - ../code/code-insertion.lua
 insert-before-post: _sharebuttons.md
 
+comments:
+  giscus:
+    repo: vyasenov/vyasenov.github.io
+    repo-id: R_kgDOOgsNLQ
+    category: Q&A
+    category-id: DIC_kwDOOgsNLc4Cph1b
+    mapping: pathname
+    reactions-enabled: true
+    loading: lazy
+    language: en
+
 format:
   html:
     include-in-header:
