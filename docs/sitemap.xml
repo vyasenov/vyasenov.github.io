@@ -17,24 +17,28 @@
     <lastmod>2026-02-13T18:50:03.504Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/filling-missing-data-mcmc.html</loc>
-    <lastmod>2025-05-01T03:03:56.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ols-fixed-random-x.html</loc>
+    <lastmod>2026-03-13T18:40:10.820Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/bootstrap-limitations.html</loc>
-    <lastmod>2025-05-04T15:41:11.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/bayesian-ab-tests.html</loc>
+    <lastmod>2026-04-06T02:25:06.290Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ml-based-adjustments.html</loc>
-    <lastmod>2025-04-25T21:01:45.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/column-sampling-bootstrap.html</loc>
+    <lastmod>2025-04-27T22:51:11.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</loc>
-    <lastmod>2026-03-12T22:16:58.708Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html</loc>
+    <lastmod>2025-09-24T21:38:38.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html</loc>
-    <lastmod>2026-04-05T17:37:27.549Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ks-test-one-sample.html</loc>
+    <lastmod>2025-05-05T04:08:03.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/three-classes-stat-models.html</loc>
+    <lastmod>2026-04-06T02:24:46.386Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/ci-residualized-reg.html</loc>
@@ -233,28 +237,32 @@
     <lastmod>2025-09-24T21:39:22.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/three-classes-stat-models.html</loc>
-    <lastmod>2026-04-06T02:24:46.386Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/flavors-pca.html</loc>
+    <lastmod>2026-04-06T23:00:34.363Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ks-test-one-sample.html</loc>
-    <lastmod>2025-05-05T04:08:03.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html</loc>
+    <lastmod>2026-04-05T17:37:27.549Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html</loc>
-    <lastmod>2025-09-24T21:38:38.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</loc>
+    <lastmod>2026-03-12T22:16:58.708Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/column-sampling-bootstrap.html</loc>
-    <lastmod>2025-04-27T22:51:11.000Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/ml-based-adjustments.html</loc>
+    <lastmod>2025-04-25T21:01:45.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/bayesian-ab-tests.html</loc>
-    <lastmod>2026-04-06T02:25:06.290Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/bootstrap-limitations.html</loc>
+    <lastmod>2025-05-04T15:41:11.000Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/ols-fixed-random-x.html</loc>
-    <lastmod>2026-03-13T18:40:10.820Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/filling-missing-data-mcmc.html</loc>
+    <lastmod>2025-05-01T03:03:56.000Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/six-plots-you-should-know.html</loc>
+    <lastmod>2026-04-10T19:26:12.969Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-het-treatment-effects.html</loc>

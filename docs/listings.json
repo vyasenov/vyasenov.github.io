@@ -2,6 +2,8 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/six-plots-you-should-know.html",
+      "/blog/flavors-pca.html",
       "/blog/treatment-effects-bounds.html",
       "/blog/interpret-OLS-causal-inference.html",
       "/blog/flavors-lasso.html",
