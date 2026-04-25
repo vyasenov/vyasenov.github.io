@@ -34,7 +34,7 @@ This interval clearly contains $0$, so we cannot conclude that there was a real 
 
 This type of thinking is also helpful in a slightly different context. Let’s focus on 2018, when there were $14,123$ homicides in the US, corresponding to an average daily rate of about $38.7$ cases.
 
-Imagine someone asked us to calculate the probability that there would be less than $25$ cases on a given day, but no such day took place in 2018. It would still be naïve to conclude that the probability of this event was zero.
+Imagine someone asked us to calculate the probability that there would be fewer than $25$ cases on a given day, but no such day took place in 2018. It would still be naïve to conclude that the probability of this event was zero.
 
 We can look at the left tail of the Poisson distribution with mean $\lambda = 38.7$ to answer this question:
 
@@ -56,12 +56,12 @@ lambda_value = 38.7
 # Calculate the cumulative probability for less than 25 cases
 probability = poisson.cdf(25, mu=lambda_value)
 print(probability)
->[1] 0.01270669
+>0.01270669
 ```
 
 ::::
 
-This gives us a $1.27%$ probability of such an event, suggesting that, on average, there should be about $4.6$ such days per year. Data would not help answer this question.
+This gives us a $1.27\%$ probability of such an event, suggesting that, on average, there should be about $4.6$ such days per year. Data would not help answer this question.
 
 ## Bottom Line
 

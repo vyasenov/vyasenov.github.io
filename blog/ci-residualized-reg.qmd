@@ -49,13 +49,13 @@ Mathematically, the key result of FWL is:
 
   $$\hat{\tau} = (D' M_X D)^{-1} D' M_X Y,$$
 
-where $M_X = I - X(X'X)^{-1}X'$ is the projection matrix that residualizes variables with respect to $X$. This shows that the estimate of \tau remains unchanged whether we use the full regression or the residualized regression. 
+where $M_X = I - X(X'X)^{-1}X'$ is the projection matrix that residualizes variables with respect to $X$. This shows that the estimate of $\tau$ remains unchanged whether we use the full regression or the residualized regression. 
 
 Think of it this way: we’re first “adjusting” both our treatment and outcome variables by removing the predictable parts based on our controls. Then we’re examining how the “adjusted” treatment relates to the “adjusted” outcome. This residual-on-residual regression gives us our causal estimate.
 
 ### Geometric Interpretation
 
-Geometrically, we can think of the FWL theorem in terms of projections in vector space. The residuals $\tilde{D}$ and $\tilde{\mathbf{y}}$​ are what remain after projecting $D$ and $Y$ onto the orthogonal complement of the space spanned by $Z$.
+Geometrically, we can think of the FWL theorem in terms of projections in vector space. The residuals $\tilde{D}$ and $\tilde{Y}$ are what remain after projecting $D$ and $Y$ onto the orthogonal complement of the space spanned by $X$.
 
 In other words, we’re looking at the components of $D$ and $Y$ that are orthogonal to (i.e., cannot be explained by) the control variables. The relationship between these orthogonal components gives us our treatment effect estimate.
 

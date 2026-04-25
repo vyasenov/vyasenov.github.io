@@ -6,7 +6,7 @@ categories: [correlation, paradox]
 
 ## Background
 
-Lord’s paradox presents a fascinating challenge in causal inference and statistics. It highlights how different statistical methods applied to the same data can lead to contradictory conclusions. The paradox typically arises when comparing changes over time between two groups in the context of adjusting for baseline characteristics. Despite its theoretical nature, the phenomena is deeply relevant to practical data analysis, especially in observational studies where causation is challenging to establish. Let’s look at an example.
+Lord’s paradox presents a fascinating challenge in causal inference and statistics. It highlights how different statistical methods applied to the same data can lead to contradictory conclusions. The paradox typically arises when comparing changes over time between two groups in the context of adjusting for baseline characteristics. Despite its theoretical nature, the phenomenon is deeply relevant to practical data analysis, especially in observational studies where causation is challenging to establish. Let’s look at an example.
 
 ## A Closer Look
 
@@ -35,14 +35,15 @@ Surprisingly, these two approaches can yield conflicting results. For example, t
 This contradiction arises because the two methods implicitly address different causal questions.
 
 - **Method 1** asks: “Do Groups $A$ and $B$ gain/lose different amounts of weight?”
-- **Method 2** asks: “Given the same initial weight, does any of the groups end up at different final weights?”
+- **Method 2** asks: “Given the same initial weight, do the groups end up at different final weights?”
+
 The regression approach adjusts for baseline differences, assuming $W_{\text{pre}}$ is a confounder.
 
-The key insight is that the choice of analysis reflects underlying assumptions about the causal structure of the data. If $W_{\text{pre}}$ is affected by group membership (e.g., due to selection bias), then adjusting for it may introduce bias rather than remove it. However, in practice we most often should control for baseline characteristics as they are critical in balancing the treatment and control groups.
+The key insight is that the choice of analysis reflects underlying assumptions about the causal structure of the data. If $W_{\text{pre}}$ is affected by group membership (e.g., due to selection bias), then adjusting for it may introduce bias rather than remove it. However, in practice we should usually control for baseline characteristics as they are critical in balancing the treatment and control groups.
 
-### The Simpson’s Paradox Once Again
+### Simpson’s Paradox Once Again
 
-I recently illustrated the more commonly discussed Simpson’s paradox. Interestingly, a [2008 paper](https://link.springer.com/article/10.1186/1742-7622-5-2) claims that two phenomena are closely related, with the Lord’s paradox being a “continuous version” of Simpson’s paradox.
+I recently illustrated the more commonly discussed Simpson’s paradox. Interestingly, a [2008 paper](https://link.springer.com/article/10.1186/1742-7622-5-2) claims that the two phenomena are closely related, with Lord’s paradox being a “continuous version” of Simpson’s paradox.
 
 ## An Example
 
@@ -73,11 +74,11 @@ weight_post <- weight_pre + gain
 # Create data frame
 data <- data.frame(group = group, pre = weight_pre, post = weight_post)
 
-# Analysis 1: Compare change scores between groups`
+# Analysis 1: Compare change scores between groups
 t.test(post - pre ~ group, data = data)
 > p-value = 0.6107
 
-# Analysis 2: Regression Adjustment`
+# Analysis 2: Regression Adjustment
 model <- lm(post ~ group + pre, data = data)
 summary(model)
 > p-value = 0.08428742
@@ -125,7 +126,7 @@ print(model.summary())
 
 ::::
 
-The former approach shows lack of statistically significant differences in the body weight after the intervention between the two groups ($p$-value =$ 0.6107$). The results from the latter method do show meaningful differences ($p$-value = $0.0842$).
+The former approach shows lack of statistically significant differences in the body weight after the intervention between the two groups ($p$-value = $0.6107$). The results from the latter method do show meaningful differences ($p$-value = $0.0842$).
 
 This illustrates the core of Lord’s paradox – the statistical approach chosen can lead to different interpretations of the same underlying phenomenon.
 
@@ -139,10 +140,10 @@ This illustrates the core of Lord’s paradox – the statistical approach chose
 
 ## References
 
-Lord, E. M. (1967). A paradox in the interpretation of group comparisons. Psychological Bulletin, 68, 304–305. doi:10.1037/h0025105
+Lord, F. M. (1967). A paradox in the interpretation of group comparisons. Psychological Bulletin, 68, 304–305. doi:10.1037/h0025105
 
 Lord, F. M. (1969). Statistical adjustments when comparing preexisting groups. Psychological Bulletin, 72, 336–337. doi:10.1037/h0028108
 
-Lord, E. M. (1975). Lord’s paradox. In S. B. Anderson, S. Ball, R. T. Murphy, & Associates, Encyclopedia of Educational Evaluation (pp. 232–236). San Francisco, CA: Jossey-Bass.
+Lord, F. M. (1975). Lord’s paradox. In S. B. Anderson, S. Ball, R. T. Murphy, & Associates, Encyclopedia of Educational Evaluation (pp. 232–236). San Francisco, CA: Jossey-Bass.
 
 Tu, Y. K., Gunnell, D., & Gilthorpe, M. S. (2008). Simpson’s Paradox, Lord’s Paradox, and Suppression Effects are the same phenomenon–the reversal paradox. Emerging themes in epidemiology, 5, 1-9.

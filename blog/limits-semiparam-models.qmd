@@ -40,7 +40,7 @@ This is our first insight on the semiparametric efficiency bound, which admitted
 
 ### Efficient Influence Functions
 
-The semiparametric efficiency bound depends on the interplay between $\theta$ and $\eta$, captured through the something called the **Efficient Influence Function** (EIF). Remember that the score function for $\theta$,
+The semiparametric efficiency bound depends on the interplay between $\theta$ and $\eta$, captured through something called the **Efficient Influence Function** (EIF). Remember that the score function for $\theta$,
 
 $$S_\theta(X)=\frac{\partial}{\partial \theta} \log f(X; \theta, \eta),$$
 
@@ -52,7 +52,7 @@ Now enter the EIF $\psi^*(X)$ which captures the variation in $\theta$ while adj
 
 $$\mathbb{E}\left[ \psi^*(X) \cdot S_\eta(X) \right] = 0,$$
 
-ensuring that the influence of $\eta$ is removed from $\psi(X)$. In other words, $\psi^*(X)$ captures only information about $\theta$, uncontaminated by nuisance parameters. It is the influence function with the lowest possible variance.
+ensuring that the influence of $\eta$ is removed from $\psi^*(X)$. In other words, $\psi^*(X)$ captures only information about $\theta$, uncontaminated by nuisance parameters. It is the influence function with the lowest possible variance.
 
 ### Efficient Score
 
@@ -69,7 +69,7 @@ We are, at last, ready to state the main result. The semiparametric efficiency b
 $$\text{Var}(\hat{\theta}) \geq \frac{1}{\mathbb{E}[S_\theta^*(X)^2]}.$$
 
 ​
-This generalizes the Cramér-Rao lower bound for semiparametric models by incorporating the complexity introduced by the nuisance parameter $\eta$. In parametric models, this bound collapses to and is determined by the Fisher Information, while in here, it is governed by the efficient score.
+This generalizes the Cramér-Rao lower bound for semiparametric models by incorporating the complexity introduced by the nuisance parameter $\eta$. In parametric models, this bound collapses to and is determined by the Fisher Information, while here, it is governed by the efficient score.
 
 To achieve the bound in practice, nuisance parameters are often removed through methods like regression residuals, inverse probability weighting, or targeted maximum likelihood estimation (TMLE). These techniques isolate the information about $\theta$ from $\eta$, enabling efficient estimation.
 

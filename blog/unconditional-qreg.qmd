@@ -12,7 +12,7 @@ For example, suppose we want to understand the effect of a job training program 
 
 The key breakthrough in this space was provided by Firpo, Fortin, and Lemieux (2009), who introduced a method based on the Recentered Influence Function (RIF). This allows us to estimate the effect of covariates on unconditional quantiles using simple linear regressions. Later, Frölich and Melly (2013) extended this framework to account for endogeneity, providing a way to estimate Unconditional Quantile Treatment Effects (UQTEs) in settings where treatment is not randomly assigned.
 
-In this article, we’ll unpack the key ideas behind UQR, discuss how to estimate unconditional quantile treatment effects, and illustrate these concepts with an example in `R` and `python`.
+In this article, I’ll unpack the key ideas behind UQR, discuss how to estimate unconditional quantile treatment effects, and illustrate these concepts with an example in `R` and `python`.
 
 ## Notation
 
@@ -67,11 +67,11 @@ The most common implementation is RIF-OLS, though alternatives include RIF-Logit
 
 #### Inference
 
-Density estimation is a critical step that affects the quality of inference as poor estimates at the quantile point can lead to noisy estimates. Because of the multi-step estimation (quantile, density, RIF), standard error computation is more complex. Bootstrapping is commonly used and has been shown to perform well in pracice. 
+Density estimation is a critical step that affects the quality of inference as poor estimates at the quantile point can lead to noisy estimates. Because of the multi-step estimation (quantile, density, RIF), standard error computation is more complex. Bootstrapping is commonly used and has been shown to perform well in practice. 
 
 #### Challenges
 
-RIF-OLS is a linear model and as such it assumes a linear relationship between the RIF and covariates. If the true relationship is nonlinear, flexible methods (logit, nonparametric) are preferred. UQR is especially appealing for estimating treatment effects on the distribution of outcomes in quasi-experimental settings. When treatment is exogenous (conditional on the covariates), including treatment indicators in the RIF regression yields estimates of the treatment effect at various unconditional quantiles. This is a perfect segway for the next section.
+RIF-OLS is a linear model and as such it assumes a linear relationship between the RIF and covariates. If the true relationship is nonlinear, flexible methods (logit, nonparametric) are preferred. UQR is especially appealing for estimating treatment effects on the distribution of outcomes in quasi-experimental settings. When treatment is exogenous (conditional on the covariates), including treatment indicators in the RIF regression yields estimates of the treatment effect at various unconditional quantiles. This is a perfect segue for the next section.
 
 ### Unconditional Quantile Treatment Effects
 

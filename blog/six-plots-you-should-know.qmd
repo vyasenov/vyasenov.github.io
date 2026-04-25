@@ -10,7 +10,7 @@ Most data science workflows rely on a familiar trio of plots: histograms, scatte
 
 There are several plots that statisticians use regularly but that rarely show up in typical data science notebooks. Many of these are extremely informative for diagnostics, distribution comparison, or exploring high-dimensional relationships.
 
-In this post we’ll look at six of them. To keep things simple we will use the same dataset throughout: the classic `iris` dataset. The goal is not mathematical rigor but practical intuition and code you can reuse. All examples below are shown in `R` and `Python`.
+In this post I’ll look at six of them. To keep things simple I will use the same dataset throughout: the classic `iris` dataset. The goal is not mathematical rigor but practical intuition and code you can reuse. All examples below are shown in `R` and `Python`.
 
 ## A Closer Look
 
@@ -249,7 +249,7 @@ plt.show()
 
 A corrgram turns a correlation matrix into something you can actually read. Before fitting a regression, building a clustering pipeline, or running PCA, I almost always want to know which variables are moving together and which are largely independent. A corrgram gives that answer in a single glance.
 
-The upside is speed: strong blocks, redundancies, and likely multicollinearity jump out immediately. The downside is that (Pearson) correlation is a blunt summary. It only captures linear association, ignores conditional relationships, and can be badly distorted by outliers. Presumably, one can move away from Pearson correlation and do the same plot with other correlation measures. Corrgrams also don't work well with too many variables.So I treat corrgrams as a screening device, not as evidence of mechanism. Used that way, they are extremely effective.
+The upside is speed: strong blocks, redundancies, and likely multicollinearity jump out immediately. The downside is that (Pearson) correlation is a blunt summary. It only captures linear association, ignores conditional relationships, and can be badly distorted by outliers. Presumably, one can move away from Pearson correlation and do the same plot with other correlation measures. Corrgrams also don't work well with too many variables. So I treat corrgrams as a screening device, not as evidence of mechanism. Used that way, they are extremely effective.
 
 ![](/files/corrgram.png){fig-alt="Corrgram of iris measurements" fig-align="center" width="80%"}
 
@@ -292,7 +292,7 @@ In the `iris` data, the corrgram immediately tells you that petal length and pet
 
 ## Where to Learn More
 
-Wilke's *Fundamentals of Data Visualization* is what I have in my bookshelf, but I admit I don't reach out for it very often. Novice data scientists will sure benefit from it, though.
+Wilke's *Fundamentals of Data Visualization* is what I have in my bookshelf, but I admit I don't reach for it very often. Novice data scientists will surely benefit from it, though.
 
 ## References
 

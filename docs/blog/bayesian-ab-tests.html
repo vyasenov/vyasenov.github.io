@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>Bayesian Analysis of Randomized Experiments: A Modern Approach – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -72,13 +75,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -122,7 +126,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -135,7 +139,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -172,7 +176,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -205,7 +209,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -245,7 +249,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -273,7 +277,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -296,19 +300,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -462,16 +469,16 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Imagine you’re a data scientist evaluating an A/B test of a new recommendation algorithm. The results show a modest but promising 0.5% lift in conversion rate—up from <span class="math inline">\(8\%\)</span> to <span class="math inline">\(8.5\%\)</span> across <span class="math inline">\(20,000\)</span> users—along with a <span class="math inline">\(p\)</span>-value of <span class="math inline">\(0.06\)</span>. Given historical data, the improvement seems realistic, the cost to implement is low, and the projected revenue impact is substantial. Yet, the conventional analysis compels you to “fail to reject the null hypothesis” simply because the p-value doesn’t meet an arbitrary <span class="math inline">\(0.05\)</span> threshold.</p>
+<p>Imagine you’re a data scientist evaluating an A/B test of a new recommendation algorithm. The results show a modest but promising 0.5% lift in conversion rate—up from <span class="math inline">\(8\%\)</span> to <span class="math inline">\(8.5\%\)</span> across <span class="math inline">\(20,000\)</span> users—along with a <span class="math inline">\(p\)</span>-value of <span class="math inline">\(0.06\)</span>. Given historical data, the improvement seems realistic, the cost to implement is low, and the projected revenue impact is substantial. Yet, the conventional analysis compels you to “fail to reject the null hypothesis” simply because the <span class="math inline">\(p\)</span>-value doesn’t meet an arbitrary <span class="math inline">\(0.05\)</span> threshold.</p>
 <p>Traditional A/B testing approaches (randomized controlled trials or RCTs) rely primarily on frequentist methods like <span class="math inline">\(t\)</span>-tests or chi-squared tests to detect differences between treatment and control groups. For more precision, analysts often adjust for covariates in linear models. After weeks or months of testing, however, these methods often boil down to a single outcome: the <span class="math inline">\(p\)</span>-value. This binary interpretation—significant or not—can obscure valuable insights, as seen in the example above.</p>
-<p>Bayesian statistics, by contrast, offers a more nuanced and potentially more informative alternative. In this article, we’ll walk through a practical example, discuss the implementation details, and dive into the Bayesian framework’s mathematical foundations for experimentation. One of the core advantages of the Bayesian approach is its ability to produce a full posterior distribution, offering a richer view of the experiment’s outcomes beyond just point estimates.</p>
+<p>Bayesian statistics, by contrast, offers a more nuanced and potentially more informative alternative. In this article, I will walk through a practical example, discuss the implementation details, and dive into the Bayesian framework’s mathematical foundations for experimentation. One of the core advantages of the Bayesian approach is its ability to produce a full posterior distribution, offering a richer view of the experiment’s outcomes beyond just point estimates.</p>
 <p>This article assumes a familiarity with Bayesian fundamentals like priors, posteriors, and conjugate distributions. If you’d like a refresher, see the References section below.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
 <p>Let’s establish our notation for a binary intervention randomized experiment:</p>
 <ul>
-<li><span class="math inline">\(T \in {0,1}\)</span>: Treatment indicator</li>
+<li><span class="math inline">\(T \in \{0,1\}\)</span>: Treatment indicator</li>
 <li><span class="math inline">\(N_T\)</span>: Number of units in treatment group</li>
 <li><span class="math inline">\(N_C\)</span>: Number of units in control group</li>
 <li><span class="math inline">\(N = N_T + N_C\)</span>: Total sample size</li>
@@ -486,7 +493,7 @@ window.Quarto = {
 <p>The Bayesian methodology of analyzing experiments proceeds in four steps.</p>
 <section id="step-1-specify-the-prior-distribution" class="level3">
 <h3 class="anchored" data-anchor-id="step-1-specify-the-prior-distribution">Step 1: Specify the Prior Distribution</h3>
-<p>We begin by choosing the prior distributions for Y. The prior distribution represents our beliefs about the parameter before seeing the data. It is usually informed by previous A/B testing experience combined with deep context knowledge. For example, we might believe that the treatment effect is around two percentage points (<span class="math inline">\(\hat{\tau}=0.02\)</span>) with some uncertainty around it.</p>
+<p>We begin by choosing the prior distributions for <span class="math inline">\(Y\)</span>. The prior distribution represents our beliefs about the parameter before seeing the data. It is usually informed by previous A/B testing experience combined with deep context knowledge. For example, we might believe that the treatment effect is around two percentage points (<span class="math inline">\(\hat{\tau}=0.02\)</span>) with some uncertainty around it.</p>
 <p>Given our binary outcome, the Beta distribution serves as a natural conjugate prior: <span class="math display">\[ Y_i \sim \text{Beta} (\alpha_i, \beta_i), \hspace{.5cm} i \in \{T,C\}.  \]</span></p>
 </section>
 <section id="step-2-specify-the-likelihood-function" class="level3">
@@ -499,7 +506,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="step-3-posterior-distributions-derivation">Step 3: Posterior Distributions Derivation</h3>
 <p>Thanks to conjugacy between Beta and Binomial distributions, we obtain closed-form posterior distributions:</p>
 <p><span class="math display">\[ Y_i | X_i \sim \text{Beta}(\alpha_i+X_i, \beta_i+N_i-X_i), \hspace{.5cm} i\in\{T,C\}  .\]</span></p>
-<p>This mathematical convenience allows us to avoid more complex numerical methods like MCMC sampling. We can now even plot the two posterior distributions and visually asses their differences.</p>
+<p>This mathematical convenience allows us to avoid more complex numerical methods like MCMC sampling. We can now even plot the two posterior distributions and visually assess their differences.</p>
 </section>
 <section id="step-4-inference-and-decision-making" class="level3">
 <h3 class="anchored" data-anchor-id="step-4-inference-and-decision-making">Step 4: Inference and Decision Making</h3>
@@ -507,11 +514,10 @@ window.Quarto = {
 <p><em>Probability of Positive Impact</em></p>
 <p>We can calculate the probability that the outcomes for the treatment group are higher than those of the control group. In closed form, we have:</p>
 <p><span class="math display">\[ P(Y_T&gt;Y_C|X_T,X_C) = \frac{1}{N}\sum_i\mathbf{1}(Y_{T,i}&gt;Y_{C,i}),\]</span></p>
-<p>where <span class="math inline">\(\mathbf{1}(\cdot)\)</span> is the indicator function. This is simply share of observations for which <span class="math inline">\(Y_T &gt;Y_C\)</span>.</p>
+<p>where <span class="math inline">\(\mathbf{1}(\cdot)\)</span> is the indicator function. This is simply the share of observations for which <span class="math inline">\(Y_T &gt;Y_C\)</span>.</p>
 <p><em>Average Treatment Effect</em></p>
 <p>Another potential example of an object of interest is the Average Treatment Effect (ATE):</p>
-<p><span class="math display">\[ ATE = \frac{1}{N_T}\sum_{i \in T}Y_{T,i} -  \frac{1}{N_C}\sum_{i \in C}Y_{C,i} \rightarrow \frac{\alpha_T+X_T}{\alpha_T+\beta_T +N_T} - \frac{\alpha_C+X_C}{\alpha_C+\beta_C +N_C} \]</span></p>
-<p><span class="math display">\[ ATE \rightarrow \frac{\alpha_T+X_T}{\alpha_T+\beta_T +N_T} - \frac{\alpha_C+X_C}{\alpha_C+\beta_C +N_C} \]</span></p>
+<p><span class="math display">\[ ATE = \frac{1}{N_T}\sum_{i \in T}Y_{T,i} -  \frac{1}{N_C}\sum_{i \in C}Y_{C,i} \rightarrow \frac{\alpha_T+X_T}{\alpha_T+\beta_T +N_T} - \frac{\alpha_C+X_C}{\alpha_C+\beta_C +N_C}. \]</span></p>
 <p>To summarize, here is the high-level algorithm:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
@@ -519,7 +525,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -538,8 +544,8 @@ Algorithm:
 <p>Overall, Bayesian thinking entails some compelling advantages:</p>
 <ul>
 <li><strong>Incorporation of Prior Information</strong>. It allows you to incorporate prior knowledge or expert opinion into the analysis. This is particularly useful when historical data or domain expertise is available.</li>
-<li><strong>Probabilistic Interpretation</strong>: It provides direct probabilistic interpretations of the results, such as the probability that one variant is better than another. This may be more intuitive than frequentist p-values, which are often misinterpreted.</li>
-<li><strong>Handling of Small Sample Sizes</strong>: It tends to perform better with small sample sizes because they incorporate prior distributions, which can regularize estimates and prevent overfitting.</li>
+<li><strong>Probabilistic Interpretation</strong>: It provides direct probabilistic interpretations of the results, such as the probability that one variant is better than another. This may be more intuitive than frequentist <span class="math inline">\(p\)</span>-values, which are often misinterpreted.</li>
+<li><strong>Handling of Small Sample Sizes</strong>: It tends to perform better with small sample sizes because Bayesian methods incorporate prior distributions, which can regularize estimates and prevent overfitting.</li>
 <li><strong>Continuous Learning</strong>: As new data comes in, Bayesian methods provide a natural way to update the posterior distribution, leading to continuous learning and adaptation.</li>
 </ul>
 <p>The downsides are mostly related to the choice of prior distribution. In settings where there is a lack of expert knowledge, this Bayesian approach to experimentation might not be very attractive. Computation can also be an issue in more complex settings.</p>
@@ -549,10 +555,10 @@ Algorithm:
 <h2 class="anchored" data-anchor-id="an-example">An Example</h2>
 <p>Let’s code an example in <code>R</code> and <code>python</code>. We start with generating some fake data and selecting parameters for the prior distributions.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
@@ -579,35 +585,31 @@ Algorithm:
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>posterior_obs_T <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">10000</span>, posterior_alpha_T, posterior_beta_T)</span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>posterior_obs_C <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">10000</span>, posterior_alpha_C, posterior_beta_C)</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample from the posterior distributions</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>posterior_obs_T <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">10000</span>, posterior_alpha_T, posterior_beta_T)</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>posterior_obs_C <span class="ot">&lt;-</span> <span class="fu">rbeta</span>(<span class="dv">10000</span>, posterior_alpha_C, posterior_beta_C)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the probability that T is better than C</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>prob_T_better <span class="ot">&lt;-</span> <span class="fu">mean</span>(posterior_obs_T <span class="sc">&gt;</span> posterior_obs_C)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Probability that T is better than C:"</span>, <span class="fu">round</span>(prob_T_better, <span class="at">digits=</span><span class="dv">3</span>)))</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the probability that T is better than C</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>prob_T_better <span class="ot">&lt;-</span> <span class="fu">mean</span>(posterior_obs_T <span class="sc">&gt;</span> posterior_obs_C)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Probability that T is better than C:"</span>, <span class="fu">round</span>(prob_T_better, <span class="at">digit=</span><span class="dv">3</span>)))</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the average treatment effect</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>treatment_effect <span class="ot">&lt;-</span> <span class="fu">mean</span>(posterior_obs_T <span class="sc">-</span> posterior_obs_C)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Average change in Y b/w T and C:"</span>, <span class="fu">round</span>(treatment_effect, <span class="at">digits=</span><span class="dv">3</span>)))</span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the average treatment effect</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>treatment_effect <span class="ot">&lt;-</span> <span class="fu">mean</span>(posterior_obs_T <span class="sc">-</span> posterior_obs_C)</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">"Average change in Y b/w T and C:"</span>, <span class="fu">round</span>(treatment_effect, <span class="at">digit=</span><span class="dv">3</span>)))</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>treatment_effect_limit <span class="ot">&lt;-</span> (alpha_T <span class="sc">+</span> x_T)<span class="sc">/</span>(alpha_T <span class="sc">+</span> beta_T <span class="sc">+</span> n_T) <span class="sc">-</span> (alpha_C <span class="sc">+</span> x_C)<span class="sc">/</span>(alpha_C <span class="sc">+</span> beta_C <span class="sc">+</span> n_C)</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(treatment_effect_limit)</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="co"># we can even plot both posteriors distributions.</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(posterior_obs_T, posterior_obs_C),</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"T"</span>, <span class="st">"C"</span>), <span class="at">each =</span> <span class="dv">10000</span>))</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> y, <span class="at">fill =</span> group)) <span class="sc">+</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Posterior Distributions of Outcomes"</span>,</span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Y = 1"</span>, <span class="at">y =</span> <span class="st">"Density"</span>) <span class="sc">+</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>treatment_effect_limit <span class="ot">&lt;-</span> (alpha_T <span class="sc">+</span> x_T)<span class="sc">/</span>(alpha_T <span class="sc">+</span> beta_T <span class="sc">+</span> n_T) <span class="sc">-</span> (alpha_C <span class="sc">+</span> x_C)<span class="sc">/</span>(alpha_C <span class="sc">+</span> beta_C <span class="sc">+</span> n_C)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(treatment_effect_limit)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="co"># we can even plot both posteriors distributions.</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(posterior_obs_T, posterior_obs_C),</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"T"</span>, <span class="st">"C"</span>), <span class="at">each =</span> <span class="dv">10000</span>))</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> y, <span class="at">fill =</span> group)) <span class="sc">+</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Posterior Distributions of Outcomes"</span>,</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Y = 1"</span>, <span class="at">y =</span> <span class="st">"Density"</span>) <span class="sc">+</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
@@ -650,7 +652,7 @@ Algorithm:
 <span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Y = 1"</span>)</span>
 <span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Density"</span>)</span>
 <span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -664,7 +666,7 @@ Algorithm:
 <ul>
 <li><p>Bayesian inference offers a compelling alternative to the traditional methods based on frequentist statistics.</p></li>
 <li><p>The main idea rests on incorporating prior information on the success rates in the treatment and control group as a starting point.</p></li>
-<li><p>Advantages of bayesian methods include incorporating prior information, providing probabilistic interpretations, handling small sample sizes better, and enabling continuous learning.</p></li>
+<li><p>Advantages of Bayesian methods include incorporating prior information, providing probabilistic interpretations, handling small sample sizes better, and enabling continuous learning.</p></li>
 <li><p>The main challenge is the choice of prior distribution, which can be difficult without expert knowledge.</p></li>
 </ul>
 </section>
@@ -710,7 +712,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -760,13 +762,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1111,15 +1114,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -1136,26 +1140,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

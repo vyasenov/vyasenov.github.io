@@ -83,9 +83,9 @@ print(f"Bootstrap SE of max: {boot_se:.4f}")
 
 ## Bottom Line
 
-- The bootstrap is incredible versatile, but it has its limitations.
+- The bootstrap is incredibly versatile, but it has its limitations.
 
-- Beware in relying on it when facing any of the situations described above.
+- Beware of relying on it when facing any of the situations described above.
 
 ## Where to Learn More
 

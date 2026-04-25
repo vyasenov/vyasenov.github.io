@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>Weights in Statistical Analyses – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -72,13 +75,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -122,7 +126,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -135,7 +139,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -172,7 +176,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -205,7 +209,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -245,7 +249,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -273,7 +277,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -296,19 +300,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -462,7 +469,7 @@ window.Quarto = {
 <p>Weights in statistical analyses offer a way to assign varying importance to observations in a dataset. Although powerful, they can be quite confusing due to the various types of weights available. In this article, I will unpack the details behind the most common types of weights used in data science.</p>
 <p>Most types of statistical analyses can be performed with weights. These include calculating summary statistics, regression models, bootstrap, etc. Even maximum likelihood estimation is minimally affected. In this article, I will keep it simple and only discuss mean and variance estimation.</p>
 <p>The two primary types of weights encountered in practice are sampling weights and frequency weights. I will explore each in turn and conclude with a comparative example.</p>
-<p>To begin, let’s imagine a well-behaved random variable X of which we have an iid sample of size n.&nbsp;I will use w to denote the relevant weighting variable.</p>
+<p>To begin, let’s imagine a well-behaved random variable <span class="math inline">\(X\)</span> of which we have an iid sample of size <span class="math inline">\(n\)</span>. I will use <span class="math inline">\(w\)</span> to denote the relevant weighting variable.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
@@ -470,8 +477,8 @@ window.Quarto = {
 <p><span class="math display">\[ \bar{X} = \frac{\sum_i wX}{\sum_i w}. \]</span></p>
 <p>Variance estimation depends on the weight type.</p>
 <p>Remember that we estimate the standard error of <span class="math inline">\(\bar{X}\)</span> as:</p>
-<p><span class="math display">\[ SE(\bar{X})=\frac{s}{\sqrt{n}}, \hspace{.3cm} \text{where} \hspace{.3cm} s=\sqrt{\frac{1}{N-1}\sum_i(X-\bar{X})^2} \]</span></p>
-<p>is an estimate of the standard deviation of <span class="math inline">\(X\)</span>. I will explain below how estimation of <span class="math inline">\(SE(\bar{X})\)</span> differs for sampling and frequency weights. Importantly, s_w will denote the weighted version of this standard error.</p>
+<p><span class="math display">\[ SE(\bar{X})=\frac{s}{\sqrt{n}}, \hspace{.3cm} \text{where} \hspace{.3cm} s=\sqrt{\frac{1}{n-1}\sum_i(X-\bar{X})^2} \]</span></p>
+<p>is an estimate of the standard deviation of <span class="math inline">\(X\)</span>. I will explain below how estimation of <span class="math inline">\(SE(\bar{X})\)</span> differs for sampling and frequency weights. Importantly, <span class="math inline">\(s_w\)</span> will denote the weighted version of this standard error.</p>
 <section id="sampling-weights" class="level3">
 <h3 class="anchored" data-anchor-id="sampling-weights">Sampling Weights</h3>
 <p>Sampling weights measure the inverse probability of an observation entering the sample. They are particularly relevant in surveys when some units in the population are sampled more frequently than others. These weights adjust for sampling discrepancies to ensure that survey estimates are representative of the entire population. Sampling weights are also sometimes called probability weights.</p>
@@ -480,7 +487,7 @@ window.Quarto = {
 <p>This weighting approach is also common in causal inference analyses using propensity score methods. Similarly, in machine learning, weighting is often employed to adjust for unbalanced samples in the context of rare events (e.g., fraud detection, cancer diagnosis).</p>
 <p>Let’s now get back to the discussion on variance estimation. With sampling weights, we have:</p>
 <p><span class="math display">\[ SE^{\text{sampling}}(\bar{X})=\frac{s_w}{\sqrt{n^{\text{S}}_{\text{eff}}}}=\frac{s_w}{\sqrt{\frac{(\sum_i w)^2}{\sum_i w^2}}}\]</span></p>
-<p>The numerator is the weighted version of the sum of squared deviations from the mean, emphasizing observations with higher weights. The denominator normalizes the standard error based on the total sum of the weights. When the weights differ greatly—high weights make some observations much more influential, increasing uncertainty about the population mean and so the sampling-weighted standard error is often larger.</p>
+<p>The numerator is the weighted version of the sum of squared deviations from the mean, emphasizing observations with higher weights. The denominator normalizes the standard error based on the total sum of the weights. When the weights differ greatly, high weights make some observations much more influential, increasing uncertainty about the population mean, and so the sampling-weighted standard error is often larger.</p>
 <p>I will move on to describing frequency weights.</p>
 <p><em>Software Package</em>: <a href="https://www.rdocumentation.org/packages/survey">survey</a></p>
 </section>
@@ -488,10 +495,10 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="frequency-weights">Frequency Weights</h3>
 <p>Frequency weights measure the number of times an observation should be counted in the analysis. They are most relevant when there are multiple identical observations or when duplicating observations is possible. Naturally, higher weights correspond to observations that appear more frequently. Frequency weights are common in aggregated datasets. For instance, with market- or city-level data, we might want to weight the rows by market size, thus assigning more importance to larger units.</p>
 <p>We can gain intuition from a linear algebra perspective. In a regression context, the design matrix X must be of full rank (to ensure invertibility), which implies no two rows can be identical. We thus need to collapse X to keep only distinct rows and record the number of times each row appears in the original data. This record constitutes the frequency weights.</p>
-<p>The formula for estimating the standard error of X with frequency weights is:</p>
+<p>The formula for estimating the standard error of <span class="math inline">\(X\)</span> with frequency weights is:</p>
 <p><span class="math display">\[ SE^{\text{frequency}}(\bar{X})=\frac{s_w}{\sqrt{n^{\text{F}}_{\text{eff}}}}=\frac{s_w}{\sqrt{\sum_i w}}.\]</span></p>
 <p>Here <span class="math inline">\(n_{\text{eff}}\)</span> is the effective sample size (i.e., the sum of all weights) and <span class="math inline">\(s_w\)</span> is the weighted standard deviation of <span class="math inline">\(X\)</span>.</p>
-<p>The frequency-weighted standard error is typically the smaller because it increases the effective sample size without introducing variability in the contribution of different observations. In contrast, the sampling-weighted standard error could be larger if some observations are given much higher weights, increasing the variability and lowering the precision.</p>
+<p>The frequency-weighted standard error is typically smaller because it increases the effective sample size without introducing variability in the contribution of different observations. In contrast, the sampling-weighted standard error could be larger if some observations are given much higher weights, increasing the variability and lowering the precision.</p>
 <p><em>Software Package</em>: <a href="https://www.rdocumentation.org/packages/survey">survey</a>.</p>
 </section>
 <section id="one-more-thing" class="level3">
@@ -503,10 +510,10 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="an-example">An Example</h2>
 <p>Let’s see all of this in practice. We begin by creating a fake dataset of a variable <span class="math inline">\(X\)</span> with both sampling and frequency weights. The weights are randomly created and hence have no underlying meaning, so think of this example as a tutorial, without a strong focus on the results.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Python</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clear workspace and load libraries</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clear workspace and load libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">681</span>)</span>
@@ -538,10 +545,10 @@ window.Quarto = {
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x    <span class="dv">0</span> <span class="fl">0.0038</span></span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(mean_freq, <span class="at">digits=</span><span class="dv">3</span>))</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>    mean     SE</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="sc">-</span><span class="fl">0.002</span> <span class="fl">0.0037</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> x <span class="sc">-</span><span class="fl">0.002</span> <span class="fl">0.0037</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.weightstats <span class="im">import</span> DescrStatsW</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -573,11 +580,11 @@ window.Quarto = {
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Sampling-Weighted Mean and SE:"</span>, np.<span class="bu">round</span>(mean_samp, <span class="dv">3</span>))</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Sampling<span class="op">-</span>Weighted Mean <span class="kw">and</span> SE: [<span class="op">-</span><span class="fl">0.002</span>  <span class="fl">0.002</span>]</span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Frequency-Weighted Mean and SE:"</span>, np.<span class="bu">round</span>(mean_freq, <span class="dv">3</span>))</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Frequency<span class="op">-</span>Weighted Mean <span class="kw">and</span> SE: [<span class="op">-</span><span class="fl">0.004</span>  <span class="fl">0.002</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> Frequency<span class="op">-</span>Weighted Mean <span class="kw">and</span> SE: [<span class="op">-</span><span class="fl">0.004</span>  <span class="fl">0.002</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
-<p>The unweighted and frequency-weighted means match exactly, (I am not sure why the sampling-weighted mean is slightly lower.) while the variances are different. The variance with frequency weights is lower than that of sampling weights.</p>
+<p>The unweighted and frequency-weighted means match exactly (I am not sure why the sampling-weighted mean is slightly lower), while the variances are different. The variance with frequency weights is lower than that of sampling weights.</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
@@ -585,7 +592,7 @@ window.Quarto = {
 <li><p>Weights are one of the most confusing aspects of working with data.</p></li>
 <li><p>Sampling and frequency weights are the most common types of weights found in practice.</p></li>
 <li><p>The former measure the inverse probability of being sampled, while the latter represent the number of times an observation enters the sample.</p></li>
-<li><p>While weighting usually does not impact point estimates (e.g., regression coefficients, means), incorrect usage of weights can lead to inaccurate confidence intervals and p-values.</p></li>
+<li><p>While weighting usually does not impact point estimates (e.g., regression coefficients, means), incorrect usage of weights can lead to inaccurate confidence intervals and <span class="math inline">\(p\)</span>-values.</p></li>
 <li><p>This is relevant only if <em>(i)</em> your dataset contains weights, and <em>(ii)</em> you are interested in population-level statistics.</p></li>
 </ul>
 </section>
@@ -632,7 +639,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -682,13 +689,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1033,15 +1041,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -1058,26 +1067,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

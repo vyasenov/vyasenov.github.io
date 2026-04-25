@@ -29,7 +29,7 @@ We observe a random sample of size $n$, of $\{Y_i, W_i, X_i \}$, where $i$ index
 
 ### Inverse Propensity Score Weights
 
-Inverse propensity score (IPS) weights rely on the estimated propensity score \hat{e}(X). The weights for treated and untreated groups are defined as:
+Inverse propensity score (IPS) weights rely on the estimated propensity score $\hat{e}(X)$. The weights for treated and untreated groups are defined as:
 
 $$ \gamma_{\text{IPS}}(X) = \begin{cases} 1 / \hat{e}(X) & \text{if } W = 1, \\ 1 / (1 - \hat{e}(X)) & \text{if } W = 0. \end{cases} $$
 
@@ -51,7 +51,7 @@ Using IPS weights entails two primary challenges. When $\hat{e}(X)$ is close to 
 
 ### Covariate Balancing Weights
 
-An alternative approach seeks weights that directly balance the dataset at hand. Typically this is framed as a constrained optimization problem with placing restrictions on the maximum imbalance in X between the treatment and control groups.
+An alternative approach seeks weights that directly balance the dataset at hand. Typically this is framed as a constrained optimization problem placing restrictions on the maximum imbalance in $X$ between the treatment and control groups.
 
 The weights $\gamma_{\text{CB}}(X)$ are obtained by solving:
 
@@ -61,7 +61,7 @@ where “Imbalance” measures covariate discrepancies between groups, and “Pe
 
 $$ \frac{1}{n} \sum_{i=1}^n W_i \gamma(X_i) f(X_i) \approx \frac{1}{n} \sum_{i=1}^n f(X_i), $$
 
-with $f(x_i)=x$. The same idea can be applied to higher moments of $X$ like variance or skewness. Examples methods relying on this type of weights include include [Hainmueller (2012)](https://doi.org/10.1093/pan/mpr025), [Chan et al. (2016)](https://doi.org/10.1111/rssb.12129), and [Athey et al. (2018)](https://doi.org/10.1111/rssb.12268), among many others.
+with $f(x_i)=x$. The same idea can be applied to higher moments of $X$ like variance or skewness. Example methods relying on this type of weights include [Hainmueller (2012)](https://doi.org/10.1093/pan/mpr025), [Chan et al. (2016)](https://doi.org/10.1111/rssb.12129), and [Athey et al. (2018)](https://doi.org/10.1111/rssb.12268), among many others.
 
 Covariate balancing weights bypass the need to explicitly estimate $e(X)$. Instead, they solve for weights that ensure the treated and control groups are balanced across predefined covariates or their transformations. This method aligns closely with the goal of causal inference: achieving balance. The main challenge is selecting the right set of covariates to be balanced. Variance estimation can also be more involved, although modern statistical packages take care of it.
 
@@ -73,11 +73,11 @@ Covariate balancing weights bypass the need to explicitly estimate $e(X)$. Inste
 
 $$ \sum_{i}\left[ W_i - e(X_i; \gamma) \right] X_i = 0. $$
 
-Additionally, CBPS estimates \gamma by solving the standard likelihood score equation:
+Additionally, CBPS estimates $\gamma$ by solving the standard likelihood score equation:
 
 $$ \sum_{i} \left[ W_i - e(X_i; \gamma) \right] \frac{\partial e(X_i; \gamma)}{\partial \gamma} = 0. $$
 
-The CBPS is operationalized in the Genralized Method of Moments (GMM) framework from the econometrics literature. This approach ensures that the estimated propensity scores lead to balanced covariates, potentially improving the robustness of causal inference. CBPS can be implemented using available GMM software packages and is particularly useful when traditional propensity score models fail to achieve adequate balance.
+The CBPS is operationalized in the Generalized Method of Moments (GMM) framework from the econometrics literature. This approach ensures that the estimated propensity scores lead to balanced covariates, potentially improving the robustness of causal inference. CBPS can be implemented using available GMM software packages and is particularly useful when traditional propensity score models fail to achieve adequate balance.
 
 *Software Packages*: [CBPS](https://github.com/kosukeimai/CBPS).
 
@@ -143,7 +143,7 @@ This article was inspired by [Ben-Michael et al. (2021)](https://arxiv.org/abs/2
 
 - IPS weights adjust for treatment probability but can be unstable.
 
-- Covariate balancing weights directly target balance X, bypassing propensity score estimation.
+- Covariate balancing weights directly target balance in $X$, bypassing propensity score estimation.
 
 ## References
 

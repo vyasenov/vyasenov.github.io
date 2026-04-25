@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>A Brief Introduction to Conformal Inference – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -72,13 +75,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -122,7 +126,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -135,7 +139,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -172,7 +176,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -205,7 +209,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -245,7 +249,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -273,7 +277,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -296,19 +300,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -467,14 +474,14 @@ window.Quarto = {
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let’s imagine a size n i.i.d. sample of an outcome variable <span class="math inline">\(Y\)</span> and a covariate vector <span class="math inline">\(X\)</span>, <span class="math inline">\((X_1, Y_1) \dots (X_n, Y_n)\)</span>. Conformal inference is concerned with building a “confidence interval” for a new outcome observation <span class="math inline">\(Y_{n+1}\)</span> from a new feature realization <span class="math inline">\(X_{n+1}\)</span>.</p>
+<p>Let’s imagine a size <span class="math inline">\(n\)</span> i.i.d. sample of an outcome variable <span class="math inline">\(Y\)</span> and a covariate vector <span class="math inline">\(X\)</span>, <span class="math inline">\((X_1, Y_1) \dots (X_n, Y_n)\)</span>. Conformal inference is concerned with building a “confidence interval” for a new outcome observation <span class="math inline">\(Y_{n+1}\)</span> from a new feature realization <span class="math inline">\(X_{n+1}\)</span>.</p>
 <p>Importantly, this interval should be valid:</p>
 <ul>
 <li>in finite samples (i.e., non-asymptotically),</li>
 <li>without assumptions on the data generating process, and</li>
 <li>for any estimator of the regression function, <span class="math inline">\(\mu(x)=E[Y \mid X=x]\)</span>.</li>
 </ul>
-<p>In mathematical notation, given a significance level , we want to construct a confidence interval <span class="math inline">\(CI(X_{n+1})\)</span> satisfying the above properties and such that:</p>
+<p>In mathematical notation, given a significance level <span class="math inline">\(\alpha\)</span>, we want to construct a confidence interval <span class="math inline">\(CI(X_{n+1})\)</span> satisfying the above properties and such that:</p>
 <p><span class="math display">\[P(Y_{n+1} \in CI(X_{n+1})) \geq 1-\alpha.\]</span></p>
 </section>
 <section id="a-closer-look" class="level2">
@@ -487,18 +494,18 @@ window.Quarto = {
 </section>
 <section id="the-naïve-approach" class="level3">
 <h3 class="anchored" data-anchor-id="the-naïve-approach">The Naïve Approach</h3>
-<p>Let’s turn back to the regression example with Y and X. We are given a new observation <span class="math inline">\(X_{n+1}\)</span> and our focus is on <span class="math inline">\(Y_{n+1}\)</span>. Following the fact described above, a naïve way to construct a confidence interval for <span class="math inline">\(Y_{n+1}\)</span> is as follows:</p>
+<p>Let’s turn back to the regression example with <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span>. We are given a new observation <span class="math inline">\(X_{n+1}\)</span> and our focus is on <span class="math inline">\(Y_{n+1}\)</span>. Following the fact described above, a naïve way to construct a confidence interval for <span class="math inline">\(Y_{n+1}\)</span> is as follows:</p>
 <p><span class="math display">\[CI^{\text{naïve}}_{1-\alpha}(X_{n+1}) = \left[ \hat{\mu}(X_{n+1}) \pm \hat{q}^{\mid \hat{u} \mid}_{1-\alpha} \right].\]</span></p>
-<p>Here <span class="math inline">\(\mu(\cdot)\)</span> is an estimate of the regression function <span class="math inline">\(E[Y \mid X]\)</span>, and <span class="math inline">\(\hat{q}^{\mid \hat{u} \mid}_{1-\alpha}\)</span> is the <span class="math inline">\((1-\alpha)\)</span>th quantile of empirical distribution function of the fitted residuals <span class="math inline">\(\mid Y-\hat{\mu}(X) \mid\)</span>.</p>
+<p>Here <span class="math inline">\(\hat{\mu}(\cdot)\)</span> is an estimate of the regression function <span class="math inline">\(E[Y \mid X]\)</span>, and <span class="math inline">\(\hat{q}^{\mid \hat{u} \mid}_{1-\alpha}\)</span> is the <span class="math inline">\((1-\alpha)\)</span>th quantile of the empirical distribution function of the fitted residuals <span class="math inline">\(\mid Y-\hat{\mu}(X) \mid\)</span>.</p>
 <p>Put simply, we can look at an interval around our best prediction for <span class="math inline">\(Y_{n+1}\)</span> (i.e., <span class="math inline">\(\hat{\mu}(X_{n+1})\)</span>) defined by the residuals estimated on the original data.</p>
-<p>It turns out this interval is too narrow. In a series of papers Vladimir Vovk and co-authors show that the empirical distribution function of the fitted residuals is often biased downward and hence this interval is invalid. This is where conformal inference comes in.</p>
+<p>It turns out this interval is too narrow. In a series of papers, Vladimir Vovk and co-authors show that the empirical distribution function of the fitted residuals is often biased downward and hence this interval is invalid. This is where conformal inference comes in.</p>
 </section>
 <section id="conformal-inference" class="level3">
 <h3 class="anchored" data-anchor-id="conformal-inference">Conformal Inference</h3>
-<p>Consider the following strategy. For each <span class="math inline">\(y\)</span> we fit a regression $_y $ on the sample <span class="math inline">\((Y_1, X_1),\dots (Y_n, X_n), (y, X_{n+1})\)</span>. We calculate the residuals <span class="math inline">\(R^y_i\)</span> for <span class="math inline">\(i=1,\dots,n\)</span> and <span class="math inline">\(R^y_{n+1}\)</span> and count the proportion of <span class="math inline">\(R^y_i\)</span>’s smaller than <span class="math inline">\(R^y_{n+1}\)</span>. Let’s call this number <span class="math inline">\(\sigma(y)\)</span>. That is,</p>
+<p>Consider the following strategy. For each <span class="math inline">\(y\)</span> we fit a regression <span class="math inline">\(\hat{\mu}_y\)</span> on the sample <span class="math inline">\((Y_1, X_1),\dots (Y_n, X_n), (y, X_{n+1})\)</span>. We calculate the residuals <span class="math inline">\(R^y_i\)</span> for <span class="math inline">\(i=1,\dots,n\)</span> and <span class="math inline">\(R^y_{n+1}\)</span> and count the proportion of <span class="math inline">\(R^y_i\)</span>’s smaller than <span class="math inline">\(R^y_{n+1}\)</span>. Let’s call this number <span class="math inline">\(\sigma(y)\)</span>. That is,</p>
 <p><span class="math display">\[\sigma(y) = \frac{1}{n+1}\sum_{i=1}^{n+1} I (R^y_i \leq R^y_{n+1}),\]</span></p>
-<p>where <span class="math inline">\(I(\cdot)\)</span> is the indicator function equal to one when the statement in the parenthesis is true and 0 if when it is not.</p>
-<p>The test statistic <span class="math inline">\(\sigma({Y_{n+1}})\)</span> is uniformly distributed over the set <span class="math inline">\(\{ \frac{1}{n+1}, \frac{2}{n+1},\dots, 1\}\)</span>, implying we can use <span class="math inline">\(1-\sigma({Y_{n+1}})\)</span> as a valid p-value for testing the null that <span class="math inline">\(Y_{n+1}=y.\)</span> Then, using the sample quantiles logic outlined above we arrive at the following confidence interval for <span class="math inline">\(Y_{n+1}\)</span>:</p>
+<p>where <span class="math inline">\(I(\cdot)\)</span> is the indicator function equal to one when the statement in the parenthesis is true and 0 when it is not.</p>
+<p>The test statistic <span class="math inline">\(\sigma(Y_{n+1})\)</span> is uniformly distributed over the set <span class="math inline">\(\{ \frac{1}{n+1}, \frac{2}{n+1},\dots, 1\}\)</span>, implying we can use <span class="math inline">\(1-\sigma(Y_{n+1})\)</span> as a valid <span class="math inline">\(p\)</span>-value for testing the null that <span class="math inline">\(Y_{n+1}=y.\)</span> Then, using the sample quantiles logic outlined above we arrive at the following confidence interval for <span class="math inline">\(Y_{n+1}\)</span>:</p>
 <p><span class="math display">\[ CI^{\text{conformal}}_{1-\alpha}(X_{n+1}) \approx \{ y\in \mathbb{R} : \sigma(y)\leq 1-\alpha \}.\]</span></p>
 <p>This is summarized in the following procedure:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
@@ -507,7 +514,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -537,12 +544,12 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Randomly split the data in two equal-sized bins.</li>
+<li>Randomly split the data into two equal-sized bins.</li>
 <li>Get <span class="math inline">\(\hat{\mu}\)</span> on the first bin.</li>
 <li>Calculate the residuals for each observation in the second bin.</li>
 <li>Let <span class="math inline">\(d\)</span> be the <span class="math inline">\(s\)</span>-th smallest residual, where <span class="math inline">\(s=(\frac{n}{2}+1)(1-\alpha)\)</span>.</li>
@@ -558,7 +565,7 @@ Algorithm:
 <p>I used the popular <code>iris</code> dataset to try out the <code>R</code> package <code>conformalInference</code>. Like most of my data demos, this is meant to be a mere illustration and you should not take the results seriously.</p>
 <p>The outcome variable was <code>Sepal.Length</code>, and the matrix <span class="math inline">\(X\)</span> included <code>sepal.width</code>, <code>petal.length</code>, <code>petal.width</code>, <code>species_setosa</code>, <code>species_versicolor</code>, and <code>species_virginica</code>. Some of these were categorical in which case I converted them to a bunch of binary variables. I used the first <span class="math inline">\(148\)</span> observations to estimate the regression function <span class="math inline">\(\mu(X)\)</span> using lasso and the <span class="math inline">\(149\)</span>th row to form the prediction (i.e., the test set).</p>
 <p>Here is the code.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clear workspace and load packages</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># clear workspace and load packages</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(conformalInference)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span>
@@ -623,8 +630,8 @@ Algorithm:
 <span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> [<span class="dv">1</span>] <span class="st">"The lower bound is 5.74 and the upper bound is 6.93"</span></span>
 <span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>out.split<span class="sc">$</span>pred</span>
 <span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span>          [,<span class="dv">1</span>]</span>
-<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> [<span class="dv">1</span>,] <span class="fl">6.33556</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The actual age value in the test set was <span class="math inline">\(6.2\)</span> while the conformal inference approach computed a confidence interval (<span class="math inline">\(5.88, 6.68\)</span>). The splitting algorithm gave similar results.</p>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> [<span class="dv">1</span>,] <span class="fl">6.33556</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The actual sepal length value in the test set was <span class="math inline">\(6.2\)</span> while the conformal inference approach computed a confidence interval (<span class="math inline">\(5.89, 6.68\)</span>). The splitting algorithm gave similar results.</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
@@ -674,7 +681,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -724,13 +731,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1075,15 +1083,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -1100,26 +1109,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

@@ -8,7 +8,7 @@ categories: [causal inference, flavors]
 
 If you’ve worked on causal inference with observational data, you’ve likely faced the fundamental challenge: the treated and control groups often look very different. Matching methods aim to fix that. The idea is simple and intuitive—let’s compare treated units to similar control units and mimic the conditions of a randomized experiment as best as we can.
 
-But here’s the twist: there multiple ways to define “similar.” Should we look for exact matches? Should we match on covariates directly or on some summary score like the propensity score? Should we optimize the matches globally or locally? Over the years, researchers have developed a wide variety of matching methods, each with its own advantages and pitfalls. The landscape can be overwhelming, especially if you’re new to causal inference. 
+But here’s the twist: there are multiple ways to define “similar.” Should we look for exact matches? Should we match on covariates directly or on some summary score like the propensity score? Should we optimize the matches globally or locally? Over the years, researchers have developed a wide variety of matching methods, each with its own advantages and pitfalls. The landscape can be overwhelming, especially if you’re new to causal inference. 
 
 In this article, I'll walk through the most popular matching strategies for causal inference. I’ll talk about what each method does, when to use it, and where it might lead you astray. The focus is on the intuition and technical description—not on the code. Whether you’re doing matching for the first time or looking to expand your toolkit, you will find something useful here.
 
@@ -27,7 +27,7 @@ $$
 \text{ATT} = \mathbb{E}[Y(1) - Y(0) \mid D = 1].
 $$
 
-The core idea behind matching is to find comparable untreated units for each treated unit so we can approximate $Y(0)$ for the treated group. We then look discard the unmatched units and look at the difference in outcomes between treated and matched controls to estimate the treatment effect. 
+The core idea behind matching is to find comparable untreated units for each treated unit so we can approximate $Y(0)$ for the treated group. We then discard the unmatched units and look at the difference in outcomes between treated and matched controls to estimate the treatment effect. 
 
 Let's abuse notation a bit and define the sample-analogue of the ATT as:
 

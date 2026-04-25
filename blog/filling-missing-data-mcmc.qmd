@@ -14,7 +14,7 @@ Let’s break this down step by step, explore the underlying intuition, as well 
 
 ## Notation
 
-To keep things precise, let’s set up some notation. Let Y be the complete dataset, which we wish we had. We observe some, but not all observations of Y. Let’s split it into observed data $Y_{\text{obs}}$, and missing (or incomplete) data $Y_{\text{miss}}$, so that $Y = \left( Y_{\text{obs}}, Y_{\text{miss}} \right)$.
+To keep things precise, let’s set up some notation. Let $Y$ be the complete dataset, which we wish we had. We observe some, but not all observations of $Y$. Let’s split it into observed data $Y_{\text{obs}}$, and missing (or incomplete) data $Y_{\text{miss}}$, so that $Y = \left( Y_{\text{obs}}, Y_{\text{miss}} \right)$.
 
 Assume a model for the data parameterized by $\theta$, that is $Y \sim f(Y \mid \theta)$. A simple example would be that a univariate $Y$ is Gaussian with some unspecified mean and variance. Our goal is to estimate and fill in $Y_{\text{miss}}$ by sampling from the posterior distribution
 
@@ -94,7 +94,7 @@ summary(pool(models))
 
 This is clearly a silly example since $Y$ is missing at random, suggesting that missing data does not result in bias. Anyway, for illustration purposes we run the Bayesian Regression algorithm to fill in the missing $Y$ and proceed with a linear regression of $Y$ on $X$.
 
-Specifically, the code below uses normal (linear regression) imputation to fill in the missing values. For each missing point the algorithm fits a linear regression model predicting $Y$ from $X$ using the complete data and then use this model to predict or impute the missing $Y$. This process is repeated $m$ times (hence the name multiple imputation), creating $m$ different versions of the dataset with the missing values filled in.
+Specifically, the code below uses normal (linear regression) imputation to fill in the missing values. For each missing point the algorithm fits a linear regression model predicting $Y$ from $X$ using the complete data and then uses this model to predict or impute the missing $Y$. This process is repeated $m$ times (hence the name multiple imputation), creating $m$ different versions of the dataset with the missing values filled in.
 
 Both coefficients fall in the expected respective regions. 
 

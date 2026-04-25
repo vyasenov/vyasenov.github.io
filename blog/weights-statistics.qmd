@@ -12,7 +12,7 @@ Most types of statistical analyses can be performed with weights. These include 
 
 The two primary types of weights encountered in practice are sampling weights and frequency weights. I will explore each in turn and conclude with a comparative example.
 
-To begin, let’s imagine a well-behaved random variable X of which we have an iid sample of size n. I will use w to denote the relevant weighting variable.
+To begin, let’s imagine a well-behaved random variable $X$ of which we have an iid sample of size $n$. I will use $w$ to denote the relevant weighting variable.
 
 ## A Closer Look
 
@@ -24,9 +24,9 @@ Variance estimation depends on the weight type.
 
 Remember that we estimate the standard error of $\bar{X}$ as:
 
-$$ SE(\bar{X})=\frac{s}{\sqrt{n}}, \hspace{.3cm} \text{where} \hspace{.3cm} s=\sqrt{\frac{1}{N-1}\sum_i(X-\bar{X})^2} $$
+$$ SE(\bar{X})=\frac{s}{\sqrt{n}}, \hspace{.3cm} \text{where} \hspace{.3cm} s=\sqrt{\frac{1}{n-1}\sum_i(X-\bar{X})^2} $$
 
-is an estimate of the standard deviation of $X$. I will explain below how estimation of $SE(\bar{X})$ differs for sampling and frequency weights. Importantly, s_w will denote the weighted version of this standard error.
+is an estimate of the standard deviation of $X$. I will explain below how estimation of $SE(\bar{X})$ differs for sampling and frequency weights. Importantly, $s_w$ will denote the weighted version of this standard error.
 
 ### Sampling Weights
 
@@ -42,7 +42,7 @@ Let’s now get back to the discussion on variance estimation. With sampling wei
 
 $$ SE^{\text{sampling}}(\bar{X})=\frac{s_w}{\sqrt{n^{\text{S}}_{\text{eff}}}}=\frac{s_w}{\sqrt{\frac{(\sum_i w)^2}{\sum_i w^2}}}$$
 
-The numerator is the weighted version of the sum of squared deviations from the mean, emphasizing observations with higher weights. The denominator normalizes the standard error based on the total sum of the weights. When the weights differ greatly—high weights make some observations much more influential, increasing uncertainty about the population mean and so the sampling-weighted standard error is often larger.
+The numerator is the weighted version of the sum of squared deviations from the mean, emphasizing observations with higher weights. The denominator normalizes the standard error based on the total sum of the weights. When the weights differ greatly, high weights make some observations much more influential, increasing uncertainty about the population mean, and so the sampling-weighted standard error is often larger.
 
 I will move on to describing frequency weights.
 
@@ -54,13 +54,13 @@ Frequency weights measure the number of times an observation should be counted i
 
 We can gain intuition from a linear algebra perspective. In a regression context, the design matrix X must be of full rank (to ensure invertibility), which implies no two rows can be identical. We thus need to collapse X to keep only distinct rows and record the number of times each row appears in the original data. This record constitutes the frequency weights.
 
-The formula for estimating the standard error of X with frequency weights is:
+The formula for estimating the standard error of $X$ with frequency weights is:
 
 $$ SE^{\text{frequency}}(\bar{X})=\frac{s_w}{\sqrt{n^{\text{F}}_{\text{eff}}}}=\frac{s_w}{\sqrt{\sum_i w}}.$$
 
 Here $n_{\text{eff}}$ is the effective sample size (i.e., the sum of all weights) and $s_w$ is the weighted standard deviation of $X$.
 
-The frequency-weighted standard error is typically the smaller because it increases the effective sample size without introducing variability in the contribution of different observations. In contrast, the sampling-weighted standard error could be larger if some observations are given much higher weights, increasing the variability and lowering the precision.
+The frequency-weighted standard error is typically smaller because it increases the effective sample size without introducing variability in the contribution of different observations. In contrast, the sampling-weighted standard error could be larger if some observations are given much higher weights, increasing the variability and lowering the precision.
 
 *Software Package*: [survey](https://www.rdocumentation.org/packages/survey).
 
@@ -152,7 +152,7 @@ print("Frequency-Weighted Mean and SE:", np.round(mean_freq, 3))
 
 ::::
 
-The unweighted and frequency-weighted means match exactly, (I am not sure why the sampling-weighted mean is slightly lower.) while the variances are different. The variance with frequency weights is lower than that of sampling weights.
+The unweighted and frequency-weighted means match exactly (I am not sure why the sampling-weighted mean is slightly lower), while the variances are different. The variance with frequency weights is lower than that of sampling weights.
 
 ## Bottom Line
 
@@ -162,7 +162,7 @@ The unweighted and frequency-weighted means match exactly, (I am not sure why th
 
 - The former measure the inverse probability of being sampled, while the latter represent the number of times an observation enters the sample.
 
-- While weighting usually does not impact point estimates (e.g., regression coefficients, means), incorrect usage of weights can lead to inaccurate confidence intervals and p-values.
+- While weighting usually does not impact point estimates (e.g., regression coefficients, means), incorrect usage of weights can lead to inaccurate confidence intervals and $p$-values.
 
 - This is relevant only if *(i)* your dataset contains weights, and *(ii)* you are interested in population-level statistics.
 

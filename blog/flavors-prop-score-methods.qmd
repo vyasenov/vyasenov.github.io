@@ -11,7 +11,7 @@ Introduced by Rosenbaum and Rubin in 1983, the propensity score, the probability
 
 But here's the thing: the propensity score itself is just the starting point. It designates an entire class of statistical methods for treatment effect estimation. In practice, there are tons of ways to use propensity scores. You can match on them, stratify your sample, weight your observations, or plug them into doubly robust estimators that combine modeling of both the treatment and the outcome. You can tweak how you weight the units—downweighting those with extreme scores or focusing on the region where treated and control groups overlap.
 
-In this post, we’ll explore the many flavors of propensity score methods. As always, the focus is on the intuition, the basic math, and practical considerations. Oh, there is also some `R` and `python` code.
+In this post, I’ll explore the many flavors of propensity score methods. As always, the focus is on the intuition, the basic math, and practical considerations. Oh, there is also some `R` and `python` code.
 
 ## Notation
 

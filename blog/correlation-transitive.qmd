@@ -6,9 +6,9 @@ categories: [correlation, statistical inference]
 
 ## Background
 
-At first, I found this really puzzling. $X$ is correlated (Pearson) with Y, and Y is correlated with $Z$. Does this mean X is necessarily correlated with $Z$? Intuitively, this totally makes sense. The answer, however, is “no.”
+At first, I found this really puzzling. $X$ is correlated (Pearson) with $Y$, and $Y$ is correlated with $Z$. Does this mean $X$ is necessarily correlated with $Z$? Intuitively, this totally makes sense. The answer, however, is “no.”
 
-Perhaps the strangest thing is how easy it is to rationalize this “puzzle.” I drink more beer ($X$) and read more books ($Z$) when I am on a vacation (Y). That is, both pairs – $X$ and $Y$ and $Z$ and $Y$ – are positively correlated. But I do not drink more beer when I read more books – $X$ and $Z$ are not correlated. It is now obvious that correlation is not (always) transitive, but a second ago, this sounded bizarre.
+Perhaps the strangest thing is how easy it is to rationalize this “puzzle.” I drink more beer ($X$) and read more books ($Z$) when I am on a vacation ($Y$). That is, both pairs – $X$ and $Y$ and $Z$ and $Y$ – are positively correlated. But I do not drink more beer when I read more books – $X$ and $Z$ are not correlated. It is now obvious that correlation is not (always) transitive, but a second ago, this sounded bizarre.
 
 ## A Closer Look
 
@@ -24,13 +24,9 @@ Then, we have:
 
 $$ cor(X,Z)=cor(X,Y)cor(Z,Y)+cor(\epsilon^{X,Y},\epsilon^{Z,Y}).$$
 
-We can use the Cauchy-Schwarz inequality to bound the last term, which gives the final range of possible values for cor(X,Z):
+We can use the Cauchy-Schwarz inequality to bound the last term, which gives the final range of possible values for $cor(X,Z)$:
 
-$$cor(X,Y)cor(Z,Y) - \sqrt{(1-cor(X,Y)^2) (1-cor(Z,Y)^2)}$$
-
-$$\leq cor(X,Z) \leq  $$
-
-$$cor(X,Y)cor(Z,Y) + \sqrt{(1-cor(X,Y)^2) (1-cor(Z,Y)^2)}$$
+$$cor(X,Y)cor(Z,Y) - \sqrt{(1-cor(X,Y)^2)(1-cor(Z,Y)^2)} \leq cor(X,Z) \leq cor(X,Y)cor(Z,Y) + \sqrt{(1-cor(X,Y)^2)(1-cor(Z,Y)^2)}.$$
 
 For instance, if we set $cor(X,Y)=cor(Z,Y)=0.6$, then we get:
 
@@ -39,8 +35,6 @@ $$-.28 \leq cor(X,Z) \leq 1.$$
 That is, $cor(X,Z)$ can be negative.
 
 ### Examples
-
-### Example: City Lifestyle
 
 Let's go through three examples of non-transitive correlations.
 

@@ -8,7 +8,7 @@ categories: [statistical inference, nonparametric models]
 
 Nonparametric statistics offers a powerful toolkit for data analysis when the underlying data-generating process is too complex or unknown to be captured by parametric models. Unlike parametric methods, which assume a specific form for the underlying distribution or functional relationship, nonparametric approaches let the data “speak for itself.”
 
-In earlier articles, we explored parametric and semiparametric models, where the focus was on attaining the lowest possible variance. However, in nonparametric statistics, this goal is unsuitable, as prioritizing minimal variance often introduces significant bias. The spotlight falls instead on selecting the optimal tuning parameter: the bandwidth. This article explains the various considerations and mathematical details associated with selecting the optimal bandwidth value in Kernel Density (KD) and Kernel Regression (KR) estimation.
+In earlier articles, I explored parametric and semiparametric models, where the focus was on attaining the lowest possible variance. However, in nonparametric statistics, this goal is unsuitable, as prioritizing minimal variance often introduces significant bias. The spotlight falls instead on selecting the optimal tuning parameter: the bandwidth. This article explains the various considerations and mathematical details associated with selecting the optimal bandwidth value in Kernel Density (KD) and Kernel Regression (KR) estimation.
 
 ## Notation
 
@@ -20,11 +20,11 @@ A kernel function $K(\cdot)$ is a non-negative, symmetric function that integrat
 
 ### Kernel Density
 
-KD is sort of like creating a smooth histogram. The kernel density estimator for a sample of n observations $X_1, X_2, \dots, X_n \in \mathbb{R}$ is given by:
+KD is sort of like creating a smooth histogram. The kernel density estimator for a sample of $n$ observations $X_1, X_2, \dots, X_n \in \mathbb{R}$ is given by:
 
   $$\hat{f}_h (x) = \frac{1}{n h} \sum_i K\left(\frac{x - X_i}{h}\right),$$
 
-where $h > 0$ is the bandwidth, a positive scalar controlling the smoothness of the estimate. Its function is to determine the window length around x in which the observations get positive weight.
+where $h > 0$ is the bandwidth, a positive scalar controlling the smoothness of the estimate. Its function is to determine the window length around $x$ in which the observations get positive weight.
 
 The value $\hat{f}_h (x)$ will be large when there are many data points around $x$, and small otherwise. Some popular kernel functions like Epanechnikov, Gaussian or triangular assign higher weights to observations closer to $x$ and decaying importance to data further away.
 
@@ -32,7 +32,7 @@ Density estimation can also be performed in higher dimensions where the curse of
 
 ### Kernel Regression
 
-Kernel regression, also known as local regression, is much like fitting a flexible smooth curve through data points. In this context, we have access to $n$ observations of an outcome variable $Y$. The objective is to estimate the conditional mean function at some point X=x:
+Kernel regression, also known as local regression, is much like fitting a flexible smooth curve through data points. In this context, we have access to $n$ observations of an outcome variable $Y$. The objective is to estimate the conditional mean function at some point $X=x$:
 
 $$m(x) = \mathbb{E}[Y \mid X = x].$$
 
@@ -149,7 +149,7 @@ This yields a simplified version of the following figure:
 
 ![](../files/nonparametric.png)
 
-The green line corresponds to the Nadaraya-Watson regression with an optimal bandwidth and features some degree of curvature. The red line has a smaller bandwidth (higher variance, lower bias), and the blue line is undersmoothed (higher bandwidth).
+The green line corresponds to the Nadaraya-Watson regression with an optimal bandwidth and features some degree of curvature. The red line has a smaller bandwidth (higher variance, lower bias), and the blue line is over-smoothed (higher bandwidth).
 
 ## Bottom Line
 

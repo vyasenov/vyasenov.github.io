@@ -6,9 +6,9 @@ categories: [semiparametric models]
 
 ## Background
 
-Generalized Additive Models (GAMs) are one of the most powerful and flexible tools in a data scientist's toolbox for modeling complex, nonlinear relationships between covariates and an outcome. They generalize linear models by allowing smooth, nonparametric functions of the predictors while still maintaining interpretability and manageable computation. The core idea is instead of forcing relationships to be straight lines, let the data speak for itself. 
+Generalized Additive Models (GAMs) are one of the most powerful and flexible tools in a data scientist's toolbox for modeling complex, nonlinear relationships between covariates and an outcome. They generalize linear models by allowing smooth, nonparametric functions of the predictors while still maintaining interpretability and manageable computation. The core idea is simple: instead of forcing relationships to be straight lines, let the data speak for itself.
 
-This article explains what you really need to know about GAMs, following the excellent review by Simon Wood (2025). We’ll go over the basics of how GAMs work, how smoothness is controlled, the computational strategies involved, and key pitfalls to watch out for. We'll also walk through a code example in both `R` and `Python` to show how to fit and interpret these models in practice.
+This article explains what you really need to know about GAMs, following the excellent review by Simon Wood (2025). I’ll go over the basics of how GAMs work, how smoothness is controlled, the computational strategies involved, and key pitfalls to watch out for. I’ll also walk through a code example in both `R` and `Python` to show how to fit and interpret these models in practice.
 
 ## Notation
 
@@ -50,7 +50,7 @@ $$
 \min_{f_1,\dots,f_p} \left\{ \sum_{i=1}^n \left(y_i - \beta_0 - \sum_{j=1}^p f_j(x_{ij})\right)^2 + \sum_{j=1}^p \lambda_j \int \left(f_j''(x)\right)^2 \, dx \right\}, 
 $$
 
-where $S_j$ encodes the roughness penalty and $\lambda_j$ is the smoothing parameter.
+where $\lambda_j$ is the smoothing parameter.
  
 Everything in a GAM flows from this penalized least-squares (or penalized likelihood) objective. The balance between fitting the data and keeping the function smooth is controlled by smoothing parameters ($\lambda$). This is regularization: in particular, the standard spline roughness penalties are quadratic (ridge-like). A higher $\lambda$ makes the function flatter; a lower $\lambda$ allows more flexibility. 
 
@@ -73,7 +73,7 @@ The marginal likelihood approach treats smooth coefficients as random effects wi
 
 Similarly, there are two common tools for model selection. The well-known *Akaike Information Criterion (AIC)* controls the trade-off between goodness of fit and model complexity. Alternatively, one can employ *hypothesis testing* to check whether each $f_j$ is significantly different from zero.
 
-With $\lambda$, $k$, and $f_j$ selected, we can fit the GAM and make predictions. Let's shift the focus on a few more nuianced, but important, topics.
+With $\lambda$, $k$, and $f_j$ selected, we can fit the GAM and make predictions. Let's shift the focus to a few more nuanced, but important, topics.
 
 ### Why Rank Reduction Matters
 

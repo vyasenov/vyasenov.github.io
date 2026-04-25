@@ -14,17 +14,17 @@ You might have come across the statement, “correlation is a cosine,” but nev
 
 The law of cosines states that in any triangle with sides $x$, $y$, and $z$ and an angle (between $x$ and $y$) $\theta$, we have:
 
-$$ z^2 = x^2 + y^2 - 2 x y cos(\theta), $$
+$$ z^2 = x^2 + y^2 - 2 x y cos(\theta). $$
 
 In the special case when $\theta=\frac{\pi}{2}$, the term on the right-hand side equals $0$ and the equation reduces to the well-known Pythagorean Theorem.
 
-### The Variance of the $A+B$
+### The Variance of $A+B$
 
 Let’s imagine two random variables $A$, $B$. The variance of their sum is given by:
 
 $$ var(A+B) = var(A)+var(B)+2 cov(A,B), $$
 
-where $cov(\cdot)$, denotes covariance. We can substitute the last term with its definition as follows:
+where $cov(\cdot)$ denotes covariance. We can substitute the last term with its definition as follows:
 
 $$ var(A+B) = var(A)+var(B)+2 corr(A,B) sd(A) sd(B). $$
 
@@ -36,7 +36,7 @@ $$ sd^2(A+B) = sd^2 (A)+ sd^2 (B)+2 corr(A,B) sd(A) sd(B).$$
 
 Setting $x=sd(A)$, $y=sd(B)$, and $z=sd(A+B)$ in the first equation gives the desired result. With one small caveat – the negative sign on the cosine term. To get around this we can simply look at the complementary angle $\delta = \pi - \theta$.
 
-That is, we imagine a triangle with sides equal to $sd(A)$, $sd(B)$ and $sd(A+B)$, where $\theta$ is the angle between $sd(A)$, $sd(B)$. When this angle is small ($\theta < \frac{\pi}{2}$), the two sides point in the same direction and A and B are positively correlated. The opposite is true for $\theta > \frac{\pi}{2}$. As mentioned above, $\theta = \frac{\pi}{2}$ kills the correlation term, consistent with $A$ and $B$ being independent.
+That is, we imagine a triangle with sides equal to $sd(A)$, $sd(B)$ and $sd(A+B)$, where $\theta$ is the angle between $sd(A)$, $sd(B)$. When this angle is small ($\theta < \frac{\pi}{2}$), the two sides point in the same direction and $A$ and $B$ are positively correlated. The opposite is true for $\theta > \frac{\pi}{2}$. As mentioned above, $\theta = \frac{\pi}{2}$ kills the correlation term, consistent with $A$ and $B$ being independent.
 
 ### Correlation as a Dot Product
 

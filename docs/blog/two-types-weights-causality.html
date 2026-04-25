@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>The Two Types of Weights in Causal Inference – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -72,13 +75,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -122,7 +126,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -135,7 +139,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -172,7 +176,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -205,7 +209,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -245,7 +249,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -273,7 +277,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -296,19 +300,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -482,7 +489,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="inverse-propensity-score-weights" class="level3">
 <h3 class="anchored" data-anchor-id="inverse-propensity-score-weights">Inverse Propensity Score Weights</h3>
-<p>Inverse propensity score (IPS) weights rely on the estimated propensity score (X). The weights for treated and untreated groups are defined as:</p>
+<p>Inverse propensity score (IPS) weights rely on the estimated propensity score <span class="math inline">\(\hat{e}(X)\)</span>. The weights for treated and untreated groups are defined as:</p>
 <p><span class="math display">\[ \gamma_{\text{IPS}}(X) = \begin{cases} 1 / \hat{e}(X) &amp; \text{if } W = 1, \\ 1 / (1 - \hat{e}(X)) &amp; \text{if } W = 0. \end{cases} \]</span></p>
 <p>IPS weights intuitively correct for the unequal probability of treatment assignment. If an individual has a low probability of treatment <span class="math inline">\(e(X)\approx 0\)</span> but is treated, their weight is large, amplifying their influence in the analysis. Conversely, individuals with high treatment probabilities are downweighted to prevent overrepresentation.</p>
 <p>A few notes. First, these weights <a href="https://academic.oup.com/biomet/article/70/1/41/240879">adjust the observed data</a> such that the distribution of covariates in the weighted treated and control groups resembles that of the overall population. This helps mitigate selection bias, ensuring that comparisons between treated and control groups reflect a treatment effect rather than confounded differences in covariates (e.g., the control group is older).</p>
@@ -495,12 +502,12 @@ window.Quarto = {
 </section>
 <section id="covariate-balancing-weights" class="level3">
 <h3 class="anchored" data-anchor-id="covariate-balancing-weights">Covariate Balancing Weights</h3>
-<p>An alternative approach seeks weights that directly balance the dataset at hand. Typically this is framed as a constrained optimization problem with placing restrictions on the maximum imbalance in X between the treatment and control groups.</p>
+<p>An alternative approach seeks weights that directly balance the dataset at hand. Typically this is framed as a constrained optimization problem placing restrictions on the maximum imbalance in <span class="math inline">\(X\)</span> between the treatment and control groups.</p>
 <p>The weights <span class="math inline">\(\gamma_{\text{CB}}(X)\)</span> are obtained by solving:</p>
 <p><span class="math display">\[ \min_{\gamma} \text{Imbalance}(\gamma) + \lambda \text{Penalty}(\gamma),\]</span></p>
 <p>where “Imbalance” measures covariate discrepancies between groups, and “Penalty” controls for extreme weights. A common formulation balances means:</p>
 <p><span class="math display">\[ \frac{1}{n} \sum_{i=1}^n W_i \gamma(X_i) f(X_i) \approx \frac{1}{n} \sum_{i=1}^n f(X_i), \]</span></p>
-<p>with <span class="math inline">\(f(x_i)=x\)</span>. The same idea can be applied to higher moments of <span class="math inline">\(X\)</span> like variance or skewness. Examples methods relying on this type of weights include include <a href="https://doi.org/10.1093/pan/mpr025">Hainmueller (2012)</a>, <a href="https://doi.org/10.1111/rssb.12129">Chan et al.&nbsp;(2016)</a>, and <a href="https://doi.org/10.1111/rssb.12268">Athey et al.&nbsp;(2018)</a>, among many others.</p>
+<p>with <span class="math inline">\(f(x_i)=x\)</span>. The same idea can be applied to higher moments of <span class="math inline">\(X\)</span> like variance or skewness. Example methods relying on this type of weights include <a href="https://doi.org/10.1093/pan/mpr025">Hainmueller (2012)</a>, <a href="https://doi.org/10.1111/rssb.12129">Chan et al.&nbsp;(2016)</a>, and <a href="https://doi.org/10.1111/rssb.12268">Athey et al.&nbsp;(2018)</a>, among many others.</p>
 <p>Covariate balancing weights bypass the need to explicitly estimate <span class="math inline">\(e(X)\)</span>. Instead, they solve for weights that ensure the treated and control groups are balanced across predefined covariates or their transformations. This method aligns closely with the goal of causal inference: achieving balance. The main challenge is selecting the right set of covariates to be balanced. Variance estimation can also be more involved, although modern statistical packages take care of it.</p>
 <p><em>Software Packages</em>: <a href="https://www.rdocumentation.org/packages/MatchIt">MatchIt</a>, <a href="https://www.rdocumentation.org/packages/Matching">Matching</a>.</p>
 </section>
@@ -508,16 +515,16 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="hybrid-approach">Hybrid Approach</h3>
 <p><a href="https://doi.org/10.1111/rssb.12027">Imai and Ratkovic (2013)</a> developed a hybrid method that combines elements of covariate balancing and inverse propensity score methods. Their method, known as Covariate Balancing Propensity Score (CBPS), aims to estimate propensity scores while simultaneously achieving covariate balance. Instead of relying on a tuning parameter, CBPS ensures balance by solving the following moment conditions:</p>
 <p><span class="math display">\[ \sum_{i}\left[ W_i - e(X_i; \gamma) \right] X_i = 0. \]</span></p>
-<p>Additionally, CBPS estimates by solving the standard likelihood score equation:</p>
+<p>Additionally, CBPS estimates <span class="math inline">\(\gamma\)</span> by solving the standard likelihood score equation:</p>
 <p><span class="math display">\[ \sum_{i} \left[ W_i - e(X_i; \gamma) \right] \frac{\partial e(X_i; \gamma)}{\partial \gamma} = 0. \]</span></p>
-<p>The CBPS is operationalized in the Genralized Method of Moments (GMM) framework from the econometrics literature. This approach ensures that the estimated propensity scores lead to balanced covariates, potentially improving the robustness of causal inference. CBPS can be implemented using available GMM software packages and is particularly useful when traditional propensity score models fail to achieve adequate balance.</p>
+<p>The CBPS is operationalized in the Generalized Method of Moments (GMM) framework from the econometrics literature. This approach ensures that the estimated propensity scores lead to balanced covariates, potentially improving the robustness of causal inference. CBPS can be implemented using available GMM software packages and is particularly useful when traditional propensity score models fail to achieve adequate balance.</p>
 <p><em>Software Packages</em>: <a href="https://github.com/kosukeimai/CBPS">CBPS</a>.</p>
 </section>
 </section>
 <section id="an-example" class="level2">
 <h2 class="anchored" data-anchor-id="an-example">An Example</h2>
 <p>Let’s illustrate these methods in practice with <code>R</code>. Consider a dataset with treatment <span class="math inline">\(W\)</span>, outcome <span class="math inline">\(Y\)</span>, and covariates <span class="math inline">\(X_1, X_2​\)</span>. We estimate the ATE using both IPS, <a href="https://doi.org/10.1093/pan/mpr025">entropy balancing weights</a> and CBPS. The exercise starts with generating some synthetic data.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>())</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(WeightIt)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
@@ -557,12 +564,12 @@ window.Quarto = {
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span><span class="fu">ATE</span> (Entropy Balance Weights)<span class="sc">:</span> <span class="fl">2.287048</span> </span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"ATE (CBPS Weights):"</span>, cbps_ate, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span><span class="fu">ATE</span> (CBPS Weights)<span class="sc">:</span> <span class="fl">2.287048</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span><span class="fu">ATE</span> (CBPS Weights)<span class="sc">:</span> <span class="fl">2.287048</span> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The weights are all very highly correlated with each other (not shown above), so they yield nearly identical results. For simplicity, I have ignored variance estimation and confidence intervals.</p>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>This article was inspired by <a href="https://arxiv.org/abs/2110.14831">Ben-Michael et al.&nbsp;(2021)</a> and <a href="https://doi.org/10.1002/sim.8659">Chattopadhyay et al.&nbsp;(2020)</a>. Both references are great starting points. There are plenty of accessible materials on the topic online. My favorite is <a href="https://jhr.uwpress.org/content/50/2/373.short">Imbens (2015)</a>. For more in-depth content turn to <a href="https://www.amazon.com/Causal-Inference-Statistics-Biomedical-Sciences/dp/0521885884/ref=sr_1_1?dib=eyJ2IjoiMSJ9.nem1mlE601jgKEheniqQFEj4Pz1c35gbXgCgSU8NoUPGjHj071QN20LucGBJIEps.8MYs_J-ThoGfV5QH6emDwPZzBCBeJL_vtQZPuJeWkcU&amp;dib_tag=se&amp;keywords=imbens+rubin&amp;qid=1740166258&amp;sr=8-1">Imbens and Rubin (2015)</a>’s seminal textbook.</p>
+<p>This article was inspired by <a href="https://arxiv.org/abs/2110.14831">Ben-Michael et al.&nbsp;(2021)</a> and <a href="https://doi.org/10.1002/sim.8659">Chattopadhyay et al.&nbsp;(2020)</a>. Both references are great starting points. There are plenty of accessible materials on the topic online. My favorite is <a href="https://jhr.uwpress.org/content/50/2/373.short">Imbens (2015)</a>. For more in-depth content turn to <a href="https://www.amazon.com/Causal-Inference-Statistics-Biomedical-Sciences/dp/0521885884/ref=sr_1_1?dib=eyJ2IjoiMSJ9.nem1mlE601jgKEheniqQFEj4Pz1c35gbXgCgSU8NoUPGjHj071QN20LucGBJIEps.8MYs_J-ThoGfV5QH6emDwPZzBCBeJL_vtQZPuJeWkcU&amp;dib_tag=se&amp;keywords=imbens+rubin&amp;qid=1740166258&amp;sr=8-1">Imbens and Rubin (2015)</a>‘s seminal textbook.</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
@@ -570,7 +577,7 @@ window.Quarto = {
 <li><p>Covariate balance between the treatment and control groups is at the core of causal inference.</p></li>
 <li><p>There are two broad classes of weights that achieve such balance.</p></li>
 <li><p>IPS weights adjust for treatment probability but can be unstable.</p></li>
-<li><p>Covariate balancing weights directly target balance X, bypassing propensity score estimation.</p></li>
+<li><p>Covariate balancing weights directly target balance in <span class="math inline">\(X\)</span>, bypassing propensity score estimation.</p></li>
 </ul>
 </section>
 <section id="references" class="level2">
@@ -618,7 +625,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -668,13 +675,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1019,15 +1027,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -1044,26 +1053,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

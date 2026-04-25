@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>The Many Flavors of Gradient Boosting – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -72,13 +75,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -122,7 +126,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -135,7 +139,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -172,7 +176,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -205,7 +209,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -245,7 +249,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -273,7 +277,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -296,19 +300,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -486,7 +493,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="refresher-on-gradient-boosting" class="level3">
 <h3 class="anchored" data-anchor-id="refresher-on-gradient-boosting">Refresher on Gradient Boosting</h3>
-<p>Gradient boosting is an ensemble machine learning technique that builds models sequentially, each new model attempting to correct the errors of the previous ones. The general idea is to minimize a loss function by adding weak learners (typically short decision trees) in a stage-wise manner to arrive at a single strong learner. This iterative process allows the model to improve its performance gradually, making it highly effective for complex datasets. Gradient boosting methods are versatile in that they can be used both for regression and classifications problems. In the most common case when the weak learners are decision trees, the algorithm is known as gradient tree boosting.</p>
+<p>Gradient boosting is an ensemble machine learning technique that builds models sequentially, each new model attempting to correct the errors of the previous ones. The general idea is to minimize a loss function by adding weak learners (typically short decision trees) in a stage-wise manner to arrive at a single strong learner. This iterative process allows the model to improve its performance gradually, making it highly effective for complex datasets. Gradient boosting methods are versatile in that they can be used both for regression and classification problems. In the most common case when the weak learners are decision trees, the algorithm is known as gradient tree boosting.</p>
 <p>Mathematically, the model is built as follows:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
@@ -494,7 +501,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -523,7 +530,7 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -553,7 +560,7 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -561,8 +568,8 @@ Algorithm:
 <li>Initialize the model with a constant value: <span class="math inline">\(f_0(x) = \arg\min_{\gamma} \sum_i L(y_i, \gamma)\)</span></li>
 <li>For <span class="math inline">\(m=1, \dots M\)</span>:
 <ol type="i">
-<li>Compute the gradients <span class="math display">\[grad_m(x_i)=\left( \frac{\partial L(y_i, f(x_i))}{\partial f(x_i)}\right)_{f(x)=f_{m-1}(x)}\]</span> and hessians <span class="math display">\[hess_m(x_i)=\left( \frac{\partial^2 L(y_i, f(x_i))}{\partial^2 f(x_i)^2}\right)_{f(x)=f_{m-1}(x)}\]</span> of the loss function for <span class="math inline">\(i=1,\dots,n\)</span>.</li>
-<li>Fit a weak learner such as a tree, <span class="math inline">\(h_m(x)\)</span> on$ {(x_i, ) }_{i=1}^n$.</li>
+<li>Compute the gradients <span class="math display">\[grad_m(x_i)=\left( \frac{\partial L(y_i, f(x_i))}{\partial f(x_i)}\right)_{f(x)=f_{m-1}(x)}\]</span> and hessians <span class="math display">\[hess_m(x_i)=\left( \frac{\partial^2 L(y_i, f(x_i))}{\partial f(x_i)^2}\right)_{f(x)=f_{m-1}(x)}\]</span> of the loss function for <span class="math inline">\(i=1,\dots,n\)</span>.</li>
+<li>Fit a weak learner such as a tree, <span class="math inline">\(h_m(x)\)</span>, on <span class="math inline">\(\{(x_i, \frac{grad_m(x_i)}{hess_m(x_i)}) \}_{i=1}^n\)</span>.</li>
 <li>Update the model <span class="math inline">\(f_m(x)=f_{(m-1)} - \alpha h_m(x).\)</span></li>
 </ol></li>
 <li>The final model is <span class="math inline">\(f_M(x)=\sum_m f_m(x)\)</span>.</li>
@@ -586,15 +593,15 @@ Algorithm:
 </section>
 <section id="challenges" class="level3">
 <h3 class="anchored" data-anchor-id="challenges">Challenges</h3>
-<p>Gradient boosting methods comes with a few common practical challenges. When a predictive model learns the training data too precisely, it may perform poorly on new, unseen data – a problem called overfitting. To combat this, various regularization methods are used to add helpful constraints to the learning process. A main parameter that regulates the model’s learning precision is the number of boosting rounds (<span class="math inline">\(M\)</span>), which determines how many base models are created. While using more rounds reduces training errors, it also increases overfitting risk. To find the optimal <span class="math inline">\(M\)</span> value, it’s common to use cross validation. The depth of decision trees is another important control parameter in tree boosting. Deeper trees can capture more complex patterns but are more prone to memorizing the training data rather than learning generalizable patterns.</p>
+<p>Gradient boosting methods come with a few common practical challenges. When a predictive model learns the training data too precisely, it may perform poorly on new, unseen data – a problem called overfitting. To combat this, various regularization methods are used to add helpful constraints to the learning process. A main parameter that regulates the model’s learning precision is the number of boosting rounds (<span class="math inline">\(M\)</span>), which determines how many base models are created. While using more rounds reduces training errors, it also increases overfitting risk. To find the optimal <span class="math inline">\(M\)</span> value, it’s common to use cross validation. The depth of decision trees is another important control parameter in tree boosting. Deeper trees can capture more complex patterns but are more prone to memorizing the training data rather than learning generalizable patterns.</p>
 <p>The improved predictive performance of gradient boosting relative to simpler models comes at a cost of reduced model transparency. While a single decision tree’s reasoning can be easily traced and understood, tracking the decision-making process across numerous trees becomes extremely complex and challenging. Gradient boosting is an excellent example of the inherent tradeoff between model simplicity and performance.</p>
-<p>Let’s now look at how can we use these methods in practice.</p>
+<p>Let’s now look at how we can use these methods in practice.</p>
 </section>
 </section>
 <section id="an-example" class="level2">
 <h2 class="anchored" data-anchor-id="an-example">An Example</h2>
 <p>Here is some sample <code>python</code> code illustrating the implementation of each algorithm described above on a common dataset. Let’s look at it in detail.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># loading the necessary libraries</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># loading the necessary libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> load_breast_cancer</span>
@@ -626,8 +633,8 @@ Algorithm:
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    y_pred <span class="op">=</span> clf.predict(X_test)</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    accuracy <span class="op">=</span> accuracy_score(y_test, y_pred)</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    results[name] <span class="op">=</span> accuracy</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>Finally, we <span class="bu">print</span> the accuracy results:</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Finally, print the accuracy results</span></span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, accuracy <span class="kw">in</span> results.items():</span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>accuracy<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
@@ -635,9 +642,9 @@ Algorithm:
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>AdaBoost: <span class="fl">0.9737</span></span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>XGBoost: <span class="fl">0.9561</span></span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>LightGBM: <span class="fl">0.9649</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>CatBoost: <span class="fl">0.9649</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Overall each method performed reasonably well, with accuracy ranging from <span class="math inline">\(95.6\)</span>% to <span class="math inline">\(97.4\)</span>%. Interestingly, <code>Adaboost</code> outperformed the other more complex algorithms, at least in the in terms of accuracy.</p>
-<p>And that’s it. You are now familiar with the most popular implementations of gradient boosting along with their advantages and weaknesses. You also know how to employ them in practice. Have fun incorporating <code>XGboost</code> and the like into your predictive modeling tasks.</p>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span>CatBoost: <span class="fl">0.9649</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Overall each method performed reasonably well, with accuracy ranging from <span class="math inline">\(95.6\%\)</span> to <span class="math inline">\(97.4\%\)</span>. Interestingly, <code>Adaboost</code> outperformed the other more complex algorithms, at least in terms of accuracy.</p>
+<p>And that’s it. You are now familiar with the most popular implementations of gradient boosting along with their advantages and weaknesses. You also know how to employ them in practice. Have fun incorporating <code>XGBoost</code> and the like into your predictive modeling tasks.</p>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
@@ -652,7 +659,7 @@ Algorithm:
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Wikipedia is a great starting point, and it’s a resource I used extensively when preparing this article. “The Elements of Statistical Learning” by Hastie, Tibshirani, and Friedman is a comprehensive guide that covers the theoretical foundations of machine learning, including gradient boosting. It is the de facto bible for statistical ML. While this book is phenomenal, it can be challenging for less technical practitioners for which I recommend its lighter versions, “An Introduction to Statistical Learning” with R and <code>Python</code> code. All these books are available for free online. Lastly, if you want to dive even deeper into any of the algorithms describe above, consider studying the papers in the References section below.</p>
+<p>Wikipedia is a great starting point, and it’s a resource I used extensively when preparing this article. “The Elements of Statistical Learning” by Hastie, Tibshirani, and Friedman is a comprehensive guide that covers the theoretical foundations of machine learning, including gradient boosting. It is the de facto bible for statistical ML. While this book is phenomenal, it can be challenging for less technical practitioners for which I recommend its lighter versions, “An Introduction to Statistical Learning” with R and <code>Python</code> code. All these books are available for free online. Lastly, if you want to dive even deeper into any of the algorithms described above, consider studying the papers in the References section below.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
@@ -697,7 +704,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -747,13 +754,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1098,15 +1106,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -1123,26 +1132,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

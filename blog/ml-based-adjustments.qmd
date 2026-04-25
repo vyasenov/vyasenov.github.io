@@ -24,7 +24,7 @@ Broadly speaking, there are two ML Methods for Variance Reduction.
 
 ### Using ML Regression Directly
 
-The simplest and most natural way to incorporate covariates is to add them to a linear model (along with the treatment variable and their interactions with the treatment variable). [Bloniarz et al. (2015)](https://www.pnas.org/doi/abs/10.1073/pnas.1510506113) show we can directly use Lasso regression instead of OLS.
+The simplest and most natural way to incorporate covariates is to add them to a linear model (along with the treatment variable and their interactions with the treatment variable). [Bloniarz et al. (2016)](https://www.pnas.org/doi/abs/10.1073/pnas.1510506113) show we can directly use Lasso regression instead of OLS.
 
 To guarantee that the lasso does not omit the treatment variable, we can run two separate regressions, one for each (treatment) group. Then the estimator can be formulated as:
 
@@ -33,14 +33,14 @@ $$\hat{ATE}^{lasso} = (\bar{Y}^T-\tilde{X}^T\beta^{T}_{lasso}) - (\bar{Y}^C-\til
 where $\beta^{i}_{lasso}$ is the coefficient vector from the lasso regressions on observations in group $i\in\{T,C\}$. The authors also give a conservative formula for computing the variance of $\hat{ATE}^{lasso}$. When the two lasso regressions select different sets of covariates (which is probably common in practice), this is no longer guaranteed to yield equal or lower asymptotic variance compared to the benchmark.
 
 ::: {.callout-note title="Algorithm:"}
-1. For the treatment and control groups separately, run lasso regression of $Y$ on $\tilde{X}$ go get $\hat{\beta}^T_{lasso}$ and $\hat{\beta}^C_{lasso}$.
+1. For the treatment and control groups separately, run lasso regression of $Y$ on $\tilde{X}$ to get $\hat{\beta}^T_{lasso}$ and $\hat{\beta}^C_{lasso}$.
 2. Calculate the treatment effect estimate $\hat{ATE}^{lasso}$ using the above formula.
-3. Calculate the estimate of the variance of $\hat{ATE}^{lasso}$ using the formula in Blonarz et al. (2015).
+3. Calculate the estimate of the variance of $\hat{ATE}^{lasso}$ using the formula in Bloniarz et al. (2016).
 :::
 
 The authors also propose the [lasso+OLS estimator](https://projecteuclid.org/journals/bernoulli/volume-19/issue-2/Least-squares-after-model-selection-in-high-dimensional-sparse-models/10.3150/11-BEJ410.full) which first uses $L1$ regularization as above to select the covariates and then plugs those in OLS to get the treatment effect estimate.
 
-A similar idea has also been studied by [Wager et al (2016)](https://www.pnas.org/doi/abs/10.1073/pnas.1614732113). They show that when additionally, assuming Gaussian data (along with a bunch of regularity assumptions), we can use any “risk consistent” ML estimator such as ridge, elastic net, etc. “Risk consistent” here means as we give the algorithm more data, it gets closer to the truth. The lower the risk the higher the variance reduction gains compared to the simple difference-in-means estimator. The authors also propose a simple cross-fitting approach to calculate confidence intervals.
+A similar idea has also been studied by [Wager et al. (2016)](https://www.pnas.org/doi/abs/10.1073/pnas.1614732113). They show that, when additionally assuming Gaussian data (along with a bunch of regularity assumptions), we can use any “risk consistent” ML estimator such as ridge, elastic net, etc. “Risk consistent” here means as we give the algorithm more data, it gets closer to the truth. The lower the risk the higher the variance reduction gains compared to the simple difference-in-means estimator. The authors also propose a simple cross-fitting approach to calculate confidence intervals.
 
 ::: {.callout-note title="Algorithm:"}
 1. Split the data into $k$ equal sized folds.
@@ -61,7 +61,7 @@ An [alternative approach](https://proceedings.neurips.cc/paper/2021/hash/488b084
 Here is a rough version of the algorithm:
 
 ::: {.callout-note title="Algorithm:"}
-1. Split the data in $k$ equal-sized folds.
+1. Split the data into $k$ equal-sized folds.
 2. For each fold $k$:
   i. Predict $Y$ by applying a ML algorithm to all other $k-1$ folds. Call this prediction $\bar{Y}_k$.
 3. Get a final prediction $\bar{Y}=\sum_k\bar{Y}_k$.

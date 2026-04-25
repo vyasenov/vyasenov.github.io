@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>The Kolmogorov–Smirnov Test as a Goodness-of-fit – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -37,13 +40,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -87,7 +91,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -100,7 +104,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -137,7 +141,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -170,7 +174,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -210,7 +214,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -238,7 +242,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -261,19 +265,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -422,14 +429,14 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>The Kolmogorov–Smirnov (KS) test is a staple in the statistical toolbox for checking how well data fit a hypothesized distribution. It comes in both a one-sample and a two-sample version. A common application in causal inference is covariates distribution balance checks between the treatment and control groups. It’s nonparametric, straightforward to compute, and widely implemented just about every statistical software. But—and this is a big but—using the KS test naively can lead to some serious misinterpretations, especially when parameters are estimated from the data.</p>
-<p>This article is based on the 2024 <a href="https://www.tandfonline.com/doi/abs/10.1080/00031305.2024.2356095">paper</a> by Zeimbekakis, Schifano, and Yan, which takes a hard look at the common misuses of the <em>one-sample</em> KS test. We’ll walk through what the KS test is supposed to do, when it goes wrong, and how to think more clearly about assessing goodness-of-fit.</p>
+<p>The Kolmogorov–Smirnov (KS) test is a staple in the statistical toolbox for checking how well data fit a hypothesized distribution. It comes in both a one-sample and a two-sample version. A common application in causal inference is covariates distribution balance checks between the treatment and control groups. It’s nonparametric, straightforward to compute, and widely implemented in just about every statistical software. But—and this is a big but—using the KS test naively can lead to some serious misinterpretations, especially when parameters are estimated from the data.</p>
+<p>This article is based on the 2024 <a href="https://www.tandfonline.com/doi/abs/10.1080/00031305.2024.2356095">paper</a> by Zeimbekakis, Schifano, and Yan, which takes a hard look at the common misuses of the <em>one-sample</em> KS test. I’ll walk through what the KS test is supposed to do, when it goes wrong, and how to think more clearly about assessing goodness-of-fit.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
 <p>Let <span class="math inline">\(X_1, \dots, X_n\)</span> be i.i.d. random variables with unknown distribution function <span class="math inline">\(F\)</span>. We want to test whether <span class="math inline">\(F = F_0\)</span>, for some known distribution function <span class="math inline">\(F_0\)</span>.</p>
 <p>The empirical distribution function (EDF) is: <span class="math display">\[F_n(x) = \frac{1}{n} \sum_{i=1}^n I(X_i \leq x)\]</span></p>
-<p>You are probably familiar with this. It’s is a step function that estimates the true cumulative distribution function of a random variable based on a sample. At any point <span class="math inline">\(x\)</span>, the ECDF gives the proportion of observations in the sample that are less than or equal to <span class="math inline">\(x\)</span>. It is the nonparametric maximum likelihood estimator of the cumulative distribution function (CDF).</p>
+<p>You are probably familiar with this. It is a step function that estimates the true cumulative distribution function of a random variable based on a sample. At any point <span class="math inline">\(x\)</span>, the ECDF gives the proportion of observations in the sample that are less than or equal to <span class="math inline">\(x\)</span>. It is the nonparametric maximum likelihood estimator of the cumulative distribution function (CDF).</p>
 <p>The KS statistic is: <span class="math display">\[D_n = \sup_{x \in \mathbb{R}} |F_n(x) - F_0(x)|\]</span></p>
 <p>Under the null hypothesis, this test statistic converges to the Kolmogorov distribution, a distribution with no closed-form density but a known CDF. This is under the assumption that <span class="math inline">\(F_0\)</span> is fully specified, i.e., no parameters have been estimated from the data.</p>
 </section>
@@ -437,14 +444,14 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="a-refresher-on-ks" class="level3">
 <h3 class="anchored" data-anchor-id="a-refresher-on-ks">A Refresher on KS</h3>
-<p>Intuitively, the KS test statistic measuries the largest vertical distance between the EDF and the hypothesized CDF <span class="math inline">\(F_0\)</span>. It is sensitive to discrepancies in the CDF. This gives you a global measure of discrepancy, not a local one—so it’s less powerful for detecting issues like tail misspecification or multimodality. This is important because in many applications, tail behavior is critically important, such as in risk modeling or extreme value analysis.</p>
-<p>A well known limitation of the KS test is that with small samples, it has limited power to detect distributional differences, while with very large samples, it may detect statistically significant but practically trivial deviations from the hypothesized distribution. This problem in the contxt of “big data” is obviously broader and goes beyond the KS test.</p>
+<p>Intuitively, the KS test statistic measures the largest vertical distance between the EDF and the hypothesized CDF <span class="math inline">\(F_0\)</span>. It is sensitive to discrepancies in the CDF. This gives you a global measure of discrepancy, not a local one—so it’s less powerful for detecting issues like tail misspecification or multimodality. This is important because in many applications, tail behavior is critically important, such as in risk modeling or extreme value analysis.</p>
+<p>A well known limitation of the KS test is that with small samples, it has limited power to detect distributional differences, while with very large samples, it may detect statistically significant but practically trivial deviations from the hypothesized distribution. This problem in the context of “big data” is obviously broader and goes beyond the KS test.</p>
 </section>
 <section id="the-problem" class="level3">
 <h3 class="anchored" data-anchor-id="the-problem">The Problem</h3>
 <p>Here’s the catch: the null distribution of the KS statistic assumes <span class="math inline">\(F_0\)</span> is fully known. But in practice, people often use the test to evaluate model fit <em>after</em> estimating parameters—e.g., fitting a normal distribution by MLE and then checking fit with KS.</p>
 <p>That invalidates the test.</p>
-<p>Why? Because the theoretical distribution of <span class="math inline">\(D_n\)</span> changes when parameters are estimated. The true distribution of the test statistic becomes conditional on the data, and the critical values are no longer accurate. This leads to an deflated Type I error rate: you’re less likely to incorrectly reject the null. In other words, the test is too conservative.</p>
+<p>Why? Because the theoretical distribution of <span class="math inline">\(D_n\)</span> changes when parameters are estimated. The true distribution of the test statistic becomes conditional on the data, and the critical values are no longer accurate. This leads to a deflated Type I error rate: you’re less likely to incorrectly reject the null. In other words, the test is too conservative.</p>
 </section>
 <section id="better-alternatives" class="level3">
 <h3 class="anchored" data-anchor-id="better-alternatives">Better Alternatives</h3>
@@ -459,9 +466,9 @@ window.Quarto = {
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li><p>The KS test is a popular and flexible method for estimating differences between statistical disitributions.</p></li>
+<li><p>The KS test is a popular and flexible method for testing differences between statistical distributions.</p></li>
 <li><p>It assumes no parameters are estimated—violating this leads to invalid inference.</p></li>
-<li><p>Estimating parameters from the same data used in the test inflates Type I error.</p></li>
+<li><p>Estimating parameters from the same data used in the test deflates Type I error.</p></li>
 <li><p>Use alternatives like the Lilliefors test or bootstrap methods when parameters are estimated.</p></li>
 </ul>
 </section>
@@ -501,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -551,13 +558,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -902,15 +910,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -927,26 +936,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

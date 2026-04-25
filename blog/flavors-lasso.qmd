@@ -8,7 +8,7 @@ categories: [machine learning, flavors]
 
 The Lasso (Least Absolute Shrinkage and Selection Operator), introduced by Tibshirani in 1996, has become one of the go-to tools for variable selection and shrinkage in regression problems. But the classic Lasso is just the starting point. Over the years, researchers have developed many variants of Lasso, each designed to address specific limitations or tailor the method to different kinds of data structures.
 
-This article provides a tour of the most popular flavors of Lasso — from standard $\ell_1$-penalized regression to modern adaptations like Adaptive Lasso, Elastic Net, Square-root Lasso, and more. For each version, we'll lay out the objective function, describe when it's applicable, and summarize its key characteristics.
+This article provides a tour of the most popular flavors of Lasso — from standard $\ell_1$-penalized regression to modern adaptations like Adaptive Lasso, Elastic Net, Square-root Lasso, and more. For each version, I'll lay out the objective function, describe when it's applicable, and summarize its key characteristics.
 
 ## Notation
 
@@ -322,8 +322,8 @@ X_corr = np.hstack([X_base, X_base[:, :2] + np.random.randn(n, 2) * 0.1])
 beta_true = np.array([2, -1.5, 0, 0, 0, 2.2, -1.3])
 y_corr = X_corr @ beta_true + np.random.randn(n)
 
-# Fit Elastic Net with $\ell_1$_ratio = 0.5 (equal mix)
-elastic = ElasticNetCV($\ell_1$_ratio=0.5, cv=5)
+# Fit Elastic Net with l1_ratio = 0.5 (equal mix)
+elastic = ElasticNetCV(l1_ratio=0.5, cv=5)
 elastic.fit(X_corr, y_corr)
 
 # Compare with Lasso

@@ -67,7 +67,7 @@ If this wasn't enough for you, Rodgers and Nicewander (1988) offer a brilliant f
 8. **As an average cross-product of standardized variables**, which is obtained by dividing both the numerator and the denominator by the product
 of the two sample standard deviations.
 9. **As a rescaled variance of the difference between standardized scores**
-10. **As a balloon rule**: A visual approximation of r using the ellipse-shaped scatterplot “balloon” width and height.
+10. **As a balloon rule**: A visual approximation of $r$ using the ellipse-shaped scatterplot “balloon” width and height.
 11. **As a geometric property of elliptical contours (isoconcentration ellipses)** in a bivariate distribution—essentially more precise versions of the "balloon" idea from the prior rule.
 12. **As a test statistic in randomized experiments**, $r$ can be computed from a t-statistic or F-statistic (e.g., from ANOVA). 
 13. **As a ratio of two means** following Galton, $r$ reflects how the mean of Y changes with selected values of X.

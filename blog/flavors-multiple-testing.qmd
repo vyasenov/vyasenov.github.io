@@ -22,7 +22,7 @@ Vaguely speaking, MH adjustments can be viewed as inflating the calculated p-val
 
 ## Notation
 
-We are interested in testing a bunch of m null hypotheses about a population parameter $\beta$.
+We are interested in testing a bunch of $m$ null hypotheses about a population parameter $\beta$.
 
 As a running example, you can think of $\beta$ as the causal impact of a new product feature on user engagement and $m$ as indexing some geographical regions such as cities. We are interested in whether the new feature is more impactful in some cities than others. We will denote these hypotheses with $H_1, H_2, \dots, H_m$ and refer to their associated p-values with $p_1, p_2, \dots, p_m$.
 
@@ -52,7 +52,7 @@ In the example from the introduction, $FWER = 0.3$.
 
 Controlling the FWER is good, but sometimes it is not great. It does what it is supposed to do – limit the number of false positives, but it is often too conservative. In practice, too few variables remain significant after such FWER adjustments, especially when testing many (as opposed to just a few) hypotheses.
 
-To correct this, in the 1990s, Yoav Benjamini and Yosef Hochberg, conceptualized controlling the so-called False Discovery Rate (FDR). FDR is the expected proportion of false positives:
+To correct this, in the 1990s, Yoav Benjamini and Yosef Hochberg conceptualized controlling the so-called False Discovery Rate (FDR). FDR is the expected proportion of false positives:
 
 $$ FDR = \mathbb{E} \left[ \frac{\text{\# False Positives}}{\text{\# False Positives + \# True Positives} } \right]. $$
 
@@ -72,7 +72,7 @@ You might have heard of this one. The procedure is extremely simple – it goes 
 1. reject $H_i$ if $p_i \times m  \leq \alpha$ for all $i$.
 :::
 
-In words, we multiply all $p$-values by m and reject the hypotheses with adjusted $p$-values that are smaller than or equal to $\alpha$.
+In words, we multiply all $p$-values by $m$ and reject the hypotheses with adjusted $p$-values that are smaller than or equal to $\alpha$.
 
 The Bonferroni adjustment is often considered to control the FWER, but it actually controls an even more conservative target – the per-family error rate (PFER). PFER is the sum of probabilities of Type 1 error for all the hypotheses.
 
@@ -80,14 +80,14 @@ You correctly guessed that PFER is considered too strict. Although it is common 
 
 #### Holm & Bonferroni’s Procedure
 
-This adjustment offers greater statistical power than the Bonferroni method regardless of the test size \alpha without significantly compromising on simplicity. In algorithmic language:
+This adjustment offers greater statistical power than the Bonferroni method regardless of the test size $\alpha$ without significantly compromising on simplicity. In algorithmic language:
 
 ::: {.callout-note title="Algorithm:"}
 1. Order the $p$-values in ascending order – $p_1, p_2, \dots, p_m.$
 2. Reject the null hypothesis $H_1,\dots H_{k-1}$, where $k$ is the smallest index for which $p_i \times (m+1-k) \leq \alpha$.
 :::
 
-Much like the Bonferroni method with a multiplication factor of ($m+1-k$) instead of $m$.
+This is much like the Bonferroni method, but with a multiplication factor of $(m+1-k)$ instead of $m$.
 
 These two procedures control the FWER by assuming a kind of a ‘worst-case’ scenario in which the $p$-values are close to being independent of each other. To see why this is the case, imagine the extreme opposite scenario in which there is perfect positive dependence. Then, there is effectively one test statistic, and FWER adjustment is unnecessary.
 
@@ -121,15 +121,15 @@ Importantly, Westfall and Young’s method rests on a critical assumption called
 This procedure improves on Westfall and Young’s method by not requiring a pivotality assumption. Here I am describing the method from Romano and Wolf’s 2005 Econometrica paper, although the authors have developed a few closely related FWER adjustments. This is the rough algorithm for it:
 
 ::: {.callout-note title="Algorithm:"}
-1. Order the test statistics in descending order, $t_1 \geq t_2 \geq, \dots, t_m$.
-2. Take B bootstrap samples, and for each hypothesis i compute the empirical distribution function of the successive maximum test statistic random variable. That is, the random variable of the maximum test statistic between $t_i, t_{i+1}, \dots, t_m$. Call this distribution $c(i)$.
-3. Reject $H_i$ if $t_i$ is greater than the 1-\alpha quantile of $c(1)$.
-4. Denote by h the number of rejected hypotheses. If $h=0$ stop. Otherwise, for $H_{h+1},\dots H_s$:
+1. Order the test statistics in descending order, $t_1 \geq t_2 \geq \dots \geq t_m$.
+2. Take $B$ bootstrap samples, and for each hypothesis $i$ compute the empirical distribution function of the successive maximum test statistic random variable. That is, the random variable of the maximum test statistic between $t_i, t_{i+1}, \dots, t_m$. Call this distribution $c(i)$.
+3. Reject $H_i$ if $t_i$ is greater than the $1-\alpha$ quantile of $c(1)$.
+4. Denote by $h$ the number of rejected hypotheses. If $h=0$ stop. Otherwise, for $H_{h+1},\dots H_s$:
 5. Reject $H_i$ if $t_i > c(h+1)$
 6. Iterate until no further hypotheses are rejected.
 :::
 
-And you thought the Westfall and Young correction was tricky. The good news is that there are software packages for all these adjustments, so you won’t have to program them yourself.  Arguably, this one of the best ways to control FWER; does not rest on pivotality assumptions. However, it can be difficult to explain to non-technical audiences; difficult to explain to anyone, really.
+And you thought the Westfall and Young correction was tricky. The good news is that there are software packages for all these adjustments, so you won’t have to program them yourself.  Arguably, this is one of the best ways to control FWER; it does not rest on pivotality assumptions. However, it can be difficult to explain to non-technical audiences; difficult to explain to anyone, really.
 
 *Software Package*: [hdm](https://www.rdocumentation.org/packages/hdm).
 
@@ -154,7 +154,7 @@ BH is valid when the tests are independent and in some, but not all, dependence 
 This adjustment has an interesting geometric interpretation:
 
 - plot $p$ versus $k$,
-- draw a line through the origin with a slope equal to $frac{\alpha}{m}$,
+- draw a line through the origin with a slope equal to $\frac{\alpha}{m}$,
 - reject all hypotheses associated with the $p$-values on the left up to the last point below this line.
 
 #### Benjamini & Yekutieli‘s Procedure
@@ -163,7 +163,7 @@ Benjamini and Yekutieli (BY) developed a refinement of the BH procedure, which a
 
 ::: {.callout-note title="Algorithm:"}
 1. Order the $p$-values in ascending order – $p_1, p_2, \dots, p_m$.
-2. Find the largest integer $k$ such that $p_k \times \frac{m.c(m)}{k}\leq \alpha$.
+2. Find the largest integer $k$ such that $p_k \times \frac{m \cdot c(m)}{k}\leq \alpha$.
 3. Reject the null hypotheses $H_1, \dots, H_k$.
 :::
 
@@ -236,7 +236,7 @@ You can find the code for this analysis in [this GitHub repository](https://gith
 
 - Two major frameworks exist – FWER and FDR control. The former is often considered too conservative, while the latter is the dominant way researchers and practitioners think about correcting for MH testing.
 
-- In most settings, the Benjamini-Yekuiteli approach offers a great balance between statistical power and technical simplicity.
+- In most settings, the Benjamini-Yekutieli approach offers a great balance between statistical power and technical simplicity.
 
 - Knockoffs are a novel and exciting approach to FDR control.
 

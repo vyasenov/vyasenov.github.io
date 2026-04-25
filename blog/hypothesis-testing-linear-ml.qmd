@@ -20,9 +20,9 @@ This field is often referred to as statistical inference after model selection. 
 
 As a reminder, $\beta^{lasso}$ is the solution to:
 
-  $$\min_{\beta} \frac{1}{2} || Y-x\beta|| ^2_2 + \lambda ||\beta||_1. $$
+  $$\min_{\beta} \frac{1}{2} || Y-X\beta|| ^2_2 + \lambda ||\beta||_1. $$
 
-We are trying to predict a vector $Y\in \mathbb{R}$ with a set of features $X\in \mathbb{R}^{pxn}$ with $p\leq n$, and $\lambda$ is a tuning parameter. When needed, I will use $j$ to index individual columns (i.e., variables) of $X$.
+We are trying to predict a vector $Y\in \mathbb{R}$ with a set of features $X\in \mathbb{R}^{p \times n}$ with $p\leq n$, and $\lambda$ is a tuning parameter. When needed, I will use $j$ to index individual columns (i.e., variables) of $X$.
 
 ## A Closer Look
 
@@ -32,9 +32,9 @@ We first need to discuss an important subtlety. There are two distinct ways of t
 
 \begin{equation} Y=X\beta_0+\epsilon. \end{equation} 
 
-We are interested in testing whether $\beta_0=0$ – that is, inference on the full model. This is certainly an intuitive target. The interpretation is that this model encapsulates all relevant causal variables for $Y$. Importantly, even if a given variable $X_j $ is not selected, it still belongs to the model and has a meaningful interpretation.
+We are interested in testing whether $\beta_0=0$ – that is, inference on the full model. This is certainly an intuitive target. The interpretation is that this model encapsulates all relevant causal variables for $Y$. Importantly, even if a given variable $X_j$ is not selected, it still belongs to the model and has a meaningful interpretation.
 
-There is an alternative way to think about the problem. Imagine we run a variable selection algorithm (e.g., lasso), which selects a subset $M=\{1,\dots,p\}$ of all available predictors ($X$), $M<p$ leading to the alternative model:
+There is an alternative way to think about the problem. Imagine we run a variable selection algorithm (e.g., lasso), which selects a subset $M\subset \{1,\dots,p\}$ of all available predictors ($X$), $|M|<p$, leading to the alternative model:
 
 \begin{equation} Y=X_M\beta_M+u. \end{equation} 
 
@@ -105,7 +105,7 @@ There are [multiple versions](https://projecteuclid.org/journals/annals-of-stati
 
   $$\hat{\beta}^{\text{bias cor}} = \hat{\beta}^{lasso} + \hat{\Theta} X'\epsilon^{lasso},$$
 
-Where $\hat{\beta}^{lasso}$ is the lasso estimator and $\epsilon^{lasso}$ are the residuals. The missing piece is the $\hat{\Theta}$ matrix; there are several ways to estimate it depending on the setting. In its simplest form, $\hat{\Theta}$ is the inverse of the sample variance-covariance matrix. Other examples include the matrix, which minimizes an error term related to the bias as well as the variance of its Gaussian component. Similar bias-correction methods have been developed for Ridge regression as well.
+where $\hat{\beta}^{lasso}$ is the lasso estimator and $\epsilon^{lasso}$ are the residuals. The missing piece is the $\hat{\Theta}$ matrix; there are several ways to estimate it depending on the setting. In its simplest form, $\hat{\Theta}$ is the inverse of the sample variance-covariance matrix. Other examples include the matrix, which minimizes an error term related to the bias as well as the variance of its Gaussian component. Similar bias-correction methods have been developed for Ridge regression as well.
 
 *Software Package*: [hdi](https://www.rdocumentation.org/packages/hdi/).
 
@@ -138,13 +138,13 @@ To take a step back, most confidence intervals in statistics take the form:
 
   $$\hat{\beta} \pm m \times \hat{SE}(\hat{\beta}).$$
 
-Every data scientist has seen a similar formula before. The question is usually one about choosing the constant $m$. When we work with two-sided hypotheses tests and large samples, we often use $m = 1.96$ because this is roughly the $97.5$th percentile of the $t$-distribution with many degrees of freedom.  This gives a $2.5\%$ false positive error on both tails of the distribution ($5\%$ in total) and hence the associated 95% confidence intervals. The larger m, the wider or more conservative the confidence interval.
+Every data scientist has seen a similar formula before. The question is usually one about choosing the constant $m$. When we work with two-sided hypotheses tests and large samples, we often use $m = 1.96$ because this is roughly the $97.5$th percentile of the $t$-distribution with many degrees of freedom.  This gives a $2.5\%$ false positive error on both tails of the distribution ($5\%$ in total) and hence the associated 95% confidence intervals. The larger $m$, the wider or more conservative the confidence interval.
 
-There are a few ways to choose the constant m in the PoSI world. Vaguely speaking, PoSI says we should select this constant to equal the $97.5$th percentile of a distribution related to the largest $t$-statistic among all possible models. This is usually approximated with Monte Carlo simulations. Interestingly, we do not need the response variable to approximate the value.
+There are a few ways to choose the constant $m$ in the PoSI world. Vaguely speaking, PoSI says we should select this constant to equal the $97.5$th percentile of a distribution related to the largest $t$-statistic among all possible models. This is usually approximated with Monte Carlo simulations. Interestingly, we do not need the response variable to approximate the value.
 
   $$m = \max_{\text{ \{all models and vars\} }} |t|.$$
 
-Another and even more conservative choice for $m$ is the Scheffe constant.
+Another and even more conservative choice for $m$ is the Scheffé constant.
 
   $$m^{scheffe} = \sqrt{rank(X) \times F(rank(X),  n-p)},$$
 
@@ -164,11 +164,11 @@ To dig one layer deeper, the authors show that the selection of Lasso predictors
 
   $$ AY\leq b. $$
 
-In English, for fixed $X$ and $\lambda$, the set of alternative outcome values $Y^*$ which yields the same set of selected predictors, can be expressed by the simple inequality above. In it, $A$ and $b$ depend do not depend on $Y$. Under this new result, the distribution of $\hat{\beta}_M^{\text{EPoSI}}$ is now well-understood and tractable, thus enabling valid hypothesis testing.
+In English, for fixed $X$ and $\lambda$, the set of alternative outcome values $Y^*$ which yields the same set of selected predictors, can be expressed by the simple inequality above. In it, $A$ and $b$ do not depend on $Y$. Under this new result, the distribution of $\hat{\beta}_M^{\text{EPoSI}}$ is now well-understood and tractable, thus enabling valid hypothesis testing.
 
 Then, we can use the conditional distribution function to construct a whimsical test statistic that is uniformly distributed on the $[0,1]$ interval. And we can finally build confidence intervals based on that statistic.
 
-Selective inference is currently among the hottest topic in all of statistics. There have been a myriad of extensions and improvements on the original paper. Still, this literature is painstakingly technical. What is the polyhedral selection property or a union of polytopes?
+Selective inference is currently among the hottest topics in all of statistics. There have been a myriad of extensions and improvements on the original paper. Still, this literature is painstakingly technical. What is the polyhedral selection property or a union of polytopes?
 
 *Software Package*: [selectiveInference](https://www.rdocumentation.org/packages/selectiveInference).
 
@@ -225,13 +225,13 @@ You can find the code for this exercise in [this GitHub repo](https://github.com
 
 - If we are interested in the full model, the Multi Split approach is general enough to cover a wide range of models and settings.
 
-- If we believe you have to focus on the selected model, EPoSI is the state-of-the-art.
+- If we believe we have to focus on the selected model, EPoSI is the state-of-the-art.
 
 - [Simulation](https://doi.org/10.1214/14-STS507) [exercises](https://www.jstor.org/stable/24780819) usually show no clear winner, as none of the methods consistently outperforms the rest.
 
 ## Where to Learn More
 
-[Taylor and Tibshirani (2015)](https://doi.org/10.1073/pnas.1507583112) give a non-technical introduction to the problem space along with a description of the POSI method – a great read but focused on a single approach. [Other](https://doi.org/10.1214/14-STS507) [studies](https://www.jstor.org/stable/24780819add) both provide a relatively accessible overview of the various methods for statistical inference on the full model. For technical readers, [Zhang et al. (2022)](https://doi.org/10.1214/22-SS135) provide an excellent up-to-date review of the literature, which I used extensively.
+[Taylor and Tibshirani (2015)](https://doi.org/10.1073/pnas.1507583112) give a non-technical introduction to the problem space along with a description of the PoSI method – a great read but focused on a single approach. [Other](https://doi.org/10.1214/14-STS507) [studies](https://www.jstor.org/stable/24780819) both provide a relatively accessible overview of the various methods for statistical inference on the full model. For technical readers, [Zhang et al. (2022)](https://doi.org/10.1214/22-SS135) provide an excellent up-to-date review of the literature, which I used extensively.
 
 ## References
 

@@ -10,7 +10,7 @@ If you’ve ever worked with high-dimensional data, you’ve likely faced a fami
 
 Over time, statisticians and machine learning researchers have created a diverse toolbox of techniques to tackle this problem—each rooted in different ideas, with its own strengths and trade-offs. Some methods apply penalties to shrink coefficients, like Lasso and Ridge. Others use geometric insights, like Principal Components Analysis (PCA). There are methods built on randomization, like Model-X Knockoffs, and some that rely on greedy or stepwise searches, such as Forward Selection and Least Angle Regression (LAR).
 
-In this post, I’ll take a guided tour through these approaches—what they do, when to use them, and why they work. We’ll also explore their limitations, because no method is a silver bullet. The goal isn’t to pick a winner, but to help you figure out which tool fits your problem. Think of it as a field guide to variable selection, focused on ideas and intuition—so you can navigate the landscape with more confidence and clarity. And, yes, there will be plenty of `R` and `Python` code snippets to illustrate each method in action.
+In this post, I’ll take a guided tour through these approaches—what they do, when to use them, and why they work. I’ll also explore their limitations, because no method is a silver bullet. The goal isn’t to pick a winner, but to help you figure out which tool fits your problem. Think of it as a field guide to variable selection, focused on ideas and intuition—so you can navigate the landscape with more confidence and clarity. And, yes, there will be plenty of `R` and `Python` code snippets to illustrate each method in action.
 
 ## Notation
 
@@ -52,7 +52,7 @@ Now let's examine each of the methods in turn.
 
 The classic workhorse of variable selection, stepwise procedures iteratively add or remove variables based on some criterion like AIC (Aikake Information Criterion), BIC (Bayesian Information Criterion), or $p$-values. In forward selection, you start with no variables and add the one that improves the model the most. In backward elimination with $p<n$, you start with all variables and remove the least significant one at each step. Both methods can also be combined in a bidirectional stepwise approach. In either case, you stop when adding or removing variables no longer sufficiently improves the model according to your chosen criterion.
 
-Stepwise selection can work well for smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side). However, they it is unstable and prone to overfitting. 
+Stepwise selection can work well for smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side). However, it is unstable and prone to overfitting. 
 
 
 
@@ -103,7 +103,7 @@ $$
 \hat{\beta}^{\text{lasso}} = \arg\min_{\beta} \left\{ \| Y - X \beta \|_2^2 + \lambda \| \beta \|_1 \right\}.
 $$
 
-The magic of the $\ell_1$ penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. It's theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios.
+The magic of the $\ell_1$ penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. Its theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios.
 
 Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of flavors, including group lasso, adaptive lasso, and fused lasso, which I will probably cover in a future blog post. Be careful, though, lasso is known to be biased, so it's great for prediction, but don't take its coefficients at face value.
 
@@ -277,7 +277,7 @@ Least Angle Regression (LAR) is a greedy, stepwise variable selection algorithm 
 2. Find the predictor most correlated with the current residual.
 3. Move the coefficient of that variable in the direction of its sign until another predictor becomes equally correlated with the residual.
 4. Continue in a “least angle” direction, adjusting the path to include both predictors, and so on.
-::::
+:::
 
 The result is a sequence of models, each with one more active variable—just like in forward stepwise regression, but using geometry rather than brute force.
 
@@ -415,7 +415,7 @@ print(feature_names[selected])
 
 ### FOCI (Feature Ordering by Conditional Independence)
 
-FOCI is a recent, information-theoretic method that orders features by how much conditional mutual information they contribute to the outcome. It’s model-free and does not assume a particular parametric form. I have also writtn about FOCI in a [previous post](https://vyasenov.github.io/blog/foci.html), so I won't repeat the details here.
+FOCI is a recent, information-theoretic method that orders features by how much conditional mutual information they contribute to the outcome. It’s model-free and does not assume a particular parametric form. I have also written about FOCI in a [previous post](https://vyasenov.github.io/blog/foci.html), so I won't repeat the details here.
 
 ---
 
@@ -430,7 +430,7 @@ FOCI is a recent, information-theoretic method that orders features by how much 
 
 ## Where to Learn More
 
-For a great introduction to penalized regression methods, *The Elements of Statistical Learning* by Hastie, Tibshirani, and Friedman is a classic. As always, you can reach out *Computer Age Statistical Inference* or *All of Statistics* and they won't let you down. 
+For a great introduction to penalized regression methods, *The Elements of Statistical Learning* by Hastie, Tibshirani, and Friedman is a classic. As always, you can reach for *Computer Age Statistical Inference* or *All of Statistics* and they won't let you down. 
 
 ## References
 

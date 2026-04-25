@@ -8,7 +8,7 @@ categories: [machine learning, variable selection]
 
 In high-dimensional regression, we sometimes hear that a method possesses the oracle property. The phrase sounds impressive: it suggests that an estimator behaves as if the true sparsity pattern were known in advance—hence the name, as though an oracle had revealed the true support beforehand.
 
-This note explains what the oracle property actually means, why it is considered desirable, and where its practical relevance is limited. The goal is to distinguish asymptotic guarantees from practical performance. As usual, we introduce some notation so that the discussion rests on a clear mathematical foundation and a shared framework.
+This note explains what the oracle property actually means, why it is considered desirable, and where its practical relevance is limited. The goal is to distinguish asymptotic guarantees from practical performance. As usual, I introduce some notation so that the discussion rests on a clear mathematical foundation and a shared framework.
 
 ## Notation
 
@@ -20,7 +20,7 @@ with $X \in \mathbb{R}^{n \times p}$ and $p$ potentially large. Let the true par
 
 $$S = \{j : \beta_j \neq 0\}, \quad s = |S|.$$
 
-Put simply, $S$ is the set of variables that are non-zero in the true parameter vector $\beta$, $s$ is the number of non-zero variables. 
+Put simply, $S$ is the set of variables that are non-zero in the true parameter vector $\beta$, and $s$ is the number of non-zero variables. 
 
 ## A Closer Look
 

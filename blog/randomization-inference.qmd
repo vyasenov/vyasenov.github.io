@@ -8,7 +8,7 @@ categories: [causal inference, statistical inference]
 
 Randomization inference offers a refreshing alternative to traditional parametric inference, providing exact control over Type I error rates without relying on large-sample approximations or strict distributional assumptions. Born out of Fisher's famous tea-tasting experiment, the approach leverages the symmetry and structure induced by randomization itself to test hypotheses.
 
-This blog post unpacks the theory and intuition behind randomization inference, drawing on the excellent review by Ritzwoller, Romano, and Shaikh (2025). We'll cover the key ideas, notation, and algorithms involved, and also touch on modern applications like two-sample tests, regression, and conformal inference. Throughout, we'll emphasize the practical considerations — when it works, why it works, and where caution is needed.
+This blog post unpacks the theory and intuition behind randomization inference, drawing on the excellent review by Ritzwoller, Romano, and Shaikh (2025). I'll cover the key ideas, notation, and algorithms involved, and also touch on modern applications like two-sample tests, regression, and conformal inference. Throughout, I'll emphasize the practical considerations — when it works, why it works, and where caution is needed.
 
 ## Notation
 
@@ -170,7 +170,7 @@ print(p_value)
 
 ## Where to Learn More
 
-The best starting point is the recent review by Ritzwoller, Romano, and Shaikh (2025). For foundational treatments on nonparametric inference, the go-to is Lehmann & Romano's two-volumne door-stopper *Testing Statistical Hypotheses*. The practical guide by Good (2005) on permutation tests is also highly recommended.
+The best starting point is the recent review by Ritzwoller, Romano, and Shaikh (2025). For foundational treatments on nonparametric inference, the go-to is Lehmann & Romano's two-volume door-stopper *Testing Statistical Hypotheses*. The practical guide by Good (2005) on permutation tests is also highly recommended.
 
 ## References
 

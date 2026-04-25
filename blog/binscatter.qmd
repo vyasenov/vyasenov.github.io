@@ -11,7 +11,7 @@ In the realm of data visualization, the classical scatter plot has long been a s
 Binscatter offers a cleaner, more interpretable way to visualize the relationship between two variables, especially when dealing with large datasets. By aggregating data points into bins and plotting the average outcome within each bin, binscatter simplifies the visualization, making it easier to discern patterns and trends. It’s particularly useful for:
 
 - Intuitive visualization for large datasets by grouping data into bins.
-- Highlighting trends and relationship between variables effectively.
+- Highlighting trends and relationships between variables effectively.
 - Extending these ideas to control for covariates.
 
 In this article, I will introduce binscatter, explore its mathematical foundation, and demonstrate its utility with an example in `R` and `python`.
@@ -32,9 +32,9 @@ To formalize binscatter, let’s define the following:
 
 ### Formal Definition
 
-A binscatter plot is constructed by partitioning the range of the independent variable $X$ into a fixed number of $K$ bins, $B_1,\dots,B_K$ typically using empirical quantiles. This ensures each bin is of roughly the same size. Within each bin, the average value of the dependent variable $Y$ is calculated. These averages are then plotted against the midpoint of each bin, $\bar{X}$, resulting in a series of points that represent an estimate of conditional mean of $Y$ given $X$, $E[Y\mid X]$.
+A binscatter plot is constructed by partitioning the range of the independent variable $X$ into a fixed number of $K$ bins, $B_1,\dots,B_K$ typically using empirical quantiles. This ensures each bin is of roughly the same size. Within each bin, the average value of the dependent variable $Y$ is calculated. These averages are then plotted against the midpoint of each bin, $\bar{X}$, resulting in a series of points that represent an estimate of the conditional mean of $Y$ given $X$, $E[Y\mid X]$.
 
-In technical jargon binscatter provides a nonparametric estimate of the conditional mean function, offering a visual summary of the relationship between the two variables. The resulting graph allows assessment of linearity, monotonicity, convexity, etc.
+In technical jargon, binscatter provides a nonparametric estimate of the conditional mean function, offering a visual summary of the relationship between the two variables. The resulting graph allows assessment of linearity, monotonicity, convexity, etc.
 
 ### The Algorithm
 
@@ -63,7 +63,7 @@ In many applications, it is essential to control for additional covariates $W$ t
 
 A common but flawed approach to incorporating covariates in binscatter is residualized binscatter. This method involves first regressing separately both $Y$ and $X$ on the covariates $W$ to obtain residuals $\hat{u}_Y$​ and $\hat{u}_X$​, and then applying the binscatter method to these residuals:
 
-$$\bar{\hat{u}}_{Y,k} = \frac{1}{|B_k|} \sum_{i \in B_k} \hat{u}_{X,i}.$$
+$$\bar{\hat{u}}_{Y,k} = \frac{1}{|B_k|} \sum_{i \in B_k} \hat{u}_{Y,i}.$$
 
 While this approach is motivated by the [Frisch-Waugh-Lovell](https://en.wikipedia.org/wiki/Frisch%E2%80%93Waugh%E2%80%93Lovell_theorem) theorem in linear regression, it can lead to incorrect conclusions in more general settings. The residualized binscatter may not accurately reflect the true conditional mean function, especially if the underlying relationship is nonlinear. Therefore, it is generally not recommended for empirical work.
 
@@ -85,9 +85,9 @@ against $\bar{X}_k$, ensuring a correct visualization of the relationship betwee
 
 ### Practical Considerations
 
-A key decision is the choice of the number of bins $K$. Too few bins can oversmooth the data, masking important features, while too many bins can lead to undersmoothing, resulting in a noisy and less interpretable plot. An optimal choice of $K$ balances bias and variance, often determined using data-driven methods. To address this, [Cattaneo et al. (2024)](https://www.aeaweb.org/articles?id=10.1257/aer.20221576) propose an adaptive, Integrated Mean Squared Error (IMSE)-optimal choice of $K$ for which get a plug-in formula.
+A key decision is the choice of the number of bins $K$. Too few bins can oversmooth the data, masking important features, while too many bins can lead to undersmoothing, resulting in a noisy and less interpretable plot. An optimal choice of $K$ balances bias and variance, often determined using data-driven methods. To address this, [Cattaneo et al. (2024)](https://www.aeaweb.org/articles?id=10.1257/aer.20221576) propose an adaptive, Integrated Mean Squared Error (IMSE)-optimal choice of $K$ for which they derive a plug-in formula.
 
-Thoughtful data scientist always have variance in their mind. If, for instance, we see some linear relationship between $Y$ and $X$, how can we determine whether it is statistically significant? Quantifying the uncertainty around binscatter estimates is crucial. The authors also discuss constructing confidence bands, which can be added to the plot to visually represent estimation uncertainty, enhancing both interpretability and reliability.
+Thoughtful data scientists always have variance in their mind. If, for instance, we see some linear relationship between $Y$ and $X$, how can we determine whether it is statistically significant? Quantifying the uncertainty around binscatter estimates is crucial. The authors also discuss constructing confidence bands, which can be added to the plot to visually represent estimation uncertainty, enhancing both interpretability and reliability.
 
 ## An Example
 

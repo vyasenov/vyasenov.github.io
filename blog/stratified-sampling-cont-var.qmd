@@ -30,23 +30,23 @@ When dealing with multiple variables, this method extends to either marginally s
 
 An alternative approach uses unsupervised clustering algorithms, such as $k$-means or hierarchical clustering, to group observations into clusters, treating these clusters as strata. Unlike binning, clustering leverages the distribution of the data to form natural groupings.
 
-Formally, let $X$ be a matrix of n observations across $p$ continuous variables. One class of clustering algorithms aims to assign each observation $i$ to one of $k$ clusters:
+Formally, let $X$ be a matrix of $n$ observations across $p$ continuous variables. One class of clustering algorithms aims to assign each observation $i$ to one of $k$ clusters:
 
 $$\text{minimize} \quad \sum_{j=1}^k \sum_{i \in \mathcal{C}_j} \text{distance}(X_i - \mu_j), $$
 
-where $\mu_j=\frac{1}{|S_j|}\sum_{i\in \mathcal{C}_j} X$​ is the centroid of cluster $\mathcal{C}_j$ of $size |S_j|$.
+where $\mu_j=\frac{1}{|S_j|}\sum_{i\in \mathcal{C}_j} X$​ is the centroid of cluster $\mathcal{C}_j$ of size $|S_j|$.
 
-Commonly, $\text{distance}(X_i, \mu_j)=\|X_i - \mu_j\|^2$ which leads to $k$-means clustering. Unlike in the binning approach, here we are not restricting each strata to have the same number of observations.
+Commonly, $\text{distance}(X_i, \mu_j)=\|X_i - \mu_j\|^2$ which leads to $k$-means clustering. Unlike in the binning approach, here we are not restricting each stratum to have the same number of observations.
 
 ## Pros and Cons
 
-Unsurprisingly, each method comes with its trade-offs. Traditional binning is simple and interpretable but can struggle with multivariate dependencies. Clustering accounts for multivariate relationships between variables, avoids imposing arbitrary bin thresholds, and may results in more natural groupings. However, it can be computationally expensive and sensitive to the choice of algorithm and hyperparameters (e.g., $k$ in $k$-means).
+Unsurprisingly, each method comes with its trade-offs. Traditional binning is simple and interpretable but can struggle with multivariate dependencies. Clustering accounts for multivariate relationships between variables, avoids imposing arbitrary bin thresholds, and may result in more natural groupings. However, it can be computationally expensive and sensitive to the choice of algorithm and hyperparameters (e.g., $k$ in $k$-means).
 
 One can also imagine a hybrid approach. Begin with a dimensionality reduction method like PCA and then perform binning on the first few principal components.
 
 ## An Example
 
-Here is `R` and `python` code illustrating both types of approaches on the popular `iris` dataset. We are interested in creating strata based on the `SepalLenght` variable. We begin with the traditional binning approach.
+Here is `R` and `python` code illustrating both types of approaches on the popular `iris` dataset. We are interested in creating strata based on the `Sepal.Length` variable. We begin with the traditional binning approach.
 
 :::: {.panel-tabset}
 

@@ -26,7 +26,7 @@ where $\nabla g(\mu)$ is the gradient of $g(\cdot)$ evaluated at $\mu$, i.e., a 
 
 By substituting this into the approximation, the variance of $g(X)$ becomes:
 
-  \begin{align*} \text{Var}(g(X)) & = \text{Var}(g(\mu) + \nabla g(\mu)^T (X - \mu)) \\ & = \text{Var}(g(\mu) + \nabla g(\mu)^T X -  \nabla g(\mu)^T  \mu) \\  &= \text{Var}(g(\mu)^T X)  \\ &=  \nabla g(\mu)^T \Sigma \nabla g(\mu).  \end{align*}
+  \begin{align*} \text{Var}(g(X)) & = \text{Var}(g(\mu) + \nabla g(\mu)^T (X - \mu)) \\ & = \text{Var}(g(\mu) + \nabla g(\mu)^T X -  \nabla g(\mu)^T  \mu) \\  &= \text{Var}(\nabla g(\mu)^T X)  \\ &=  \nabla g(\mu)^T \Sigma \nabla g(\mu).  \end{align*}
 
 In the univariate $k=1$ case, we have:
 
@@ -44,7 +44,7 @@ We want to approximate the variance of $R$ using the Delta Method. Here is the s
 1. Define $g(X)$ and obtain its gradient. Here, $g(X) = \frac{X_1}{X_2}$ and the gradient is:
   $$\nabla g(\mu) = \left[ \frac{1}{\mu_2}, -\frac{\mu_1}{\mu_2^2} \right]^T.$$
 
-2. Evaluate \nabla $g(\mu)$ at \mu_1 and \mu_2. In our example
+2. Evaluate $\nabla g(\mu)$ at $\mu_1$ and $\mu_2$. In our example
   $$\nabla g(\mu) = [0.1, -0.5]^T.$$
 
 3. Compute the variance approximation. We have $$\Sigma = \begin{bmatrix} \sigma_1^2 & 0 \\ 0 & \sigma_2^2 \end{bmatrix} = \begin{bmatrix} 4 & 0 \\ 0 & 1 \end{bmatrix}.$$ Thus, the approximate variance of $R$ is:

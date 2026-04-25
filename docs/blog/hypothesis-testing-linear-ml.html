@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>Hypothesis Testing in Linear Machine Learning Models – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -37,13 +40,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -87,7 +91,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -100,7 +104,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -137,7 +141,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -170,7 +174,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -210,7 +214,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -238,7 +242,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -261,19 +265,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -436,8 +443,8 @@ window.Quarto = {
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
 <p>As a reminder, <span class="math inline">\(\beta^{lasso}\)</span> is the solution to:</p>
-<p><span class="math display">\[\min_{\beta} \frac{1}{2} || Y-x\beta|| ^2_2 + \lambda ||\beta||_1. \]</span></p>
-<p>We are trying to predict a vector <span class="math inline">\(Y\in \mathbb{R}\)</span> with a set of features <span class="math inline">\(X\in \mathbb{R}^{pxn}\)</span> with <span class="math inline">\(p\leq n\)</span>, and <span class="math inline">\(\lambda\)</span> is a tuning parameter. When needed, I will use <span class="math inline">\(j\)</span> to index individual columns (i.e., variables) of <span class="math inline">\(X\)</span>.</p>
+<p><span class="math display">\[\min_{\beta} \frac{1}{2} || Y-X\beta|| ^2_2 + \lambda ||\beta||_1. \]</span></p>
+<p>We are trying to predict a vector <span class="math inline">\(Y\in \mathbb{R}\)</span> with a set of features <span class="math inline">\(X\in \mathbb{R}^{p \times n}\)</span> with <span class="math inline">\(p\leq n\)</span>, and <span class="math inline">\(\lambda\)</span> is a tuning parameter. When needed, I will use <span class="math inline">\(j\)</span> to index individual columns (i.e., variables) of <span class="math inline">\(X\)</span>.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
@@ -445,8 +452,8 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="two-types-of-models-and-parameters">Two Types of Models and Parameters</h3>
 <p>We first need to discuss an important subtlety. There are two distinct ways of thinking about performing hypothesis testing in ML models. The traditional view is that we have a true linear model which includes all variables:</p>
 <p><span class="math display">\[\begin{equation} Y=X\beta_0+\epsilon. \end{equation}\]</span></p>
-<p>We are interested in testing whether <span class="math inline">\(\beta_0=0\)</span> – that is, inference on the full model. This is certainly an intuitive target. The interpretation is that this model encapsulates all relevant causal variables for <span class="math inline">\(Y\)</span>. Importantly, even if a given variable $X_j $ is not selected, it still belongs to the model and has a meaningful interpretation.</p>
-<p>There is an alternative way to think about the problem. Imagine we run a variable selection algorithm (e.g., lasso), which selects a subset <span class="math inline">\(M=\{1,\dots,p\}\)</span> of all available predictors (<span class="math inline">\(X\)</span>), <span class="math inline">\(M&lt;p\)</span> leading to the alternative model:</p>
+<p>We are interested in testing whether <span class="math inline">\(\beta_0=0\)</span> – that is, inference on the full model. This is certainly an intuitive target. The interpretation is that this model encapsulates all relevant causal variables for <span class="math inline">\(Y\)</span>. Importantly, even if a given variable <span class="math inline">\(X_j\)</span> is not selected, it still belongs to the model and has a meaningful interpretation.</p>
+<p>There is an alternative way to think about the problem. Imagine we run a variable selection algorithm (e.g., lasso), which selects a subset <span class="math inline">\(M\subset \{1,\dots,p\}\)</span> of all available predictors (<span class="math inline">\(X\)</span>), <span class="math inline">\(|M|&lt;p\)</span>, leading to the alternative model:</p>
 <p><span class="math display">\[\begin{equation} Y=X_M\beta_M+u. \end{equation}\]</span></p>
 <p>Now we are interested in testing whether <span class="math inline">\(\beta_M=0\)</span> – that is, inference on the selected model. Unlike the scenario above, here <span class="math inline">\(\beta_{Mj}\)</span> is interpreted as the change in <span class="math inline">\(Y\)</span> for a unit change in <span class="math inline">\(X_j\)</span> when all other variables in <span class="math inline">\(X_M\)</span> (as opposed to all of <span class="math inline">\(X\)</span>) are kept constant.</p>
 <p>Which of the two targets is more intuitive?</p>
@@ -462,7 +469,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -490,7 +497,7 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -513,7 +520,7 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -538,7 +545,7 @@ Algorithm:
 <p>This approach tackles the problem from a very different angle. The idea is to directly remove the bias from the naïve Lasso procedure without any subsampling or data splitting. Somewhat magically, the resulting estimator is unbiased and asymptotically normally distributed – statistical inference is then straightforward.</p>
 <p>There are <a href="https://projecteuclid.org/journals/annals-of-statistics/volume-42/issue-3/On-asymptotically-optimal-confidence-regions-and-tests-for-high-dimensional/10.1214/14-AOS1221.full">multiple versions</a> of this idea, but the general form of these estimators is:</p>
 <p><span class="math display">\[\hat{\beta}^{\text{bias cor}} = \hat{\beta}^{lasso} + \hat{\Theta} X'\epsilon^{lasso},\]</span></p>
-<p>Where <span class="math inline">\(\hat{\beta}^{lasso}\)</span> is the lasso estimator and <span class="math inline">\(\epsilon^{lasso}\)</span> are the residuals. The missing piece is the <span class="math inline">\(\hat{\Theta}\)</span> matrix; there are several ways to estimate it depending on the setting. In its simplest form, <span class="math inline">\(\hat{\Theta}\)</span> is the inverse of the sample variance-covariance matrix. Other examples include the matrix, which minimizes an error term related to the bias as well as the variance of its Gaussian component. Similar bias-correction methods have been developed for Ridge regression as well.</p>
+<p>where <span class="math inline">\(\hat{\beta}^{lasso}\)</span> is the lasso estimator and <span class="math inline">\(\epsilon^{lasso}\)</span> are the residuals. The missing piece is the <span class="math inline">\(\hat{\Theta}\)</span> matrix; there are several ways to estimate it depending on the setting. In its simplest form, <span class="math inline">\(\hat{\Theta}\)</span> is the inverse of the sample variance-covariance matrix. Other examples include the matrix, which minimizes an error term related to the bias as well as the variance of its Gaussian component. Similar bias-correction methods have been developed for Ridge regression as well.</p>
 <p><em>Software Package</em>: <a href="https://www.rdocumentation.org/packages/hdi/">hdi</a>.</p>
 </section>
 <section id="bootstrap" class="level4">
@@ -550,13 +557,13 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Run a Lasso regression.</li>
-<li>Keep only <span class="math inline">\(\beta^{lasso}\)</span>’s larger than some magical threshold.</li>
+<li>Keep only <span class="math inline">\(\beta^{lasso}\)</span>‘s larger than some magical threshold.</li>
 <li>Compute the associated residuals and center them around <span class="math inline">\(0\)</span>.</li>
 <li>Repeat B times:</li>
 </ol>
@@ -581,10 +588,10 @@ Algorithm:
 <p>The goal of the <a href="https://www.jstor.org/stable/23566582">PoSI method</a> is to construct confidence intervals that are valid regardless of the variable selection method and the selected submodel. The benefit is that we would be reaching the correct conclusion even if we did not select the true model. This luxury comes at the expense of often being too conservative (i.e., confidence intervals are “too wide”). Let me explain how this is done.</p>
 <p>To take a step back, most confidence intervals in statistics take the form:</p>
 <p><span class="math display">\[\hat{\beta} \pm m \times \hat{SE}(\hat{\beta}).\]</span></p>
-<p>Every data scientist has seen a similar formula before. The question is usually one about choosing the constant <span class="math inline">\(m\)</span>. When we work with two-sided hypotheses tests and large samples, we often use <span class="math inline">\(m = 1.96\)</span> because this is roughly the <span class="math inline">\(97.5\)</span>th percentile of the <span class="math inline">\(t\)</span>-distribution with many degrees of freedom. This gives a <span class="math inline">\(2.5\%\)</span> false positive error on both tails of the distribution (<span class="math inline">\(5\%\)</span> in total) and hence the associated 95% confidence intervals. The larger m, the wider or more conservative the confidence interval.</p>
-<p>There are a few ways to choose the constant m in the PoSI world. Vaguely speaking, PoSI says we should select this constant to equal the <span class="math inline">\(97.5\)</span>th percentile of a distribution related to the largest <span class="math inline">\(t\)</span>-statistic among all possible models. This is usually approximated with Monte Carlo simulations. Interestingly, we do not need the response variable to approximate the value.</p>
+<p>Every data scientist has seen a similar formula before. The question is usually one about choosing the constant <span class="math inline">\(m\)</span>. When we work with two-sided hypotheses tests and large samples, we often use <span class="math inline">\(m = 1.96\)</span> because this is roughly the <span class="math inline">\(97.5\)</span>th percentile of the <span class="math inline">\(t\)</span>-distribution with many degrees of freedom. This gives a <span class="math inline">\(2.5\%\)</span> false positive error on both tails of the distribution (<span class="math inline">\(5\%\)</span> in total) and hence the associated 95% confidence intervals. The larger <span class="math inline">\(m\)</span>, the wider or more conservative the confidence interval.</p>
+<p>There are a few ways to choose the constant <span class="math inline">\(m\)</span> in the PoSI world. Vaguely speaking, PoSI says we should select this constant to equal the <span class="math inline">\(97.5\)</span>th percentile of a distribution related to the largest <span class="math inline">\(t\)</span>-statistic among all possible models. This is usually approximated with Monte Carlo simulations. Interestingly, we do not need the response variable to approximate the value.</p>
 <p><span class="math display">\[m = \max_{\text{ \{all models and vars\} }} |t|.\]</span></p>
-<p>Another and even more conservative choice for <span class="math inline">\(m\)</span> is the Scheffe constant.</p>
+<p>Another and even more conservative choice for <span class="math inline">\(m\)</span> is the Scheffé constant.</p>
 <p><span class="math display">\[m^{scheffe} = \sqrt{rank(X) \times F(rank(X),  n-p)},\]</span></p>
 <p>where <span class="math inline">\(F(\dot)\)</span> denotes the <span class="math inline">\(95\)</span>th percentile of the <span class="math inline">\(F\)</span> distribution with the respective degrees of freedom.</p>
 <p>Unfortunately, you guessed correctly that this method does not scale well. In some sense, it is a “brute force” method that scans through all possible model combinations and all variables within each model and picks the most conservative value. The authors recommend this procedure for datasets with roughly <span class="math inline">\(p&lt;20\)</span>. This rules out many practical applications where machine learning is most useful.</p>
@@ -596,9 +603,9 @@ Algorithm:
 <p>The idea is first to get the conditional distribution of <span class="math inline">\(\beta\)</span> given the selected model. A bit magically, it turns out it is a <a href="https://en.wikipedia.org/wiki/Truncated_normal_distribution">truncated normal distribution</a>. Really, who would have guessed this? Do you even remember truncated probability distributions (hint: they are just like regular PDFs but bounded from at least one side. This requires further scaling so that the density area sums to 1.)?</p>
 <p>To dig one layer deeper, the authors show that the selection of Lasso predictors can be recast as a “polyhedral region” of the form:</p>
 <p><span class="math display">\[ AY\leq b. \]</span></p>
-<p>In English, for fixed <span class="math inline">\(X\)</span> and <span class="math inline">\(\lambda\)</span>, the set of alternative outcome values <span class="math inline">\(Y^*\)</span> which yields the same set of selected predictors, can be expressed by the simple inequality above. In it, <span class="math inline">\(A\)</span> and <span class="math inline">\(b\)</span> depend do not depend on <span class="math inline">\(Y\)</span>. Under this new result, the distribution of <span class="math inline">\(\hat{\beta}_M^{\text{EPoSI}}\)</span> is now well-understood and tractable, thus enabling valid hypothesis testing.</p>
+<p>In English, for fixed <span class="math inline">\(X\)</span> and <span class="math inline">\(\lambda\)</span>, the set of alternative outcome values <span class="math inline">\(Y^*\)</span> which yields the same set of selected predictors, can be expressed by the simple inequality above. In it, <span class="math inline">\(A\)</span> and <span class="math inline">\(b\)</span> do not depend on <span class="math inline">\(Y\)</span>. Under this new result, the distribution of <span class="math inline">\(\hat{\beta}_M^{\text{EPoSI}}\)</span> is now well-understood and tractable, thus enabling valid hypothesis testing.</p>
 <p>Then, we can use the conditional distribution function to construct a whimsical test statistic that is uniformly distributed on the <span class="math inline">\([0,1]\)</span> interval. And we can finally build confidence intervals based on that statistic.</p>
-<p>Selective inference is currently among the hottest topic in all of statistics. There have been a myriad of extensions and improvements on the original paper. Still, this literature is painstakingly technical. What is the polyhedral selection property or a union of polytopes?</p>
+<p>Selective inference is currently among the hottest topics in all of statistics. There have been a myriad of extensions and improvements on the original paper. Still, this literature is painstakingly technical. What is the polyhedral selection property or a union of polytopes?</p>
 <p><em>Software Package</em>: <a href="https://www.rdocumentation.org/packages/selectiveInference">selectiveInference</a>.</p>
 </section>
 </section>
@@ -822,13 +829,13 @@ Algorithm:
 <li><p>The naive approach to hypothesis testing is usually invalid.</p></li>
 <li><p>There are two main approaches that work – inference on the full model or on the selected model. The latter poses more technical challenges than the former.</p></li>
 <li><p>If we are interested in the full model, the Multi Split approach is general enough to cover a wide range of models and settings.</p></li>
-<li><p>If we believe you have to focus on the selected model, EPoSI is the state-of-the-art.</p></li>
+<li><p>If we believe we have to focus on the selected model, EPoSI is the state-of-the-art.</p></li>
 <li><p><a href="https://doi.org/10.1214/14-STS507">Simulation</a> <a href="https://www.jstor.org/stable/24780819">exercises</a> usually show no clear winner, as none of the methods consistently outperforms the rest.</p></li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p><a href="https://doi.org/10.1073/pnas.1507583112">Taylor and Tibshirani (2015)</a> give a non-technical introduction to the problem space along with a description of the POSI method – a great read but focused on a single approach. <a href="https://doi.org/10.1214/14-STS507">Other</a> <a href="https://www.jstor.org/stable/24780819add">studies</a> both provide a relatively accessible overview of the various methods for statistical inference on the full model. For technical readers, <a href="https://doi.org/10.1214/22-SS135">Zhang et al.&nbsp;(2022)</a> provide an excellent up-to-date review of the literature, which I used extensively.</p>
+<p><a href="https://doi.org/10.1073/pnas.1507583112">Taylor and Tibshirani (2015)</a> give a non-technical introduction to the problem space along with a description of the PoSI method – a great read but focused on a single approach. <a href="https://doi.org/10.1214/14-STS507">Other</a> <a href="https://www.jstor.org/stable/24780819">studies</a> both provide a relatively accessible overview of the various methods for statistical inference on the full model. For technical readers, <a href="https://doi.org/10.1214/22-SS135">Zhang et al.&nbsp;(2022)</a> provide an excellent up-to-date review of the literature, which I used extensively.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
@@ -878,7 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -928,13 +935,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1279,15 +1287,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -1304,26 +1313,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

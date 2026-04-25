@@ -123,7 +123,7 @@ Lee (2009) is the method I see most often in practice because the intuition is s
 
 Lee's key assumption is *monotone selection*: treatment can move selection in only one direction for every unit. If treatment raises the probability of observation, then the treated group contains some "extra" observed units relative to control. Those units must be trimmed away from one tail or the other of the treated outcome distribution.
 
-Let $S$ indicate whether the outcome is observed and suppose $$\mathbb{P}(S=1 \mid D=1) > \mathbb{P}(S=1 \mid D=0)$$. The excess selected share in the treated group is
+Let $S$ indicate whether the outcome is observed and suppose $\mathbb{P}(S=1 \mid D=1) > \mathbb{P}(S=1 \mid D=0)$. The excess selected share in the treated group is
 
 $$
 \pi = \frac{\mathbb{P}(S=1 \mid D=1) - \mathbb{P}(S=1 \mid D=0)}{\mathbb{P}(S=1 \mid D=1)}.

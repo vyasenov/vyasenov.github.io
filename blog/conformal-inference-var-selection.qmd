@@ -8,11 +8,11 @@ categories: [machine learning]
 
 Many machine learning (ML) methods operate as opaque systems, generating predictions when given a dataset as input. Identifying which variables have the greatest impact on these predictions is often crucial. This adds a touch of interpretability and transparency and aids stakeholders in better understanding the relevant context. Examples abound. For instance, identifying the house attributes most important for predicting home prices, the school or hospital characteristics most strongly associated with better students’ and patients’ outcomes, etc. 
 
-[Conformal inference](https://www.tandfonline.com/doi/abs/10.1080/01621459.2017.1307116) offers a novel way of measuring variable importance in ML. In an earlier article I introduced conformal inference as a tool for generating confidence intervals when making predictions for new observations, and here I will describe how we can adapt it to the context of feature importance. The approach is thus similar in spirit to the Gini Importance-based methods mentioned above.
+[Conformal inference](https://www.tandfonline.com/doi/abs/10.1080/01621459.2017.1307116) offers a novel way of measuring variable importance in ML. In an earlier article I introduced conformal inference as a tool for generating confidence intervals when making predictions for new observations, and here I will describe how we can adapt it to the context of feature importance. The approach is thus similar in spirit to the Gini Importance-based methods discussed below.
 
 ## Notation
 
-Let’s begin by setting up some notation. We have a size $n$  i.i.d. random sample of a feature vector $X$ and an outcome $Y$. The focus of conformal inference is on constructing a “confidence interval” for predicting a new observation $Y_{n+1}$ given a new feature realization $X_{n+1}$. I denote the estimate of the mean function by $\hat{\mu}$ and the same estimate when removing feature $j$ from $X $ by $\hat{\mu}_{-j}$.
+Let’s begin by setting up some notation. We have a size $n$ i.i.d. random sample of a feature vector $X$ and an outcome $Y$. The focus of conformal inference is on constructing a “confidence interval” for predicting a new observation $Y_{n+1}$ given a new feature realization $X_{n+1}$. I denote the estimate of the mean function by $\hat{\mu}$ and the same estimate when removing feature $j$ from $X$ by $\hat{\mu}_{-j}$.
 
 Please refer to my previous article for more details on the conformal inference framework, methodology and its properties.
 
@@ -37,7 +37,7 @@ The main idea is to use conformal inference ideas to construct a confidence inte
 
 Specifically, let $CI(\cdot)$ denote the conformal inference interval for $Y_{n+1}$ given $X_{n+1}$. Then, the interval
 
-  $$S_j(x)=\{ |y-\hat{\mu}_{-j}(x)|-|y-\hat{\mu}(x)| : y \in CI(x) \}.$$
+  $$S_j(x)=\{ |y-\hat{\mu}_{-j}(x)|-|y-\hat{\mu}(x)| : y \in CI(x) \}$$
 
 has a valid finite-sample coverage in the sense that:
 
@@ -47,7 +47,7 @@ where $\alpha$ is a pre-specified significance level. This holds for all $j$.
 
 We can plot the confidence intervals $S_j(X_i)$ for $i=1 \dots n$ and roughly interpret them as measuring variable importance. The closer the intervals are to zero, the less important the variable is for predicting new outcomes. The opposite is true as well. The further and more often it is away from zero, the more important the variable.
 
-Another, more global, approach to using conformal inference for variable importance focuses on the distribution of $\Delta_j(X_{n+1}, Y_{n+1})$ and conducts hypothesis testing on its median or mean. Intuitively, failing to reject a hypothesis that these statistics are non-zero is evidence that variable $j$ does not play a significant role in predicting $Y$.
+Another, more global, approach to using conformal inference for variable importance focuses on the distribution of $\Delta_j(X_{n+1}, Y_{n+1})$ and conducts hypothesis testing on its median or mean. Intuitively, failing to reject the hypothesis that these statistics are zero is evidence that variable $j$ does not play a significant role in predicting $Y$.
 
 ## Bottom Line
 

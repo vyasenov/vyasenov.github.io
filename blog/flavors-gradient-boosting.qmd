@@ -31,7 +31,7 @@ Before diving into the specifics of each method, let’s establish some common n
 
 ### Refresher on Gradient Boosting
 
-Gradient boosting is an ensemble machine learning technique that builds models sequentially, each new model attempting to correct the errors of the previous ones. The general idea is to minimize a loss function by adding weak learners (typically short decision trees) in a stage-wise manner to arrive at a single strong learner. This iterative process allows the model to improve its performance gradually, making it highly effective for complex datasets. Gradient boosting methods are versatile in that they can be used both for regression and classifications problems. In the most common case when the weak learners are decision trees, the algorithm is known as gradient tree boosting.
+Gradient boosting is an ensemble machine learning technique that builds models sequentially, each new model attempting to correct the errors of the previous ones. The general idea is to minimize a loss function by adding weak learners (typically short decision trees) in a stage-wise manner to arrive at a single strong learner. This iterative process allows the model to improve its performance gradually, making it highly effective for complex datasets. Gradient boosting methods are versatile in that they can be used both for regression and classification problems. In the most common case when the weak learners are decision trees, the algorithm is known as gradient tree boosting.
 
 Mathematically, the model is built as follows:
 
@@ -76,8 +76,8 @@ With some simplifications, the regression version of the `XGBoost` is implemente
 ::: {.callout-note title="Algorithm:"}
 1. Initialize the model with a constant value: $f_0(x) = \arg\min_{\gamma} \sum_i L(y_i, \gamma)$
 2. For $m=1, \dots M$:
-    i. Compute the gradients $$grad_m(x_i)=\left( \frac{\partial L(y_i, f(x_i))}{\partial f(x_i)}\right)_{f(x)=f_{m-1}(x)}$$ and hessians $$hess_m(x_i)=\left( \frac{\partial^2 L(y_i, f(x_i))}{\partial^2 f(x_i)^2}\right)_{f(x)=f_{m-1}(x)}$$ of the loss function for $i=1,\dots,n$.
-    ii. Fit a weak learner such as a tree, $h_m(x)$ on$ \{(x_i, \frac{grad_m(x_i)}{hess_m(x_i)}) \}_{i=1}^n$.
+    i. Compute the gradients $$grad_m(x_i)=\left( \frac{\partial L(y_i, f(x_i))}{\partial f(x_i)}\right)_{f(x)=f_{m-1}(x)}$$ and hessians $$hess_m(x_i)=\left( \frac{\partial^2 L(y_i, f(x_i))}{\partial f(x_i)^2}\right)_{f(x)=f_{m-1}(x)}$$ of the loss function for $i=1,\dots,n$.
+    ii. Fit a weak learner such as a tree, $h_m(x)$, on $\{(x_i, \frac{grad_m(x_i)}{hess_m(x_i)}) \}_{i=1}^n$.
     iii. Update the model $f_m(x)=f_{(m-1)} - \alpha h_m(x).$
 3. The final model is $f_M(x)=\sum_m f_m(x)$.
 :::
@@ -104,11 +104,11 @@ First, rather than growing trees level-wise (row by row) as in most implementati
 
 ### Challenges
 
-Gradient boosting methods comes with a few common practical challenges. When a predictive model learns the training data too precisely, it may perform poorly on new, unseen data – a problem called overfitting. To combat this, various regularization methods are used to add helpful constraints to the learning process. A main parameter that regulates the model’s learning precision is the number of boosting rounds ($M$), which determines how many base models are created. While using more rounds reduces training errors, it also increases overfitting risk. To find the optimal $M$ value, it’s common to use cross validation. The depth of decision trees is another important control parameter in tree boosting. Deeper trees can capture more complex patterns but are more prone to memorizing the training data rather than learning generalizable patterns.
+Gradient boosting methods come with a few common practical challenges. When a predictive model learns the training data too precisely, it may perform poorly on new, unseen data – a problem called overfitting. To combat this, various regularization methods are used to add helpful constraints to the learning process. A main parameter that regulates the model’s learning precision is the number of boosting rounds ($M$), which determines how many base models are created. While using more rounds reduces training errors, it also increases overfitting risk. To find the optimal $M$ value, it’s common to use cross validation. The depth of decision trees is another important control parameter in tree boosting. Deeper trees can capture more complex patterns but are more prone to memorizing the training data rather than learning generalizable patterns.
 
 The improved predictive performance of gradient boosting relative to simpler models comes at a cost of reduced model transparency. While a single decision tree’s reasoning can be easily traced and understood, tracking the decision-making process across numerous trees becomes extremely complex and challenging. Gradient boosting is an excellent example of the inherent tradeoff between model simplicity and performance.
 
-Let’s now look at how can we use these methods in practice.
+Let’s now look at how we can use these methods in practice.
 
 ## An Example
 
@@ -147,8 +147,8 @@ for name, clf in classifiers.items():
     y_pred = clf.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     results[name] = accuracy
-Finally, we print the accuracy results:
 
+# Finally, print the accuracy results
 for name, accuracy in results.items():
     print(f"{name}: {accuracy:.4f}")
 
@@ -159,9 +159,9 @@ for name, accuracy in results.items():
 >CatBoost: 0.9649
 ```
 
-Overall each method performed reasonably well, with accuracy ranging from $95.6$% to $97.4$%. Interestingly, `Adaboost` outperformed the other more complex algorithms, at least in the in terms of accuracy.
+Overall each method performed reasonably well, with accuracy ranging from $95.6\%$ to $97.4\%$. Interestingly, `Adaboost` outperformed the other more complex algorithms, at least in terms of accuracy.
 
-And that’s it. You are now familiar with the most popular implementations of gradient boosting along with their advantages and weaknesses. You also know how to employ them in practice. Have fun incorporating `XGboost` and the like into your predictive modeling tasks.
+And that’s it. You are now familiar with the most popular implementations of gradient boosting along with their advantages and weaknesses. You also know how to employ them in practice. Have fun incorporating `XGBoost` and the like into your predictive modeling tasks.
 
 ## Bottom Line
 
@@ -179,7 +179,7 @@ And that’s it. You are now familiar with the most popular implementations of g
 
 ## Where to Learn More
 
-Wikipedia is a great starting point, and it’s a resource I used extensively when preparing this article. “The Elements of Statistical Learning” by Hastie, Tibshirani, and Friedman is a comprehensive guide that covers the theoretical foundations of machine learning, including gradient boosting. It is the de facto bible for statistical ML. While this book is phenomenal, it can be challenging for less technical practitioners for which I recommend its lighter versions, “An Introduction to Statistical Learning” with R and `Python` code. All these books are available for free online. Lastly, if you want to dive even deeper into any of the algorithms describe above, consider studying the papers in the References section below.
+Wikipedia is a great starting point, and it’s a resource I used extensively when preparing this article. “The Elements of Statistical Learning” by Hastie, Tibshirani, and Friedman is a comprehensive guide that covers the theoretical foundations of machine learning, including gradient boosting. It is the de facto bible for statistical ML. While this book is phenomenal, it can be challenging for less technical practitioners for which I recommend its lighter versions, “An Introduction to Statistical Learning” with R and `Python` code. All these books are available for free online. Lastly, if you want to dive even deeper into any of the algorithms described above, consider studying the papers in the References section below.
 
 ## References
 

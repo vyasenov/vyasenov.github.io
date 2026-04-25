@@ -16,11 +16,11 @@ Let’s now delve deeper into this statement and unravel the underlying mechanis
 
 ### Refresher on Mean Squared Error (MSE)
 
-To understand the paradox, let’s begin by quantify what we mean by “better” estimation. The MSE of an estimator $\hat{\mu}$ is defined as its expected squared error (or loss):
+To understand the paradox, let’s begin by quantifying what we mean by “better” estimation. The MSE of an estimator $\hat{\mu}$ is defined as its expected squared error (or loss):
 
   $$\text{MSE}(\hat{\mu}) = \mathbb{E}\left[ ( \hat{\mu} - \mu )^2 \right],$$
 
-where $\mu = (\mu_1, \mu_2, \dots, \mu_p)$ is the true vector of means. All else equal, the lower MSE the better.
+where $\mu = (\mu_1, \mu_2, \dots, \mu_p)$ is the true vector of means. All else equal, the lower the MSE the better.
 
 ### Mathematical Formulation
 
@@ -28,9 +28,9 @@ Stein’s paradox arises in the context of estimating multiple parameters simult
 
 $$X_i \sim N(\mu_i, \sigma^2), \quad i = 1, \dots, p,$$
 
-where $X_i$ are observed values, $\mu_i$ are the unknown means, and $\sigma^2$ is known. We assume non-zero covariance between the variables.
+where $X_i$ are observed values, $\mu_i$ are the unknown means, and $\sigma^2$ is known. We assume zero covariance between the variables.
 
-A natural approach is to estimate each \mu_i using its corresponding sample mean $X_i$, which is the maximum likelihood estimator (MLE). However, in dimensions $p \geq 3$, this seemingly reasonable approach is dominated by an alternative method.
+A natural approach is to estimate each $\mu_i$ using its corresponding sample mean $X_i$, which is the maximum likelihood estimator (MLE). However, in dimensions $p \geq 3$, this seemingly reasonable approach is dominated by an alternative method.
 
 The surprise? Shrinking the individual estimates toward a common value—such as the overall mean—produces an estimator with uniformly lower expected squared error.
 

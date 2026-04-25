@@ -10,7 +10,7 @@ At its heart, the bootstrap poses a simple yet powerful question: “What if we 
 
 But here's the thing: there isn’t just *one* bootstrap. Over the years, statisticians have developed many flavors of the bootstrap to address different challenges in different settings. Some handle small samples better. Some are designed for dependent data like time series. Others shine when the assumptions of classic bootstrapping crumble (think clustered data or heteroskedasticity).
 
-In this article, I’ll take a tour through the zoo of bootstrap methods: from the classic nonparametric bootstrap to the jackknife, parametric bootstrap, Bayesian bootstrap, wild bootstrap, moving block bootstrap, and more. We’ll explore where each method shines, where it stumbles, and how to pick the right one for your problem.  As usual, I won’t just throw formulas at you. The focus here is on understanding *why* these methods work, not just how to mechanically apply them. There is also plenty of `R` and `Python` code to illustrate each method in action.
+In this article, I’ll take a tour through the zoo of bootstrap methods: from the classic nonparametric bootstrap to the jackknife, parametric bootstrap, Bayesian bootstrap, wild bootstrap, moving block bootstrap, and more. I’ll explore where each method shines, where it stumbles, and how to pick the right one for your problem.  As usual, I won’t just throw formulas at you. The focus here is on understanding *why* these methods work, not just how to mechanically apply them. There is also plenty of `R` and `Python` code to illustrate each method in action.
 
 ## Notation
 
@@ -203,7 +203,7 @@ print(np.var(bayes_boot_means, ddof=1))
 
 ### Wild Bootstrap
 
-The wild bootstrap is a lifesaver when dealing with *heteroskedasticity* or few clusters. Rather than resampling entire observations (which breaks the structure of heteroskedastic errors), the wild bootstrap keeps the design matrix $X$ fixed and perturbs only the residuals—in a way that maintains heteroskedasticity-consistent variability. Some versions modify instead the score function instead of the residuals.
+The wild bootstrap is a lifesaver when dealing with *heteroskedasticity* or few clusters. Rather than resampling entire observations (which breaks the structure of heteroskedastic errors), the wild bootstrap keeps the design matrix $X$ fixed and perturbs only the residuals—in a way that maintains heteroskedasticity-consistent variability. Some versions modify the score function instead of the residuals.
 
 Suppose you’re estimating a regression model:
 $$
@@ -286,19 +286,19 @@ The cluster bootstrap generates resampled datasets by:
 ::: {.callout-note title="Algorithm:"}
 For each bootstrap sample $b = 1, \dots, B$:
 
-1. Sampling clusters $g$ from your data with replacement and include *all observations* $i$ from each selected cluster.
-3. Compute the statistic $\hat{\theta}^*_b = T(\hat{F}^*_b)$.
+1. Sample clusters $g$ from your data with replacement and include *all observations* $i$ from each selected cluster.
+2. Compute the statistic $\hat{\theta}^*_b = T(\hat{F}^*_b)$.
 :::
 
 **Strengths:** Simple to implement, preserves cluster dependence, consistent under many forms of within-cluster correlation.
 
-**Weaknesses:** Requires a reasonably large number of clusters (typically $G \geq 30$). Can be biased or unstable with few clusters. (Luckily, the United States was broken down in 50 states. The Swiss were not as fortunate.)
+**Weaknesses:** Requires a reasonably large number of clusters (typically $G \geq 30$). Can be biased or unstable with few clusters. (Luckily, the United States was broken down into 50 states. The Swiss were not as fortunate.)
 
 ---
 
 ### Moving Block Bootstrap
 
-If your data are *dependent*, like time series, the classic bootstrap fails because it breaks the correlation structure. The moving block bootstrap fixes this by resampling blocks of adjacent observations instead of individual data points. You can easily see how this makes sense for time seires: you want to maintain the local dependence structure while still resampling.
+If your data are *dependent*, like time series, the classic bootstrap fails because it breaks the correlation structure. The moving block bootstrap fixes this by resampling blocks of adjacent observations instead of individual data points. You can easily see how this makes sense for time series: you want to maintain the local dependence structure while still resampling.
 
 You choose a block length $l$ and create overlapping blocks of data:
 $$

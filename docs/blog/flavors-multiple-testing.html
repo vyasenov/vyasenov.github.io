@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>The Many Flavors of Multiple Testing Adjustments – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -37,13 +40,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -87,7 +91,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -100,7 +104,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -137,7 +141,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -170,7 +174,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -210,7 +214,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -238,7 +242,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -261,19 +265,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -437,7 +444,7 @@ window.Quarto = {
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>We are interested in testing a bunch of m null hypotheses about a population parameter <span class="math inline">\(\beta\)</span>.</p>
+<p>We are interested in testing a bunch of <span class="math inline">\(m\)</span> null hypotheses about a population parameter <span class="math inline">\(\beta\)</span>.</p>
 <p>As a running example, you can think of <span class="math inline">\(\beta\)</span> as the causal impact of a new product feature on user engagement and <span class="math inline">\(m\)</span> as indexing some geographical regions such as cities. We are interested in whether the new feature is more impactful in some cities than others. We will denote these hypotheses with <span class="math inline">\(H_1, H_2, \dots, H_m\)</span> and refer to their associated p-values with <span class="math inline">\(p_1, p_2, \dots, p_m\)</span>.</p>
 <p>We use <span class="math inline">\(\alpha\)</span> to denote the probability of a Type 1 error – rejecting a true null (i.e., a false positive). In technical jargon, we refer to <span class="math inline">\(\alpha\)</span> as test size. We often choose <span class="math inline">\(\alpha=.05\)</span>, meaning that we are allowing a 5% chance that we will make such an error. This corresponds to the 95% confidence intervals that we often see.</p>
 <p>Next, statistical power is the probability of correctly rejecting a false null hypothesis (i.e., a true positive). This is a desirable property – the higher it is, the better. While this terminology does not describe the entire hypothesis testing framework, it does cover what is necessary to continue reading the article.</p>
@@ -460,7 +467,7 @@ window.Quarto = {
 <p><span class="math display">\[ FWER = \mathbb{P} (\text{At Least 1 Type 1 Error}). \]</span></p>
 <p>In the example from the introduction, <span class="math inline">\(FWER = 0.3\)</span>.</p>
 <p>Controlling the FWER is good, but sometimes it is not great. It does what it is supposed to do – limit the number of false positives, but it is often too conservative. In practice, too few variables remain significant after such FWER adjustments, especially when testing many (as opposed to just a few) hypotheses.</p>
-<p>To correct this, in the 1990s, Yoav Benjamini and Yosef Hochberg, conceptualized controlling the so-called False Discovery Rate (FDR). FDR is the expected proportion of false positives:</p>
+<p>To correct this, in the 1990s, Yoav Benjamini and Yosef Hochberg conceptualized controlling the so-called False Discovery Rate (FDR). FDR is the expected proportion of false positives:</p>
 <p><span class="math display">\[ FDR = \mathbb{E} \left[ \frac{\text{\# False Positives}}{\text{\# False Positives + \# True Positives} } \right]. \]</span></p>
 <p>Take a minute to notice the significant difference between these two approaches. FWER controls the probability of having at least one false positive at <span class="math inline">\(\alpha\)</span>. At the same time, FDR is okay with having several false positives as long as they are (on average) less than <span class="math inline">\(\alpha\)</span> of all hypotheses.</p>
 <p>FWER is more conservative than FDR, resulting in fewer significant variables. In our example, applying an FWER adjustment as opposed to an FDR one will lead to fewer statistically significant differences in the impact of the new feature across various cities.</p>
@@ -477,7 +484,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -486,20 +493,20 @@ Algorithm:
 </ol>
 </div>
 </div>
-<p>In words, we multiply all <span class="math inline">\(p\)</span>-values by m and reject the hypotheses with adjusted <span class="math inline">\(p\)</span>-values that are smaller than or equal to <span class="math inline">\(\alpha\)</span>.</p>
+<p>In words, we multiply all <span class="math inline">\(p\)</span>-values by <span class="math inline">\(m\)</span> and reject the hypotheses with adjusted <span class="math inline">\(p\)</span>-values that are smaller than or equal to <span class="math inline">\(\alpha\)</span>.</p>
 <p>The Bonferroni adjustment is often considered to control the FWER, but it actually controls an even more conservative target – the per-family error rate (PFER). PFER is the sum of probabilities of Type 1 error for all the hypotheses.</p>
 <p>You correctly guessed that PFER is considered too strict. Although it is common in practice, there are better alternatives. While the Bonferroni correction is simple and elegant, it is always dominated by the Holm-Bonferroni procedure, so there is really no reason ever to use it.</p>
 </section>
 <section id="holm-bonferronis-procedure" class="level4">
 <h4 class="anchored" data-anchor-id="holm-bonferronis-procedure">Holm &amp; Bonferroni’s Procedure</h4>
-<p>This adjustment offers greater statistical power than the Bonferroni method regardless of the test size without significantly compromising on simplicity. In algorithmic language:</p>
+<p>This adjustment offers greater statistical power than the Bonferroni method regardless of the test size <span class="math inline">\(\alpha\)</span> without significantly compromising on simplicity. In algorithmic language:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -509,7 +516,7 @@ Algorithm:
 </ol>
 </div>
 </div>
-<p>Much like the Bonferroni method with a multiplication factor of (<span class="math inline">\(m+1-k\)</span>) instead of <span class="math inline">\(m\)</span>.</p>
+<p>This is much like the Bonferroni method, but with a multiplication factor of <span class="math inline">\((m+1-k)\)</span> instead of <span class="math inline">\(m\)</span>.</p>
 <p>These two procedures control the FWER by assuming a kind of a ‘worst-case’ scenario in which the <span class="math inline">\(p\)</span>-values are close to being independent of each other. To see why this is the case, imagine the extreme opposite scenario in which there is perfect positive dependence. Then, there is effectively one test statistic, and FWER adjustment is unnecessary.</p>
 <p>In practice, however, the <span class="math inline">\(p\)</span>-values are often correlated, and exploiting this dependence can result in even more powerful FWER corrections. This can be achieved with various resampling methods, such as the bootstrap or permutation procedures.</p>
 </section>
@@ -523,7 +530,7 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -552,21 +559,21 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Order the test statistics in descending order, <span class="math inline">\(t_1 \geq t_2 \geq, \dots, t_m\)</span>.</li>
-<li>Take B bootstrap samples, and for each hypothesis i compute the empirical distribution function of the successive maximum test statistic random variable. That is, the random variable of the maximum test statistic between <span class="math inline">\(t_i, t_{i+1}, \dots, t_m\)</span>. Call this distribution <span class="math inline">\(c(i)\)</span>.</li>
-<li>Reject <span class="math inline">\(H_i\)</span> if <span class="math inline">\(t_i\)</span> is greater than the 1-quantile of <span class="math inline">\(c(1)\)</span>.</li>
-<li>Denote by h the number of rejected hypotheses. If <span class="math inline">\(h=0\)</span> stop. Otherwise, for <span class="math inline">\(H_{h+1},\dots H_s\)</span>:</li>
+<li>Order the test statistics in descending order, <span class="math inline">\(t_1 \geq t_2 \geq \dots \geq t_m\)</span>.</li>
+<li>Take <span class="math inline">\(B\)</span> bootstrap samples, and for each hypothesis <span class="math inline">\(i\)</span> compute the empirical distribution function of the successive maximum test statistic random variable. That is, the random variable of the maximum test statistic between <span class="math inline">\(t_i, t_{i+1}, \dots, t_m\)</span>. Call this distribution <span class="math inline">\(c(i)\)</span>.</li>
+<li>Reject <span class="math inline">\(H_i\)</span> if <span class="math inline">\(t_i\)</span> is greater than the <span class="math inline">\(1-\alpha\)</span> quantile of <span class="math inline">\(c(1)\)</span>.</li>
+<li>Denote by <span class="math inline">\(h\)</span> the number of rejected hypotheses. If <span class="math inline">\(h=0\)</span> stop. Otherwise, for <span class="math inline">\(H_{h+1},\dots H_s\)</span>:</li>
 <li>Reject <span class="math inline">\(H_i\)</span> if <span class="math inline">\(t_i &gt; c(h+1)\)</span></li>
 <li>Iterate until no further hypotheses are rejected.</li>
 </ol>
 </div>
 </div>
-<p>And you thought the Westfall and Young correction was tricky. The good news is that there are software packages for all these adjustments, so you won’t have to program them yourself. Arguably, this one of the best ways to control FWER; does not rest on pivotality assumptions. However, it can be difficult to explain to non-technical audiences; difficult to explain to anyone, really.</p>
+<p>And you thought the Westfall and Young correction was tricky. The good news is that there are software packages for all these adjustments, so you won’t have to program them yourself. Arguably, this is one of the best ways to control FWER; it does not rest on pivotality assumptions. However, it can be difficult to explain to non-technical audiences; difficult to explain to anyone, really.</p>
 <p><em>Software Package</em>: <a href="https://www.rdocumentation.org/packages/hdm">hdm</a>.</p>
 <p>This wraps up the descriptions of the methods controlling the FWER.</p>
 </section>
@@ -583,7 +590,7 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -598,7 +605,7 @@ Algorithm:
 <p>This adjustment has an interesting geometric interpretation:</p>
 <ul>
 <li>plot <span class="math inline">\(p\)</span> versus <span class="math inline">\(k\)</span>,</li>
-<li>draw a line through the origin with a slope equal to <span class="math inline">\(frac{\alpha}{m}\)</span>,</li>
+<li>draw a line through the origin with a slope equal to <span class="math inline">\(\frac{\alpha}{m}\)</span>,</li>
 <li>reject all hypotheses associated with the <span class="math inline">\(p\)</span>-values on the left up to the last point below this line.</li>
 </ul>
 </section>
@@ -611,13 +618,13 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Order the <span class="math inline">\(p\)</span>-values in ascending order – <span class="math inline">\(p_1, p_2, \dots, p_m\)</span>.</li>
-<li>Find the largest integer <span class="math inline">\(k\)</span> such that <span class="math inline">\(p_k \times \frac{m.c(m)}{k}\leq \alpha\)</span>.</li>
+<li>Find the largest integer <span class="math inline">\(k\)</span> such that <span class="math inline">\(p_k \times \frac{m \cdot c(m)}{k}\leq \alpha\)</span>.</li>
 <li>Reject the null hypotheses <span class="math inline">\(H_1, \dots, H_k\)</span>.</li>
 </ol>
 </div>
@@ -814,7 +821,7 @@ Algorithm:
 <ul>
 <li><p>Multiple testing corrections are likely necessary when you are using a single dataset multiple times (i.e., testing multiple hypotheses).</p></li>
 <li><p>Two major frameworks exist – FWER and FDR control. The former is often considered too conservative, while the latter is the dominant way researchers and practitioners think about correcting for MH testing.</p></li>
-<li><p>In most settings, the Benjamini-Yekuiteli approach offers a great balance between statistical power and technical simplicity.</p></li>
+<li><p>In most settings, the Benjamini-Yekutieli approach offers a great balance between statistical power and technical simplicity.</p></li>
 <li><p>Knockoffs are a novel and exciting approach to FDR control.</p></li>
 </ul>
 </section>
@@ -827,7 +834,7 @@ Algorithm:
 <p>Barber, R. F., &amp; Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. The Annals of Statistics, 43(5), 2055-2085.</p>
 <p>Benjamini, Y., &amp; Yekutieli, D. (2001). The control of the false discovery rate in multiple testing under dependency. Annals of Statistics, 1165-1188.</p>
 <p>Benjamini, Y., &amp; Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological), 57(1), 289-300.</p>
-<p>Candes, E., Fan, Y., Janson, L., &amp; Lv, J. (2018). Panning for gold:’model‐X’knockoffs for high dimensional controlled variable selection. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 80(3), 551-577.</p>
+<p>Candes, E., Fan, Y., Janson, L., &amp; Lv, J. (2018). Panning for gold:‘model‐X’knockoffs for high dimensional controlled variable selection. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 80(3), 551-577.</p>
 <p>Clarke, D., Romano, J. P., &amp; Wolf, M. (2020). The Romano–Wolf multiple-hypothesis correction in Stata. The Stata Journal, 20(4), 812-843.</p>
 <p>Dai, C., Lin, B., Xing, X., &amp; Liu, J. S. (2022). False discovery rate control via data splitting. Journal of the American Statistical Association, 1-38.</p>
 <p>Korthauer, K., Kimes, P. K., Duvallet, C., Reyes, A., Subramanian, A., Teng, M., … &amp; Hicks, S. C. (2019). A practical guide to methods controlling false discoveries in computational biology. Genome biology, 20(1), 1-21.</p>
@@ -867,7 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -917,13 +924,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1268,15 +1276,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -1293,26 +1302,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

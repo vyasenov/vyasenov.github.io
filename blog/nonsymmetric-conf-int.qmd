@@ -14,7 +14,7 @@ That template is deeply ingrained. It works beautifully for estimators whose sam
 
 The “$\pm$ margin of error” representation is not a defining property of confidence intervals. It is a *consequence of* symmetry. Once symmetry disappears because of skewed sampling distributions, nonlinear transformations, boundary constraints, or small-sample behavior, the interval need not be centered around the point estimate.
 
-The goal of this note is to unpack where asymmetry comes from, when it is expected, and how different construction principles lead to intervals that look very different from the textbook $t$-interval. We will also illustrate the phenomenon with a bootstrap example in `R` and `Python`.
+The goal of this note is to unpack where asymmetry comes from, when it is expected, and how different construction principles lead to intervals that look very different from the textbook $t$-interval. I will also illustrate the phenomenon with a bootstrap example in `R` and `Python`.
 
 ## Notation
 
@@ -36,7 +36,7 @@ This interval is symmetric around $\hat{\theta}$ by construction. Its symmetry i
 
 ## A Closer Look
 
-We will now examine four common sources of confidence interval asymmetry.
+I will now examine four common sources of confidence interval asymmetry.
 
 ### Skewed Sampling Distributions
 

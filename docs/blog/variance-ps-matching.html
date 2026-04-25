@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>The Variance of Propensity Score Matching Estimators – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -37,13 +40,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -87,7 +91,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -100,7 +104,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -137,7 +141,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -170,7 +174,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -210,7 +214,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -238,7 +242,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -261,19 +265,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -425,8 +432,8 @@ window.Quarto = {
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>Propensity score matching (PSM) is among the most popular methods for estimating causal effects with observational data. It lends its fame to both its power and simplicity. Under a certain set of commonly invoked assumptions, controlling for the propensity score alone (as opposed to the full set of covariates) is enough to remove bias between the treatment and control groups. The underlying idea of matching on the propensity score is incredibly simple and most data scientists can quickly estimate a treatment effect even from scratch.</p>
-<p>While estimating treatment effects is common and straightforward, calculating their variance along with the associated confidence intervals and p-values can be more challenging. So, how exactly do you compute the variance of PSM methods? In this article I will describe the most popular ways of doing that. My goal is to cover the intuition and I will spare the technical details. Interested readers can refer to the References section below for more detailed expositions.</p>
-<p>Statistical methods based on the propensity score function come in different flavors (e.g., weighting, matching, subclassification, etc.), but today I will focus on <span class="math inline">\(1:1\)</span> or <span class="math inline">\(1:N\)</span> matching. There are also several potential estimands of interest, such as ATE (average treatment effect), ATT (ATE for the treatment group) but I will talk specifically about the latter.</p>
+<p>While estimating treatment effects is common and straightforward, calculating their variance along with the associated confidence intervals and <span class="math inline">\(p\)</span>-values can be more challenging. So, how exactly do you compute the variance of PSM methods? In this article I will describe the most popular ways of doing that. My goal is to cover the intuition and I will spare the technical details. Interested readers can refer to the References section below for more detailed expositions.</p>
+<p>Statistical methods based on the propensity score function come in different flavors (e.g., weighting, matching, subclassification, etc.), but today I will focus on <span class="math inline">\(1:1\)</span> or <span class="math inline">\(1:N\)</span> matching. There are also several potential estimands of interest, such as ATE (average treatment effect) and ATT (ATE for the treatment group), but I will talk specifically about the latter.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
@@ -437,14 +444,14 @@ window.Quarto = {
 <li>Analyze the outcome differences in each pair to arrive at a final ATT (or ATE) estimate.</li>
 </ul>
 <p>Throughout the article, I will assume a standard, well-behaved setting with SUTVA, unconfoundedness, and overlap assumptions in place. Similarly, I will ignore many important aspects of PSM methods such as trimming, propensity score and even treatment effect estimation. I will also use standard notation (e.g., <span class="math inline">\(Y\)</span> and <span class="math inline">\(D\)</span> denote outcome and treatment; and <span class="math inline">\(\tau\)</span> is the ATT) without setting up the entire framework.</p>
-<p>We can classify the methods for estimating the PSM variance in three distinct buckets.</p>
+<p>We can classify the methods for estimating the PSM variance into three distinct buckets.</p>
 <section id="asymptotic-approximations" class="level3">
 <h3 class="anchored" data-anchor-id="asymptotic-approximations">Asymptotic Approximations</h3>
 <p>Recall the <a href="https://en.wikipedia.org/wiki/Law_of_total_variance">Law of Total Variance</a> stating that, given a conditioning variable <span class="math inline">\(X\)</span>, we can always decompose a random variable <span class="math inline">\(Y\)</span>’s variance, into two components – the expectation of the conditional variance and the variance of the conditional expectation: <span class="math display">\[Var(Y) = Var(E(Y|X)) + E(Var(Y|X)).\]</span></p>
 <p><a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1468-0262.2006.00655.x">Abadie and Imbens (2006)</a> use this idea to derive the asymptotic variance formula for one-to-one and one-to-many matching estimators. They provide an analytical expression for the variance as <span class="math inline">\(n \to \infty\)</span> (and hence, this is an approximation) using the matching covariates as conditioning variables. I will not be going into their work in detail, but a couple of notes are worth discussing.</p>
 <p>The original formulation assumes the true propensity score function is known. This is rarely true and in practice we rely on an estimate of it. Practitioners then replace this true propensity score with the estimated one. This is OK, but not great – it brings me to the second issue.</p>
 <p>One needs to account for the fact that this propensity score is estimated. As such, it comes with uncertainty, which, if ignored, can potentially understate the variance of your estimator. Hello, type 1 errors!</p>
-<p>In follow-up work, <a href="https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA11293">Abadie and Imbens (2016)</a> propose correction which accounts for this uncertainty. Interestingly, in a work that I will discuss below, <a href="https://www.tandfonline.com/doi/abs/10.1080/07350015.2018.1476247">Bodory et al.&nbsp;(2020)</a> report that in practice this correction might increase or decrease the ATT variance.</p>
+<p>In follow-up work, <a href="https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA11293">Abadie and Imbens (2016)</a> propose a correction which accounts for this uncertainty. Interestingly, in a work that I will discuss below, <a href="https://www.tandfonline.com/doi/abs/10.1080/07350015.2018.1476247">Bodory et al.&nbsp;(2020)</a> report that in practice this correction might increase or decrease the ATT variance.</p>
 </section>
 <section id="approximation-based-on-weights" class="level3">
 <h3 class="anchored" data-anchor-id="approximation-based-on-weights">Approximation Based on Weights</h3>
@@ -456,7 +463,7 @@ window.Quarto = {
 <section id="bootstrap" class="level3">
 <h3 class="anchored" data-anchor-id="bootstrap">Bootstrap</h3>
 <p>Bootstrap is the go-to method for estimating variances in complex settings where analytical expressions are too messy or even do not exist. PSM seems like a natural environment where the bootstrap can help. Not so fast!</p>
-<p>Abadie and Imbens (2006) show that the standard nonparametric <a href="https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6474">bootstrap is inconsistent</a> for non-smooth estimators (such as propensity score matching) with fixed number of matches and continuous covariates. Nevertheless, practitioners routinely ignore this result. While the theory says we should not use the bootstrap here, the extent to which this is of practical relevance is unclear. For instance, if this only makes a difference in the fourth decimal, we might be willing to sacrifice some bias for ease of computation.</p>
+<p>Abadie and Imbens (2006) show that the standard nonparametric <a href="https://onlinelibrary.wiley.com/doi/abs/10.3982/ECTA6474">bootstrap is inconsistent</a> for non-smooth estimators (such as propensity score matching) with a fixed number of matches and continuous covariates. Nevertheless, practitioners routinely ignore this result. While the theory says we should not use the bootstrap here, the extent to which this is of practical relevance is unclear. For instance, if this only makes a difference in the fourth decimal, we might be willing to sacrifice some bias for ease of computation.</p>
 <p>There are at least two ways one can go around using the bootstrap here. The first one is the standard plain vanilla approach.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
@@ -464,7 +471,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -477,20 +484,20 @@ Algorithm:
 </div>
 </div>
 <p>Alternatively, in this last step we can directly use the <span class="math inline">\(\frac{\alpha}{2}\)</span> and <span class="math inline">\(1-\frac{\alpha}{2}\)</span> quantiles of the bootstrap distribution of <span class="math inline">\(\hat{\tau}\)</span>.</p>
-<p>The second approach uses the well-known fact that the bootstrap behaves better when it uses so called asymptotically pivotal statistics – i.e., ones which asymptotic distribution does not depend on unknown quantities. In this setting a candidate would be the <span class="math inline">\(t\)</span>-statistic which, as we know, under certain conditions has a standard normal asymptotic distribution. We proceed in three steps:</p>
+<p>The second approach uses the well-known fact that the bootstrap behaves better when it uses so-called asymptotically pivotal statistics – i.e., ones whose asymptotic distribution does not depend on unknown quantities. In this setting a candidate would be the <span class="math inline">\(t\)</span>-statistic which, as we know, under certain conditions has a standard normal asymptotic distribution. We proceed in three steps:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Compute the <span class="math inline">\(t\)</span>-stat in the main sample using one of the variance approximations.</li>
-<li>Draw <span class="math inline">\(B\)</span> random samples of size <span class="math inline">\(n\)</span> and we compute the recentered <span class="math inline">\(t\)</span>-stat with respect to <span class="math inline">\(\hat{\tau}\)</span> in the main sample, <span class="math display">\[T^b = \frac{\hat{\tau}^b - \hat{\tau}}{\sqrt{\hat{V}(\tau^b)}}.\]</span></li>
+<li>Draw <span class="math inline">\(B\)</span> random samples of size <span class="math inline">\(n\)</span> and compute the recentered <span class="math inline">\(t\)</span>-stat with respect to <span class="math inline">\(\hat{\tau}\)</span> in the main sample, <span class="math display">\[T^b = \frac{\hat{\tau}^b - \hat{\tau}}{\sqrt{\hat{V}(\tau^b)}}.\]</span></li>
 <li>The <span class="math inline">\(p\)</span>-value is the share of (absolute value) bootstrap <span class="math inline">\(t\)</span>-stats larger than the absolute value of the <span class="math inline">\(t\)</span>-stat in the main sample <span class="math display">\[p{\text{-value}} = 1 - \frac{1}{B} \sum_b \mathbf{1}(|T^b|\leq |T|) = \frac{1}{B} \sum_b \mathbf{1}(|T^b|&gt; |T|),\]</span></li>
 </ol>
 <p>where <span class="math inline">\(T\)</span> is the <span class="math inline">\(t\)</span>-stat from the main sample.</p>
@@ -559,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -609,13 +616,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -960,15 +968,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -985,26 +994,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

@@ -24,7 +24,7 @@ Formally, a parametric model describes the data-generating process entirely usin
 
 $$Y = X\beta + \epsilon,$$
 
-the parameter \beta specifies the entire relationship between $X$ and $Y$. This imposes a strong assumption: the relationship is linear, meaning a unit change in $X$ consistently results in a $\beta$ change in $Y$, regardless of $X$‘s magnitude (small or large). While convenient, this assumption may not hold in all practical scenarios, as real-world relationships often are complex and deviate from linearity.
+the parameter $\beta$ specifies the entire relationship between $X$ and $Y$. This imposes a strong assumption: the relationship is linear, meaning a unit change in $X$ consistently results in a $\beta$ change in $Y$, regardless of $X$‘s magnitude (small or large). While convenient, this assumption may not hold in all practical scenarios, as real-world relationships often are complex and deviate from linearity.
 
 ### Semiparametric Models
 
@@ -48,7 +48,7 @@ Let’s get back to the density estimation example. Histograms are a form of non
 
   $$\hat{f}(x)=\frac{1}{nh}\sum_i K \left( \frac{x-X_i}{h} \right),$$
 
-where $K(\cdot)$ is a kernel function, and $h$ is a bandwidth parameter controlling the smoothness of the estimate. А kernel function assigns varying weight to observations around a data point. They are non-negative, symmetric around zero, and sum to one. Commonly employed kernel functions include:
+where $K(\cdot)$ is a kernel function, and $h$ is a bandwidth parameter controlling the smoothness of the estimate. A kernel function assigns varying weight to observations around a data point. They are non-negative, symmetric around zero, and sum to one. Commonly employed kernel functions include:
 
 - Gaussian $K(\cdot)=\frac{1}{\sqrt{2 \pi}}e^{-0.5x^2}$,
 - Epanechnikov $K(\cdot)=\frac{3}{4}(1-x^2)$,
@@ -60,13 +60,13 @@ Nonparametric regression provides another illustration. In it, the relationship 
 
 $$Y=m(X)+\epsilon,$$
 
-where $m(X)$ is an unknown function estimated directly from the data using methods like local polynomial regression, splines. Unlike the linearity assumption in parametric models, nonparametric regression allows $m(X)$ to capture complex, nonlinear relationships. A commonly used variant of this is [LOESS regression](https://en.wikipedia.org/wiki/Local_regression) often overlayed in bivariate scatterplots.
+where $m(X)$ is an unknown function estimated directly from the data using methods like local polynomial regression or splines. Unlike the linearity assumption in parametric models, nonparametric regression allows $m(X)$ to capture complex, nonlinear relationships. A commonly used variant of this is [LOESS regression](https://en.wikipedia.org/wiki/Local_regression) often overlayed in bivariate scatterplots.
 
 Many popular machine learning (ML) methods are also nonparametric. In this context it is important to distinguish between parameters which impose assumptions on the data and hyperparameters which serve to tune the algorithm. Tree-based techniques exemplify the nonparametric nature of ML: gradient boosting machines, random forests, and individual decision trees can all grow more complex as they encounter more data, creating flexible models that capture intricate patterns. Think even of unsupervised clustering models including $k$-means and hierarchical clustering.
 
 While nonparametric models are powerful, their flexibility comes at a cost: they can overfit small datasets and often require careful tuning (e.g., choosing the kernel bandwidth) to balance bias and variance. Nonetheless, they are invaluable for exploratory analysis and applications where minimal assumptions are desired.
 
-Did I also mention the curse of dimensionality?! You will quickly fall into its trap with even moderate number of variables. Yes, there is just so much you can do without adding some structure to your models.
+Did I also mention the curse of dimensionality?! You will quickly fall into its trap with even a moderate number of variables. Yes, there is just so much you can do without adding some structure to your models.
 
 ## An Example
 
@@ -74,7 +74,7 @@ We illustrate the distinctions between parametric, semiparametric, and nonparame
 
 $$Y=sin(X)+\epsilon,$$
 
-where $X$ is uniformly distributed and \epsilon is normally distributed noise. We then model the relationship between $Y$ and $X$ using three approaches. 
+where $X$ is uniformly distributed and $\epsilon$ is normally distributed noise. We then model the relationship between $Y$ and $X$ using three approaches. 
 
 :::: {.panel-tabset}
 
@@ -196,12 +196,12 @@ A parametric model, such as linear regression (although it could also be quadrat
 
 ![](../files/three_model_classes.png)
 
-You should not be surprised. This example demonstrates how the choice of model class significantly impacts the flexibility and interpretability of the fitted relationship. Do not take this example too seriously, it merely serves to illustrate the varying degree of complexity of statistical models.
+You should not be surprised. This example demonstrates how the choice of model class significantly impacts the flexibility and interpretability of the fitted relationship. Do not take this example too seriously; it merely serves to illustrate the varying degree of complexity of statistical models.
 
 ## Bottom Line
 
-- Parametric models impose the strongest assumptions and require the least amount of data. These are most models employed in practice. Think of linear regression.
+- Parametric models impose the strongest assumptions and require the least amount of data. These are the models most often employed in practice. Think of linear regression.
 
-- Semiparametric models strike balance between flexibility and interpretation while allowing for flexible relationships in the data. Think of (non-Augmented) Inverse Propensity Score Weighting.
+- Semiparametric models strike a balance between flexibility and interpretation while allowing for flexible relationships in the data. Think of (non-Augmented) Inverse Propensity Score Weighting.
 
-- Nonparametric models are flexible and data-hungry. They allow for flexible associations between your variables. Think of a histrogram or kernel density.
+- Nonparametric models are flexible and data-hungry. They allow for flexible associations between your variables. Think of a histogram or kernel density.

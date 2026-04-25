@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>An Overview of Machine Learning Methods in Causal Inference – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -37,13 +40,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -87,7 +91,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -100,7 +104,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -137,7 +141,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -170,7 +174,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -210,7 +214,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -238,7 +242,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -261,19 +265,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -428,13 +435,13 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>The most exciting trend in causal inference over the last decade has been the infusion of machine learning (ML) techniques. Supervised machine learning is designed to find complex patterns in data and as such, it is merely occupied with prediction. Causal inference, on the other hand, pays close attention to statistical precision and inference based on asymptotic properties like consistency and normality. The two worlds are, thus, fundamentally different.</p>
+<p>The most exciting trend in causal inference over the last decade has been the infusion of machine learning (ML) techniques. Supervised machine learning is designed to find complex patterns in data and as such, it is primarily concerned with prediction. Causal inference, on the other hand, pays close attention to statistical precision and inference based on asymptotic properties like consistency and normality. The two worlds are, thus, fundamentally different.</p>
 <p>It should be no surprise then that machine learning and causal inference do not naturally speak to each other, and some modifications are required to marry them. The good news is recent innovations have led to a bunch of ways in which ML models can be used in isolating causal effects especially in settings with many covariates (also called “high dimensional” settings).</p>
 <p>In this article, I will briefly describe the ways in which we can use ML when looking for causal relationships. I will indeed be concise, and I will avoid diving deeper into technical details. This blog post will look more like a laundry list with references to papers and software packages than a tutorial.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>It is helpful to quickly summarize some features of the potential outcome framework. Imagine we have a i.i.d. random sample of a binary treatment indicator <span class="math inline">\(D\)</span>, outcome variable <span class="math inline">\(Y\)</span> and a vector of covariates <span class="math inline">\(X\)</span>. Assume the potential outcomes <span class="math inline">\(Y(0)\)</span> and <span class="math inline">\(Y(1)\)</span> are unrelated to the binary treatment status <span class="math inline">\(D\)</span> which is often referred to as the unconfoundedness or ignorability.</p>
+<p>It is helpful to quickly summarize some features of the potential outcome framework. Imagine we have an i.i.d. random sample of a binary treatment indicator <span class="math inline">\(D\)</span>, outcome variable <span class="math inline">\(Y\)</span> and a vector of covariates <span class="math inline">\(X\)</span>. Assume the potential outcomes <span class="math inline">\(Y(0)\)</span> and <span class="math inline">\(Y(1)\)</span> are unrelated to the binary treatment status <span class="math inline">\(D\)</span>, an assumption often referred to as unconfoundedness or ignorability.</p>
 <p>A common estimand of interest is the Average Treatment Effect (ATE)</p>
 <p><span class="math display">\[ATE = E[Y(1) - Y(0)],\]</span></p>
 <p>where <span class="math inline">\(Y(d)\)</span> is the potential outcome under treatment regime <span class="math inline">\(D=d\)</span>. Another popular estimand is the Conditional ATE (CATE),</p>
@@ -468,7 +475,7 @@ window.Quarto = {
 <section id="ml-methods-for-the-outcome-model" class="level3">
 <h3 class="anchored" data-anchor-id="ml-methods-for-the-outcome-model">ML Methods for the Outcome Model</h3>
 <p>We can also estimate treatment effects directly by modelling the outcome variable. This also requires correct model specification, and even then, it is prone to extrapolation in finite samples. Examples include <a href="https://www.tandfonline.com/doi/abs/10.1198/jcgs.2010.08162">Bayesian Additive</a> <a href="https://projecteuclid.org/journals/bayesian-analysis/volume-15/issue-3/Bayesian-Regression-Tree-Models-for-Causal-Inference--Regularization-Confounding/10.1214/19-BA1195.full">Regression Trees</a> (BART) and other <a href="https://www.tandfonline.com/doi/full/10.1080/00273171.2012.640600">ensemble methods</a>.</p>
-<p><a href="https://academic.oup.com/restud/article-abstract/81/2/608/1523757">Belloni et al.&nbsp;(2014)</a> show that the set of features optimal when estimating the outcome model, is not necessarily optimal for estimating treatment effects. The issue is omitting a variable that is correlated with the treatment even if its correlation with the outcome is only modest, can introduce considerable bias. Moreover, typically, the rate of convergence in this context when using ML models will be slower than <span class="math inline">\(\sqrt{n}\)</span>, meaning that you will need much more data to get a good treatment effect estimate.</p>
+<p><a href="https://academic.oup.com/restud/article-abstract/81/2/608/1523757">Belloni et al.&nbsp;(2014)</a> show that the set of features optimal when estimating the outcome model is not necessarily optimal for estimating treatment effects. The issue is that omitting a variable that is correlated with the treatment, even if its correlation with the outcome is only modest, can introduce considerable bias. Moreover, typically, the rate of convergence in this context when using ML models will be slower than <span class="math inline">\(\sqrt{n}\)</span>, meaning that you will need much more data to get a good treatment effect estimate.</p>
 <p>Overall, there is no statistical theory of why ML methods should work well here, but some methods tend to perform well empirically. This brings us to the doubly robust approach.</p>
 <p><em>Software Packages</em>: <a href="https://rdrr.io/cran/BART/">BART</a>, <a href="https://www.rdocumentation.org/packages/rbart">rBART</a>, <a href="https://www.rdocumentation.org/packages/BayesTree">BayesTree</a>.</p>
 </section>
@@ -477,7 +484,7 @@ window.Quarto = {
 <p>Methods combining models for both the propensity score and the outcome have long been advocated. Intuitively, the propensity score can be seen as a balancing step after which regression adjustment can remove any remaining bias. <a href="https://jhr.uwpress.org/content/50/2/373.short">Imbens (2015)</a>, for instance, promotes this type of thinking in matching methods specifically.</p>
 <p><a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.1994.10476818">Doubly robust (DR)</a> estimators use both nuisance models and have the amazing property of being consistent even if only one of the two models is correctly specified. You can think of the bias term as a product of the biases in the two nuisance models – if one of them is equal to zero, the entire term vanishes. Additionally, if both models are correctly specified, some methods are semiparametrically efficient, (i.e., “the best” in a large class of flexible models). A simple DR method is the Augmented Inverse Probability Weighting (AIPW) estimator which in linear models comes down to running weighted OLS regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(D\)</span> and <span class="math inline">\(X\)</span> with the estimated (inverse) propensity score as weights.</p>
 <p>There is more good news. Amazingly, DR methods can still converge at a rate <span class="math inline">\(\sqrt{N}\)</span> even if the underlying nuisance models converge at slower rates. The formal requirement is that the nuisance models must belong to something called a Donsker class. In simple words, they should not be too complex and prone to overfit.</p>
-<p>One line of research has developed the <a href="https://academic.oup.com/ectj/article/21/1/C1/5056401">Double ML</a> framework. This work has been so influential that it deserves a blog post of its own. Without going into technical details, the authors of the original paper show that naïve application of ML methods when estimating both nuisance functions results in two types of biases – regularization and overfitting. DoubleML makes use of something called Neyman orthogonalization (think of the <a href="https://en.wikipedia.org/wiki/Frisch%E2%80%93Waugh%E2%80%93Lovell_theorem">Frisch–Waugh–Lovell theorem</a>) to remove the former, and sample splitting to avoid the latter. In simple settings, this method combines the residuals from regressions of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> on <span class="math inline">\(D\)</span>, but in general it can take more complicated forms.</p>
+<p>One line of research has developed the <a href="https://academic.oup.com/ectj/article/21/1/C1/5056401">Double ML</a> framework. This work has been so influential that it deserves a blog post of its own. Without going into technical details, the authors of the original paper show that naïve application of ML methods when estimating both nuisance functions results in two types of biases – regularization and overfitting. DoubleML makes use of something called Neyman orthogonalization (think of the <a href="https://en.wikipedia.org/wiki/Frisch%E2%80%93Waugh%E2%80%93Lovell_theorem">Frisch–Waugh–Lovell theorem</a>) to remove the former, and sample splitting to avoid the latter. In simple settings, this method combines the residuals from regressions of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> and <span class="math inline">\(D\)</span> on <span class="math inline">\(X\)</span>, but in general it can take more complicated forms.</p>
 <p>Another line of research has developed the <a href="https://academic.oup.com/restud/article-abstract/81/2/608/1523757">Double Post Lasso</a> approach. The idea here is simpler – use Lasso to select covariates relevant to the outcome regression and then again to select ones relevant to the propensity score. Lastly, use OLS to regress <span class="math inline">\(Y\)</span> on the union of the covariates selected previously. This procedure removes confounding or regularization bias that might be present in methods using ML models to estimate only one of the nuisance models.</p>
 <p><em>Software Packages</em>: <a href="https://docs.doubleml.org/stable/index.html">DoubleML</a>, <a href="https://www.rdocumentation.org/packages/hdm">hdm</a>, <a href="https://github.com/ChihYuChiang/dlsr">dlsr</a>.</p>
 </section>
@@ -485,7 +492,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="heterogeneous-treatment-effect-estimation">Heterogeneous Treatment Effect Estimation</h3>
 <p>Mining for heterogeneous treatment effects has been a particularly fruitful field for ML methods. A leading example is the causal tree method developed by <a href="https://www.pnas.org/doi/abs/10.1073/pnas.1510489113">Athey and Imbens (2016)</a>. It resembles the traditional CART algorithm, but it uses a different criterion for splitting the data: instead of focusing on Mean Squared Error (MSE) for the outcome, it uses MSE for treatment effect. The result is a decision tree, in which units in each leaf have similar treatment effects. The method also features “honest” sample splitting for obtaining variance estimates – one half of the data is used to determine the optimal tree, and the other half to estimate the treatment effects.</p>
 <p>Building on this idea, <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.2017.1319839">Wager and Athey (2018)</a> propose a random forest-based method which generates a bunch of causal trees and averages the results to induce smoothness in the treatment effect’s function. Magically, the authors show the predictions are asymptotically normal and centered around the true value for each unit! This is exciting as it allows for standard methods for statistical inference.</p>
-<p>Other methods include BART, a Bayesian version of random forests mentioned above, <a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-7/issue-1/Estimating-treatment-effect-heterogeneity-in-randomized-program-evaluation/10.1214/12-AOAS593.full">Imai and Ratkovic (2013)</a> who propose adding treatment indicators interacted with covariates in a LASSO regression to determine which variables are important for treatment effect heterogeneity. Similarly, <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.951443">Tian et al.&nbsp;(2014)</a> suggest modifying the covariates in a straightforward way and running a regression of the outcome on the modified variables without an intercept. Other methods include the <span class="math inline">\(R\)</span>-learner of <a href="https://academic.oup.com/biomet/article-abstract/108/2/299/5911092">Nie and Wager (2021)</a> which relies on estimating the two nuisance models described above and using a special loss function. <a href="https://www.pnas.org/doi/abs/10.1073/pnas.1804597116">Künzel et al.&nbsp;(2019)</a> propose a <span class="math inline">\(X\)</span>-learner metaalogrithm.</p>
+<p>Other methods include BART, a Bayesian version of random forests mentioned above. <a href="https://projecteuclid.org/journals/annals-of-applied-statistics/volume-7/issue-1/Estimating-treatment-effect-heterogeneity-in-randomized-program-evaluation/10.1214/12-AOAS593.full">Imai and Ratkovic (2013)</a> propose adding treatment indicators interacted with covariates in a LASSO regression to determine which variables are important for treatment effect heterogeneity. Similarly, <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.951443">Tian et al.&nbsp;(2014)</a> suggest modifying the covariates in a straightforward way and running a regression of the outcome on the modified variables without an intercept. Other methods include the <span class="math inline">\(R\)</span>-learner of <a href="https://academic.oup.com/biomet/article-abstract/108/2/299/5911092">Nie and Wager (2021)</a> which relies on estimating the two nuisance models described above and using a special loss function. <a href="https://www.pnas.org/doi/abs/10.1073/pnas.1804597116">Künzel et al.&nbsp;(2019)</a> propose an <span class="math inline">\(X\)</span>-learner meta-algorithm.</p>
 <p><em>Software Packages</em>: <a href="https://github.com/kosukeimai/FindIt">FindIt</a>, <a href="https://github.com/xnie/rlearner">rlearner</a>, <a href="https://grf-labs.github.io/grf/">grf</a>, <a href="https://github.com/soerenkuenzel/causalToolbox">causalToolbox</a>.</p>
 </section>
 <section id="others" class="level3">
@@ -588,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -638,13 +645,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -989,15 +997,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -1014,26 +1023,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

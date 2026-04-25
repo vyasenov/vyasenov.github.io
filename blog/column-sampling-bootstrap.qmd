@@ -17,7 +17,7 @@ One creative approach is *resampling columns instead of rows*, generating a dist
 Here’s the basic algorithm:
 
 ::: {.callout-note title="Algorithm:"}
-1. Randomly sample columns from your dataset with replacement to create fake dataset.
+1. Randomly sample columns from your dataset with replacement to create a fake dataset.
 2. Compute their correlation coefficient.
 3. Repeat this many times.
 4. Compare your observed correlation to the distribution of these synthetic correlations.
@@ -106,7 +106,7 @@ print("P-value:", p_value)
 
 ::::
 
-The observed correlation is quite low and equal to $0.58$. Its associated p-value is $0.676$, consistent with the value not being statistically significant.
+The observed correlation is quite low and equal to $0.058$. Its associated $p$-value is $0.676$, consistent with the value not being statistically significant.
 
 
 ## Bottom Line
@@ -115,4 +115,4 @@ The observed correlation is quite low and equal to $0.58$. Its associated p-valu
 
 - While it offers computational efficiency and flexibility, its reliance on the i.i.d. assumption and potential to overlook row-level dependencies highlight the need for careful application.
 
-- The column-sampling bootrap should not be your go-to method to assess statistical significance.
+- The column-sampling bootstrap should not be your go-to method to assess statistical significance.

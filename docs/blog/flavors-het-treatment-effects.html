@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.24">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>The Alphabet of Learners for Heterogeneous Treatment Effects – Vasco Yasenov</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -37,13 +40,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-1e438c382a17f6d88d3993662a872df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-a37c72dd2dbac68997fcdc15a3622e78.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a9957ab5e8b7c67643b7e2e6b5c1e54e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-05ad5c04182ae40a1da91fd291b82df0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-158031087360bce0ff56dc785ce39e06.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -87,7 +91,7 @@ gtag('config', 'G-RE2GPQMVXH', { 'anonymize_ip': true});
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -100,7 +104,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -137,7 +141,7 @@ window.Quarto = {
         toggleBodyColorMode(bsSheetEl);
       }
     }
-    window.setColorSchemeToggle = (alternate) => {
+    const setColorSchemeToggle = (alternate) => {
       const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
@@ -170,7 +174,7 @@ window.Quarto = {
       }
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
-      window.setColorSchemeToggle(alternate)
+      setColorSchemeToggle(alternate)
       // Hack to workaround the fact that safari doesn't
       // properly recolor the scrollbar when toggling (#1455)
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
@@ -210,7 +214,7 @@ window.Quarto = {
     const isFileUrl = () => {
       return window.location.protocol === 'file:';
     }
-    window.hasAlternateSentinel = () => {
+    const hasAlternateSentinel = () => {
       let styleSentinel = getColorSchemeSentinel();
       if (styleSentinel !== null) {
         return styleSentinel === "alternate";
@@ -238,7 +242,7 @@ window.Quarto = {
       const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
       const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
       let newTheme = '';
-      if(darkModeDefault) {
+      if(authorPrefersDark) {
         newTheme = isAlternate ? baseTheme : alternateTheme;
       } else {
         newTheme = isAlternate ? alternateTheme : baseTheme;
@@ -261,19 +265,22 @@ window.Quarto = {
         changeGiscusTheme();
       }
     };
-    const darkModeDefault = false;
-    document.querySelector('link.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
     let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
     // Dark / light mode switch
     window.quartoToggleColorScheme = () => {
       // Read the current dark / light value
-      let toAlternate = !window.hasAlternateSentinel();
+      let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
     };
     // Switch to dark mode if need be
-    if (window.hasAlternateSentinel()) {
+    if (hasAlternateSentinel()) {
       toggleColorMode(true);
     } else {
       toggleColorMode(false);
@@ -429,16 +436,16 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>Numerous tales illustrate the inadequacy of the average to capture meaningful quantities. Statisticians love these. In my favorite one the protagonist places her head in a burning oven and her feet in an ice bucket before declaring she is fine on average. Looking beyond the average is often quite important.</p>
 <p>This is especially salient in policy evaluation where we design interventions, programs or product features aimed at improving the outcomes for specific groups of students, voters, users, etc. Heterogeneous treatment effects in these cases might be even more important than the overall average one.</p>
-<p>The Machine Learning (ML) toolbox offers among the most powerful methods to detect such heterogeneity in formalized, data-driven ways. Today I will describe four model-agnostic methods – the so-called <span class="math inline">\(S\)</span>-, <span class="math inline">\(T\)</span>-, <span class="math inline">\(X\)</span>- and <span class="math inline">\(R\)</span>-learners (i.e., estimators). By model-free I mean that these methods work with any predictive models such as <a href="https://yasenov.com/2023/06/using-lasso-to-estimate-heterogeneous-treatment-effects/">the lasso</a>, gradient boosting, or even neural networks. In some clever sense, <span class="math inline">\(S-T-X-R\)</span> is the <span class="math inline">\(A-B-C\)</span> of heterogeneous treatment effect estimation.</p>
+<p>The Machine Learning (ML) toolbox offers among the most powerful methods to detect such heterogeneity in formalized, data-driven ways. Today I will describe four model-agnostic methods – the so-called <span class="math inline">\(S\)</span>-, <span class="math inline">\(T\)</span>-, <span class="math inline">\(X\)</span>- and <span class="math inline">\(R\)</span>-learners (i.e., estimators). By model-agnostic I mean that these methods work with any predictive models such as <a href="https://yasenov.com/2023/06/using-lasso-to-estimate-heterogeneous-treatment-effects/">the lasso</a>, gradient boosting, or even neural networks. In some clever sense, <span class="math inline">\(S-T-X-R\)</span> is the <span class="math inline">\(A-B-C\)</span> of heterogeneous treatment effect estimation.</p>
 <p>My goal is to give a high-level overview, without getting lost in technical details. Enthusiastic data scientists can jump to the Where to Learn More section below to dive deep into the theory when needed. The <a href="https://causalml.readthedocs.io/en/latest/index.html">CausalML</a> Python package implements many of these methods, so I encourage everyone who has never used it to go ahead and try them.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>As usual, let’s begin by setting some mathematical notation. I use D to denote a binary treatment indicator, <span class="math inline">\(Y\)</span> is the observed outcome and <span class="math inline">\(X\)</span> is a covariate of interest. The potential outcomes under each treatment state are <span class="math inline">\(Y(0)\)</span> and <span class="math inline">\(Y(1)\)</span>, and <span class="math inline">\(p\)</span> is the (conditional) probability of assignment into the treatment (i.e., the propensity score).</p>
+<p>As usual, let’s begin by setting some mathematical notation. I use <span class="math inline">\(D\)</span> to denote a binary treatment indicator, <span class="math inline">\(Y\)</span> is the observed outcome and <span class="math inline">\(X\)</span> is a covariate of interest. The potential outcomes under each treatment state are <span class="math inline">\(Y(0)\)</span> and <span class="math inline">\(Y(1)\)</span>, and <span class="math inline">\(p\)</span> is the (conditional) probability of assignment into the treatment (i.e., the propensity score).</p>
 <p>The average treatment effect is then the mean difference in potential outcomes across all units:</p>
-<p><span class="math display">\[ATE = E[Y(1)-E(0)].\]</span></p>
+<p><span class="math display">\[ATE = E[Y(1)-Y(0)].\]</span></p>
 <p>Interest is, instead, in the ATE for units with values <span class="math inline">\(X=x\)</span> which I refer to as the heterogeneous treatment effect, <span class="math inline">\(HTE(X)\)</span>:</p>
-<p><span class="math display">\[HTE(X) = E[Y(1)-E(0)|X].\]</span></p>
+<p><span class="math display">\[HTE(X) = E[Y(1)-Y(0)|X].\]</span></p>
 <p>It is also helpful to define the conditional outcome functions under each treatment state:</p>
 <p><span class="math display">\[\mu(X,d) = E[Y(d)|X].\]</span></p>
 <p>It then follows that <span class="math inline">\(HTE(X)\)</span> can also be expressed as:</p>
@@ -456,7 +463,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -466,7 +473,7 @@ Algorithm:
 </ol>
 </div>
 </div>
-<p>This is intuitive and fine. But the problem is that the treatment variable D might be excluded in step 1 when it is not highly correlated with the outcome. (Note that in observational data this does not necessarily imply a null treatment effect.) In this case, we cannot even move to step 2.</p>
+<p>This is intuitive and fine. But the problem is that the treatment variable <span class="math inline">\(D\)</span> might be excluded in step 1 when it is not highly correlated with the outcome. (Note that in observational data this does not necessarily imply a null treatment effect.) In this case, we cannot even move to step 2.</p>
 </section>
 <section id="two-learner" class="level3">
 <h3 class="anchored" data-anchor-id="two-learner"><span class="math inline">\(T\)</span>(wo) Learner</h3>
@@ -477,17 +484,17 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Use the observations in the control group to estimate <span class="math inline">\(\hat{\mu}(X,0)\)</span> and the ones in the treatment effect for <span class="math inline">\(\hat{\mu}(X,1)\)</span>.</li>
+<li>Use the observations in the control group to estimate <span class="math inline">\(\hat{\mu}(X,0)\)</span> and the ones in the treatment group for <span class="math inline">\(\hat{\mu}(X,1)\)</span>.</li>
 <li>Then <span class="math inline">\(\hat{HTE}(X)=\hat{\mu}(X,1)- \hat{\mu}(X,0)\)</span></li>
 </ol>
 </div>
 </div>
-<p>This is better, but still not great. A potential problem is when there are different number of observations in the treatment and control groups. For instance, in the common case where the treatment group is much smaller, their <span class="math inline">\(HTE(X)\)</span> will be estimated much less precisely than the that of the control group. When combining the two to arrive at a final estimate of <span class="math inline">\(HTE(X)\)</span> the former should get a smaller weight than the latter. This is because the ML algorithms optimize for learning the <span class="math inline">\(\mu(\cdot)\)</span> functions, and not the <span class="math inline">\(HTE(X)\)</span> function directly.</p>
+<p>This is better, but still not great. A potential problem is when there are a different number of observations in the treatment and control groups. For instance, in the common case where the treatment group is much smaller, their <span class="math inline">\(HTE(X)\)</span> will be estimated much less precisely than that of the control group. When combining the two to arrive at a final estimate of <span class="math inline">\(HTE(X)\)</span> the former should get a smaller weight than the latter. This is because the ML algorithms optimize for learning the <span class="math inline">\(\mu(\cdot)\)</span> functions, and not the <span class="math inline">\(HTE(X)\)</span> function directly.</p>
 </section>
 <section id="x-learner" class="level3">
 <h3 class="anchored" data-anchor-id="x-learner"><span class="math inline">\(X\)</span> Learner</h3>
@@ -498,18 +505,18 @@ Algorithm:
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Algorithm:
+<span class="screen-reader-only">Note</span>Algorithm:
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Use the observations in the control group to estimate <span class="math inline">\(\hat{\mu}(X,0)\)</span> and the ones in the treatment effect for <span class="math inline">\(\hat{\mu}(X,1)\)</span>.</li>
+<li>Use the observations in the control group to estimate <span class="math inline">\(\hat{\mu}(X,0)\)</span> and the ones in the treatment group for <span class="math inline">\(\hat{\mu}(X,1)\)</span>.</li>
 <li>Estimate the unit-level treatment effect for the observations in the control group, <span class="math inline">\(\hat{\mu}(X,1)-Y\)</span>, and for the treatment group, <span class="math inline">\(Y-\hat{\mu}(X,0)\)</span>.</li>
 <li>Combine both estimates by weighing them using the predicted propensity score, <span class="math inline">\(\hat{p}\)</span>: <span class="math display">\[HTE(X)=\hat{p} \times HTE(X|D=1) + (1-\hat{p})\times HTE(X|D=0).\]</span></li>
 </ol>
 </div>
 </div>
-<p>Here <span class="math inline">\(\hat{p}\)</span> balances the uncertainty associated with the <span class="math inline">\(HTE(X)\)</span>’s in each group and hence, this approach is particularly effective when there is a significant difference in the number of units between the two groups.</p>
+<p>Here <span class="math inline">\(\hat{p}\)</span> balances the uncertainty associated with the <span class="math inline">\(HTE(X)\)</span>‘s in each group and hence, this approach is particularly effective when there is a significant difference in the number of units between the two groups.</p>
 </section>
 <section id="robinson-learner" class="level3">
 <h3 class="anchored" data-anchor-id="robinson-learner"><span class="math inline">\(R\)</span>(obinson) Learner</h3>
@@ -526,13 +533,13 @@ Algorithm:
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>I have previously written on how ML can be useful in causal inference, more generally and how we can use the Lasso to estimate heterogeneous treatment effects. <a href="https://www.sciencedirect.com/science/article/pii/S0049089X22001211">Hu (2022)</a> offers a detailed summary of a bunch of ML methods for HTE estimation. A Statistical Odds and Ends <a href="https://statisticaloddsandends.wordpress.com/2022/05/20/t-learners-s-learners-and-x-learners/">blog post</a> describes the <span class="math inline">\(S\)</span>-, <span class="math inline">\(T\)</span>- and <span class="math inline">\(X\)</span>-learners and contains useful advice on when each of them is preferable. Chapter 21 of <a href="https://matheusfacure.github.io/python-causality-handbook/21-Meta-Learners.html">Causal Inference for the Brave and True</a> also discusses this material and provides useful examples.</p>
+<p>I have previously written on how ML can be useful in causal inference more generally, and how we can use the Lasso to estimate heterogeneous treatment effects. <a href="https://www.sciencedirect.com/science/article/pii/S0049089X22001211">Hu (2022)</a> offers a detailed summary of a bunch of ML methods for HTE estimation. A Statistical Odds and Ends <a href="https://statisticaloddsandends.wordpress.com/2022/05/20/t-learners-s-learners-and-x-learners/">blog post</a> describes the <span class="math inline">\(S\)</span>-, <span class="math inline">\(T\)</span>- and <span class="math inline">\(X\)</span>-learners and contains useful advice on when each of them is preferable. Chapter 21 of <a href="https://matheusfacure.github.io/python-causality-handbook/21-Meta-Learners.html">Causal Inference for the Brave and True</a> also discusses this material and provides useful examples.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <p>Hu, A. (2022). Heterogeneous treatment effects analysis for social scientists: A review. Social Science Research, 102810.</p>
-<p>Künzel, S. R., Sekhon, J. S., Bickel, P. J., &amp; Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the national academy of sciences, 116(10), 4156-4165. Nie,</p>
-<p>Xie, N., &amp; Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319.</p>
+<p>Künzel, S. R., Sekhon, J. S., Bickel, P. J., &amp; Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the national academy of sciences, 116(10), 4156-4165.</p>
+<p>Nie, X., &amp; Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319.</p>
 
 
 </section>
@@ -565,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function() {
       a.appendChild(i);
       window.document.body.appendChild(a);
     }
-    window.setColorSchemeToggle(window.hasAlternateSentinel())
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -615,13 +622,14 @@ document.addEventListener('DOMContentLoaded', function() {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -966,15 +974,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <script>
-function loadGiscusWhenReady() {
-  // Function to get the theme based on body class
-  const getTheme = () => {
-    const baseTheme = document.getElementById('giscus-base-theme').value;
-    const altTheme = document.getElementById('giscus-alt-theme').value;
-    return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
-  };
-  // Create the Giscus script and add it to the desired location
-  const loadGiscus = () => {
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      if (authorPrefersDark) {
+          [baseTheme, altTheme] = [altTheme, baseTheme];
+      }
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
     const script = document.createElement("script");
     script.src = "https://giscus.app/client.js";
     script.async = true;
@@ -991,26 +1000,8 @@ function loadGiscusWhenReady() {
     script.crossOrigin = "anonymous";
     // Append the script to the desired div instead of at the end of the body
     document.getElementById("quarto-content").appendChild(script);
-  };
-  // MutationObserver to detect when the 'quarto-light' or 'quarto-dark' class is added to the body
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "attributes" && mutation.attributeName === "class") {
-        if (document.body.classList.contains('quarto-light') || document.body.classList.contains('quarto-dark')) {
-          loadGiscus();
-          observer.disconnect(); // Stop observing once Giscus is loaded
-          break;
-        }
-      }
-    }
-  });
-  // Start observing the body for class attribute changes
-  observer.observe(document.body, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-}
-loadGiscusWhenReady();
+  }
+  loadGiscus();
 </script>
 </div> <!-- /content -->
 <footer class="footer">

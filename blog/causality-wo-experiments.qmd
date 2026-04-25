@@ -20,13 +20,13 @@ Let’s begin by establishing some basic notation. We aim to analyze the impact 
 
   $$ Y = \beta X_1 + \gamma X_2 + \epsilon, $$
 
-where \epsilon is a mean-zero error term. Our goal is to obtain a consistent estimate of $\beta$. For simplicity, we’re using the same notation for both single- and vector-valued quantities, as $X_2$ can be in $\mathbb{R}^p$ with $ p>1$.
+where $\epsilon$ is a mean-zero error term. Our goal is to obtain a consistent estimate of $\beta$. For simplicity, we’re using the same notation for both single- and vector-valued quantities, as $X_2$ can be in $\mathbb{R}^p$ with $p>1$.
 
 The challenge arises because $X_1$ and $\epsilon$ are correlated, rendering the standard OLS estimator inconsistent. Even in large samples, $\hat{\beta}_{OLS}$ will be biased, and getting more data would not help. Specifically:
 
   $$\hat{\beta}_{OLS} := (X'X)^{-1}X'Y \nrightarrow \beta. $$
 
-Standard instrument-based methods rely on the existence of an instrumental variable $Z$ which, conditional on $X_2$, correlates with $X_1$ but not with \epsilon. Estimation then proceeds with 2SLS, LIML, or GMM, potentially yielding good estimates of $\beta$ given appropriate assumptions. Common issues with instrumental variables include implausibility of the exclusion restriction, weak correlation with $X_1$, and challenges in interpreting $\hat{\beta}_{IV}$. Formally:
+Standard instrument-based methods rely on the existence of an instrumental variable $Z$ which, conditional on $X_2$, correlates with $X_1$ but not with $\epsilon$. Estimation then proceeds with 2SLS, LIML, or GMM, potentially yielding good estimates of $\beta$ given appropriate assumptions. Common issues with instrumental variables include implausibility of the exclusion restriction, weak correlation with $X_1$, and challenges in interpreting $\hat{\beta}_{IV}$. Formally:
 
   $$\hat{\beta}_{IV} := (Z'X)^{-1}Z'Y \rightarrow \beta. $$
 
@@ -38,12 +38,12 @@ Let’s start with the heteroskedasticity-based approach of [Lewbel (2012)](http
 
 ### Heteroskedasticity & Higher Moments
 
-The main idea here is to construct valid instruments for $X_1$ by using information contained in the heteroskedasticity of $\epsilon$. Intuitively, if $\epsilon$ exhibits heteroskedasticity related to $ X_2$, we can use to create instruments—specifically by interacting $X_2$ with the residuals of the endogenous regressor’s reduced form equation. So, this is an IV-based method, but the instrument is “internal” to the model and does not rely on any external information.
+The main idea here is to construct valid instruments for $X_1$ by using information contained in the heteroskedasticity of $\epsilon$. Intuitively, if $\epsilon$ exhibits heteroskedasticity related to $X_2$, we can use it to create instruments—specifically by interacting $X_2$ with the residuals of the endogenous regressor’s reduced form equation. So, this is an IV-based method, but the instrument is “internal” to the model and does not rely on any external information.
 
 The key assumptions are:
 
 - The error term in the structural equation ($\epsilon$) is heteroskedastic. This means $var(\epsilon|X_2)$ is not constant and depends on $X_2$. Moreover, we need $cov(X_2,\epsilon^2) \neq 0$. This is an analogue of the first stage assumption in IV methods.
-- The exogenous variable ($X_2$) are uncorrelated with the product of the endogeneous variable ($X_1$) and the error term ($\epsilon$). That is, $cov(X_2, X_1\epsilon) = 0$. This is a form of the standard exogeneity assumption in IV estimation.
+- The exogenous variables ($X_2$) are uncorrelated with the product of the endogenous variable ($X_1$) and the error term ($\epsilon$). That is, $cov(X_2, X_1\epsilon) = 0$. This is a form of the standard exogeneity assumption in IV estimation.
 
 The heteroskedasticity-based estimator of Lewbel (2012) proceeds in two steps:
 
@@ -81,7 +81,7 @@ and
 
   $$ (\epsilon, \nu) \sim \text{Gaussian}(\cdot). $$
 
-These set of assumptions lead to analytical solutions for the conditional and unconditional distributions of $(Y,X)$ and all parameters of the model are identified. Maximum likelihood estimation can then give us an estimate of $\beta_{LIV}$.
+This set of assumptions leads to analytical solutions for the conditional and unconditional distributions of $(Y,X)$ and all parameters of the model are identified. Maximum likelihood estimation can then give us an estimate of $\beta_{LIV}$.
 
 *Software Packages*: [REndo](https://www.rdocumentation.org/packages/REndo).
 
@@ -123,7 +123,7 @@ That’s it. You are now equipped with a set of new methods designed to identify
 
 ## Where to Learn More
 
-Ebbes, Wedel, and Bockenholt (2009), Park and Gupta (2012), Papies, Ebbes, and Heerde (2017), and Rutz and Watson (2019) provide detailed comparisons of these IV-free methods with alternative methods. Also, Qian et al. (2024) and Papadopolous (2022) and Baum and Lewbel (2019) have a practical angle that many data scientist will find accessible and attractive.
+Ebbes, Wedel, and Bockenholt (2009), Park and Gupta (2012), Papies, Ebbes, and Heerde (2017), and Rutz and Watson (2019) provide detailed comparisons of these IV-free methods with alternative methods. Also, Qian et al. (2024) and Papadopoulos (2022) and Baum and Lewbel (2019) have a practical angle that many data scientists will find accessible and attractive.
 
 ## References
 
@@ -150,8 +150,6 @@ Papadopoulos, A. (2022). Accounting for endogeneity in regression models using C
 Papies, D., Ebbes, P., & Van Heerde, H. J. (2017). Addressing endogeneity in marketing models. Advanced methods for modeling markets, 581-627.
 
 Park, S., & Gupta, S. (2012). Handling endogenous regressors by joint estimation using copulas. Marketing Science, 31(4), 567-586.
-
-Rigobon, R. (2003). Identification through heteroskedasticity. Review of Economics a  nd Statistics, 85(4), 777-792.
 
 Qian, Y., Koschmann, A., & Xie, H. (2024). A Practical Guide to Endogeneity Correction Using Copulas (No. w32231). National Bureau of Economic Research.
 

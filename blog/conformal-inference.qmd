@@ -16,7 +16,7 @@ As a teaser, the basic idea behind the method rests on a simple result about sam
 
 ## Notation 
 
-Let’s imagine a size n i.i.d. sample of an outcome variable $Y$ and a covariate vector $X$, $(X_1, Y_1) \dots (X_n, Y_n)$. Conformal inference is concerned with building a “confidence interval” for a new outcome observation $Y_{n+1}$ from a new feature realization $X_{n+1}$.
+Let’s imagine a size $n$ i.i.d. sample of an outcome variable $Y$ and a covariate vector $X$, $(X_1, Y_1) \dots (X_n, Y_n)$. Conformal inference is concerned with building a “confidence interval” for a new outcome observation $Y_{n+1}$ from a new feature realization $X_{n+1}$.
 
 Importantly, this interval should be valid:
 
@@ -24,7 +24,7 @@ Importantly, this interval should be valid:
 - without assumptions on the data generating process, and
 - for any estimator of the regression function, $\mu(x)=E[Y \mid X=x]$.
 
-In mathematical notation, given a significance level \alpha, we want to construct a confidence interval $CI(X_{n+1})$ satisfying the above properties and such that:
+In mathematical notation, given a significance level $\alpha$, we want to construct a confidence interval $CI(X_{n+1})$ satisfying the above properties and such that:
 
   $$P(Y_{n+1} \in CI(X_{n+1})) \geq 1-\alpha.$$
 
@@ -40,25 +40,25 @@ So, given a new observation $U_{n+1}$, we know that:
 
 ### The Naïve Approach
 
-Let’s turn back to the regression example with Y and X. We are given a new observation $X_{n+1}$ and our focus is on $Y_{n+1}$. Following the fact described above, a naïve way to construct a confidence interval for $Y_{n+1}$ is as follows:
+Let’s turn back to the regression example with $Y$ and $X$. We are given a new observation $X_{n+1}$ and our focus is on $Y_{n+1}$. Following the fact described above, a naïve way to construct a confidence interval for $Y_{n+1}$ is as follows:
 
   $$CI^{\text{naïve}}_{1-\alpha}(X_{n+1}) = \left[ \hat{\mu}(X_{n+1}) \pm \hat{q}^{\mid \hat{u} \mid}_{1-\alpha} \right].$$
 
-Here $\mu(\cdot)$ is an estimate of the regression function $E[Y \mid X]$, and $\hat{q}^{\mid \hat{u} \mid}_{1-\alpha}$ is the $(1-\alpha)$th quantile of empirical distribution function of the fitted residuals $\mid Y-\hat{\mu}(X) \mid$.
+Here $\hat{\mu}(\cdot)$ is an estimate of the regression function $E[Y \mid X]$, and $\hat{q}^{\mid \hat{u} \mid}_{1-\alpha}$ is the $(1-\alpha)$th quantile of the empirical distribution function of the fitted residuals $\mid Y-\hat{\mu}(X) \mid$.
 
 Put simply, we can look at an interval around our best prediction for $Y_{n+1}$ (i.e., $\hat{\mu}(X_{n+1})$) defined by the residuals estimated on the original data.
 
-It turns out this interval is too narrow. In a series of papers Vladimir Vovk and co-authors show that the empirical distribution function of the fitted residuals is often biased downward and hence this interval is invalid. This is where conformal inference comes in.
+It turns out this interval is too narrow. In a series of papers, Vladimir Vovk and co-authors show that the empirical distribution function of the fitted residuals is often biased downward and hence this interval is invalid. This is where conformal inference comes in.
 
 ### Conformal Inference
 
-Consider the following strategy. For each $y$ we fit a regression $\hat{\mu}_y $ on the sample $(Y_1, X_1),\dots (Y_n, X_n), (y, X_{n+1})$. We calculate the residuals $R^y_i$ for $i=1,\dots,n$ and $R^y_{n+1}$ and count the proportion of $R^y_i$’s smaller than $R^y_{n+1}$. Let’s call this number $\sigma(y)$. That is,
+Consider the following strategy. For each $y$ we fit a regression $\hat{\mu}_y$ on the sample $(Y_1, X_1),\dots (Y_n, X_n), (y, X_{n+1})$. We calculate the residuals $R^y_i$ for $i=1,\dots,n$ and $R^y_{n+1}$ and count the proportion of $R^y_i$’s smaller than $R^y_{n+1}$. Let’s call this number $\sigma(y)$. That is,
 
 $$\sigma(y) = \frac{1}{n+1}\sum_{i=1}^{n+1} I (R^y_i \leq R^y_{n+1}),$$
 
-where $I(\cdot)$ is the indicator function equal to one when the statement in the parenthesis is true and 0 if when it is not.
+where $I(\cdot)$ is the indicator function equal to one when the statement in the parenthesis is true and 0 when it is not.
 
-The test statistic $\sigma({Y_{n+1}})$ is uniformly distributed over the set $\{ \frac{1}{n+1}, \frac{2}{n+1},\dots, 1\}$, implying we can use $1-\sigma({Y_{n+1}})$ as a valid p-value for testing the null that $Y_{n+1}=y.$ Then, using the sample quantiles logic outlined above we arrive at the following confidence interval for $Y_{n+1}$:
+The test statistic $\sigma(Y_{n+1})$ is uniformly distributed over the set $\{ \frac{1}{n+1}, \frac{2}{n+1},\dots, 1\}$, implying we can use $1-\sigma(Y_{n+1})$ as a valid $p$-value for testing the null that $Y_{n+1}=y.$ Then, using the sample quantiles logic outlined above we arrive at the following confidence interval for $Y_{n+1}$:
 
   $$ CI^{\text{conformal}}_{1-\alpha}(X_{n+1}) \approx \{ y\in \mathbb{R} : \sigma(y)\leq 1-\alpha \}.$$
 
@@ -84,7 +84,7 @@ Split conformal inference is a modification of the original algorithm that requi
 
 ::: {.callout-note title="Algorithm:"}
 
-1. Randomly split the data in two equal-sized bins.
+1. Randomly split the data into two equal-sized bins.
 2. Get $\hat{\mu}$ on the first bin.
 3. Calculate the residuals for each observation in the second bin.
 4. Let $d$ be the $s$-th smallest residual, where $s=(\frac{n}{2}+1)(1-\alpha)$.
@@ -170,7 +170,7 @@ out.split$pred
 > [1,] 6.33556
 ```
 
-The actual age value in the test set was $6.2$ while the conformal inference approach computed a confidence interval ($5.88, 6.68$). The splitting algorithm gave similar results.
+The actual sepal length value in the test set was $6.2$ while the conformal inference approach computed a confidence interval ($5.89, 6.68$). The splitting algorithm gave similar results.
 
 ## Bottom Line
 

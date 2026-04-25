@@ -10,7 +10,7 @@ Much of data science is concerned with learning about the relationships between 
 
 In this article I will go over the basics of Chatterjee’s correlation measure. Before we get there, let’s first review some of the more traditional approaches in assessing bivariate relationship strength.
 
-For simplicity, let’s assume away ties. Let’s also set hypothesis testing aside. All test statistics I describe below have well-established asymptotic theory for hypothesis testing and calculating p-values. Thus, we can gauge not only the strength of the relationship between the variables but also the uncertainty associated with that measurement and whether or not it is statistically significant.
+For simplicity, let’s assume away ties. Let’s also set hypothesis testing aside. All test statistics I describe below have well-established asymptotic theory for hypothesis testing and calculating $p$-values. Thus, we can gauge not only the strength of the relationship between the variables but also the uncertainty associated with that measurement and whether or not it is statistically significant.
 
 ## A Closer Look
 
@@ -22,7 +22,7 @@ When we simply say “correlation” we refer to the so-called Pearson correlati
 
 where an upper bar denotes a sample mean.
 
-This coefficient lives in the $[-1,1]$ interval. Larger values indicate stronger relationship between $X$ and $Y$, be it positive or negative. At the extreme, the Pearson coefficient will equal $1$ when all observations can be perfectly lined up on a upward sloping line. Yes, you guessed it – when it equals $-1$ the line is sloping down.
+This coefficient lives in the $[-1,1]$ interval. Larger values indicate stronger relationship between $X$ and $Y$, be it positive or negative. At the extreme, the Pearson coefficient will equal $1$ when all observations can be perfectly lined up on an upward sloping line. Yes, you guessed it – when it equals $-1$ the line is sloping down.
 
 You can easily calculate the Pearson correlation in `R` and `python`:
 
@@ -32,7 +32,7 @@ You can easily calculate the Pearson correlation in `R` and `python`:
 
 ```r
 cor(x,y, method = 'pearson')
-cor.test(x,y, method = 'pearson', alternative='two.sided').
+cor.test(x,y, method = 'pearson', alternative='two.sided')
 ```
 
 ### Python
@@ -69,8 +69,8 @@ Calculating it is just as simple:
 ### R
 
 ```r
-cor(x,y, method = 'pearson')
-cor.test(x,y, method = 'spearman', alternative='two.sided').
+cor(x,y, method = 'spearman')
+cor.test(x,y, method = 'spearman', alternative='two.sided')
 ```
 
 ### Python
@@ -84,13 +84,13 @@ spearman_corr, spearman_pval = spearmanr(x, y)
 
 :::
 
-Spearman correlation is not the only rank correlation coefficient out there. А popular alternative is the Kendall rank coefficient which is computed slightly differently. Let’s define a pair of observations $(X_i, Y_i)$ and $(X_j, Y_j)$ to be agreeing (the technical term is concordant) if the differences $(X_i - X_j)$ and $(Y_i - Y_j)$ have the same sign (i.e., either both $X_i > X_j$ and $Y_i > Y_j $or both $X_i < X_j$ and $Y_i < Y_j$ ).
+Spearman correlation is not the only rank correlation coefficient out there. A popular alternative is the Kendall rank coefficient which is computed slightly differently. Let’s define a pair of observations $(X_i, Y_i)$ and $(X_j, Y_j)$ to be agreeing (the technical term is concordant) if the differences $(X_i - X_j)$ and $(Y_i - Y_j)$ have the same sign (i.e., either both $X_i > X_j$ and $Y_i > Y_j$, or both $X_i < X_j$ and $Y_i < Y_j$).
 
 Then, Kendall’s coefficient is expressed as:
 
 $$corr^{K} = \frac{\text{number of agreeing pairs} - \text{number of disagreeing pairs}} {\text{total number of pairs}}.$$
 
-So, it quantifies the degree of agreement between the ranks of $X$ and $Y$. Like the other coeffients described above, its range is $[-1, 1]$ and values away from zero indicate stronger relationship.
+So, it quantifies the degree of agreement between the ranks of $X$ and $Y$. Like the other coefficients described above, its range is $[-1, 1]$ and values away from zero indicate stronger relationship.
 
 Again, this coefficient is similarly computed in `R` and `python`:
 
@@ -100,7 +100,7 @@ Again, this coefficient is similarly computed in `R` and `python`:
 
 ```r
 cor(x,y, method = 'kendall')
-cor.test(x,y, method = 'spearman', alternative='two.sided').
+cor.test(x,y, method = 'kendall', alternative='two.sided')
 ```
 
 ### Python
@@ -114,7 +114,7 @@ kendall_corr, kendall_pval = kendalltau(x, y)
 
 :::
 
-Kendall’s measure improves on some of the shortcomings baked in the Spearman’s coefficients – it has a clearer interpretation and it is less sensitive to rank ties.
+Kendall’s measure improves on some of the shortcomings baked into Spearman’s coefficient – it has a clearer interpretation and it is less sensitive to rank ties.
 
 However, none of these rank correlation coefficients can detect non-monotonic relationships. For instance, $X$ and $Y$ can have a parabola- or wave-like pattern when plotted against each other. We would like a correlation measure flexible enough to capture such non-linear relationships.
 
@@ -128,13 +128,13 @@ Let’s start with the formula. The Chatterjee correlation coefficient is calcul
 
 $$corr^{C}(X,Y) = 1-\frac{3\sum_{i=1}^{n-1}|R(Y_{k:R(X_k)=i+1}) - R(Y_{k:R(X_k)=i})|}{n^2-1},$$
 
-where n is the sample size. This looks complicated, so let’s try to simplify the numerator. Let’s sort the data in an ascending order of $X$ so that we have $(X_{(1)}, Y_{(1)}), \dots, (X_{(n)}, Y_{(n)})$, where $X_{(1)}<X_{(2)}<\dots <X_{(n)}$. Also, denote $R(Y_i)$ be the rank of $Y_{(i)}$. Then:
+where $n$ is the sample size. This looks complicated, so let’s try to simplify the numerator. Let’s sort the data in an ascending order of $X$ so that we have $(X_{(1)}, Y_{(1)}), \dots, (X_{(n)}, Y_{(n)})$, where $X_{(1)}<X_{(2)}<\dots <X_{(n)}$. Also, let $R(Y_i)$ be the rank of $Y_{(i)}$. Then:
 
   $$corr^{C}(X,Y) = 1 - \frac{3\sum_{i=1}^{n-1}|R(Y_{i+1})-R(Y_i)|}{n^2-1}.$$
 
 So, this new coefficient is a scaled version of the sum of the absolute differences in the consecutive ranks of $Y$ when ordered by $X$. It is perhaps best to think about Chatterjee’s method as a measure of dependence and not strictly a correlation coefficient.
 
-There are some major difference compared to the previous correlation measures. Chatterjee’s correlation coefficient lies in the $[0,1]$ interval. It is equal to zero if and only if $X$ and $Y$ are independent and to one if one of them is a function of the other. Unlike the coefficients described above, it is not symmetric in $X$ and $Y$, meaning $corr^{C}(X,Y) \neq corr^{C}(Y,X)$. This is understandable since we are interested in whether $X$ is a function of $Y$, which does not imply the opposite. The author also develops asymptotic theory for calculating p-values although some researchers have [raised concerns](https://academic.oup.com/biomet/article-abstract/109/2/317/6259083) about the coefficient’s power.
+There are some major differences compared to the previous correlation measures. Chatterjee’s correlation coefficient lies in the $[0,1]$ interval. It is equal to zero if and only if $X$ and $Y$ are independent and to one if one of them is a function of the other. Unlike the coefficients described above, it is not symmetric in $X$ and $Y$, meaning $corr^{C}(X,Y) \neq corr^{C}(Y,X)$. This is understandable since we are interested in whether $X$ is a function of $Y$, which does not imply the opposite. The author also develops asymptotic theory for calculating $p$-values although some researchers have [raised concerns](https://academic.oup.com/biomet/article-abstract/109/2/317/6259083) about the coefficient’s power.
 
 Here is a sample code to calculate its value:
 
@@ -191,7 +191,7 @@ There you have it. You are now well-equipped to dive deeper into your datasets a
 
 ## Where to Learn More
 
-Wikipedia has detailed entries on correlation, rank correlation, and Kendall’s coefficient which I found helpful. The R bloggers platform has articles exploring the Chatterjee’s correlation coefficient in detail. The more technically oriented folks will find Chatterjee’s original paper helpful.
+Wikipedia has detailed entries on correlation, rank correlation, and Kendall’s coefficient which I found helpful. The R bloggers platform has articles exploring Chatterjee’s correlation coefficient in detail. The more technically oriented folks will find Chatterjee’s original paper helpful.
 
 ## References
 
