@@ -1,7 +1,7 @@
 ---
 title: "Filling in Missing Data with MCMC"
 date: "2025-01-31"
-categories: [missing data]
+categories: [statistical inference]
 ---
 
 ## Background

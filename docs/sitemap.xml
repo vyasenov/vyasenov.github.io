@@ -22,7 +22,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/bayesian-ab-tests.html</loc>
-    <lastmod>2026-04-25T21:13:41.427Z</lastmod>
+    <lastmod>2026-04-26T22:46:12.973Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/column-sampling-bootstrap.html</loc>
@@ -34,7 +34,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/ks-test-one-sample.html</loc>
-    <lastmod>2026-04-25T21:20:25.400Z</lastmod>
+    <lastmod>2026-04-26T22:46:19.531Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/three-classes-stat-models.html</loc>
@@ -42,7 +42,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/ci-residualized-reg.html</loc>
-    <lastmod>2026-04-25T21:19:40.829Z</lastmod>
+    <lastmod>2026-04-26T22:46:23.286Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/logit-randomized-experiments.html</loc>
@@ -82,11 +82,11 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/correlated-random-effects.html</loc>
-    <lastmod>2026-04-25T21:22:50.198Z</lastmod>
+    <lastmod>2026-04-26T22:46:13.008Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/lasso-heterogeneous-effects.html</loc>
-    <lastmod>2026-04-25T21:06:54.726Z</lastmod>
+    <lastmod>2026-04-26T22:46:18.269Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/recent-dev-fdr.html</loc>
@@ -110,7 +110,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/conformal-inference.html</loc>
-    <lastmod>2026-04-25T21:09:40.911Z</lastmod>
+    <lastmod>2026-04-26T22:46:20.568Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/limits-semiparam-models.html</loc>
@@ -154,7 +154,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/unconditional-qreg.html</loc>
-    <lastmod>2026-04-25T21:22:19.931Z</lastmod>
+    <lastmod>2026-04-26T22:46:13.030Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/causation-without-correlation.html</loc>
@@ -166,7 +166,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/causality-wo-experiments.html</loc>
-    <lastmod>2026-04-25T21:12:08.332Z</lastmod>
+    <lastmod>2026-04-26T22:46:12.992Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/paradox-lord.html</loc>
@@ -174,7 +174,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html</loc>
-    <lastmod>2026-04-25T21:03:25.250Z</lastmod>
+    <lastmod>2026-04-26T22:46:17.143Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/gen-vars-predefined-corr.html</loc>
@@ -218,7 +218,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/conformal-inference-var-selection.html</loc>
-    <lastmod>2026-04-25T21:09:12.813Z</lastmod>
+    <lastmod>2026-04-26T22:46:21.680Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/stratified-sampling-cont-var.html</loc>
@@ -230,7 +230,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/generalized-additive-models.html</loc>
-    <lastmod>2026-04-25T21:23:00.723Z</lastmod>
+    <lastmod>2026-04-26T22:46:23.976Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/corr-myths-13-views.html</loc>
@@ -242,7 +242,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html</loc>
-    <lastmod>2026-04-05T17:37:27.000Z</lastmod>
+    <lastmod>2026-04-26T22:46:13.018Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</loc>
@@ -258,11 +258,11 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/filling-missing-data-mcmc.html</loc>
-    <lastmod>2026-04-25T21:18:29.739Z</lastmod>
+    <lastmod>2026-04-26T22:46:14.448Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/six-plots-you-should-know.html</loc>
-    <lastmod>2026-04-25T21:24:44.612Z</lastmod>
+    <lastmod>2026-04-26T22:46:15.608Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/flavors-het-treatment-effects.html</loc>
@@ -275,9 +275,5 @@
   <url>
     <loc>https://vyasenov.github.io/software.html</loc>
     <lastmod>2025-08-13T22:05:13.000Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/BLOG-EDITS.html</loc>
-    <lastmod>2026-04-25T21:52:08.499Z</lastmod>
   </url>
 </urlset>

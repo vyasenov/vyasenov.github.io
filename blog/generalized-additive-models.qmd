@@ -1,7 +1,7 @@
 ---
 title: "Generalized Additive Models: What You Need to Know"
 date: "2026-02-12"
-categories: [semiparametric models]
+categories: [semiparametric models, machine learning]
 ---
 
 ## Background

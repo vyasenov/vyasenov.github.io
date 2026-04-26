@@ -1,7 +1,7 @@
 ---
 title: "Causality without Experiments, Unconfoundedness, or Instruments"
 date: "2024-08-12"
-categories: [causal inference, instrumental variables]
+categories: [causal inference]
 ---
 
 ## Background

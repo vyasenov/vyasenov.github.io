@@ -1,7 +1,7 @@
 ---
 title: "Understanding Correlated Random Effects Models"
 date: "2026-02-11"
-categories: [causal inference, panel data]
+categories: [causal inference]
 ---
 
 ## Background

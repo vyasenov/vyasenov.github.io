@@ -1,7 +1,7 @@
 ---
 title: "Lasso for Heterogeneous Treatment Effects Estimation"
 date: "2023-06-30"
-categories: [heterogeneous treatment effects, causal inference, lasso]
+categories: [heterogeneous treatment effects, causal inference, variable selection]
 ---
 
 ## Background

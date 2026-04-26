@@ -1,7 +1,7 @@
 ---
 title: "*Unconditional* Quantile Regression and Treatment Effects"
 date: "2025-12-21"
-categories: [causal inference, quantile regression]
+categories: [causal inference]
 ---
 
 ## Background
