@@ -42,6 +42,13 @@
     "text": "I develop and apply causal inference and machine learning tools to solve complex and ambiguous problems with data.\n\nI’m currently a Staff Data Scientist at Adobe and a researcher at Immigration Policy Lab at Stanford University.\nPreviously, I held postdoctoral positions at UC Berkeley and Stanford. My PhD dissertation (Econ ’17) combined natural experiments with innovative statistical methods to study the wage/employment effects of immigration and the consequences of double-shift schooling systems.\nThroughout my career, I’ve been fortunate to work closely with mentors who were students of Nobel Prize laureates. As a way to give back, I maintain a blog that makes cutting-edge academic research in data science accessible to a broader audience.\n\nMy academic research has been published in leading peer-reviewed journals in labor economics, political science, medicine, and general science and has been featured by most major media outlets such as The New York Times, The Washington Post, and The Wall Street Journal, among many others.\nMy children’s book on causal inference reached \\(\\#2\\) on Amazon’s New Releases in Probability and Statistics list.\n\nOutside of work, I’m an avid mushroom picker and mountain biker—but most of all, I love spending time with my family away from concrete. Originally from Asenovgrad, Bulgaria, I now live in the San Francisco Bay Area with my wife and our son, Luca.\n\nOh, and my Erdős number is \\(8\\)."
   },
   {
+    "objectID": "blog/flavors-correlation-coef.html",
+    "href": "blog/flavors-correlation-coef.html",
+    "title": "Nonlinear Correlations and Chatterjee’s Coefficient",
+    "section": "",
+    "text": "6 min read"
+  },
+  {
     "objectID": "blog/flavors-correlation-coef.html#background",
     "href": "blog/flavors-correlation-coef.html#background",
     "title": "Nonlinear Correlations and Chatterjee’s Coefficient",
@@ -75,6 +82,13 @@
     "title": "Nonlinear Correlations and Chatterjee’s Coefficient",
     "section": "References",
     "text": "References\nChatterjee, S. (2021). A new coefficient of correlation. Journal of the American Statistical Association, 116(536), 2009-2022.\nDette, H., Siburg, K. F., & Stoimenov, P. A. (2013). A Copula‐Based Non‐parametric Measure of Regression Dependence. Scandinavian Journal of Statistics, 40(1), 21-41.\nShi, H., Drton, M., & Han, F. (2022). On the power of Chatterjee’s rank correlation. Biometrika, 109(2), 317-333.\nhttps://www.r-bloggers.com/2021/12/exploring-the-xi-correlation-coefficient/"
+  },
+  {
+    "objectID": "blog/flavors-bootstrap.html",
+    "href": "blog/flavors-bootstrap.html",
+    "title": "The Many Flavors of Bootstrap",
+    "section": "",
+    "text": "8 min read"
   },
   {
     "objectID": "blog/flavors-bootstrap.html#background",
@@ -119,6 +133,13 @@
     "text": "References\nCameron, A. C., Gelbach, J. B., & Miller, D. L. (2008). Bootstrap-based improvements for inference with clustered errors. The review of economics and statistics, 90(3), 414-427.\nDavidson, R., & Flachaire, E. (2008). The wild bootstrap, tamed at last. Journal of Econometrics, 146(1), 162-169.\nDavison, A. C., & Hinkley, D. V. (1997). Bootstrap Methods and Their Application. Cambridge University Press.\nEfron, B. (1979). Bootstrap methods: Another look at the jackknife. Annals of Statistics, 7(1), 1–26.\nEfron, B., & Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.\nLahiri, S. N. (2003). Resampling Methods for Dependent Data. Springer.\nRubin, D. B. (1981). The Bayesian bootstrap. Annals of Statistics, 9(1), 130–134."
   },
   {
+    "objectID": "blog/ols-fixed-random-x.html",
+    "href": "blog/ols-fixed-random-x.html",
+    "title": "OLS with Fixed vs Random \\(X\\): What Actually Changes?",
+    "section": "",
+    "text": "3 min read"
+  },
+  {
     "objectID": "blog/ols-fixed-random-x.html#background",
     "href": "blog/ols-fixed-random-x.html#background",
     "title": "OLS with Fixed vs Random \\(X\\): What Actually Changes?",
@@ -159,6 +180,13 @@
     "title": "OLS with Fixed vs Random \\(X\\): What Actually Changes?",
     "section": "References",
     "text": "References\nGreene, W. H. (2018). Econometric Analysis.\nWooldridge, J. M. (2010). Econometric Analysis of Cross Section and Panel Data."
+  },
+  {
+    "objectID": "blog/bayesian-ab-tests.html",
+    "href": "blog/bayesian-ab-tests.html",
+    "title": "Bayesian Analysis of Randomized Experiments: A Modern Approach",
+    "section": "",
+    "text": "6 min read"
   },
   {
     "objectID": "blog/bayesian-ab-tests.html#background",
@@ -210,6 +238,13 @@
     "text": "References\nDeng, A. (2015, May). Objective bayesian two sample hypothesis testing for online controlled experiments. In Proceedings of the 24th International Conference on World Wide Web (pp. 923-928).\nKamalbasha, S., & Eugster, M. J. (2021). Bayesian A/B testing for business decisions. In Data Science–Analytics and Applications: Proceedings of the 3rd International Data Science Conference–iDSC2020 (pp. 50-57). Springer Fachmedien Wiesbaden.\nKurt, Will. Bayesian statistics the fun way: understanding statistics and probability with Star Wars, Lego, and Rubber Ducks. No Starch Press, 2019.\nStevens, N. T., & Hagar, L. (2022). Comparative probability metrics: using posterior probabilities to account for practical equivalence in A/B tests. The American Statistician, 76(3), 224-237."
   },
   {
+    "objectID": "blog/column-sampling-bootstrap.html",
+    "href": "blog/column-sampling-bootstrap.html",
+    "title": "Column-Sampling Bootstrap?",
+    "section": "",
+    "text": "3 min read"
+  },
+  {
     "objectID": "blog/column-sampling-bootstrap.html#background",
     "href": "blog/column-sampling-bootstrap.html#background",
     "title": "Column-Sampling Bootstrap?",
@@ -236,6 +271,13 @@
     "title": "Column-Sampling Bootstrap?",
     "section": "Bottom Line",
     "text": "Bottom Line\n\nThe column-sampling bootstrap is a thought-provoking twist on traditional resampling techniques that leverages the width of your dataset.\nWhile it offers computational efficiency and flexibility, its reliance on the i.i.d. assumption and potential to overlook row-level dependencies highlight the need for careful application.\nThe column-sampling bootstrap should not be your go-to method to assess statistical significance."
+  },
+  {
+    "objectID": "blog/jackknife-vs-bootstrap.html",
+    "href": "blog/jackknife-vs-bootstrap.html",
+    "title": "Jackknife vs. Bootstrap: A Tale of Two Resamplers",
+    "section": "",
+    "text": "5 min read"
   },
   {
     "objectID": "blog/jackknife-vs-bootstrap.html#background",
@@ -280,6 +322,13 @@
     "text": "References\nEfron, B. (1992). Bootstrap methods: another look at the jackknife. In Breakthroughs in statistics: Methodology and distribution (pp. 569-593). New York, NY: Springer New York.\nEfron, B., & Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.\nQuenouille, M. H. (1956). Notes on bias in estimation. Biometrika, 43(3/4), 353-360.\nTukey, J. (1958). Bias and confidence in not quite large samples. Ann. Math. Statist., 29, 614.\nWasserman, L. (2013). All of statistics: a concise course in statistical inference. Springer Science & Business Media."
   },
   {
+    "objectID": "blog/ks-test-one-sample.html",
+    "href": "blog/ks-test-one-sample.html",
+    "title": "The Kolmogorov–Smirnov Test as a Goodness-of-fit",
+    "section": "",
+    "text": "4 min read"
+  },
+  {
     "objectID": "blog/ks-test-one-sample.html#background",
     "href": "blog/ks-test-one-sample.html#background",
     "title": "The Kolmogorov–Smirnov Test as a Goodness-of-fit",
@@ -315,6 +364,13 @@
     "text": "References\nLilliefors, H. W. (1967). On the Kolmogorov-Smirnov test for normality with mean and variance unknown. Journal of the American statistical Association, 62(318), 399-402.\nZeimbekakis, A., Schifano, E. D., & Yan, J. (2024). On Misuses of the Kolmogorov–Smirnov Test for One-Sample Goodness-of-Fit. The American Statistician, 78(4), 481-487."
   },
   {
+    "objectID": "blog/three-classes-stat-models.html",
+    "href": "blog/three-classes-stat-models.html",
+    "title": "The Three Classes of Statistical Models",
+    "section": "",
+    "text": "7 min read"
+  },
+  {
     "objectID": "blog/three-classes-stat-models.html#background",
     "href": "blog/three-classes-stat-models.html#background",
     "title": "The Three Classes of Statistical Models",
@@ -341,6 +397,13 @@
     "title": "The Three Classes of Statistical Models",
     "section": "Bottom Line",
     "text": "Bottom Line\n\nParametric models impose the strongest assumptions and require the least amount of data. These are the models most often employed in practice. Think of linear regression.\nSemiparametric models strike a balance between flexibility and interpretation while allowing for flexible relationships in the data. Think of (non-Augmented) Inverse Propensity Score Weighting.\nNonparametric models are flexible and data-hungry. They allow for flexible associations between your variables. Think of a histogram or kernel density."
+  },
+  {
+    "objectID": "blog/ci-residualized-reg.html",
+    "href": "blog/ci-residualized-reg.html",
+    "title": "Causal Inference with Residualized Regressions",
+    "section": "",
+    "text": "5 min read"
   },
   {
     "objectID": "blog/ci-residualized-reg.html#background",
@@ -385,6 +448,13 @@
     "text": "References\nDing, P. (2021). The Frisch–Waugh–Lovell theorem for standard errors. Statistics & Probability Letters, 168, 108945."
   },
   {
+    "objectID": "blog/logit-randomized-experiments.html",
+    "href": "blog/logit-randomized-experiments.html",
+    "title": "Logistic Regression in Randomized Trials?",
+    "section": "",
+    "text": "4 min read"
+  },
+  {
     "objectID": "blog/logit-randomized-experiments.html#background",
     "href": "blog/logit-randomized-experiments.html#background",
     "title": "Logistic Regression in Randomized Trials?",
@@ -425,6 +495,13 @@
     "title": "Logistic Regression in Randomized Trials?",
     "section": "Reference",
     "text": "Reference\nFreedman, D. A. (2008). Randomization Does Not Justify Logistic Regression. Statistical Science, 23(2), 237–249. https://doi.org/10.1214/08-STS262"
+  },
+  {
+    "objectID": "blog/mutual-information.html",
+    "href": "blog/mutual-information.html",
+    "title": "Mutual Information: What, Why, How, and When",
+    "section": "",
+    "text": "7 min read"
   },
   {
     "objectID": "blog/mutual-information.html#introduction",
@@ -476,6 +553,13 @@
     "text": "References\nBrown, G., Pocock, A., Zhao, M. J., & Luján, M. (2012). Conditional likelihood maximisation: a unifying framework for information theoretic feature selection. JMLR.\nCover, T. M., & Thomas, J. A. (2006). Elements of information theory (2nd ed.). Wiley-Interscience.\nKraskov, A., Stögbauer, H., & Grassberger, P. (2004). Estimating mutual information. Physical Review E, 69(6).\nPeng, H., Long, F., & Ding, C. (2005). Feature selection based on mutual information criteria of max-dependency, max-relevance, and min-redundancy. IEEE TPAMI.\nRoss, B. C. (2014). Mutual information between discrete and continuous data sets. PloS one, 9(2).\nVergara, J. R., & Estévez, P. A. (2014). A review of feature selection methods based on mutual information. Neural Computing and Applications, 24(1)."
   },
   {
+    "objectID": "blog/flavors-matching-methods.html",
+    "href": "blog/flavors-matching-methods.html",
+    "title": "The Many Flavors of Matching for Causal Inference",
+    "section": "",
+    "text": "12 min read"
+  },
+  {
     "objectID": "blog/flavors-matching-methods.html#background",
     "href": "blog/flavors-matching-methods.html#background",
     "title": "The Many Flavors of Matching for Causal Inference",
@@ -516,6 +600,13 @@
     "title": "The Many Flavors of Matching for Causal Inference",
     "section": "References",
     "text": "References\nAbadie, A., & Imbens, G. W. (2016). Matching on the estimated propensity score. Econometrica, 84(2), 781-807.\nBen-Michael, E., Feller, A., Hirshberg, D. A., & Zubizarreta, J. R. (2021). The balancing act in causal inference. arXiv preprint arXiv:2110.14831.\nDiamond, A., & Sekhon, J. S. (2013). Genetic matching for estimating causal effects: A general multivariate matching method for achieving balance in observational studies. Review of Economics and Statistics, 95(3), 932-945.\nIacus, S. M., King, G., & Porro, G. (2012). Causal inference without balance checking: Coarsened exact matching. Political analysis, 20(1), 1-24.\nImbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.\nImbens, G. W., & Rubin, D. B. (2015). Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction. Cambridge University Press.\nRosenbaum, P. R., & Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. Biometrika, 70(1), 41–55.\nStuart, E. A. (2010). Matching methods for causal inference: A review and a look forward. Statistical Science, 25(1), 1–21.\nRosenbaum, P. R. (2002). Observational Studies. Springer."
+  },
+  {
+    "objectID": "blog/flavors-lasso.html",
+    "href": "blog/flavors-lasso.html",
+    "title": "The Many Flavors of Lasso",
+    "section": "",
+    "text": "9 min read"
   },
   {
     "objectID": "blog/flavors-lasso.html#background",
@@ -560,6 +651,13 @@
     "text": "References\n\nBelloni, A., Chernozhukov, V., & Wang, L. (2011). Square-root lasso: Pivotal recovery of sparse signals via conic programming. Biometrika, 98(4), 791–806.\nBühlmann, P., & van de Geer, S. (2011). Statistics for High-Dimensional Data: Methods, Theory and Applications. Springer.\nFriedman, J., Hastie, T., & Tibshirani, R. (2008). Sparse inverse covariance estimation with the graphical lasso. Biostatistics, 9(3), 432–441.\nHastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction (2nd ed.). Springer.\nHastie, T., Tibshirani, R., & Wainwright, M. (2015). Statistical Learning with Sparsity: The Lasso and Generalizations. CRC Press.\nMeinshausen, N. (2007). Relaxed lasso. Computational Statistics & Data Analysis, 52(1), 374–393.\nTibshirani, R. (1996). Regression shrinkage and selection via the lasso. Journal of the Royal Statistical Society: Series B (Methodological), 58(1), 267–288.\nTibshirani, R., Saunders, M., Rosset, S., Zhu, J., & Knight, K. (2005). Sparsity and smoothness via the fused lasso. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 67(1), 91–108.\nYuan, M., & Lin, Y. (2006). Model selection and estimation in regression with grouped variables. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 68(1), 49–67.\nZou, H., & Hastie, T. (2005). Regularization and variable selection via the elastic net. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 67(2), 301–320.\nZou, H. (2006). The adaptive lasso and its oracle properties. Journal of the American Statistical Association, 101(476), 1418–1429."
   },
   {
+    "objectID": "blog/paradox-stein.html",
+    "href": "blog/paradox-stein.html",
+    "title": "Stein’s Paradox: A Simple Illustration",
+    "section": "",
+    "text": "3 min read"
+  },
+  {
     "objectID": "blog/paradox-stein.html#background",
     "href": "blog/paradox-stein.html#background",
     "title": "Stein’s Paradox: A Simple Illustration",
@@ -593,6 +691,13 @@
     "title": "Stein’s Paradox: A Simple Illustration",
     "section": "References",
     "text": "References\nEfron, B., & Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press."
+  },
+  {
+    "objectID": "blog/delta-method.html",
+    "href": "blog/delta-method.html",
+    "title": "The Delta Method: Simplifying Confidence Intervals for Complex Estimators",
+    "section": "",
+    "text": "3 min read"
   },
   {
     "objectID": "blog/delta-method.html#background",
@@ -635,6 +740,13 @@
     "title": "The Delta Method: Simplifying Confidence Intervals for Complex Estimators",
     "section": "References",
     "text": "References\nCasella, G., & Berger, R. L. (2002). Statistical Inference.\nGreene, W. H. (2018). Econometric Analysis."
+  },
+  {
+    "objectID": "blog/binscatter.html",
+    "href": "blog/binscatter.html",
+    "title": "Binscatter: A New Visual Tool for Data Analysis",
+    "section": "",
+    "text": "6 min read"
   },
   {
     "objectID": "blog/binscatter.html#background",
@@ -686,6 +798,13 @@
     "text": "References\nCattaneo, M. D., Crump, R. K., Farrell, M. H., & Feng, Y. (2024). On Binscatter Regressions. American Economic Review, 111(3), 718–748.\nStarr, E., & Goldfarb, B. (2020). Binned scatterplots: A simple tool to make research easier and better. Strategic Management Journal, 41(12), 2261-2274."
   },
   {
+    "objectID": "blog/limits-nonparametric-models.html",
+    "href": "blog/limits-nonparametric-models.html",
+    "title": "The Limits of Nonparametric Models",
+    "section": "",
+    "text": "6 min read"
+  },
+  {
     "objectID": "blog/limits-nonparametric-models.html#background",
     "href": "blog/limits-nonparametric-models.html#background",
     "title": "The Limits of Nonparametric Models",
@@ -728,6 +847,13 @@
     "text": "References\nHastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning.\nLi, Q., & Racine, J. S. (2023). Nonparametric econometrics: theory and practice. Princeton University Press.\nSilverman, B. W. (1986). Density Estimation for Statistics and Data Analysis. Wand, M. P., & Jones, M. C. (1995). Kernel Smoothing.\nWasserman, L. (2013). All of statistics: a concise course in statistical inference. Springer Science & Business Media."
   },
   {
+    "objectID": "blog/hypothesis-testing-all-data.html",
+    "href": "blog/hypothesis-testing-all-data.html",
+    "title": "Hypothesis Testing with Population Data",
+    "section": "",
+    "text": "4 min read"
+  },
+  {
     "objectID": "blog/hypothesis-testing-all-data.html#background",
     "href": "blog/hypothesis-testing-all-data.html#background",
     "title": "Hypothesis Testing with Population Data",
@@ -761,6 +887,13 @@
     "title": "Hypothesis Testing with Population Data",
     "section": "References",
     "text": "References\nThe FBI (2018) Crime in the US.\nThe FBI (2019) Crime in the US.\nSpiegelhalter, D. (2019). The art of statistics: Learning from data. Penguin UK."
+  },
+  {
+    "objectID": "blog/correlated-random-effects.html",
+    "href": "blog/correlated-random-effects.html",
+    "title": "Understanding Correlated Random Effects Models",
+    "section": "",
+    "text": "8 min read"
   },
   {
     "objectID": "blog/correlated-random-effects.html#background",
@@ -812,6 +945,13 @@
     "text": "References\n\nCameron, A. C., & Trivedi, P. K. (2005). Microeconometrics: methods and applications. Cambridge university press.\nSchunck, R. (2013). Within and between estimates in random-effects models: Advantages and drawbacks of correlated random effects and hybrid models. The Stata Journal, 13(1), 65-76.\nMundlak, Y. (1978). On the pooling of time series and cross section data. Econometrica, 46(1), 69–85."
   },
   {
+    "objectID": "blog/lasso-heterogeneous-effects.html",
+    "href": "blog/lasso-heterogeneous-effects.html",
+    "title": "Lasso for Heterogeneous Treatment Effects Estimation",
+    "section": "",
+    "text": "9 min read"
+  },
+  {
     "objectID": "blog/lasso-heterogeneous-effects.html#background",
     "href": "blog/lasso-heterogeneous-effects.html#background",
     "title": "Lasso for Heterogeneous Treatment Effects Estimation",
@@ -861,6 +1001,13 @@
     "text": "References\nBarber, R. F., & Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. The Annals of Statistics: 2055-2085.\nBarber, R. F., & Candès, E. J. (2019). A knockoff filter for high-dimensional selective inference. The Annals of Statistics, 47(5), 2504-2537.\nBien, J., Taylor, J., & Tibshirani, R. (2013). A lasso for hierarchical interactions. Annals of statistics, 41(3), 1111.\nChatterjee, A., & Lahiri, S. N. (2011). Bootstrapping lasso estimators. Journal of the American Statistical Association, 106(494), 608-625.\nDeng, C., Koch, B., Vock, D. M., & Koopmeiners, J. S. (2023). Group LASSO Variable Selection Method for Treatment Effect Generalization. arXiv preprint arXiv:2302.03832.\nDu, Y., Chen, H., & Varadhan, R. (2021). Lasso estimation of hierarchical interactions for analyzing heterogeneity of treatment effect. Statistics in Medicine, 40(25), 5417-5433.\nHu, A. (2022). Heterogeneous treatment effects analysis for social scientists: A review. Social Science Research, 102810.\nImai, K., & Ratkovic, M. (2013). Estimating treatment effect heterogeneity in randomized program evaluation. The Annals of Applied Statistics (2013): 443-470.\nLim, M., & Hastie, T. (2015). Learning interactions via hierarchical group-lasso regularization. Journal of Computational and Graphical Statistics, 24(3), 627-654.\nNie, X., & Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319.\nMeinshausen, N., Meier, L., & Bühlmann, P. (2009). P-values for high-dimensional regression. Journal of the American Statistical Association, 104(488), 1671-1681.\nTian, L., Alizadeh, A. A., Gentles, A. J., & Tibshirani, R. (2014). A simple method for estimating interactions between a treatment and a large number of covariates. Journal of the American Statistical Association, 109(508), 1517-1532.\nTibshirani, R. (1996). Regression shrinkage and selection via the lasso. Journal of the Royal Statistical Society: Series B (Methodological), 58(1), 267-288.\nWager, S., & Athey, S. (2018). Estimation and inference of heterogeneous treatment effects using random forests. Journal of the American Statistical Association, 113(523), 1228-1242.\nXie, Y., Chen, N., & Shi, X. (2018). False discovery rate controlled heterogeneous treatment effect detection for online controlled experiments. In Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining (pp. 876-885)."
   },
   {
+    "objectID": "blog/recent-dev-fdr.html",
+    "href": "blog/recent-dev-fdr.html",
+    "title": "Recent Developments in False Discovery Rate",
+    "section": "",
+    "text": "7 min read"
+  },
+  {
     "objectID": "blog/recent-dev-fdr.html#background",
     "href": "blog/recent-dev-fdr.html#background",
     "title": "Recent Developments in False Discovery Rate",
@@ -894,6 +1041,13 @@
     "title": "Recent Developments in False Discovery Rate",
     "section": "References",
     "text": "References\nBarber, R. F., & Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. Annals of Statistics, 43(5), 2055-2085.\nBenjamini, Y., & Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological), 57(1), 289-300.\nBenjamini, Y., & Yekutieli, D. (2001). The control of the false discovery rate in multiple testing under dependency. Annals of statistics, 1165-1188.\nDai, C., Lin, B., Xing, X., & Liu, J. S. (2022). False discovery rate control via data splitting. Journal of the American Statistical Association, 1-18.\nDai, C., Lin, B., Xing, X., & Liu, J. S. (2023). A scale-free approach for false discovery rate control in generalized linear models. Journal of the American Statistical Association, 1-15.\nIgnatiadis, N., Klaus, B., Zaugg, J. B., & Huber, W. (2016). Data-driven hypothesis weighting increases detection power in genome-scale multiple testing. Nature methods, 13(7), 577-580.\nKorthauer, K., Kimes, P. K., Duvallet, C., Reyes, A., Subramanian, A., Teng, M., … & Hicks, S. C. (2019). A practical guide to methods controlling false discoveries in computational biology. Genome biology, 20(1), 1-21.\nScott, J. G., Kelly, R. C., Smith, M. A., Zhou, P., & Kass, R. E. (2015). False discovery rate regression: an application to neural synchrony detection in primary visual cortex. Journal of the American Statistical Association, 110(510), 459-471.\nXing, X., Zhao, Z., & Liu, J. S. (2023). Controlling false discovery rate using gaussian mirrors. Journal of the American Statistical Association, 118(541), 222-241."
+  },
+  {
+    "objectID": "blog/nonsymmetric-conf-int.html",
+    "href": "blog/nonsymmetric-conf-int.html",
+    "title": "Why Some Confidence Intervals Are Not Symmetric",
+    "section": "",
+    "text": "4 min read"
   },
   {
     "objectID": "blog/nonsymmetric-conf-int.html#background",
@@ -936,6 +1090,13 @@
     "title": "Why Some Confidence Intervals Are Not Symmetric",
     "section": "References",
     "text": "References\nCasella, G., & Berger, R. L. (2002). Statistical Inference.\nEfron, B., & Tibshirani, R. J. (1993). An Introduction to the Bootstrap."
+  },
+  {
+    "objectID": "blog/flavors-multiple-testing.html",
+    "href": "blog/flavors-multiple-testing.html",
+    "title": "The Many Flavors of Multiple Testing Adjustments",
+    "section": "",
+    "text": "15 min read"
   },
   {
     "objectID": "blog/flavors-multiple-testing.html#background",
@@ -987,6 +1148,13 @@
     "text": "References\nBarber, R. F., & Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. The Annals of Statistics, 43(5), 2055-2085.\nBenjamini, Y., & Yekutieli, D. (2001). The control of the false discovery rate in multiple testing under dependency. Annals of Statistics, 1165-1188.\nBenjamini, Y., & Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal statistical society: series B (Methodological), 57(1), 289-300.\nCandes, E., Fan, Y., Janson, L., & Lv, J. (2018). Panning for gold:‘model‐X’knockoffs for high dimensional controlled variable selection. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 80(3), 551-577.\nClarke, D., Romano, J. P., & Wolf, M. (2020). The Romano–Wolf multiple-hypothesis correction in Stata. The Stata Journal, 20(4), 812-843.\nDai, C., Lin, B., Xing, X., & Liu, J. S. (2022). False discovery rate control via data splitting. Journal of the American Statistical Association, 1-38.\nKorthauer, K., Kimes, P. K., Duvallet, C., Reyes, A., Subramanian, A., Teng, M., … & Hicks, S. C. (2019). A practical guide to methods controlling false discoveries in computational biology. Genome biology, 20(1), 1-21.\nRomano, J. P., & Wolf, M. (2005). Stepwise multiple testing as formalized data snooping. Econometrica, 73(4), 1237-1282.\nRomano, J. P., & Wolf, M. (2005). Exact and approximate stepdown methods for multiple hypothesis testing. Journal of the American Statistical Association, 100(469), 94-108.\nWestfall, P. H., & Young, S. S. (1993). Resampling-based multiple testing: Examples and methods for p-value adjustment (Vol. 279). John Wiley & Sons.\nXing, X., Zhao, Z., & Liu, J. S. (2021). Controlling false discovery rate using gaussian mirrors. Journal of the American Statistical Association, 1-20."
   },
   {
+    "objectID": "blog/treatment-effects-bounds.html",
+    "href": "blog/treatment-effects-bounds.html",
+    "title": "Brief Overview of Treatment Effect Bounds",
+    "section": "",
+    "text": "7 min read"
+  },
+  {
     "objectID": "blog/treatment-effects-bounds.html#background",
     "href": "blog/treatment-effects-bounds.html#background",
     "title": "Brief Overview of Treatment Effect Bounds",
@@ -1022,6 +1190,13 @@
     "text": "References\nBalke, A., & Pearl, J. (1997). Bounds on treatment effects from studies with imperfect compliance. Journal of the American Statistical Association, 92(439), 1171-1176.\nKowalski, A. E. (2016). Doing more when you’re running LATE: Applying marginal treatment effect methods to examine treatment effect heterogeneity in experiments. American Economic Journal: Applied Economics, 8(2), 1-17.\nLee, D. S. (2009). Training, wages, and sample selection: Estimating sharp bounds on treatment effects. Review of Economic Studies, 76(3), 1071-1102.\nManski, C. F. (1990). Nonparametric bounds on treatment effects. American Economic Review, 80(2), 319-323.\nManski, C. F. (2003). Partial Identification of Probability Distributions. Springer.\nManski, C. F., & Pepper, J. V. (2000). Monotone instrumental variables: With an application to the returns to schooling. Econometrica, 68(4), 997-1010."
   },
   {
+    "objectID": "blog/diff-causal-predictive-models.html",
+    "href": "blog/diff-causal-predictive-models.html",
+    "title": "Causal vs. Predictive Modeling: Subtle, but Crucial Differences",
+    "section": "",
+    "text": "6 min read"
+  },
+  {
     "objectID": "blog/diff-causal-predictive-models.html#background",
     "href": "blog/diff-causal-predictive-models.html#background",
     "title": "Causal vs. Predictive Modeling: Subtle, but Crucial Differences",
@@ -1055,6 +1230,13 @@
     "title": "Causal vs. Predictive Modeling: Subtle, but Crucial Differences",
     "section": "References",
     "text": "References\nHernán, M. A., & Robins, J. M. (2020). Causal Inference: What If.\nCunningham, S. (2021). Causal Inference: The Mixtape.\nAngrist, J. D., & Pischke, J.-S. (2009). Mostly Harmless Econometrics.\nPearl, J., & Mackenzie, D. (2018). The Book of Why: The New Science of Cause and Effect."
+  },
+  {
+    "objectID": "blog/conformal-inference.html",
+    "href": "blog/conformal-inference.html",
+    "title": "A Brief Introduction to Conformal Inference",
+    "section": "",
+    "text": "6 min read"
   },
   {
     "objectID": "blog/conformal-inference.html#background",
@@ -1106,6 +1288,13 @@
     "text": "References\nLei, J., G’Sell, M., Rinaldo, A., Tibshirani, R. J., & Wasserman, L. (2018). Distribution-free predictive inference for regression. Journal of the American Statistical Association, 113(523), 1094-1111.\nLei, J., Rinaldo, A., & Wasserman, L. (2015). A conformal prediction approach to explore functional data. Annals of Mathematics and Artificial Intelligence, 74, 29-43.\nShafer, G., & Vovk, V. (2008). A Tutorial on Conformal Prediction. Journal of Machine Learning Research, 9(3).\nVovk, V., Gammerman, A., & Shafer, G. (2005). Algorithmic learning in a random world (Vol. 29). New York: Springer."
   },
   {
+    "objectID": "blog/limits-semiparam-models.html",
+    "href": "blog/limits-semiparam-models.html",
+    "title": "The Limits of Semiparametric Models: The Efficiency Bound",
+    "section": "",
+    "text": "6 min read"
+  },
+  {
     "objectID": "blog/limits-semiparam-models.html#background",
     "href": "blog/limits-semiparam-models.html#background",
     "title": "The Limits of Semiparametric Models: The Efficiency Bound",
@@ -1139,6 +1328,13 @@
     "title": "The Limits of Semiparametric Models: The Efficiency Bound",
     "section": "References",
     "text": "References\nBickel, P. J., Klaassen, C. A., Ritov, Y., & Wellner, J. A. (1993)\nEfficient and Adaptive Estimation for Semiparametric Models. Johns Hopkins University Press.\nGreene, William H. “Econometric analysis”. New Jersey: Prentice Hall (2000): 201-215.\nHines, O., Dukes, O., Diaz-Ordaz, K., & Vansteelandt, S. (2022). Demystifying statistical learning based on efficient influence functions. The American Statistician, 76(3), 292-304.\nIchimura, H., & Todd, P. (2007) Implementing Nonparametric and Semiparametric Estimators. In Heckman, J. & Leamer, E. (Eds.), Handbook of Econometrics (Vol. 6B).\nNewey, W. K. (1990) Semiparametric Efficiency Bounds. Journal of Applied Econometrics, 5(2), 99–135.\nTsiatis, A. (2007). Semiparametric theory and missing data. Springer Science & Business Media\nVan der Vaart, A. W. (2000) Asymptotic Statistics. Cambridge University Press."
+  },
+  {
+    "objectID": "blog/flavors-gradient-boosting.html",
+    "href": "blog/flavors-gradient-boosting.html",
+    "title": "The Many Flavors of Gradient Boosting",
+    "section": "",
+    "text": "10 min read"
   },
   {
     "objectID": "blog/flavors-gradient-boosting.html#background",
@@ -1190,6 +1386,13 @@
     "text": "References\nChen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (pp. 785-794).\nDorogush, A. V., Ershov, V., & Gulin, A. (2018). CatBoost: gradient boosting with categorical features support. arXiv preprint arXiv:1810.11363.\nFreund, Y., & Schapire, R. E. (1997). A decision-theoretic generalization of on-line learning and an application to boosting. Journal of computer and system sciences, 55(1), 119-139.\nFriedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. Annals of Statistics, 29(5), 1189-1232.\nHastie, T., Tibshirani, R., & Friedman, J. (2017). The elements of statistical learning: data mining, inference, and prediction.\nJames, G., Witten, D., Hastie, T., Tibshirani, R., & Taylor, J. (2023). An introduction to statistical learning: With applications in python. Springer Nature.\nJames, G., Witten, D., Hastie, T., Tibshirani, R., & Taylor, J. (2013). An introduction to statistical learning: With applications in R. Springer Nature.\nKe, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., … & Liu, T. Y. (2017). Lightgbm: A highly efficient gradient boosting decision tree. Advances in neural information processing systems, 30.\nProkhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). CatBoost: unbiased boosting with categorical features. Advances in neural information processing systems, 31."
   },
   {
+    "objectID": "blog/weights-statistics.html",
+    "href": "blog/weights-statistics.html",
+    "title": "Weights in Statistical Analyses",
+    "section": "",
+    "text": "6 min read"
+  },
+  {
     "objectID": "blog/weights-statistics.html#background",
     "href": "blog/weights-statistics.html#background",
     "title": "Weights in Statistical Analyses",
@@ -1232,6 +1435,13 @@
     "text": "References\nDupraz, Y. (2013). Using Weights in Stata. Memo, 54(2)\nLumley, T. (2020), Weights in Statistics, Blog Post\nMiratrix, L. W., Sekhon, J. S., Theodoridis, A. G., & Campos, L. F. (2018). Worth weighting? How to think about and use weights in survey experiments. Political Analysis, 26(3), 275-291.\nSolon, G., Haider, S. J., & Wooldridge, J. M. (2015). What are we weighting for?. Journal of Human resources, 50(2), 301-316.\nStata User’s Guide (2023)"
   },
   {
+    "objectID": "blog/paradox-simpson.html",
+    "href": "blog/paradox-simpson.html",
+    "title": "Simpson’s Paradox: A Simple Illustration",
+    "section": "",
+    "text": "3 min read"
+  },
+  {
     "objectID": "blog/paradox-simpson.html#background",
     "href": "blog/paradox-simpson.html#background",
     "title": "Simpson’s Paradox: A Simple Illustration",
@@ -1258,6 +1468,13 @@
     "title": "Simpson’s Paradox: A Simple Illustration",
     "section": "Bottom Line",
     "text": "Bottom Line\n\nSimpson’s paradox manifests when an observable pattern within groups disappears if the data is aggregated.\nIt is a reminder of the critical role confounding variables play in data analysis.\nIt underscores the importance of stratifying data by meaningful subgroups and carefully considering the context before drawing conclusions from aggregated statistics."
+  },
+  {
+    "objectID": "blog/flavors-ml-methods-ci.html",
+    "href": "blog/flavors-ml-methods-ci.html",
+    "title": "An Overview of Machine Learning Methods in Causal Inference",
+    "section": "",
+    "text": "14 min read"
   },
   {
     "objectID": "blog/flavors-ml-methods-ci.html#background",
@@ -1344,6 +1561,13 @@
     "text": "While my real name is Vasil, most people call me Vasco.\n I work as a Staff Data Scientist at Adobe and maintain research affiliations at Stanford’s Immigration Policy Lab."
   },
   {
+    "objectID": "blog/two-types-weights-causality.html",
+    "href": "blog/two-types-weights-causality.html",
+    "title": "The Two Types of Weights in Causal Inference",
+    "section": "",
+    "text": "7 min read"
+  },
+  {
     "objectID": "blog/two-types-weights-causality.html#background",
     "href": "blog/two-types-weights-causality.html#background",
     "title": "The Two Types of Weights in Causal Inference",
@@ -1391,6 +1615,13 @@
     "title": "The Two Types of Weights in Causal Inference",
     "section": "References",
     "text": "References\nAthey, S., Imbens, G. W., & Wager, S. (2018). Approximate residual balancing: debiased inference of average treatment effects in high dimensions. Journal of the Royal Statistical Society Series B: Statistical Methodology, 80(4), 597-623.\nBen-Michael, E., Feller, A., Hirshberg, D. A., & Zubizarreta, J. R. (2021). The balancing act in causal inference. arXiv preprint arXiv:2110.14831.\nChan, K. C. G., Yam, S. C. P., & Zhang, Z. (2016). Globally efficient non-parametric inference of average treatment effects by empirical balancing calibration weighting. Journal of the Royal Statistical Society Series B: Statistical Methodology, 78(3), 673-700.\nChattopadhyay, A., Hase, C. H., & Zubizarreta, J. R. (2020). Balancing vs modeling approaches to weighting in practice. Statistics in Medicine, 39(24), 3227-3254.\nHainmueller, J. (2012). Entropy balancing for causal effects: A multivariate reweighting method to produce balanced samples in observational studies. Political analysis, 20(1), 25-46.\nHirshberg, D. A., & Wager, S. (2018). Augmented minimax linear estimation for treatment and policy evaluation.\nImai, K., & Ratkovic, M. (2014). Covariate balancing propensity score. Journal of the Royal Statistical Society Series B: Statistical Methodology, 76(1), 243-263.\nImbens, G. W., & Rubin, D. B. (2015). Causal inference in statistics, social, and biomedical sciences. Cambridge university press.\nImbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.\nLi, F., Morgan, K. L., & Zaslavsky, A. M. (2018). Balancing covariates via propensity score weighting. Journal of the American Statistical Association, 113(521), 390-400.\nRosenbaum, P. R., & Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. Biometrika, 70(1), 41-55."
+  },
+  {
+    "objectID": "blog/unconditional-qreg.html",
+    "href": "blog/unconditional-qreg.html",
+    "title": "Unconditional Quantile Regression and Treatment Effects",
+    "section": "",
+    "text": "9 min read"
   },
   {
     "objectID": "blog/unconditional-qreg.html#background",
@@ -1442,6 +1673,13 @@
     "text": "References\nAlejo, J., Favata, F., Montes-Rojas, G., & Trombetta, M. (2021). Conditional vs unconditional quantile regression models: A guide to practitioners. Economía, 44(88), 76-93.\nBitler, M. P., Gelbach, J. B., & Hoynes, H. W. (2006). What mean impacts miss: Distributional effects of welfare reform experiments. American Economic Review, 96(4), 988-1012.\nBorah, B. J., & Basu, A. (2013). Highlighting differences between conditional and unconditional quantile regression approaches through an application to assess medication adherence. Health economics, 22(9), 1052-1070.\nBorgen, N. T. (2016). Fixed effects in unconditional quantile regression. The Stata Journal, 16(2), 403-415.\nChernozhukov, V., & Hansen, C. (2005). An IV model of quantile treatment effects. Econometrica, 73(1), 245-261.\nFirpo, S., Fortin, N. M., & Lemieux, T. (2009). Unconditional quantile regressions. Econometrica, 77(3), 953-973.\nFrölich, M., & Melly, B. (2013). Unconditional quantile treatment effects under endogeneity. Journal of Business & Economic Statistics, 31(3), 346-357.\nKoenker, R. (2017). Quantile regression: 40 years on. Annual review of economics, 9(1), 155-176.\nKoenker, R., & Hallock, K. F. (2001). Quantile regression. Journal of economic perspectives, 15(4), 143-156.\nKoenker, R., & Bassett Jr, G. (1978). Regression quantiles. Econometrica: journal of the Econometric Society, 33-50.\nSasaki, Y., Ura, T., & Zhang, Y. (2022). Unconditional quantile regression with high‐dimensional data. Quantitative Economics, 13(3), 955-978."
   },
   {
+    "objectID": "blog/causation-without-correlation.html",
+    "href": "blog/causation-without-correlation.html",
+    "title": "Causation without Correlation",
+    "section": "",
+    "text": "4 min read"
+  },
+  {
     "objectID": "blog/causation-without-correlation.html#background",
     "href": "blog/causation-without-correlation.html#background",
     "title": "Causation without Correlation",
@@ -1468,6 +1706,13 @@
     "title": "Causation without Correlation",
     "section": "References",
     "text": "References\nCunningham, S. (2021). Causal inference: The mixtape. Yale university press."
+  },
+  {
+    "objectID": "blog/foci.html",
+    "href": "blog/foci.html",
+    "title": "FOCI: A New Variable Selection Method",
+    "section": "",
+    "text": "6 min read"
   },
   {
     "objectID": "blog/foci.html#background",
@@ -1503,6 +1748,13 @@
     "title": "FOCI: A New Variable Selection Method",
     "section": "References",
     "text": "References\nAlejo, J., Favata, F., Montes-Rojas, G., & Trombetta, M. (2021). Conditional vs Unconditional Quantile Regression Models: A Guide to Practitioners. Economia, 44(88), 76-93.\nAzadkia, M., & Chatterjee, S. (2021). A simple measure of conditional dependence. The Annals of Statistics, 49(6), 3070-3102.\nBorah, B. J., & Basu, A. (2013). Highlighting differences between conditional and unconditional quantile regression approaches through an application to assess medication adherence. Health economics, 22(9), 1052-1070.\nChatterjee, S. (2021). A new coefficient of correlation. Journal of the American Statistical Association, 116(536), 2009-2022.\nDagum, P., & Luby, M. (1993). Approximating probabilistic inference in Bayesian belief networks is NP-hard. Artificial intelligence, 60(1), 141-153.\nFirpo, S., Fortin, N. M., & Lemieux, T. (2009). Unconditional quantile regressions. Econometrica, 77(3), 953-973.\nKoenker, R. (2017). Quantile regression: 40 years on. Annual review of economics, 9, 155-176."
+  },
+  {
+    "objectID": "blog/causality-wo-experiments.html",
+    "href": "blog/causality-wo-experiments.html",
+    "title": "Causality without Experiments, Unconfoundedness, or Instruments",
+    "section": "",
+    "text": "9 min read"
   },
   {
     "objectID": "blog/causality-wo-experiments.html#background",
@@ -1547,6 +1799,13 @@
     "text": "References\nBaum, C. F., & Lewbel, A. (2019). Advice on using heteroskedasticity-based identification. The Stata Journal, 19(4), 757-767.\nEbbes, P. (2004). Latent instrumental variables: a new approach to solve for endogeneity.\nEbbes, P., Wedel, M., & Böckenholt, U. (2009). Frugal IV alternatives to identify the parameter for an endogenous regressor. Journal of Applied Econometrics, 24(3), 446-468.\nEbbes, P., Wedel, M., Böckenholt, U., & Steerneman, T. (2005). Solving and testing for regressor-error (in) dependence when no IVs are available: With new evidence for the effect of education on income. Quantitative Marketing and Economics, 3, 365-392.\nErickson, T., & Whited, T. M. (2002). Two-step GMM estimation of the errors-in-variables model using high-order moments. Econometric Theory, 18(3), 776-799.\nGui, R., Meierer, M., Schilter, P., & Algesheimer, R. (2020). REndo: An R package to address endogeneity without external instrumental variables. Journal of Statistical Software.\nHueter, I. (2016). Latent instrumental variables: a critical review. Institute for New Economic Thinking Working Paper Series, (46).\nLewbel, A. (1997). Constructing instruments for regressions with measurement error when no additional data are available, with an application to patents and R&D. Econometrica, 1201-1213.\nLewbel, A. (2012). Using heteroscedasticity to identify and estimate mismeasured and endogenous regressor models. Journal of business & economic statistics, 30(1), 67-80.\nPapadopoulos, A. (2022). Accounting for endogeneity in regression models using Copulas: A step-by-step guide for empirical studies. Journal of Econometric Methods, 11(1), 127-154.\nPapies, D., Ebbes, P., & Van Heerde, H. J. (2017). Addressing endogeneity in marketing models. Advanced methods for modeling markets, 581-627.\nPark, S., & Gupta, S. (2012). Handling endogenous regressors by joint estimation using copulas. Marketing Science, 31(4), 567-586.\nQian, Y., Koschmann, A., & Xie, H. (2024). A Practical Guide to Endogeneity Correction Using Copulas (No. w32231). National Bureau of Economic Research.\nRigobon, R. (2003). Identification through heteroskedasticity. Review of Economics and Statistics, 85(4), 777-792.\nRutz, O. J., & Watson, G. F. (2019). Endogeneity and marketing strategy research: An overview. Journal of the Academy of Marketing Science, 47, 479-498.\nTran, K. C., & Tsionas, E. G. (2015). Endogeneity in stochastic frontier models: Copula approach without external instruments. Economics Letters, 133, 85-88."
   },
   {
+    "objectID": "blog/paradox-lord.html",
+    "href": "blog/paradox-lord.html",
+    "title": "Lord’s Paradox: A Simple Illustration",
+    "section": "",
+    "text": "4 min read"
+  },
+  {
     "objectID": "blog/paradox-lord.html#background",
     "href": "blog/paradox-lord.html#background",
     "title": "Lord’s Paradox: A Simple Illustration",
@@ -1580,6 +1839,13 @@
     "title": "Lord’s Paradox: A Simple Illustration",
     "section": "References",
     "text": "References\nLord, F. M. (1967). A paradox in the interpretation of group comparisons. Psychological Bulletin, 68, 304–305. doi:10.1037/h0025105\nLord, F. M. (1969). Statistical adjustments when comparing preexisting groups. Psychological Bulletin, 72, 336–337. doi:10.1037/h0028108\nLord, F. M. (1975). Lord’s paradox. In S. B. Anderson, S. Ball, R. T. Murphy, & Associates, Encyclopedia of Educational Evaluation (pp. 232–236). San Francisco, CA: Jossey-Bass.\nTu, Y. K., Gunnell, D., & Gilthorpe, M. S. (2008). Simpson’s Paradox, Lord’s Paradox, and Suppression Effects are the same phenomenon–the reversal paradox. Emerging themes in epidemiology, 5, 1-9."
+  },
+  {
+    "objectID": "blog/hypothesis-testing-linear-ml.html",
+    "href": "blog/hypothesis-testing-linear-ml.html",
+    "title": "Hypothesis Testing in Linear Machine Learning Models",
+    "section": "",
+    "text": "15 min read"
   },
   {
     "objectID": "blog/hypothesis-testing-linear-ml.html#background",
@@ -1631,6 +1897,13 @@
     "text": "References\nBerk, R., Brown, L., Buja, A., Zhang, K., & Zhao, L. (2013). Valid post-selection inference. The Annals of Statistics, 802-837.\nBühlmann, P. (2013). Statistical significance in high-dimensional linear models. Bernoulli, 19(4), 1212-1242.\nDezeure, R., Bühlmann, P., Meier, L., & Meinshausen, N. (2015). High-dimensional inference: confidence intervals, p-values and R-software hdi. Statistical Science, 533-558.\nJavanmard, A., & Montanari, A. (2014). Confidence intervals and hypothesis testing for high-dimensional regression. The Journal of Machine Learning Research, 15(1), 2869-2909.\nLee, J. D., Sun, D. L., Sun, Y., & Taylor, J. E. (2016). Exact post-selection inference, with application to the lasso. The Annals of Statistics, 44(3), 907-927.\nLeeb, H., & Pötscher, B. M. (2005). Model selection and inference: Facts and fiction. Econometric Theory, 21(1), 21-59.\nLeeb, H., Pötscher, B. M., & Ewald, K. (2015). On various confidence intervals post-model-selection. Statistical Science, 30(2), 216-227.\nMeinshausen, N., Meier, L., & Bühlmann, P. (2009). P-values for high-dimensional regression. Journal of the American Statistical Association, 104(488), 1671-1681.\nTaylor, J., & Tibshirani, R. J. (2015). Statistical learning and selective inference. Proceedings of the National Academy of Sciences, 112(25), 7629-7634.\nVan de Geer, S., Bühlmann, P., Ritov, Y. A., & Dezeure, R. (2014). On asymptotically optimal confidence regions and tests for high-dimensional models. The Annals of Statistics, 42(3), 1166-1202.\nWasserman, L., & Roeder, K. (2009). High dimensional variable selection. Annals of Statistics, 37(5A), 2178.\nZhang, D., Khalili, A., & Asgharian, M. (2022). Post-model-selection inference in linear regression models: An integrated review. Statistics Surveys, 16, 86-136.\nZhang, C. H., & Zhang, S. S. (2014). Confidence intervals for low dimensional parameters in high dimensional linear models. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 76(1), 217-242.\nZhao, S., Witten, D., & Shojaie, A. (2021). In defense of the indefensible: A very naive approach to high-dimensional inference. Statistical Science, 36(4), 562-577."
   },
   {
+    "objectID": "blog/gen-vars-predefined-corr.html",
+    "href": "blog/gen-vars-predefined-corr.html",
+    "title": "Generating Variables with Predefined Correlation",
+    "section": "",
+    "text": "3 min read"
+  },
+  {
     "objectID": "blog/gen-vars-predefined-corr.html#background",
     "href": "blog/gen-vars-predefined-corr.html#background",
     "title": "Generating Variables with Predefined Correlation",
@@ -1657,6 +1930,13 @@
     "title": "Generating Variables with Predefined Correlation",
     "section": "Bottom Line",
     "text": "Bottom Line\n\nA common data practitioner’s need is to generate variables with a predefined correlation structure.\nCholesky decomposition offers a powerful and efficient way to achieve this."
+  },
+  {
+    "objectID": "blog/limits-parametric-models.html",
+    "href": "blog/limits-parametric-models.html",
+    "title": "The Limits of Parametric Models: The Cramér-Rao Bound",
+    "section": "",
+    "text": "5 min read"
   },
   {
     "objectID": "blog/limits-parametric-models.html#background",
@@ -1708,6 +1988,13 @@
     "text": "References\nGreene, William H. “Econometric analysis”. New Jersey: Prentice Hall (2000): 201-215."
   },
   {
+    "objectID": "blog/flavors-var-selection.html",
+    "href": "blog/flavors-var-selection.html",
+    "title": "The Many Flavors of Variable Selection",
+    "section": "",
+    "text": "11 min read"
+  },
+  {
     "objectID": "blog/flavors-var-selection.html#background",
     "href": "blog/flavors-var-selection.html#background",
     "title": "The Many Flavors of Variable Selection",
@@ -1748,6 +2035,13 @@
     "title": "The Many Flavors of Variable Selection",
     "section": "References",
     "text": "References\nBarber, R. F., & Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. Annals of Statistics, 43(5), 2055–2085.\nEfron, B., & Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.\nEfron, B., Hastie, T., Johnstone, I., & Tibshirani, R. (2004). Least angle regression.\nFan, J., & Li, R. (2001). Variable selection via nonconcave penalized likelihood and its oracle properties. Journal of the American Statistical Association, 96(456), 1348–1360.\nHastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction. Springer.\nTibshirani, R. (1996). Regression shrinkage and selection via the lasso. Journal of the Royal Statistical Society Series B: Statistical Methodology, 58(1), 267-288.\nWasserman, L. (2004). All of statistics: a concise course in statistical inference. Springer Science & Business Media."
+  },
+  {
+    "objectID": "blog/oracle-property.html",
+    "href": "blog/oracle-property.html",
+    "title": "The Oracle Property: What It Promises (and What It Doesn’t)",
+    "section": "",
+    "text": "4 min read"
   },
   {
     "objectID": "blog/oracle-property.html#background",
@@ -1792,6 +2086,13 @@
     "text": "References\nBühlmann, P., & van de Geer, S. (2011). Statistics for High-Dimensional Data.\nFan, J., & Li, R. (2001). Variable selection via nonconcave penalized likelihood and its oracle properties.\nZhang, C. H. (2010). Nearly unbiased variable selection under minimax concave penalty.\nZou, H. (2006). The adaptive LASSO and its oracle properties."
   },
   {
+    "objectID": "blog/correlation-transitive.html",
+    "href": "blog/correlation-transitive.html",
+    "title": "Correlation is Not (Always) Transitive",
+    "section": "",
+    "text": "4 min read"
+  },
+  {
     "objectID": "blog/correlation-transitive.html#background",
     "href": "blog/correlation-transitive.html#background",
     "title": "Correlation is Not (Always) Transitive",
@@ -1832,6 +2133,13 @@
     "title": "Correlation is Not (Always) Transitive",
     "section": "References",
     "text": "References\nOlkin, I. (1981). Range restrictions for product-moment correlation matrices. Psychometrika, 46, 469-472. doi:10.1007/BF02293804"
+  },
+  {
+    "objectID": "blog/overlapping-conf-intervals.html",
+    "href": "blog/overlapping-conf-intervals.html",
+    "title": "Overlapping Confidence Intervals and Statistical (In)Significance",
+    "section": "",
+    "text": "4 min read"
   },
   {
     "objectID": "blog/overlapping-conf-intervals.html#background",
@@ -1876,6 +2184,13 @@
     "text": "References\nCole, S. R., & Blair, R. C. (1999). Overlapping confidence intervals. Journal of the American Academy of Dermatology, 41(6), 1051-1052.\nGelman, A., & Stern, H. (2006). The difference between “significant” and “not significant” is not itself statistically significant. The American Statistician, 60(4), 328-331.\nSchenker, N., & Gentleman, J. F. (2001). On judging the significance of differences by examining the overlap between confidence intervals. The American Statistician, 55(3), 182-186."
   },
   {
+    "objectID": "blog/roles-covariates-rtc.html",
+    "href": "blog/roles-covariates-rtc.html",
+    "title": "The Roles of Covariates in Randomized Experiments",
+    "section": "",
+    "text": "3 min read"
+  },
+  {
     "objectID": "blog/roles-covariates-rtc.html#background",
     "href": "blog/roles-covariates-rtc.html#background",
     "title": "The Roles of Covariates in Randomized Experiments",
@@ -1902,6 +2217,13 @@
     "title": "Advanced Topics in Statistical Data Science",
     "section": "",
     "text": "Show Random Article\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n6 Underrated Plot Types\n\n\n\ncorrelation\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nApr 6, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nThe Many Flavors of Principal Component Analysis\n\n\n\nmachine learning\n\nflavors\n\n\n\n\n\n\n\n\n\nApr 5, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nBrief Overview of Treatment Effect Bounds\n\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nApr 2, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nWhat OLS Estimates in Causal Inference\n\n\n\ncausal inference\n\nparametric models\n\n\n\n\n\n\n\n\n\nApr 1, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nThe Many Flavors of Lasso\n\n\n\nmachine learning\n\nflavors\n\n\n\n\n\n\n\n\n\nMar 14, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nThe Oracle Property: What It Promises (and What It Doesn’t)\n\n\n\nmachine learning\n\nvariable selection\n\n\n\n\n\n\n\n\n\nMar 13, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nWhy Some Confidence Intervals Are Not Symmetric\n\n\n\nstatistical inference\n\nhypothesis testing\n\n\n\n\n\n\n\n\n\nMar 10, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nOLS with Fixed vs Random \\(X\\): What Actually Changes?\n\n\n\nparametric models\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nMar 8, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nLogistic Regression in Randomized Trials?\n\n\n\ncausal inference\n\nparametric models\n\n\n\n\n\n\n\n\n\nFeb 17, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nRandomization Inference: A Gentle Introduction\n\n\n\ncausal inference\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nFeb 12, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nGeneralized Additive Models: What You Need to Know\n\n\n\nsemiparametric models\n\nmachine learning\n\n\n\n\n\n\n\n\n\nFeb 12, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nUnderstanding Correlated Random Effects Models\n\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nFeb 11, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nThe Many Flavors of Propensity Score Methods In Causal Inference\n\n\n\ncausal inference\n\nflavors\n\n\n\n\n\n\n\n\n\nJan 22, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nThe Wilcoxon-Mann-Whitney Test is Not a Test of Medians\n\n\n\nstatistical inference\n\nhypothesis testing\n\n\n\n\n\n\n\n\n\nJan 20, 2026\n\n\n\n\n\n\n\n\n\n\n\n\nUnconditional Quantile Regression and Treatment Effects\n\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nDec 21, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Many Flavors of Matching for Causal Inference\n\n\n\ncausal inference\n\nflavors\n\n\n\n\n\n\n\n\n\nMay 27, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Many Flavors of Variable Selection\n\n\n\nvariable selection\n\nmachine learning\n\nflavors\n\n\n\n\n\n\n\n\n\nMay 26, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Many Flavors of Bootstrap\n\n\n\nbootstrap\n\nstatistical inference\n\nflavors\n\n\n\n\n\n\n\n\n\nMay 26, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Secret Life of Correlation: Myths and Thirteen Views\n\n\n\nstatistical inference\n\ncorrelation\n\n\n\n\n\n\n\n\n\nMay 24, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Kolmogorov–Smirnov Test as a Goodness-of-fit\n\n\n\nstatistical inference\n\nhypothesis testing\n\n\n\n\n\n\n\n\n\nMay 5, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nJackknife vs. Bootstrap: A Tale of Two Resamplers\n\n\n\nbootstrap\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nMay 4, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Roles of Covariates in Randomized Experiments\n\n\n\nrandomized experiments\n\ncausal inference\n\n\n\n\n\n\n\n\n\nMay 2, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nCausal Inference with Residualized Regressions\n\n\n\ncausal inference\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nMay 1, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nCausal vs. Predictive Modeling: Subtle, but Crucial Differences\n\n\n\ncausal inference\n\nmachine learning\n\n\n\n\n\n\n\n\n\nApr 30, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Two Types of Weights in Causal Inference\n\n\n\nweights\n\ncausal inference\n\n\n\n\n\n\n\n\n\nFeb 28, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nBinscatter: A New Visual Tool for Data Analysis\n\n\n\ncorrelation\n\n\n\n\n\n\n\n\n\nFeb 9, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nFilling in Missing Data with MCMC\n\n\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nJan 31, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Limits of Semiparametric Models: The Efficiency Bound\n\n\n\nstatistical inference\n\nsemiparametric models\n\n\n\n\n\n\n\n\n\nJan 22, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Limits of Nonparametric Models\n\n\n\nstatistical inference\n\nnonparametric models\n\n\n\n\n\n\n\n\n\nJan 22, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Limits of Parametric Models: The Cramér-Rao Bound\n\n\n\nstatistical inference\n\nparametric models\n\n\n\n\n\n\n\n\n\nJan 12, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Three Classes of Statistical Models\n\n\n\nparametric models\n\nsemiparametric models\n\nnonparametric models\n\n\n\n\n\n\n\n\n\nJan 12, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nThe Delta Method: Simplifying Confidence Intervals for Complex Estimators\n\n\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nJan 10, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nStein’s Paradox: A Simple Illustration\n\n\n\nstatistical inference\n\nparadox\n\n\n\n\n\n\n\n\n\nJan 10, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nMutual Information: What, Why, How, and When\n\n\n\ncorrelation\n\n\n\n\n\n\n\n\n\nJan 2, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nGenerating Variables with Predefined Correlation\n\n\n\ncorrelation\n\n\n\n\n\n\n\n\n\nDec 20, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nStratified Sampling with Continuous Variables\n\n\n\nrandomized experiments\n\ncausal inference\n\n\n\n\n\n\n\n\n\nDec 18, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nColumn-Sampling Bootstrap?\n\n\n\nbootstrap\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nDec 16, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nThe Bootstrap and its Limitations\n\n\n\nbootstrap\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nDec 16, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nSimpson’s Paradox: A Simple Illustration\n\n\n\nparadox\n\ncausal inference\n\n\n\n\n\n\n\n\n\nDec 6, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nCausation without Correlation\n\n\n\ncausal inference\n\ncorrelation\n\n\n\n\n\n\n\n\n\nNov 21, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nThe Many Flavors of Gradient Boosting\n\n\n\nmachine learning\n\nflavors\n\n\n\n\n\n\n\n\n\nNov 6, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nBayesian Analysis of Randomized Experiments: A Modern Approach\n\n\n\nrandomized experiments\n\n\n\n\n\n\n\n\n\nOct 29, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nWeights in Statistical Analyses\n\n\n\nweights\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nSep 18, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nCausality without Experiments, Unconfoundedness, or Instruments\n\n\n\ncausal inference\n\n\n\n\n\n\n\n\n\nAug 12, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nFOCI: A New Variable Selection Method\n\n\n\nvariable selection\n\nmachine learning\n\n\n\n\n\n\n\n\n\nJun 11, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nNonlinear Correlations and Chatterjee’s Coefficient\n\n\n\ncorrelation\n\nflavors\n\n\n\n\n\n\n\n\n\nApr 12, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nA Brief Introduction to Conformal Inference\n\n\n\nmachine learning\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nDec 20, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nUsing Conformal Inference for Variable Importance in Machine Learning\n\n\n\nmachine learning\n\nstatistical inference\n\nvariable selection\n\n\n\n\n\n\n\n\n\nDec 20, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nRecent Developments in False Discovery Rate\n\n\n\nmultiple testing\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nOct 27, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nML-Based Regression Adjustments in Randomized Experiments\n\n\n\nmachine learning\n\nrandomized experiments\n\n\n\n\n\n\n\n\n\nAug 1, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nThe Alphabet of Learners for Heterogeneous Treatment Effects\n\n\n\nmachine learning\n\nrandomized experiments\n\nheterogeneous treatment effects\n\nflavors\n\n\n\n\n\n\n\n\n\nJul 28, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nLasso for Heterogeneous Treatment Effects Estimation\n\n\n\nheterogeneous treatment effects\n\ncausal inference\n\nvariable selection\n\n\n\n\n\n\n\n\n\nJun 30, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nAn Overview of Machine Learning Methods in Causal Inference\n\n\n\nmachine learning\n\ncausal inference\n\nflavors\n\n\n\n\n\n\n\n\n\nApr 30, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nThe Variance of Propensity Score Matching Estimators\n\n\n\nstatistical inference\n\ncausal inference\n\n\n\n\n\n\n\n\n\nMar 30, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nCorrelation is a Cosine\n\n\n\ncorrelation\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nFeb 9, 2023\n\n\n\n\n\n\n\n\n\n\n\n\nCorrelation is Not (Always) Transitive\n\n\n\ncorrelation\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nDec 22, 2022\n\n\n\n\n\n\n\n\n\n\n\n\nLord’s Paradox: A Simple Illustration\n\n\n\ncorrelation\n\nparadox\n\n\n\n\n\n\n\n\n\nDec 18, 2022\n\n\n\n\n\n\n\n\n\n\n\n\nHypothesis Testing in Linear Machine Learning Models\n\n\n\nstatistical inference\n\nmachine learning\n\nvariable selection\n\n\n\n\n\n\n\n\n\nNov 6, 2022\n\n\n\n\n\n\n\n\n\n\n\n\nThe Many Flavors of Multiple Testing Adjustments\n\n\n\nmultiple testing\n\nstatistical inference\n\nflavors\n\n\n\n\n\n\n\n\n\nOct 22, 2022\n\n\n\n\n\n\n\n\n\n\n\n\nHypothesis Testing with Population Data\n\n\n\nhypothesis testing\n\nstatistical inference\n\n\n\n\n\n\n\n\n\nSep 23, 2022\n\n\n\n\n\n\n\n\n\n\n\n\nOverlapping Confidence Intervals and Statistical (In)Significance\n\n\n\nstatistical inference\n\nhypothesis testing\n\n\n\n\n\n\n\n\n\nAug 12, 2022\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "blog/correlation-is-cosine.html",
+    "href": "blog/correlation-is-cosine.html",
+    "title": "Correlation is a Cosine",
+    "section": "",
+    "text": "3 min read"
   },
   {
     "objectID": "blog/correlation-is-cosine.html#background",
@@ -1944,6 +2266,13 @@
     "title": "Correlation is a Cosine",
     "section": "References",
     "text": "References\nCosines and correlation, Cook 2010, blog post"
+  },
+  {
+    "objectID": "blog/randomization-inference.html",
+    "href": "blog/randomization-inference.html",
+    "title": "Randomization Inference: A Gentle Introduction",
+    "section": "",
+    "text": "6 min read"
   },
   {
     "objectID": "blog/randomization-inference.html#background",
@@ -1995,6 +2324,13 @@
     "text": "References\n\nRitzwoller, D. M., Romano, J. P., & Shaikh, A. M. (2025). Randomization Inference: Theory and Applications.\nLehmann, E. L., & Romano, J. P. (2022). Testing Statistical Hypotheses. Springer.\nGood, P. (2005). Permutation, Parametric, and Bootstrap Tests of Hypotheses. Springer."
   },
   {
+    "objectID": "blog/conformal-inference-var-selection.html",
+    "href": "blog/conformal-inference-var-selection.html",
+    "title": "Using Conformal Inference for Variable Importance in Machine Learning",
+    "section": "",
+    "text": "5 min read"
+  },
+  {
     "objectID": "blog/conformal-inference-var-selection.html#background",
     "href": "blog/conformal-inference-var-selection.html#background",
     "title": "Using Conformal Inference for Variable Importance in Machine Learning",
@@ -2037,6 +2373,13 @@
     "text": "References\nLei, J., G’Sell, M., Rinaldo, A., Tibshirani, R. J., & Wasserman, L. (2018). Distribution-free predictive inference for regression. Journal of the American Statistical Association, 113(523), 1094-1111.\nLei, J., Rinaldo, A., & Wasserman, L. (2015). A conformal prediction approach to explore functional data. Annals of Mathematics and Artificial Intelligence, 74, 29-43.\nShafer, G., & Vovk, V. (2008). A Tutorial on Conformal Prediction. Journal of Machine Learning Research, 9(3).\nVovk, V., Gammerman, A., & Shafer, G. (2005). Algorithmic learning in a random world (Vol. 29). New York: Springer."
   },
   {
+    "objectID": "blog/stratified-sampling-cont-var.html",
+    "href": "blog/stratified-sampling-cont-var.html",
+    "title": "Stratified Sampling with Continuous Variables",
+    "section": "",
+    "text": "4 min read"
+  },
+  {
     "objectID": "blog/stratified-sampling-cont-var.html#background",
     "href": "blog/stratified-sampling-cont-var.html#background",
     "title": "Stratified Sampling with Continuous Variables",
@@ -2072,6 +2415,13 @@
     "text": "Bottom Line\n\nStratified sampling with continuous variables requires balancing simplicity and sophistication.\nTraditional binning remains a practical choice for single continuous variables or very few categorical ones.\nClustering provides a robust alternative, enabling stratification with multiple continuous variables at the cost of adding complexity and tuning parameters."
   },
   {
+    "objectID": "blog/variance-ps-matching.html",
+    "href": "blog/variance-ps-matching.html",
+    "title": "The Variance of Propensity Score Matching Estimators",
+    "section": "",
+    "text": "8 min read"
+  },
+  {
     "objectID": "blog/variance-ps-matching.html#background",
     "href": "blog/variance-ps-matching.html#background",
     "title": "The Variance of Propensity Score Matching Estimators",
@@ -2105,6 +2455,13 @@
     "title": "The Variance of Propensity Score Matching Estimators",
     "section": "References",
     "text": "References\nAbadie, A., & Imbens, G. W. (2006). Large sample properties of matching estimators for average treatment effects. Econometrica, 74(1), 235-267.\nAbadie, A., & Imbens, G. W. (2008). On the failure of the bootstrap for matching estimators. Econometrica, 76(6), 1537-1557.\nAustin, P. C., & Small, D. S. (2014). The use of bootstrapping when using propensity‐score matching without replacement: a simulation study. Statistics in medicine, 33(24), 4306-4319.\nBodory, H., Camponovo, L., Huber, M., & Lechner, M. (2020). The finite sample performance of inference methods for propensity score matching and weighting estimators. Journal of Business & Economic Statistics, 38(1), 183-200.\nBusso, M., DiNardo, J., & McCrary, J. (2014). New evidence on the finite sample properties of propensity score reweighting and matching estimators. Review of Economics and Statistics, 96(5), 885-897.\nCaliendo, M., & Kopeinig, S. (2008). Some practical guidance for the implementation of propensity score matching. Journal of economic surveys, 22(1), 31-72.\nHuber, M., Lechner, M., & Wunsch, C. (2013). The performance of estimators based on the propensity score. Journal of Econometrics, 175(1), 1-21.\nImbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.\nLechner, M. (2002). Some practical issues in the evaluation of heterogeneous labour market programmes by matching methods. Journal of the Royal Statistical Society: Series A (Statistics in Society), 165(1), 59-82."
+  },
+  {
+    "objectID": "blog/generalized-additive-models.html",
+    "href": "blog/generalized-additive-models.html",
+    "title": "Generalized Additive Models: What You Need to Know",
+    "section": "",
+    "text": "6 min read"
   },
   {
     "objectID": "blog/generalized-additive-models.html#background",
@@ -2156,6 +2513,13 @@
     "text": "References\n\nHastie, T. J. (2017). Generalized additive models. Statistical models in S, 249-307.\nRue, H., Martino, S., & Chopin, N. (2009). Approximate Bayesian inference for latent Gaussian models by using integrated nested Laplace approximations. Journal of the Royal Statistical Society Series B: Statistical Methodology, 71(2), 319-392.\nWood, S. N. (2025). Generalized Additive Models. Annual Review of Statistics and Its Application, 12, 497–526.\nWood, S. N. (2017). Generalized Additive Models: An Introduction with R. CRC Press."
   },
   {
+    "objectID": "blog/corr-myths-13-views.html",
+    "href": "blog/corr-myths-13-views.html",
+    "title": "The Secret Life of Correlation: Myths and Thirteen Views",
+    "section": "",
+    "text": "7 min read"
+  },
+  {
     "objectID": "blog/corr-myths-13-views.html#background",
     "href": "blog/corr-myths-13-views.html#background",
     "title": "The Secret Life of Correlation: Myths and Thirteen Views",
@@ -2189,6 +2553,13 @@
     "title": "The Secret Life of Correlation: Myths and Thirteen Views",
     "section": "References",
     "text": "References\nvan den Heuvel, E., & Zhan, Z. (2022). Myths about linear and monotonic associations: Pearson’s \\(r\\), Spearman’s \\(\\rho\\), and Kendall’s \\(\\tau\\). The American Statistician, 76(1), 44–52.\nLee Rodgers, J., & Nicewander, W. A. (1988). Thirteen ways to look at the correlation coefficient. The American Statistician, 42(1), 59–66."
+  },
+  {
+    "objectID": "blog/flavors-pca.html",
+    "href": "blog/flavors-pca.html",
+    "title": "The Many Flavors of Principal Component Analysis",
+    "section": "",
+    "text": "7 min read"
   },
   {
     "objectID": "blog/flavors-pca.html#background",
@@ -2233,6 +2604,13 @@
     "text": "References\nHalko, N., Martinsson, P. G., & Tropp, J. A. (2011). Finding structure with randomness: Probabilistic algorithms for constructing approximate matrix decompositions. SIAM Review, 53(2), 217-288.\nJolliffe, I. T., & Cadima, J. (2016). Principal component analysis: A review and recent developments. Philosophical Transactions of the Royal Society A, 374(2065), 20150202.\nSchölkopf, B., Smola, A., & Müller, K.-R. (1998). Nonlinear component analysis as a kernel eigenvalue problem. Neural Computation, 10(5), 1299-1319.\nTipping, M. E., & Bishop, C. M. (1999). Probabilistic principal component analysis. Journal of the Royal Statistical Society: Series B, 61(3), 611-622.\nZou, H., Hastie, T., & Tibshirani, R. (2006). Sparse principal component analysis. Journal of Computational and Graphical Statistics, 15(2), 265-286."
   },
   {
+    "objectID": "blog/interpret-OLS-causal-inference.html",
+    "href": "blog/interpret-OLS-causal-inference.html",
+    "title": "What OLS Estimates in Causal Inference",
+    "section": "",
+    "text": "7 min read"
+  },
+  {
     "objectID": "blog/interpret-OLS-causal-inference.html#background",
     "href": "blog/interpret-OLS-causal-inference.html#background",
     "title": "What OLS Estimates in Causal Inference",
@@ -2273,6 +2651,13 @@
     "title": "What OLS Estimates in Causal Inference",
     "section": "References",
     "text": "References\nAngrist, J. D., & Pischke, J. S. (2009). Mostly harmless econometrics: An empiricist’s companion. Princeton university press.\nAronow, P. M., & Samii, C. (2016). Does regression produce representative estimates of causal effects? American Journal of Political Science, 60(1), 250-267.\nChattopadhyay, A., & Zubizarreta, J. R. (2023). On the implied weights of linear regression for causal inference. Biometrika, 110(3), 615-629.\nSłoczyński, T. (2022). Interpreting OLS estimands when treatment effects are heterogeneous: Smaller groups get larger weights. Review of Economics and Statistics, 104(3), 501-509."
+  },
+  {
+    "objectID": "blog/flavors-prop-score-methods.html",
+    "href": "blog/flavors-prop-score-methods.html",
+    "title": "The Many Flavors of Propensity Score Methods In Causal Inference",
+    "section": "",
+    "text": "10 min read"
   },
   {
     "objectID": "blog/flavors-prop-score-methods.html#background",
@@ -2317,6 +2702,13 @@
     "text": "References\n\nRosenbaum, P. R., & Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. Biometrika, 70(1), 41–55.\nImai, K., & Ratkovic, M. (2014). Covariate balancing propensity score. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 76(1), 243–263.\nImbens, G. W., & Rubin, D. B. (2015). Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction. Cambridge University Press.\nHainmueller, J. (2012). Entropy balancing for causal effects. Political Analysis, 20(1), 25–46."
   },
   {
+    "objectID": "blog/ml-based-adjustments.html",
+    "href": "blog/ml-based-adjustments.html",
+    "title": "ML-Based Regression Adjustments in Randomized Experiments",
+    "section": "",
+    "text": "6 min read"
+  },
+  {
     "objectID": "blog/ml-based-adjustments.html#background",
     "href": "blog/ml-based-adjustments.html#background",
     "title": "ML-Based Regression Adjustments in Randomized Experiments",
@@ -2350,6 +2742,13 @@
     "title": "ML-Based Regression Adjustments in Randomized Experiments",
     "section": "References",
     "text": "References\nBelloni, A., & Chernozhukov, V. (2013). Least squares after model selection in high-dimensional sparse models. Bernoulli 19(2): 521-547\nBloniarz, A., Liu, H., Zhang, C. H., Sekhon, J. S., & Yu, B. (2016). Lasso adjustments of treatment effect estimates in randomized experiments. Proceedings of the National Academy of Sciences, 113(27), 7383-7390.\nGuo, Y., Coey, D., Konutgan, M., Li, W., Schoener, C., & Goldman, M. (2021). Machine learning for variance reduction in online experiments. Advances in Neural Information Processing Systems, 34, 8637-8648.\nLin, W. (2013). Agnostic notes on regression adjustments to experimental data: Reexamining Freedman’s critique. Ann. Appl. Stat. 7(1): 295-318\nList, J. A., Muir, I., & Sun, G. K. (2022). Using Machine Learning for Efficient Flexible Regression Adjustment in Economic Experiments (No. w30756). National Bureau of Economic Research.\nNegi, A., & Wooldridge, J. M. (2021). Revisiting regression adjustment in experiments with heterogeneous treatment effects. Econometric Reviews, 40(5), 504-534.\nPoyarkov, A., Drutsa, A., Khalyavin, A., Gusev, G., & Serdyukov, P. (2016, August). Boosted decision tree regression adjustment for variance reduction in online controlled experiments. In Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (pp. 235-244).\nWager, S., Du, W., Taylor, J., & Tibshirani, R. J. (2016). High-dimensional regression adjustments in randomized experiments. Proceedings of the National Academy of Sciences, 113(45), 12673-12678."
+  },
+  {
+    "objectID": "blog/bootstrap-limitations.html",
+    "href": "blog/bootstrap-limitations.html",
+    "title": "The Bootstrap and its Limitations",
+    "section": "",
+    "text": "4 min read"
   },
   {
     "objectID": "blog/bootstrap-limitations.html#background",
@@ -2392,6 +2791,13 @@
     "title": "The Bootstrap and its Limitations",
     "section": "References",
     "text": "References\nEfron, B. (2000). The bootstrap and modern statistics. Journal of the American Statistical Association, 95(452), 1293-1296.\nEfron, B., & Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.\nEfron, B., & Tibshirani, R. J. (1994). An introduction to the bootstrap. Chapman and Hall/CRC.\nMacKinnon, J. G. (2006). Bootstrap methods in econometrics. Economic Record, 82, S2-S18.\nMacKinnon, J. G., & Webb, M. D. (2017). Wild bootstrap inference for wildly different cluster sizes. Journal of Applied Econometrics, 32(2), 233-254.\nMacKinnon, J. G., & Webb, M. D. (2020). Clustering methods for statistical inference. Handbook of labor, human resources and population economics, 1-37."
+  },
+  {
+    "objectID": "blog/filling-missing-data-mcmc.html",
+    "href": "blog/filling-missing-data-mcmc.html",
+    "title": "Filling in Missing Data with MCMC",
+    "section": "",
+    "text": "6 min read"
   },
   {
     "objectID": "blog/filling-missing-data-mcmc.html#background",
@@ -2443,6 +2849,13 @@
     "text": "References\nGelman, A., Carlin, J. B., Stern, H. S., & Rubin, D. B. (1995). Bayesian data analysis. Chapman and Hall/CRC.\nRubin, D B 1987 Multiple Imputation for Nonresponse in Surveys. New York, NY: John Wiley & Sons. DOI: https://doi.org/10.1002/9780470316696\nSchafer, J L 1997 Analysis of Incomplete Multivariate Data. Boca Raton, FL: Chapman & Hall/CRC. DOI: https://doi.org/10.1201/9781439821862\nScheuren, F 2005 Multiple imputation: How it began and continues. The American Statistician, 59(4): 315–319.\nTakahashi, M. (2017). Statistical inference in missing data by MCMC and non-MCMC multiple imputation algorithms: Assessing the effects of between-imputation iterations. Data Science Journal, 16, 37-37."
   },
   {
+    "objectID": "blog/six-plots-you-should-know.html",
+    "href": "blog/six-plots-you-should-know.html",
+    "title": "6 Underrated Plot Types",
+    "section": "",
+    "text": "7 min read"
+  },
+  {
     "objectID": "blog/six-plots-you-should-know.html#background",
     "href": "blog/six-plots-you-should-know.html#background",
     "title": "6 Underrated Plot Types",
@@ -2476,6 +2889,13 @@
     "title": "6 Underrated Plot Types",
     "section": "References",
     "text": "References\nWilke, C. O. (2019). Fundamentals of Data Visualization. O’Reilly Media."
+  },
+  {
+    "objectID": "blog/flavors-het-treatment-effects.html",
+    "href": "blog/flavors-het-treatment-effects.html",
+    "title": "The Alphabet of Learners for Heterogeneous Treatment Effects",
+    "section": "",
+    "text": "6 min read"
   },
   {
     "objectID": "blog/flavors-het-treatment-effects.html#background",
@@ -2518,6 +2938,13 @@
     "title": "The Alphabet of Learners for Heterogeneous Treatment Effects",
     "section": "References",
     "text": "References\nHu, A. (2022). Heterogeneous treatment effects analysis for social scientists: A review. Social Science Research, 102810.\nKünzel, S. R., Sekhon, J. S., Bickel, P. J., & Yu, B. (2019). Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the national academy of sciences, 116(10), 4156-4165.\nNie, X., & Wager, S. (2021). Quasi-oracle estimation of heterogeneous treatment effects. Biometrika, 108(2), 299-319."
+  },
+  {
+    "objectID": "blog/wmw-test-fails-medians.html",
+    "href": "blog/wmw-test-fails-medians.html",
+    "title": "The Wilcoxon-Mann-Whitney Test is Not a Test of Medians",
+    "section": "",
+    "text": "5 min read"
   },
   {
     "objectID": "blog/wmw-test-fails-medians.html#background",

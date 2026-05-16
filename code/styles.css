@@ -91,6 +91,62 @@ th {
     text-decoration: underline; /* Add underline on hover */
 }
 
+/* Related posts (blog posts), injected by code/related-posts.js */
+#related-posts {
+    margin-top: 3em;
+    padding-top: 1.5em;
+    border-top: 1px solid #ddd;
+}
+
+#related-posts h2 {
+    font-size: 1.3em;
+    margin-top: 0;
+    margin-bottom: 0.75em;
+}
+
+.related-posts-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.related-posts-list li {
+    margin-bottom: 0.5em;
+}
+
+body.quarto-dark #related-posts {
+    border-top-color: #444;
+}
+
+/* Reading-time badge (blog posts), injected by code/reading-time.lua */
+.reading-time {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-bottom: 1.25em;
+    font-style: italic;
+}
+
+body.quarto-dark .reading-time {
+    color: #9aa0a6;
+}
+
+/* Reading-progress bar (blog posts) */
+#reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 5px;
+    width: 0%;
+    background: #2780e3; /* cosmo primary */
+    z-index: 1030;
+    transition: width 0.05s linear;
+    pointer-events: none;
+}
+
+body.quarto-dark #reading-progress {
+    background: #00e0e0; /* cyborg accent */
+}
+
 /* Back-to-top button styles */
 #back-to-top {
     position: fixed; /* Fix the button to a specific position on the screen */

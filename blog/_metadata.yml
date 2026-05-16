@@ -1,5 +1,6 @@
 filters:
   - ../code/code-insertion.lua
+  - ../code/reading-time.lua
 insert-before-post: _sharebuttons.md
 
 comments:
@@ -18,3 +19,4 @@ format:
     include-in-header:
       text: |
         <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=680ee8d89f7a510019a96bcf&product=inline-share-buttons' async='async'></script>
+        <script src="../code/related-posts.js" defer></script>

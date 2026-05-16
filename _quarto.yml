@@ -1,6 +1,9 @@
 project:
   type: website
   output-dir: docs
+  pre-render: python3 code/build-related.py
+  resources:
+    - code/related-posts.json
 
 website:
   title: "Vasco Yasenov"
@@ -60,7 +63,10 @@ format:
       <script src="../code/open-links-new-tab.js"></script>
       <script src="../code/back-to-top.js"></script>
       <script src="../code/random-article.js"></script>
+      <script src="../code/reading-progress.js" defer></script>
       <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Source+Code+Pro&display=swap" rel="stylesheet">
     toc: true
     page-layout: full
+    code-copy: true
+    lightbox: auto
     include-after-body: code/site-after-body.html

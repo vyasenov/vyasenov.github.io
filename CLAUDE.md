@@ -14,10 +14,11 @@ Personal website and blog for Vasco Yasenov, built with [Quarto](https://quarto.
 - `blog/` — blog posts as `.qmd` files; each post is self-contained
 - `blog/_metadata.yml` — shared blog metadata (giscus comments, share buttons, Lua filter)
 - `blog/_sharebuttons.md` — ShareThis share buttons inserted before each post
-- `_drafts/` — draft posts not included in the rendered site
-- `code/` — CSS, JS, and Lua assets (`styles.css`, `open-links-new-tab.js`, `back-to-top.js`, `random-article.js`, `code-insertion.lua`)
+- `_drafts/` — draft posts and scratch notes; gitignored (local-only, not rendered)
+- `code/` — site assets: `styles.css`, `open-links-new-tab.js`, `back-to-top.js`, `random-article.js`, `code-insertion.lua`, `site-after-body.html`, plus helper script `six_plots_grid.py` and vendored libs (`bindings/`, `tom-select/`, `vis-9.1.2/`) used by `mind-map.qmd`
 - `docs/` — rendered output (do not edit by hand)
 - `files/` — static assets (PDFs, images, etc.)
+- `requirements.txt` — Python deps for executable code chunks in posts (numpy, pandas, scikit-learn, statsmodels, etc.)
 - Top-level `.qmd` pages: `index.qmd`, `about.qmd`, `cv.qmd`, `research.qmd`, `software.qmd`, `mind-map.qmd`, `childrenbook.qmd`
 
 ## Common Commands

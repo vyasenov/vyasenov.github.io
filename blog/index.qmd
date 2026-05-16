@@ -3,7 +3,7 @@ title: "Advanced Topics in Statistical Data Science"
 listing:
   type: default
   sort: date desc
-  categories: true 
+  categories: true
   contents: .
   page-size: 10
 ---

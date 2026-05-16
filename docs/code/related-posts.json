@@ -1,0 +1,612 @@
+[
+  {
+    "slug": "bayesian-ab-tests",
+    "title": "Bayesian Analysis of Randomized Experiments: A Modern Approach",
+    "date": "2024-10-29",
+    "categories": [
+      "randomized experiments"
+    ],
+    "href": "bayesian-ab-tests.html"
+  },
+  {
+    "slug": "binscatter",
+    "title": "Binscatter: A New Visual Tool for Data Analysis",
+    "date": "2025-02-09",
+    "categories": [
+      "correlation"
+    ],
+    "href": "binscatter.html"
+  },
+  {
+    "slug": "bootstrap-limitations",
+    "title": "The Bootstrap and its Limitations",
+    "date": "2024-12-16",
+    "categories": [
+      "bootstrap",
+      "statistical inference"
+    ],
+    "href": "bootstrap-limitations.html"
+  },
+  {
+    "slug": "causality-wo-experiments",
+    "title": "Causality without Experiments, Unconfoundedness, or Instruments",
+    "date": "2024-08-12",
+    "categories": [
+      "causal inference"
+    ],
+    "href": "causality-wo-experiments.html"
+  },
+  {
+    "slug": "causation-without-correlation",
+    "title": "Causation without Correlation",
+    "date": "2024-11-21",
+    "categories": [
+      "causal inference",
+      "correlation"
+    ],
+    "href": "causation-without-correlation.html"
+  },
+  {
+    "slug": "ci-residualized-reg",
+    "title": "Causal Inference with Residualized Regressions",
+    "date": "2025-05-01",
+    "categories": [
+      "causal inference",
+      "statistical inference"
+    ],
+    "href": "ci-residualized-reg.html"
+  },
+  {
+    "slug": "column-sampling-bootstrap",
+    "title": "Column-Sampling Bootstrap?",
+    "date": "2024-12-16",
+    "categories": [
+      "bootstrap",
+      "statistical inference"
+    ],
+    "href": "column-sampling-bootstrap.html"
+  },
+  {
+    "slug": "conformal-inference-var-selection",
+    "title": "Using Conformal Inference for Variable Importance in Machine Learning",
+    "date": "2023-12-20",
+    "categories": [
+      "machine learning",
+      "statistical inference",
+      "variable selection"
+    ],
+    "href": "conformal-inference-var-selection.html"
+  },
+  {
+    "slug": "conformal-inference",
+    "title": "A Brief Introduction to Conformal Inference",
+    "date": "2023-12-20",
+    "categories": [
+      "machine learning",
+      "statistical inference"
+    ],
+    "href": "conformal-inference.html"
+  },
+  {
+    "slug": "corr-myths-13-views",
+    "title": "The Secret Life of Correlation: Myths and Thirteen Views",
+    "date": "2025-05-24",
+    "categories": [
+      "statistical inference",
+      "correlation"
+    ],
+    "href": "corr-myths-13-views.html"
+  },
+  {
+    "slug": "correlated-random-effects",
+    "title": "Understanding Correlated Random Effects Models",
+    "date": "2026-02-11",
+    "categories": [
+      "causal inference"
+    ],
+    "href": "correlated-random-effects.html"
+  },
+  {
+    "slug": "correlation-is-cosine",
+    "title": "Correlation is a Cosine",
+    "date": "2023-02-09",
+    "categories": [
+      "correlation",
+      "statistical inference"
+    ],
+    "href": "correlation-is-cosine.html"
+  },
+  {
+    "slug": "correlation-transitive",
+    "title": "Correlation is Not (Always) Transitive",
+    "date": "2022-12-22",
+    "categories": [
+      "correlation",
+      "statistical inference"
+    ],
+    "href": "correlation-transitive.html"
+  },
+  {
+    "slug": "delta-method",
+    "title": "The Delta Method: Simplifying Confidence Intervals for Complex Estimators",
+    "date": "2025-01-10",
+    "categories": [
+      "statistical inference"
+    ],
+    "href": "delta-method.html"
+  },
+  {
+    "slug": "diff-causal-predictive-models",
+    "title": "Causal vs. Predictive Modeling: Subtle, but Crucial Differences",
+    "date": "2025-04-30",
+    "categories": [
+      "causal inference",
+      "machine learning"
+    ],
+    "href": "diff-causal-predictive-models.html"
+  },
+  {
+    "slug": "filling-missing-data-mcmc",
+    "title": "Filling in Missing Data with MCMC",
+    "date": "2025-01-31",
+    "categories": [
+      "statistical inference"
+    ],
+    "href": "filling-missing-data-mcmc.html"
+  },
+  {
+    "slug": "flavors-bootstrap",
+    "title": "The Many Flavors of Bootstrap",
+    "date": "2025-05-26",
+    "categories": [
+      "bootstrap",
+      "statistical inference",
+      "flavors"
+    ],
+    "href": "flavors-bootstrap.html"
+  },
+  {
+    "slug": "flavors-correlation-coef",
+    "title": "Nonlinear Correlations and Chatterjee\u2019s Coefficient",
+    "date": "2024-04-12",
+    "categories": [
+      "correlation",
+      "flavors"
+    ],
+    "href": "flavors-correlation-coef.html"
+  },
+  {
+    "slug": "flavors-gradient-boosting",
+    "title": "The Many Flavors of Gradient Boosting",
+    "date": "2024-11-06",
+    "categories": [
+      "machine learning",
+      "flavors"
+    ],
+    "href": "flavors-gradient-boosting.html"
+  },
+  {
+    "slug": "flavors-het-treatment-effects",
+    "title": "The Alphabet of Learners for Heterogeneous Treatment Effects",
+    "date": "2023-07-28",
+    "categories": [
+      "machine learning",
+      "randomized experiments",
+      "heterogeneous treatment effects",
+      "flavors"
+    ],
+    "href": "flavors-het-treatment-effects.html"
+  },
+  {
+    "slug": "flavors-lasso",
+    "title": "The Many Flavors of Lasso",
+    "date": "2026-03-14",
+    "categories": [
+      "machine learning",
+      "flavors"
+    ],
+    "href": "flavors-lasso.html"
+  },
+  {
+    "slug": "flavors-matching-methods",
+    "title": "The Many Flavors of Matching for Causal Inference",
+    "date": "2025-05-27",
+    "categories": [
+      "causal inference",
+      "flavors"
+    ],
+    "href": "flavors-matching-methods.html"
+  },
+  {
+    "slug": "flavors-ml-methods-ci",
+    "title": "An Overview of Machine Learning Methods in Causal Inference",
+    "date": "2023-04-30",
+    "categories": [
+      "machine learning",
+      "causal inference",
+      "flavors"
+    ],
+    "href": "flavors-ml-methods-ci.html"
+  },
+  {
+    "slug": "flavors-multiple-testing",
+    "title": "The Many Flavors of Multiple Testing Adjustments",
+    "date": "2022-10-22",
+    "categories": [
+      "multiple testing",
+      "statistical inference",
+      "flavors"
+    ],
+    "href": "flavors-multiple-testing.html"
+  },
+  {
+    "slug": "flavors-pca",
+    "title": "The Many Flavors of Principal Component Analysis",
+    "date": "2026-04-05",
+    "categories": [
+      "machine learning",
+      "flavors"
+    ],
+    "href": "flavors-pca.html"
+  },
+  {
+    "slug": "flavors-prop-score-methods",
+    "title": "The Many Flavors of Propensity Score Methods In Causal Inference",
+    "date": "2026-01-22",
+    "categories": [
+      "causal inference",
+      "flavors"
+    ],
+    "href": "flavors-prop-score-methods.html"
+  },
+  {
+    "slug": "flavors-var-selection",
+    "title": "The Many Flavors of Variable Selection",
+    "date": "2025-05-26",
+    "categories": [
+      "variable selection",
+      "machine learning",
+      "flavors"
+    ],
+    "href": "flavors-var-selection.html"
+  },
+  {
+    "slug": "foci",
+    "title": "FOCI: A New Variable Selection Method",
+    "date": "2024-06-11",
+    "categories": [
+      "variable selection",
+      "machine learning"
+    ],
+    "href": "foci.html"
+  },
+  {
+    "slug": "gen-vars-predefined-corr",
+    "title": "Generating Variables with Predefined Correlation",
+    "date": "2024-12-20",
+    "categories": [
+      "correlation"
+    ],
+    "href": "gen-vars-predefined-corr.html"
+  },
+  {
+    "slug": "generalized-additive-models",
+    "title": "Generalized Additive Models: What You Need to Know",
+    "date": "2026-02-12",
+    "categories": [
+      "semiparametric models",
+      "machine learning"
+    ],
+    "href": "generalized-additive-models.html"
+  },
+  {
+    "slug": "hypothesis-testing-all-data",
+    "title": "Hypothesis Testing with Population Data",
+    "date": "2022-09-23",
+    "categories": [
+      "hypothesis testing",
+      "statistical inference"
+    ],
+    "href": "hypothesis-testing-all-data.html"
+  },
+  {
+    "slug": "hypothesis-testing-linear-ml",
+    "title": "Hypothesis Testing in Linear Machine Learning Models",
+    "date": "2022-11-06",
+    "categories": [
+      "statistical inference",
+      "machine learning",
+      "variable selection"
+    ],
+    "href": "hypothesis-testing-linear-ml.html"
+  },
+  {
+    "slug": "interpret-OLS-causal-inference",
+    "title": "What OLS Estimates in Causal Inference",
+    "date": "2026-04-01",
+    "categories": [
+      "causal inference",
+      "parametric models"
+    ],
+    "href": "interpret-OLS-causal-inference.html"
+  },
+  {
+    "slug": "jackknife-vs-bootstrap",
+    "title": "Jackknife vs. Bootstrap: A Tale of Two Resamplers",
+    "date": "2025-05-04",
+    "categories": [
+      "bootstrap",
+      "statistical inference"
+    ],
+    "href": "jackknife-vs-bootstrap.html"
+  },
+  {
+    "slug": "ks-test-one-sample",
+    "title": "The Kolmogorov\u2013Smirnov Test as a Goodness-of-fit",
+    "date": "2025-05-05",
+    "categories": [
+      "statistical inference",
+      "hypothesis testing"
+    ],
+    "href": "ks-test-one-sample.html"
+  },
+  {
+    "slug": "lasso-heterogeneous-effects",
+    "title": "Lasso for Heterogeneous Treatment Effects Estimation",
+    "date": "2023-06-30",
+    "categories": [
+      "heterogeneous treatment effects",
+      "causal inference",
+      "variable selection"
+    ],
+    "href": "lasso-heterogeneous-effects.html"
+  },
+  {
+    "slug": "limits-nonparametric-models",
+    "title": "The Limits of Nonparametric Models",
+    "date": "2025-01-22",
+    "categories": [
+      "statistical inference",
+      "nonparametric models"
+    ],
+    "href": "limits-nonparametric-models.html"
+  },
+  {
+    "slug": "limits-parametric-models",
+    "title": "The Limits of Parametric Models: The Cram\u00e9r-Rao Bound",
+    "date": "2025-01-12",
+    "categories": [
+      "statistical inference",
+      "parametric models"
+    ],
+    "href": "limits-parametric-models.html"
+  },
+  {
+    "slug": "limits-semiparam-models",
+    "title": "The Limits of Semiparametric Models: The Efficiency Bound",
+    "date": "2025-01-22",
+    "categories": [
+      "statistical inference",
+      "semiparametric models"
+    ],
+    "href": "limits-semiparam-models.html"
+  },
+  {
+    "slug": "logit-randomized-experiments",
+    "title": "Logistic Regression in Randomized Trials?",
+    "date": "2026-02-17",
+    "categories": [
+      "causal inference",
+      "parametric models"
+    ],
+    "href": "logit-randomized-experiments.html"
+  },
+  {
+    "slug": "ml-based-adjustments",
+    "title": "ML-Based Regression Adjustments in Randomized Experiments",
+    "date": "2023-08-01",
+    "categories": [
+      "machine learning",
+      "randomized experiments"
+    ],
+    "href": "ml-based-adjustments.html"
+  },
+  {
+    "slug": "mutual-information",
+    "title": "Mutual Information: What, Why, How, and When",
+    "date": "2025-01-02",
+    "categories": [
+      "correlation"
+    ],
+    "href": "mutual-information.html"
+  },
+  {
+    "slug": "nonsymmetric-conf-int",
+    "title": "Why Some Confidence Intervals Are Not Symmetric",
+    "date": "2026-03-10",
+    "categories": [
+      "statistical inference",
+      "hypothesis testing"
+    ],
+    "href": "nonsymmetric-conf-int.html"
+  },
+  {
+    "slug": "ols-fixed-random-x",
+    "title": "OLS with Fixed vs Random $X$: What Actually Changes?",
+    "date": "2026-03-08",
+    "categories": [
+      "parametric models",
+      "statistical inference"
+    ],
+    "href": "ols-fixed-random-x.html"
+  },
+  {
+    "slug": "oracle-property",
+    "title": "The Oracle Property: What It Promises (and What It Doesn't)",
+    "date": "2026-03-13",
+    "categories": [
+      "machine learning",
+      "variable selection"
+    ],
+    "href": "oracle-property.html"
+  },
+  {
+    "slug": "overlapping-conf-intervals",
+    "title": "Overlapping Confidence Intervals and Statistical (In)Significance",
+    "date": "2022-08-12",
+    "categories": [
+      "statistical inference",
+      "hypothesis testing"
+    ],
+    "href": "overlapping-conf-intervals.html"
+  },
+  {
+    "slug": "paradox-lord",
+    "title": "Lord\u2019s Paradox: A Simple Illustration",
+    "date": "2022-12-18",
+    "categories": [
+      "correlation",
+      "paradox"
+    ],
+    "href": "paradox-lord.html"
+  },
+  {
+    "slug": "paradox-simpson",
+    "title": "Simpson\u2019s Paradox: A Simple Illustration",
+    "date": "2024-12-06",
+    "categories": [
+      "paradox",
+      "causal inference"
+    ],
+    "href": "paradox-simpson.html"
+  },
+  {
+    "slug": "paradox-stein",
+    "title": "Stein\u2019s Paradox: A Simple Illustration",
+    "date": "2025-01-10",
+    "categories": [
+      "statistical inference",
+      "paradox"
+    ],
+    "href": "paradox-stein.html"
+  },
+  {
+    "slug": "randomization-inference",
+    "title": "Randomization Inference: A Gentle Introduction",
+    "date": "2026-02-12",
+    "categories": [
+      "causal inference",
+      "statistical inference"
+    ],
+    "href": "randomization-inference.html"
+  },
+  {
+    "slug": "recent-dev-fdr",
+    "title": "Recent Developments in False Discovery Rate",
+    "date": "2023-10-27",
+    "categories": [
+      "multiple testing",
+      "statistical inference"
+    ],
+    "href": "recent-dev-fdr.html"
+  },
+  {
+    "slug": "roles-covariates-rtc",
+    "title": "The Roles of Covariates in Randomized Experiments",
+    "date": "2025-05-02",
+    "categories": [
+      "randomized experiments",
+      "causal inference"
+    ],
+    "href": "roles-covariates-rtc.html"
+  },
+  {
+    "slug": "six-plots-you-should-know",
+    "title": "6 Underrated Plot Types",
+    "date": "2026-04-06",
+    "categories": [
+      "correlation",
+      "statistical inference"
+    ],
+    "href": "six-plots-you-should-know.html"
+  },
+  {
+    "slug": "stratified-sampling-cont-var",
+    "title": "Stratified Sampling with Continuous Variables",
+    "date": "2024-12-18",
+    "categories": [
+      "randomized experiments",
+      "causal inference"
+    ],
+    "href": "stratified-sampling-cont-var.html"
+  },
+  {
+    "slug": "three-classes-stat-models",
+    "title": "The Three Classes of Statistical Models",
+    "date": "2025-01-12",
+    "categories": [
+      "parametric models",
+      "semiparametric models",
+      "nonparametric models"
+    ],
+    "href": "three-classes-stat-models.html"
+  },
+  {
+    "slug": "treatment-effects-bounds",
+    "title": "Brief Overview of Treatment Effect Bounds",
+    "date": "2026-04-02",
+    "categories": [
+      "causal inference"
+    ],
+    "href": "treatment-effects-bounds.html"
+  },
+  {
+    "slug": "two-types-weights-causality",
+    "title": "The Two Types of Weights in Causal Inference",
+    "date": "2025-02-28",
+    "categories": [
+      "weights",
+      "causal inference"
+    ],
+    "href": "two-types-weights-causality.html"
+  },
+  {
+    "slug": "unconditional-qreg",
+    "title": "*Unconditional* Quantile Regression and Treatment Effects",
+    "date": "2025-12-21",
+    "categories": [
+      "causal inference"
+    ],
+    "href": "unconditional-qreg.html"
+  },
+  {
+    "slug": "variance-ps-matching",
+    "title": "The Variance of Propensity Score Matching Estimators",
+    "date": "2023-03-30",
+    "categories": [
+      "statistical inference",
+      "causal inference"
+    ],
+    "href": "variance-ps-matching.html"
+  },
+  {
+    "slug": "weights-statistics",
+    "title": "Weights in Statistical Analyses",
+    "date": "2024-09-18",
+    "categories": [
+      "weights",
+      "statistical inference"
+    ],
+    "href": "weights-statistics.html"
+  },
+  {
+    "slug": "wmw-test-fails-medians",
+    "title": "The Wilcoxon-Mann-Whitney Test is Not a Test of Medians",
+    "date": "2026-01-20",
+    "categories": [
+      "statistical inference",
+      "hypothesis testing"
+    ],
+    "href": "wmw-test-fails-medians.html"
+  }
+]
