@@ -30,6 +30,9 @@ website:
           href: childrenbook.qmd
         - text: TV Series Ratings
           href: https://huggingface.co/spaces/yasenov/tv-series-viz
+      - icon: rss
+        href: blog/index.xml
+        aria-label: RSS feed
       - icon: github
         href: https://github.com/vyasenov
         target: _blank
@@ -69,4 +72,7 @@ format:
     page-layout: full
     code-copy: true
     lightbox: auto
+    open-graph: true
+    twitter-card:
+      card-style: summary_large_image
     include-after-body: code/site-after-body.html

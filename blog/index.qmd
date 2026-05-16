@@ -6,6 +6,7 @@ listing:
   categories: true
   contents: .
   page-size: 10
+  feed: true
 ---
 
 <div id="random-article-sidebar-wrapper" style="display: none; margin-top: 1.25rem;">

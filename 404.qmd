@@ -1,0 +1,19 @@
+---
+title: "404: Failed to reject the null hypothesis"
+toc: false
+---
+
+We tested the hypothesis that this page exists.
+
+- $H_0$: page exists
+- $H_1$: page does not exist
+- $p$-value: $1.000$
+
+We fail to reject $H_0$ — but the evidence is, frankly, embarrassing.
+
+Try one of these instead:
+
+- [Home](/)
+- [Blog](/blog/index.html)
+- [Research](/research.html)
+- [About](/about.html)

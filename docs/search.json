@@ -1390,7 +1390,7 @@
     "href": "blog/weights-statistics.html",
     "title": "Weights in Statistical Analyses",
     "section": "",
-    "text": "6 min read"
+    "text": "7 min read"
   },
   {
     "objectID": "blog/weights-statistics.html#background",
@@ -1526,6 +1526,13 @@
     "text": "English (pdf)   Български (pdf)   Amazon (paperback) \n\n\n\n\n  \n\n English (pdf)   Български (pdf)   Amazon (paperback)"
   },
   {
+    "objectID": "mind-map.html",
+    "href": "mind-map.html",
+    "title": "Visualizing the World of Causal Inference",
+    "section": "",
+    "text": "This interactive mind map presents a structured overview of methods for treatment effect estimation in causal inference grouped by its core identification strategy.\n\n\n  \n    \n      Glossary\n    \n    \n      \n        PS: Propensity Score\n        FE: Fixed Effects\n        RE: Random Effects\n        ML: Machine Learning\n        DiD: Difference-in-Differences\n        IV: Instrumental Variables\n        SC: Synthetic Control\n        GMM: Generalized Method of Moments\n        TWFE: Two-Way Fixed Effects\n        ATE: Average Treatment Effect\n        CATE: Conditional Average Treatment Effect\n        QTE: Quantile Treatment Effect\n        CF: Control Function\n        2SLS: Two-Stage Least Squares\n        RD: Regression Discontinuity"
+  },
+  {
     "objectID": "research.html",
     "href": "research.html",
     "title": "Research Publications",
@@ -1545,13 +1552,6 @@
     "title": "Research Publications",
     "section": "Non-Academic",
     "text": "Non-Academic\n\n\n“Immigration in Local US Economies was Associated with Strong Native Wage Growth for 40 Years” (w/ Giovanni Peri) Global Migration Center (UC Davis) 03/2020\n\n\n\n\n“New Evidence on Immigration and Jobs” (w/ Giovanni Peri) The Wall Street Journal, 01/2016"
-  },
-  {
-    "objectID": "mind-map.html",
-    "href": "mind-map.html",
-    "title": "Visualizing the World of Causal Inference",
-    "section": "",
-    "text": "This interactive mind map presents a structured overview of methods for treatment effect estimation in causal inference grouped by its core identification strategy.\n\n\n  \n    \n      Glossary\n    \n    \n      \n        PS: Propensity Score\n        FE: Fixed Effects\n        RE: Random Effects\n        ML: Machine Learning\n        DiD: Difference-in-Differences\n        IV: Instrumental Variables\n        SC: Synthetic Control\n        GMM: Generalized Method of Moments\n        TWFE: Two-Way Fixed Effects\n        ATE: Average Treatment Effect\n        CATE: Conditional Average Treatment Effect\n        QTE: Quantile Treatment Effect\n        CF: Control Function\n        2SLS: Two-Stage Least Squares\n        RD: Regression Discontinuity"
   },
   {
     "objectID": "index.html",
