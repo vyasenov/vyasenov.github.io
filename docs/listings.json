@@ -2,6 +2,9 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/iv-randomized-experiments.html",
+      "/blog/lasso-theory-guarantees.html",
+      "/blog/second-gen-pvalues.html",
       "/blog/six-plots-you-should-know.html",
       "/blog/flavors-pca.html",
       "/blog/treatment-effects-bounds.html",

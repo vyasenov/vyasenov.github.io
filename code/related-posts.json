@@ -331,6 +331,16 @@
     "href": "interpret-OLS-causal-inference.html"
   },
   {
+    "slug": "iv-randomized-experiments",
+    "title": "The Role of Instrumental Variables in Randomized Experiments",
+    "date": "2026-06-11",
+    "categories": [
+      "causal inference",
+      "randomized experiments"
+    ],
+    "href": "iv-randomized-experiments.html"
+  },
+  {
     "slug": "jackknife-vs-bootstrap",
     "title": "Jackknife vs. Bootstrap: A Tale of Two Resamplers",
     "date": "2025-05-04",
@@ -360,6 +370,17 @@
       "variable selection"
     ],
     "href": "lasso-heterogeneous-effects.html"
+  },
+  {
+    "slug": "lasso-theory-guarantees",
+    "title": "Lasso and Its Theoretical Guarantees",
+    "date": "2026-06-11",
+    "categories": [
+      "machine learning",
+      "variable selection",
+      "statistical inference"
+    ],
+    "href": "lasso-theory-guarantees.html"
   },
   {
     "slug": "limits-nonparametric-models",
@@ -519,6 +540,16 @@
       "causal inference"
     ],
     "href": "roles-covariates-rtc.html"
+  },
+  {
+    "slug": "second-gen-pvalues",
+    "title": "Second-Generation P-Values: A Worthy Idea That Did Not Catch On",
+    "date": "2026-06-11",
+    "categories": [
+      "hypothesis testing",
+      "statistical inference"
+    ],
+    "href": "second-gen-pvalues.html"
   },
   {
     "slug": "six-plots-you-should-know",

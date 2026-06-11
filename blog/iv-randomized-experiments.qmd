@@ -1,0 +1,95 @@
+---
+title: "The Role of Instrumental Variables in Randomized Experiments"
+date: "2026-06-11"
+categories: [causal inference, randomized experiments]
+---
+
+## Background
+
+Instrumental variables (IV) are econometricians' pride. They underpin a great many scientific findings, and even the Nobel committee in Stockholm seems fond of them, judging by the laureates it picks. Yet their prominence outside academia is limited, and so I have not featured them on this blog as often as their importance warrants. Today I change that.
+
+My goal here is to give an overview of how one can use instrumental variables *inside* randomized experiments. The material draws on the recent NEJM survey by Angrist, Gao, Hull, and Yeh (2025), which makes the case for IV methods in clinical trials. I keep the mathematical rigor to a minimum and shine the spotlight on the practical side of the ideas. A caveat worth stating up front: IVs are arguably even more powerful in the *absence* of randomization, where they rescue observational studies from confounding — but that is a separate topic for another day.
+
+The setup that motivates everything below is simple and familiar to anyone who has run an experiment: randomized trials often fail to go according to plan. People assigned to treatment do not take it; people assigned to control find a way to get it anyway. IVs offer a principled way to recover causal effects when that happens.
+
+## Notation
+
+Index participants by $i$. Let $Z_i \in \{0, 1\}$ denote random *assignment* to treatment, and $T_i \in \{0, 1\}$ denote the treatment actually *received*. In a clean experiment these coincide, but with noncompliance they need not: a participant can have $Z_i = 1, T_i = 0$ (assigned but untreated) or $Z_i = 0, T_i = 1$ (a control who crossed over). The instrument is the randomized assignment $Z_i$; the endogenous variable is the received treatment $T_i$. Let $Y_i$ be the outcome.
+
+Following the potential-outcomes framework, write $Y_i(1)$ and $Y_i(0)$ for participant $i$'s outcome with and without treatment; the individual causal effect is $Y_i(1) - Y_i(0)$, forever unobservable since only one of the two is realized. Likewise, let $T_i(z)$ be the treatment $i$ would take under assignment $z$. This last object lets us partition the population into four latent types:
+
+- **Compliers** take treatment when assigned and not otherwise: $T_i(1) = 1, T_i(0) = 0$.
+- **Always-takers** take treatment regardless: $T_i(1) = T_i(0) = 1$.
+- **Never-takers** refuse regardless: $T_i(1) = T_i(0) = 0$.
+- **Defiers** do the opposite of their assignment — assumed away below.
+
+Three quantities organize the analysis. The **first stage** is the effect of assignment on treatment received, i.e. the difference in treatment rates between the assigned-treatment and assigned-control groups — also called *compliance*. The **reduced form** (or intention-to-treat, ITT, effect) is the effect of assignment on the outcome. And the **local average treatment effect** (LATE) is the average causal effect among compliers.
+
+The whole apparatus rests on four assumptions: (i) random assignment of $Z_i$; (ii) a *first-stage* (relevance) condition — assignment must actually move treatment, so compliance is non-zero; (iii) *monotonicity* — assignment never pushes anyone *away* from treatment, which rules out defiers; and (iv) the *exclusion restriction* — assignment affects the outcome only through treatment receipt, never directly.
+
+To keep things concrete I will borrow the survey's running example: the ISCHEMIA trial, which randomized roughly 5,000 patients with coronary artery disease to an invasive revascularization strategy ($Z_i = 1$) or conservative medical therapy ($Z_i = 0$), measuring quality of life one year later on the Seattle Angina Questionnaire (SAQ).
+
+## A Closer Look
+
+### Use Case #1: Noncompliance
+
+In a trial where everyone complies, $T_i = Z_i$, and the difference in mean outcomes by assignment *is* the average treatment effect. Noncompliance breaks this. Suppose treatment effects are constant and equal to $\beta$, so that $Y_i = Y_i(0) + \beta T_i$. Then a little algebra on the assignment-based comparison gives
+
+$$
+\underbrace{\text{ITT effect}}_{\text{reduced form}} = \beta \times \underbrace{\text{Compliance}}_{\text{first stage}}.
+$$
+
+The intuition is that the ITT effect gets *diluted*: when only a fraction of those assigned actually take treatment, the assignment-versus-assignment comparison mixes in untreated people on the treatment side and crossovers on the control side, shrinking the apparent effect toward zero. If compliance is, say, $0.4$, the ITT understates the true effect by more than half.
+
+The fix falls right out of the identity. Dividing the reduced form by the first stage recovers the effect:
+
+$$
+\beta = \frac{\text{ITT effect}}{\text{Compliance}} = \frac{\text{reduced form}}{\text{first stage}}.
+$$
+
+This ratio of differences in means is the heart of IV analysis — the Wald estimator. When effects are heterogeneous, the LATE theorem (Imbens and Angrist, 1994) tells us this same ratio identifies not some universal $\beta$ but the average effect *for compliers*:
+
+$$
+\frac{\text{ITT effect}}{\text{Compliance}} = \mathbb{E}\big[Y_i(1) - Y_i(0) \mid \text{complier}\big].
+$$
+
+In ISCHEMIA, the assigned-invasive group scored about $3.66$ points higher on SAQ quality of life than the assigned-conservative group (the reduced form). Compliance was about $0.69$ — roughly $80\%$ revascularized when assigned invasive minus $12\%$ revascularized when assigned conservative. Dividing gives a LATE of $3.66 / 0.69 \approx 5.3$, nearly $50\%$ larger than the ITT and, unlike it, in the range clinicians consider meaningful. In practice these estimates and their standard errors are computed by two-stage least squares (2SLS), which conveniently accommodates [covariates](https://vyasenov.github.io/blog/roles-covariates-rtc.html), randomization strata, and multiple sites.
+
+---
+
+### Use Case #2: Selection Bias
+
+The second problem IVs solve is subtler, and it is where practitioners most often go wrong. Faced with noncompliance, the tempting move is a *per-protocol* or *as-treated* analysis: just compare people by the treatment they actually received, $T_i$. The trouble is that $T_i$ is not randomized. The people who comply, cross over, or refuse differ systematically, so comparing by treatment received reintroduces exactly the confounding that randomization was designed to eliminate.
+
+ISCHEMIA illustrates the damage vividly. The always-takers — control patients who got revascularized anyway — entered the trial substantially *sicker* than compliers, while never-takers were somewhat *healthier*. An as-treated comparison therefore stacks sicker patients on the treated side and healthier ones on the untreated side, biasing the estimate downward. That is precisely why the paper's as-treated estimates come in below the IV estimates.
+
+The IV approach sidesteps this entirely by comparing groups defined by *randomized* assignment $Z_i$, not by $T_i$. The comparison is apples-to-apples — the complier subpopulation on the treated side is statistically identical to the complier subpopulation on the control side, differing only in the luck of the draw. The estimate is a per-protocol effect, but one purged of selection bias. As a bonus, although individual compliers cannot be identified, their average baseline characteristics *can* be computed, letting the analyst check how representative they are of the broader patient population.
+
+---
+
+### Extensions
+
+The ideas above are the foundation; the literature built a great deal on top of them. When the first stage is weak — assignment barely moves treatment — IV estimates become badly biased and their standard inference unreliable, which spawned an entire literature on *weak instruments* and the diagnostics (such as first-stage F-statistics) used to detect them. Moving beyond a single average, *marginal treatment effects* (MTE) generalize LATE to trace out how effects vary across the latent propensity to be treated, connecting the IV world to richer models of selection.
+
+It is worth noting that LATE has not been without controversy. The estimand is defined by the instrument — change the instrument and you change which compliers you are averaging over — which struck some as letting the tool dictate the question. This is the substance of the long-running, occasionally pointed exchange between James Heckman, who favored structural models with externally meaningful parameters, and Guido Imbens, whose pragmatic rejoinder was essentially "better LATE than nothing." Finally, the framework is finding new life in *nudge* (encouragement) trials, where a low-cost randomized prompt — a text, an email, a letter — serves as the instrument for a behavior like vaccination or medication adherence, converting a small nudge effect into the much larger effect on those who actually comply.
+
+## Bottom Line
+
+- Instrumental variables are ubiquitous in academic econometrics and applied microeconomics; their footprint in industry remains comparatively small.
+- Randomized experiments do not always go according to plan — noncompliance and crossovers are the rule, not the exception, in pragmatic and clinical trials.
+- IVs come to the rescue for two distinct, thorny problems: noncompliance (which dilutes intention-to-treat effects) and selection bias (which contaminates per-protocol and as-treated comparisons).
+- The price is interpretational: IV identifies the LATE, an effect specific to the compliers induced by the instrument — not necessarily the average effect for the whole population. Whether that is the estimand you want is a question worth asking before you run the regression.
+
+## Where to Learn More
+
+The two foundational papers are Imbens and Angrist (1994), which introduced the LATE theorem, and Angrist, Imbens, and Rubin (1996), which recast IV estimation in the potential-outcomes language used throughout this note. For a complete and famously readable treatment, Angrist and Pischke's *Mostly Harmless Econometrics* (2009) remains the standard reference. The clinical-trials framing here follows Angrist, Gao, Hull, and Yeh (2025), an accessible survey aimed at medical researchers that I recommend to anyone who wants to see these ideas applied end-to-end on a real trial.
+
+## References
+
+- Angrist, J. D., Gao, C., Hull, P., & Yeh, R. W. (2025). Instrumental variables in randomized trials. *NEJM Evidence*, 4(4).
+
+- Angrist, J. D., Imbens, G. W., & Rubin, D. B. (1996). Identification of causal effects using instrumental variables. *Journal of the American Statistical Association*, 91(434), 444–455.
+
+- Angrist, J. D., & Pischke, J.-S. (2009). *Mostly Harmless Econometrics: An Empiricist's Companion*. Princeton University Press.
+
+- Imbens, G. W., & Angrist, J. D. (1994). Identification and estimation of local average treatment effects. *Econometrica*, 62(2), 467–475.

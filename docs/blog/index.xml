@@ -10,7 +10,307 @@
 <atom:link href="https://vyasenov.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Personal Site of Vasco Yasenov</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Mon, 06 Apr 2026 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 10 Jun 2026 21:00:00 GMT</lastBuildDate>
+<item>
+  <title>The Role of Instrumental Variables in Randomized Experiments</title>
+  <link>https://vyasenov.github.io/blog/iv-randomized-experiments.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">8 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Instrumental variables (IV) are econometricians’ pride. They underpin a great many scientific findings, and even the Nobel committee in Stockholm seems fond of them, judging by the laureates it picks. Yet their prominence outside academia is limited, and so I have not featured them on this blog as often as their importance warrants. Today I change that.</p>
+<p>My goal here is to give an overview of how one can use instrumental variables <em>inside</em> randomized experiments. The material draws on the recent NEJM survey by Angrist, Gao, Hull, and Yeh (2025), which makes the case for IV methods in clinical trials. I keep the mathematical rigor to a minimum and shine the spotlight on the practical side of the ideas. A caveat worth stating up front: IVs are arguably even more powerful in the <em>absence</em> of randomization, where they rescue observational studies from confounding — but that is a separate topic for another day.</p>
+<p>The setup that motivates everything below is simple and familiar to anyone who has run an experiment: randomized trials often fail to go according to plan. People assigned to treatment do not take it; people assigned to control find a way to get it anyway. IVs offer a principled way to recover causal effects when that happens.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Index participants by <img src="https://latex.codecogs.com/png.latex?i">. Let <img src="https://latex.codecogs.com/png.latex?Z_i%20%5Cin%20%5C%7B0,%201%5C%7D"> denote random <em>assignment</em> to treatment, and <img src="https://latex.codecogs.com/png.latex?T_i%20%5Cin%20%5C%7B0,%201%5C%7D"> denote the treatment actually <em>received</em>. In a clean experiment these coincide, but with noncompliance they need not: a participant can have <img src="https://latex.codecogs.com/png.latex?Z_i%20=%201,%20T_i%20=%200"> (assigned but untreated) or <img src="https://latex.codecogs.com/png.latex?Z_i%20=%200,%20T_i%20=%201"> (a control who crossed over). The instrument is the randomized assignment <img src="https://latex.codecogs.com/png.latex?Z_i">; the endogenous variable is the received treatment <img src="https://latex.codecogs.com/png.latex?T_i">. Let <img src="https://latex.codecogs.com/png.latex?Y_i"> be the outcome.</p>
+<p>Following the potential-outcomes framework, write <img src="https://latex.codecogs.com/png.latex?Y_i(1)"> and <img src="https://latex.codecogs.com/png.latex?Y_i(0)"> for participant <img src="https://latex.codecogs.com/png.latex?i">’s outcome with and without treatment; the individual causal effect is <img src="https://latex.codecogs.com/png.latex?Y_i(1)%20-%20Y_i(0)">, forever unobservable since only one of the two is realized. Likewise, let <img src="https://latex.codecogs.com/png.latex?T_i(z)"> be the treatment <img src="https://latex.codecogs.com/png.latex?i"> would take under assignment <img src="https://latex.codecogs.com/png.latex?z">. This last object lets us partition the population into four latent types:</p>
+<ul>
+<li><strong>Compliers</strong> take treatment when assigned and not otherwise: <img src="https://latex.codecogs.com/png.latex?T_i(1)%20=%201,%20T_i(0)%20=%200">.</li>
+<li><strong>Always-takers</strong> take treatment regardless: <img src="https://latex.codecogs.com/png.latex?T_i(1)%20=%20T_i(0)%20=%201">.</li>
+<li><strong>Never-takers</strong> refuse regardless: <img src="https://latex.codecogs.com/png.latex?T_i(1)%20=%20T_i(0)%20=%200">.</li>
+<li><strong>Defiers</strong> do the opposite of their assignment — assumed away below.</li>
+</ul>
+<p>Three quantities organize the analysis. The <strong>first stage</strong> is the effect of assignment on treatment received, i.e.&nbsp;the difference in treatment rates between the assigned-treatment and assigned-control groups — also called <em>compliance</em>. The <strong>reduced form</strong> (or intention-to-treat, ITT, effect) is the effect of assignment on the outcome. And the <strong>local average treatment effect</strong> (LATE) is the average causal effect among compliers.</p>
+<p>The whole apparatus rests on four assumptions: (i) random assignment of <img src="https://latex.codecogs.com/png.latex?Z_i">; (ii) a <em>first-stage</em> (relevance) condition — assignment must actually move treatment, so compliance is non-zero; (iii) <em>monotonicity</em> — assignment never pushes anyone <em>away</em> from treatment, which rules out defiers; and (iv) the <em>exclusion restriction</em> — assignment affects the outcome only through treatment receipt, never directly.</p>
+<p>To keep things concrete I will borrow the survey’s running example: the ISCHEMIA trial, which randomized roughly 5,000 patients with coronary artery disease to an invasive revascularization strategy (<img src="https://latex.codecogs.com/png.latex?Z_i%20=%201">) or conservative medical therapy (<img src="https://latex.codecogs.com/png.latex?Z_i%20=%200">), measuring quality of life one year later on the Seattle Angina Questionnaire (SAQ).</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="use-case-1-noncompliance" class="level3">
+<h3 class="anchored" data-anchor-id="use-case-1-noncompliance">Use Case #1: Noncompliance</h3>
+<p>In a trial where everyone complies, <img src="https://latex.codecogs.com/png.latex?T_i%20=%20Z_i">, and the difference in mean outcomes by assignment <em>is</em> the average treatment effect. Noncompliance breaks this. Suppose treatment effects are constant and equal to <img src="https://latex.codecogs.com/png.latex?%5Cbeta">, so that <img src="https://latex.codecogs.com/png.latex?Y_i%20=%20Y_i(0)%20+%20%5Cbeta%20T_i">. Then a little algebra on the assignment-based comparison gives</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cunderbrace%7B%5Ctext%7BITT%20effect%7D%7D_%7B%5Ctext%7Breduced%20form%7D%7D%20=%20%5Cbeta%20%5Ctimes%20%5Cunderbrace%7B%5Ctext%7BCompliance%7D%7D_%7B%5Ctext%7Bfirst%20stage%7D%7D.%0A"></p>
+<p>The intuition is that the ITT effect gets <em>diluted</em>: when only a fraction of those assigned actually take treatment, the assignment-versus-assignment comparison mixes in untreated people on the treatment side and crossovers on the control side, shrinking the apparent effect toward zero. If compliance is, say, <img src="https://latex.codecogs.com/png.latex?0.4">, the ITT understates the true effect by more than half.</p>
+<p>The fix falls right out of the identity. Dividing the reduced form by the first stage recovers the effect:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbeta%20=%20%5Cfrac%7B%5Ctext%7BITT%20effect%7D%7D%7B%5Ctext%7BCompliance%7D%7D%20=%20%5Cfrac%7B%5Ctext%7Breduced%20form%7D%7D%7B%5Ctext%7Bfirst%20stage%7D%7D.%0A"></p>
+<p>This ratio of differences in means is the heart of IV analysis — the Wald estimator. When effects are heterogeneous, the LATE theorem (Imbens and Angrist, 1994) tells us this same ratio identifies not some universal <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> but the average effect <em>for compliers</em>:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cfrac%7B%5Ctext%7BITT%20effect%7D%7D%7B%5Ctext%7BCompliance%7D%7D%20=%20%5Cmathbb%7BE%7D%5Cbig%5BY_i(1)%20-%20Y_i(0)%20%5Cmid%20%5Ctext%7Bcomplier%7D%5Cbig%5D.%0A"></p>
+<p>In ISCHEMIA, the assigned-invasive group scored about <img src="https://latex.codecogs.com/png.latex?3.66"> points higher on SAQ quality of life than the assigned-conservative group (the reduced form). Compliance was about <img src="https://latex.codecogs.com/png.latex?0.69"> — roughly <img src="https://latex.codecogs.com/png.latex?80%5C%25"> revascularized when assigned invasive minus <img src="https://latex.codecogs.com/png.latex?12%5C%25"> revascularized when assigned conservative. Dividing gives a LATE of <img src="https://latex.codecogs.com/png.latex?3.66%20/%200.69%20%5Capprox%205.3">, nearly <img src="https://latex.codecogs.com/png.latex?50%5C%25"> larger than the ITT and, unlike it, in the range clinicians consider meaningful. In practice these estimates and their standard errors are computed by two-stage least squares (2SLS), which conveniently accommodates <a href="https://vyasenov.github.io/blog/roles-covariates-rtc.html">covariates</a>, randomization strata, and multiple sites.</p>
+<hr>
+</section>
+<section id="use-case-2-selection-bias" class="level3">
+<h3 class="anchored" data-anchor-id="use-case-2-selection-bias">Use Case #2: Selection Bias</h3>
+<p>The second problem IVs solve is subtler, and it is where practitioners most often go wrong. Faced with noncompliance, the tempting move is a <em>per-protocol</em> or <em>as-treated</em> analysis: just compare people by the treatment they actually received, <img src="https://latex.codecogs.com/png.latex?T_i">. The trouble is that <img src="https://latex.codecogs.com/png.latex?T_i"> is not randomized. The people who comply, cross over, or refuse differ systematically, so comparing by treatment received reintroduces exactly the confounding that randomization was designed to eliminate.</p>
+<p>ISCHEMIA illustrates the damage vividly. The always-takers — control patients who got revascularized anyway — entered the trial substantially <em>sicker</em> than compliers, while never-takers were somewhat <em>healthier</em>. An as-treated comparison therefore stacks sicker patients on the treated side and healthier ones on the untreated side, biasing the estimate downward. That is precisely why the paper’s as-treated estimates come in below the IV estimates.</p>
+<p>The IV approach sidesteps this entirely by comparing groups defined by <em>randomized</em> assignment <img src="https://latex.codecogs.com/png.latex?Z_i">, not by <img src="https://latex.codecogs.com/png.latex?T_i">. The comparison is apples-to-apples — the complier subpopulation on the treated side is statistically identical to the complier subpopulation on the control side, differing only in the luck of the draw. The estimate is a per-protocol effect, but one purged of selection bias. As a bonus, although individual compliers cannot be identified, their average baseline characteristics <em>can</em> be computed, letting the analyst check how representative they are of the broader patient population.</p>
+<hr>
+</section>
+<section id="extensions" class="level3">
+<h3 class="anchored" data-anchor-id="extensions">Extensions</h3>
+<p>The ideas above are the foundation; the literature built a great deal on top of them. When the first stage is weak — assignment barely moves treatment — IV estimates become badly biased and their standard inference unreliable, which spawned an entire literature on <em>weak instruments</em> and the diagnostics (such as first-stage F-statistics) used to detect them. Moving beyond a single average, <em>marginal treatment effects</em> (MTE) generalize LATE to trace out how effects vary across the latent propensity to be treated, connecting the IV world to richer models of selection.</p>
+<p>It is worth noting that LATE has not been without controversy. The estimand is defined by the instrument — change the instrument and you change which compliers you are averaging over — which struck some as letting the tool dictate the question. This is the substance of the long-running, occasionally pointed exchange between James Heckman, who favored structural models with externally meaningful parameters, and Guido Imbens, whose pragmatic rejoinder was essentially “better LATE than nothing.” Finally, the framework is finding new life in <em>nudge</em> (encouragement) trials, where a low-cost randomized prompt — a text, an email, a letter — serves as the instrument for a behavior like vaccination or medication adherence, converting a small nudge effect into the much larger effect on those who actually comply.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>Instrumental variables are ubiquitous in academic econometrics and applied microeconomics; their footprint in industry remains comparatively small.</li>
+<li>Randomized experiments do not always go according to plan — noncompliance and crossovers are the rule, not the exception, in pragmatic and clinical trials.</li>
+<li>IVs come to the rescue for two distinct, thorny problems: noncompliance (which dilutes intention-to-treat effects) and selection bias (which contaminates per-protocol and as-treated comparisons).</li>
+<li>The price is interpretational: IV identifies the LATE, an effect specific to the compliers induced by the instrument — not necessarily the average effect for the whole population. Whether that is the estimand you want is a question worth asking before you run the regression.</li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>The two foundational papers are Imbens and Angrist (1994), which introduced the LATE theorem, and Angrist, Imbens, and Rubin (1996), which recast IV estimation in the potential-outcomes language used throughout this note. For a complete and famously readable treatment, Angrist and Pischke’s <em>Mostly Harmless Econometrics</em> (2009) remains the standard reference. The clinical-trials framing here follows Angrist, Gao, Hull, and Yeh (2025), an accessible survey aimed at medical researchers that I recommend to anyone who wants to see these ideas applied end-to-end on a real trial.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Angrist, J. D., Gao, C., Hull, P., &amp; Yeh, R. W. (2025). Instrumental variables in randomized trials. <em>NEJM Evidence</em>, 4(4).</p></li>
+<li><p>Angrist, J. D., Imbens, G. W., &amp; Rubin, D. B. (1996). Identification of causal effects using instrumental variables. <em>Journal of the American Statistical Association</em>, 91(434), 444–455.</p></li>
+<li><p>Angrist, J. D., &amp; Pischke, J.-S. (2009). <em>Mostly Harmless Econometrics: An Empiricist’s Companion</em>. Princeton University Press.</p></li>
+<li><p>Imbens, G. W., &amp; Angrist, J. D. (1994). Identification and estimation of local average treatment effects. <em>Econometrica</em>, 62(2), 467–475.</p></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>causal inference</category>
+  <category>randomized experiments</category>
+  <guid>https://vyasenov.github.io/blog/iv-randomized-experiments.html</guid>
+  <pubDate>Wed, 10 Jun 2026 21:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Lasso and Its Theoretical Guarantees</title>
+  <link>https://vyasenov.github.io/blog/lasso-theory-guarantees.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">9 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Every data scientist has heard of the Lasso, and I have written plenty about it here as well — its <a href="https://vyasenov.github.io/blog/flavors-lasso.html">many flavors</a>, its <a href="https://vyasenov.github.io/blog/oracle-property.html">oracle property</a>, and its <a href="https://vyasenov.github.io/blog/lasso-heterogeneous-effects.html">use in estimating heterogeneous treatment effects</a>, among other things. It is appealing for several reasons: simplicity, cheap and fast computation, interpretability, and a solid theoretical foundation.</p>
+<p>In this note I focus on that last item — what makes the Lasso attractive from a theoretical standpoint. The goal is to give a high-level overview of the kinds of guarantees the Lasso promises. The literature here is heavy and, frankly, daunting, so I keep the mathematical rigor to a minimum. I am after intuition: what can the Lasso deliver in ideal settings, and what does “ideal” actually require?</p>
+<p>The punchline, which I will return to repeatedly, is that these guarantees are not free. Each one rests on assumptions about the design matrix, the noise, and the true signal — and those assumptions get stronger as the promises get bolder.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Consider the usual linear model</p>
+<p><img src="https://latex.codecogs.com/png.latex?Y%20=%20X%5Cbeta%5E*%20+%20%5Cvarepsilon,%20%5Cquad%20%5Cvarepsilon%20%5Csim%20(0,%20%5Csigma%5E2%20I_n),"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?Y%20%5Cin%20%5Cmathbb%7BR%7D%5En"> is the outcome, <img src="https://latex.codecogs.com/png.latex?X%20%5Cin%20%5Cmathbb%7BR%7D%5E%7Bn%20%5Ctimes%20p%7D"> is the design matrix, <img src="https://latex.codecogs.com/png.latex?%5Cbeta%5E*%20%5Cin%20%5Cmathbb%7BR%7D%5Ep"> is the true coefficient vector, and <img src="https://latex.codecogs.com/png.latex?%5Cvarepsilon"> is mean-zero noise with variance <img src="https://latex.codecogs.com/png.latex?%5Csigma%5E2">. The interesting regime is high-dimensional, where <img src="https://latex.codecogs.com/png.latex?p"> can be comparable to or much larger than <img src="https://latex.codecogs.com/png.latex?n">.</p>
+<p>The signal is assumed <em>sparse</em>: only a few coordinates of <img src="https://latex.codecogs.com/png.latex?%5Cbeta%5E*"> are non-zero. Let</p>
+<p><img src="https://latex.codecogs.com/png.latex?S%20=%20%5C%7Bj%20:%20%5Cbeta%5E*_j%20%5Cneq%200%5C%7D,%20%5Cquad%20s%20=%20%7CS%7C"></p>
+<p>denote the <em>support</em> and its size. Sparsity is what makes the problem tractable when <img src="https://latex.codecogs.com/png.latex?p%20%5Cgg%20n">.</p>
+<p>The Lasso can be written in two equivalent ways. The penalized (Lagrangian) form is</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta%20=%20%5Carg%5Cmin_%7B%5Cbeta%7D%20%5Cleft(%20%5Cfrac%7B1%7D%7B2n%7D%20%5C%7C%20Y%20-%20X%5Cbeta%20%5C%7C_2%5E2%20+%20%5Clambda%20%5C%7C%5Cbeta%5C%7C_1%20%5Cright),"></p>
+<p>and the constrained form is</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta%20=%20%5Carg%5Cmin_%7B%5Cbeta%7D%20%5Cfrac%7B1%7D%7B2n%7D%20%5C%7C%20Y%20-%20X%5Cbeta%20%5C%7C_2%5E2%20%5Cquad%20%5Ctext%7Bsubject%20to%7D%20%5Cquad%20%5C%7C%5Cbeta%5C%7C_1%20%5Cleq%20t."></p>
+<p>For every <img src="https://latex.codecogs.com/png.latex?%5Clambda"> there is a <img src="https://latex.codecogs.com/png.latex?t"> that yields the same solution. The <img src="https://latex.codecogs.com/png.latex?%5Cell_1"> penalty <img src="https://latex.codecogs.com/png.latex?%5C%7C%5Cbeta%5C%7C_1%20=%20%5Csum_j%20%7C%5Cbeta_j%7C"> is what does the work: unlike the <img src="https://latex.codecogs.com/png.latex?%5Cell_2"> (ridge) penalty, it has corners that produce <em>exact</em> zeros, giving simultaneous shrinkage and selection. The tuning parameter <img src="https://latex.codecogs.com/png.latex?%5Clambda%20%5Cgeq%200"> controls the strength of regularization.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<p>I will examine four broad groups of theoretical results. Each comes with its own assumptions and works only under specific conditions — sparse true support, a particular growth rate for <img src="https://latex.codecogs.com/png.latex?n"> relative to <img src="https://latex.codecogs.com/png.latex?p">, a well-behaved design matrix, and so on. I have ordered the sections in roughly ascending order of how demanding those assumptions are. This ordering is the most important takeaway of the post: prediction is cheap, estimation costs more, and exact support recovery is expensive.</p>
+<hr>
+<section id="prediction-error" class="level3">
+<h3 class="anchored" data-anchor-id="prediction-error">Prediction Error</h3>
+<p>This is the most basic guarantee, and the cheapest to buy. It says the Lasso will predict “well enough” — the in-sample prediction error will not exceed a certain bound. Formally, with the penalty chosen at the canonical rate <img src="https://latex.codecogs.com/png.latex?%5Clambda%20%5Casymp%20%5Csigma%5Csqrt%7B%5Ctfrac%7B%5Clog%20p%7D%7Bn%7D%7D">, one can show that with high probability</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7Bn%7D%20%5C%7C%20X(%5Chat%5Cbeta%20-%20%5Cbeta%5E*)%20%5C%7C_2%5E2%20%5C;%5Clesssim%5C;%20%5Clambda%20%5C,%20%5C%7C%5Cbeta%5E*%5C%7C_1%20%5C;%5Casymp%5C;%20%5Csigma%20%5C,%20%5C%7C%5Cbeta%5E*%5C%7C_1%20%5Csqrt%7B%5Cfrac%7B%5Clog%20p%7D%7Bn%7D%7D."></p>
+<p>This is the so-called <em>slow rate</em>. What is remarkable is how little it requires: essentially no conditions on the design matrix <img src="https://latex.codecogs.com/png.latex?X"> beyond standardizing the columns. All you need is for <img src="https://latex.codecogs.com/png.latex?%5Clambda"> to be large enough to dominate the noise — which is exactly what the <img src="https://latex.codecogs.com/png.latex?%5Csqrt%7B%5Clog%20p%20/%20n%7D"> scaling ensures. The <img src="https://latex.codecogs.com/png.latex?%5Clog%20p"> term is the price of searching over <img src="https://latex.codecogs.com/png.latex?p"> candidate predictors, and it enters only logarithmically, which is why the Lasso tolerates enormous <img src="https://latex.codecogs.com/png.latex?p">.</p>
+<p>If you are willing to assume more about the design (see the next section), the bound sharpens to the <em>fast rate</em>,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cfrac%7B1%7D%7Bn%7D%20%5C%7C%20X(%5Chat%5Cbeta%20-%20%5Cbeta%5E*)%20%5C%7C_2%5E2%20%5C;%5Clesssim%5C;%20%5Cfrac%7Bs%5C,%20%5Csigma%5E2%20%5Clog%20p%7D%7Bn%7D,"></p>
+<p>which scales with the number of true signals <img src="https://latex.codecogs.com/png.latex?s"> rather than with <img src="https://latex.codecogs.com/png.latex?%5C%7C%5Cbeta%5E*%5C%7C_1">. The practical reading: good predictive behavior is the Lasso’s most robust property. If all you care about is forecasting, you can lean on the Lasso with relatively little hand-wringing about the design.</p>
+<hr>
+</section>
+<section id="estimation-error" class="level3">
+<h3 class="anchored" data-anchor-id="estimation-error">Estimation Error</h3>
+<p>Here the question shifts from predictions <img src="https://latex.codecogs.com/png.latex?X%5Chat%5Cbeta"> to the coefficients <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> themselves — how close is <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> to <img src="https://latex.codecogs.com/png.latex?%5Cbeta%5E*">? This is a genuinely harder problem, and it requires a genuine condition on the design matrix.</p>
+<p>The standard assumption is the <em>restricted eigenvalue</em> (RE) condition (or the closely related compatibility condition). Loosely, it requires that <img src="https://latex.codecogs.com/png.latex?%5Ctfrac%7B1%7D%7Bn%7D%20X%5E%5Ctop%20X"> behave like a well-conditioned matrix — bounded away from singularity — but only over the directions that matter, namely vectors that are approximately sparse. We cannot ask <img src="https://latex.codecogs.com/png.latex?X%5E%5Ctop%20X"> to be invertible outright, since <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n"> makes that impossible; the restriction to a sparse cone is what rescues the argument. Under the RE condition with constant <img src="https://latex.codecogs.com/png.latex?%5Ckappa%20%3E%200">, and again <img src="https://latex.codecogs.com/png.latex?%5Clambda%20%5Casymp%20%5Csigma%5Csqrt%7B%5Ctfrac%7B%5Clog%20p%7D%7Bn%7D%7D">,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5C%7C%5Chat%5Cbeta%20-%20%5Cbeta%5E*%5C%7C_2%20%5C;%5Clesssim%5C;%20%5Cfrac%7B%5Csigma%7D%7B%5Ckappa%7D%20%5Csqrt%7B%5Cfrac%7Bs%20%5Clog%20p%7D%7Bn%7D%7D,%20%5Cqquad%20%5C%7C%5Chat%5Cbeta%20-%20%5Cbeta%5E*%5C%7C_1%20%5C;%5Clesssim%5C;%20%5Cfrac%7B%5Csigma%20s%7D%7B%5Ckappa%7D%20%5Csqrt%7B%5Cfrac%7B%5Clog%20p%7D%7Bn%7D%7D."></p>
+<p>The intuition is that strong correlations among predictors flatten the objective function in certain directions, making the coefficients poorly identified even when predictions are fine. The RE condition rules out the worst of this. When it holds, the <img src="https://latex.codecogs.com/png.latex?%5Cell_2"> error decays at essentially the rate an oracle who knew <img src="https://latex.codecogs.com/png.latex?S"> would achieve, up to the <img src="https://latex.codecogs.com/png.latex?%5Clog%20p"> factor.</p>
+<p>A reminder is in order here: never take the coefficients — or the implied <img src="https://latex.codecogs.com/png.latex?p">-values — from a Lasso fit too seriously without an extreme degree of caution. The shrinkage that makes the Lasso work also biases every non-zero coefficient toward zero, and standard inference ignores the selection step entirely. I have written about <a href="https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html">hypothesis testing in linear ML models</a> elsewhere on the blog; the estimation bounds above are about <em>rates</em>, not about valid confidence intervals.</p>
+<hr>
+</section>
+<section id="support-recovery" class="level3">
+<h3 class="anchored" data-anchor-id="support-recovery">Support Recovery</h3>
+<p>This is the most intriguing guarantee and, fittingly, the most expensive. It is relevant for model selection rather than prediction: it asks whether the Lasso picks out exactly the right set of variables, <img src="https://latex.codecogs.com/png.latex?%5Chat%20S%20=%20S">, where <img src="https://latex.codecogs.com/png.latex?%5Chat%20S%20=%20%5C%7Bj%20:%20%5Chat%5Cbeta_j%20%5Cneq%200%5C%7D">. The goal is <em>selection consistency</em>,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BP%7D(%5Chat%20S%20=%20S)%20%5Cto%201."></p>
+<p>Two strong conditions are typically needed. The first is the <em>irrepresentable condition</em>, which limits how strongly the irrelevant predictors (<img src="https://latex.codecogs.com/png.latex?X_%7BS%5Ec%7D">) can be correlated with the relevant ones (<img src="https://latex.codecogs.com/png.latex?X_S">):</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cbig%5C%7C%20X_%7BS%5Ec%7D%5E%5Ctop%20X_S%20(X_S%5E%5Ctop%20X_S)%5E%7B-1%7D%20%5Coperatorname%7Bsign%7D(%5Cbeta%5E*_S)%20%5Cbig%5C%7C_%5Cinfty%20%5Cleq%201%20-%20%5Ceta"></p>
+<p>for some <img src="https://latex.codecogs.com/png.latex?%5Ceta%20%3E%200">. This is close to necessary, not merely sufficient — if it fails, the Lasso tends to bring spurious variables into the model. The second is a <em>beta-min</em> condition: the smallest non-zero coefficient must be detectably large, <img src="https://latex.codecogs.com/png.latex?%5Cmin_%7Bj%20%5Cin%20S%7D%20%7C%5Cbeta%5E*_j%7C%20%5Cgtrsim%20%5Csqrt%7B%5Ctfrac%7B%5Clog%20p%7D%7Bn%7D%7D">. Signals weaker than the noise floor simply cannot be distinguished from zero.</p>
+<p>The practical implication is sobering. Exact support recovery is fragile: it demands that the truly important variables be only mildly correlated with the unimportant ones, and that no real signal be too small. Both are easy to violate with observational data. This is also why I treated this topic separately in my post on the <a href="https://vyasenov.github.io/blog/oracle-property.html">oracle property</a> — standard Lasso generally does <em>not</em> achieve oracle-style selection, and the fixes (adaptive Lasso, nonconvex penalties like SCAD and MCP) exist precisely to relax the irrepresentable condition.</p>
+<hr>
+</section>
+<section id="beyond-the-basics" class="level3">
+<h3 class="anchored" data-anchor-id="beyond-the-basics">Beyond the Basics</h3>
+<p>The three results above are the backbone, but the theory has grown well past them. A few directions worth knowing about:</p>
+<p><em>Debiased (desparsified) Lasso</em> removes the shrinkage bias by adding a correction term, yielding estimators that are asymptotically normal and support honest confidence intervals and <img src="https://latex.codecogs.com/png.latex?p">-values — the very thing the raw Lasso cannot provide. <em>Square-root (scaled) Lasso</em> modifies the loss so that the optimal <img src="https://latex.codecogs.com/png.latex?%5Clambda"> no longer depends on the unknown noise level <img src="https://latex.codecogs.com/png.latex?%5Csigma">, which makes tuning pivotal and robust to heteroskedasticity. On the lower-bound side, <em>minimax</em> analyses show that the rates above are not artifacts of the Lasso but are essentially optimal: no estimator can do uniformly better over sparse classes, so the <img src="https://latex.codecogs.com/png.latex?s%20%5Clog%20p%20/%20n"> rate is the best one can hope for. There is also a large literature on <em>post-selection inference</em>, which tackles the problem of doing valid hypothesis tests after the selection step.</p>
+<p>These all share a theme: the basic Lasso is excellent at prediction and decent at estimation, but turning it into a tool for <em>inference</em> requires extra machinery layered on top.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>The Lasso is among the most popular machine learning methods, and a good part of its appeal comes from a strong theoretical foundation.</li>
+<li>Under suitable conditions, one can show that the Lasso performs well across three distinct tasks — prediction, coefficient estimation, and exact support recovery — but these come at increasing assumption costs, in that order.</li>
+<li>Prediction error is nearly free; estimation error needs a restricted-eigenvalue-type condition on the design; support recovery additionally needs an irrepresentable condition and a minimum-signal-strength condition.</li>
+<li>Not all of these guarantees will hold on any given dataset. The researcher must evaluate the regularity conditions carefully for each claim she makes — and treat raw Lasso coefficients and <img src="https://latex.codecogs.com/png.latex?p">-values with skepticism unless a debiasing step has been applied.</li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>For a focused, modern treatment, “Statistical Learning with Sparsity” by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with “The Elements of Statistical Learning” (2009) as gentler background. For the theory proper, Bühlmann and van de Geer’s “Statistics for High-Dimensional Data” (2011) and Wainwright’s “High-Dimensional Statistics” (2019) are the standard references, though both are dense. On the original results, Bickel, Ritov, and Tsybakov (2009) established the prediction and estimation bounds under the restricted eigenvalue condition, while Zhao and Yu (2006) and Wainwright (2009) characterized support recovery via the irrepresentable condition.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Belloni, A., Chernozhukov, V., &amp; Wang, L. (2011). Square-root lasso: Pivotal recovery of sparse signals via conic programming. <em>Biometrika</em>, 98(4), 791–806.</p></li>
+<li><p>Bickel, P. J., Ritov, Y., &amp; Tsybakov, A. B. (2009). Simultaneous analysis of Lasso and Dantzig selector. <em>The Annals of Statistics</em>, 37(4), 1705–1732.</p></li>
+<li><p>Bühlmann, P., &amp; van de Geer, S. (2011). <em>Statistics for High-Dimensional Data: Methods, Theory and Applications</em>. Springer.</p></li>
+<li><p>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em> (2nd ed.). Springer.</p></li>
+<li><p>Hastie, T., Tibshirani, R., &amp; Wainwright, M. (2015). <em>Statistical Learning with Sparsity: The Lasso and Generalizations</em>. CRC Press.</p></li>
+<li><p>Raskutti, G., Wainwright, M. J., &amp; Yu, B. (2011). Minimax rates of estimation for high-dimensional linear regression over <img src="https://latex.codecogs.com/png.latex?%5Cell_q">-balls. <em>IEEE Transactions on Information Theory</em>, 57(10), 6976–6994.</p></li>
+<li><p>Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. <em>Journal of the Royal Statistical Society: Series B (Methodological)</em>, 58(1), 267–288.</p></li>
+<li><p>van de Geer, S., Bühlmann, P., Ritov, Y., &amp; Dezeure, R. (2014). On asymptotically optimal confidence regions and tests for high-dimensional models. <em>The Annals of Statistics</em>, 42(3), 1166–1202.</p></li>
+<li><p>Wainwright, M. J. (2009). Sharp thresholds for high-dimensional and noisy sparsity recovery using <img src="https://latex.codecogs.com/png.latex?%5Cell_1">-constrained quadratic programming (Lasso). <em>IEEE Transactions on Information Theory</em>, 55(5), 2183–2202.</p></li>
+<li><p>Wainwright, M. J. (2019). <em>High-Dimensional Statistics: A Non-Asymptotic Viewpoint</em>. Cambridge University Press.</p></li>
+<li><p>Zhao, P., &amp; Yu, B. (2006). On model selection consistency of Lasso. <em>Journal of Machine Learning Research</em>, 7, 2541–2563.</p></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>machine learning</category>
+  <category>variable selection</category>
+  <category>statistical inference</category>
+  <guid>https://vyasenov.github.io/blog/lasso-theory-guarantees.html</guid>
+  <pubDate>Wed, 10 Jun 2026 21:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Second-Generation P-Values: A Worthy Idea That Did Not Catch On</title>
+  <link>https://vyasenov.github.io/blog/second-gen-pvalues.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">8 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Hardly a data science interview goes by without the person in power bringing up the definition of the infamous <img src="https://latex.codecogs.com/png.latex?p">-value. Normally, chaos ensues. For good or ill, <img src="https://latex.codecogs.com/png.latex?p">-values are omnipresent in a data scientist’s world. A grad school professor of mine once described them as summaries of an entire dataset into a single number — or even, I would add, into a single yes/no decision.</p>
+<p>The downsides of <img src="https://latex.codecogs.com/png.latex?p">-values have been well understood and widely publicized for decades. They conflate effect size and precision, they are routinely misinterpreted, and they say nothing about scientific relevance or practical importance. Famously, the American Statistical Association issued a formal statement on their use and misuse (Wasserstein and Lazar, 2016). Predictably, there has been no shortage of proposed alternatives — <img src="https://latex.codecogs.com/png.latex?e">-values, Bayes factors, posterior probabilities, and more.</p>
+<p>In this note I describe one such alternative: the second-generation <img src="https://latex.codecogs.com/png.latex?p">-value (SGPV) of Blume et al.&nbsp;(2019). The point is to broaden how we think about using data to test scientific claims, and to get acquainted with a genuinely different approach. As usual, I keep the mathematical rigor to a minimum and focus on the intellectual idea behind the proposal — including, in the end, why I think a good idea like this one never quite caught on.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Suppose we are interested in some parameter <img src="https://latex.codecogs.com/png.latex?%5Ctheta"> — a difference in means, a log odds ratio, a regression coefficient, whatever the scientific question demands. Classical testing pits a <em>simple</em> (point) null hypothesis against everything else:</p>
+<p><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Ctheta%20=%20%5Ctheta_0%20%5Cquad%20%5Ctext%7Bversus%7D%20%5Cquad%20H_1:%20%5Ctheta%20%5Cneq%20%5Ctheta_0."></p>
+<p>A simple hypothesis pins <img src="https://latex.codecogs.com/png.latex?%5Ctheta"> to a single value; a <em>composite</em> hypothesis allows a whole set of values. The key move in what follows is to replace the point null with a composite one.</p>
+<p>Let <img src="https://latex.codecogs.com/png.latex?I%20=%20%5B%5Ctheta_%5Cell,%20%5Ctheta_u%5D"> denote an interval estimate of <img src="https://latex.codecogs.com/png.latex?%5Ctheta"> — for concreteness, a 95% confidence interval — with length <img src="https://latex.codecogs.com/png.latex?%7CI%7C%20=%20%5Ctheta_u%20-%20%5Ctheta_%5Cell">. Let</p>
+<p><img src="https://latex.codecogs.com/png.latex?H_0%20=%20%5B%5Ctheta_%5Cell%5E0,%20%5Ctheta_u%5E0%5D"></p>
+<p>denote an <em>interval null hypothesis</em>: the range of effect sizes that are too small to matter scientifically, with length <img src="https://latex.codecogs.com/png.latex?%7CH_0%7C">. This interval includes the exact null <img src="https://latex.codecogs.com/png.latex?%5Ctheta_0"> but widens it to absorb effects that are technically non-zero yet practically trivial. Choosing its width is a scientific judgment, made <em>before</em> seeing the data.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="the-first-generation-p-value" class="level3">
+<h3 class="anchored" data-anchor-id="the-first-generation-p-value">The First-Generation P-Value</h3>
+<p>Start with the object everyone already knows. We observe a dataset, and the <img src="https://latex.codecogs.com/png.latex?p">-value is the probability of seeing data at least as extreme — weirder, loosely speaking — than what we actually observed, <em>if the null hypothesis were true</em>. A large <img src="https://latex.codecogs.com/png.latex?p">-value means the data are unsurprising under the null and therefore offer no evidence against it. Famously, this is <em>not</em> the probability that the null is true; getting at that requires a Bayesian apparatus and a prior.</p>
+<p>This single number has carried an enormous load for nearly a century, and that is precisely the source of trouble.</p>
+<hr>
+</section>
+<section id="the-problem" class="level3">
+<h3 class="anchored" data-anchor-id="the-problem">The Problem</h3>
+<p>The classical <img src="https://latex.codecogs.com/png.latex?p">-value conflates two things a practitioner usually wants to keep separate: the <em>size</em> of an effect and the <em>precision</em> with which it is estimated. A tiny, scientifically meaningless effect will produce an arbitrarily small <img src="https://latex.codecogs.com/png.latex?p">-value once the sample is large enough, because precision alone drives significance. In the era of big data this is not a hypothetical — it is the default failure mode.</p>
+<p>The deeper issue is the point null itself. The hypothesis <img src="https://latex.codecogs.com/png.latex?%5Ctheta%20=%20%5Ctheta_0"> <em>exactly</em> is almost never true and rarely even interesting. Two treatments are essentially never identical to infinite precision; the relevant question is whether they differ by an amount that matters. Statistical significance, as classically defined, simply does not speak to that question.</p>
+<hr>
+</section>
+<section id="the-main-idea" class="level3">
+<h3 class="anchored" data-anchor-id="the-main-idea">The Main Idea</h3>
+<p>The SGPV, which I will denote <img src="https://latex.codecogs.com/png.latex?p_%5Cdelta">, replaces the point null with the interval null <img src="https://latex.codecogs.com/png.latex?H_0"> and then measures how much the interval estimate <img src="https://latex.codecogs.com/png.latex?I"> overlaps it. It is a <em>proportion</em>, not a tail-area probability:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0Ap_%5Cdelta%20=%20%5Cfrac%7B%7CI%20%5Ccap%20H_0%7C%7D%7B%7CI%7C%7D%20%5Ctimes%20%5Cmax%5Cleft%5C%7B%20%5Cfrac%7B%7CI%7C%7D%7B2%7CH_0%7C%7D,%5C,%201%20%5Cright%5C%7D,%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?%7CI%20%5Ccap%20H_0%7C"> is the length of the overlap between the two intervals. When the interval estimate is reasonably precise (specifically, <img src="https://latex.codecogs.com/png.latex?%7CI%7C%20%5Cleq%202%7CH_0%7C">), the correction term is <img src="https://latex.codecogs.com/png.latex?1"> and the formula reduces to the clean fraction <img src="https://latex.codecogs.com/png.latex?p_%5Cdelta%20=%20%7CI%20%5Ccap%20H_0%7C%20/%20%7CI%7C"> — the share of the interval estimate that falls inside the null zone. The correction factor only kicks in when <img src="https://latex.codecogs.com/png.latex?I"> is very wide relative to the null, capping the statistic to reflect that the data are simply too imprecise to say much.</p>
+<p>The interpretation is refreshingly direct:</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?p_%5Cdelta%20=%200">: the interval estimate does not overlap the null at all. The data are incompatible with a trivial effect and support a scientifically meaningful one.</li>
+<li><img src="https://latex.codecogs.com/png.latex?p_%5Cdelta%20=%201">: the interval estimate lies entirely inside the null. The data support <em>only</em> the null premise — something a classical <img src="https://latex.codecogs.com/png.latex?p">-value can never tell you.</li>
+<li><img src="https://latex.codecogs.com/png.latex?0%20%3C%20p_%5Cdelta%20%3C%201">: the data are inconclusive, with <img src="https://latex.codecogs.com/png.latex?p_%5Cdelta%20%5Capprox%201/2"> being the maximally inconclusive case.</li>
+</ul>
+<p>A quick worked example from the paper makes it concrete. In a study of 100 smokers and 100 non-smokers, suppose 65 smokers and 50 non-smokers develop lung cancer. The odds ratio is <img src="https://latex.codecogs.com/png.latex?1.86"> with a 95% confidence interval of <img src="https://latex.codecogs.com/png.latex?%5B1.03,%203.36%5D">. Take the interval null to be odds ratios between <img src="https://latex.codecogs.com/png.latex?0.9"> and <img src="https://latex.codecogs.com/png.latex?1.1"> — associations too weak to care about. The interval estimate overlaps the null only slightly, and the SGPV works out to <img src="https://latex.codecogs.com/png.latex?p_%5Cdelta%20=%200.175">: suggestive, but not conclusive. Bump the smokers’ cancer count from 65 to 70 and the odds ratio rises to <img src="https://latex.codecogs.com/png.latex?2.33"> with interval <img src="https://latex.codecogs.com/png.latex?%5B1.27,%204.27%5D">, which no longer touches the null. Now <img src="https://latex.codecogs.com/png.latex?p_%5Cdelta%20=%200">, and we would report a scientifically meaningful association.</p>
+<hr>
+</section>
+<section id="why-it-helps-and-where-it-falls-short" class="level3">
+<h3 class="anchored" data-anchor-id="why-it-helps-and-where-it-falls-short">Why It Helps, and Where It Falls Short</h3>
+<p>The appeal is that the SGPV bakes scientific relevance into the inference itself, rather than leaving it as an afterthought to be eyeballed from a confidence interval. By construction it can support the null, it indicates when the data are inconclusive instead of forcing a verdict, and — a genuinely attractive frequency property — its Type I error rate shrinks toward zero as the sample grows, instead of hovering at <img src="https://latex.codecogs.com/png.latex?%5Calpha"> forever. That directly attacks the big-data significance problem and tends to yield lower false discovery rates.</p>
+<p>So why did it not catch on? A few reasons. The interval null must be specified in advance, and pinning down the width of “scientifically trivial” is a real judgment call that invites disagreement and can feel arbitrary. The statistic is a proportion rather than a probability, which makes it unfamiliar and harder to slot into existing reporting conventions. And it competes in a crowded field: practitioners who care about false discoveries already reach for <a href="https://vyasenov.github.io/blog/recent-dev-fdr.html">false discovery rate (FDR)</a> or family-wise error rate (FWER) procedures, while those who specifically want to test for negligible effects often use equivalence testing (the two one-sided tests, or TOST), which predates the SGPV and is closely related in spirit. The SGPV is, in my view, a cleaner idea than its adoption suggests — but a cleaner idea is not always the one the field converges on.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?P">-values are among the most widely used and most widely misused tools in applied statistics; their core flaw is conflating effect size with precision.</li>
+<li>The second-generation <img src="https://latex.codecogs.com/png.latex?p">-value is an alternative worth knowing when false discovery is a concern — which, frankly, is most of the time.</li>
+<li>Its main idea is simple: measure the overlap between an interval estimate and an interval null that absorbs both the exact null and all scientifically trivial effects.</li>
+<li>Despite its elegance, the SGPV never gained traction. FDR/FWER control and equivalence testing remain the dominant ways practitioners guard against spurious findings.</li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>The original proposal is Blume et al.&nbsp;(2018) in <em>PLOS ONE</em>, with the gentler, non-technical treatment I have leaned on here appearing as Blume et al.&nbsp;(2019) in <em>The American Statistician</em>. For the broader context — why the profession soured on bright-line significance in the first place — the ASA statement (Wasserstein and Lazar, 2016) and the follow-up special issue editorial (Wasserstein, Schirm, and Lazar, 2019) are essential reading. On the competing approaches mentioned above, see Benjamini and Hochberg (1995) for the foundational FDR procedure.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Benjamini, Y., &amp; Hochberg, Y. (1995). Controlling the false discovery rate: A practical and powerful approach to multiple testing. <em>Journal of the Royal Statistical Society: Series B (Methodological)</em>, 57(1), 289–300.</p></li>
+<li><p>Blume, J. D., D’Agostino McGowan, L., Dupont, W. D., &amp; Greevy, R. A. (2018). Second-generation p-values: Improved rigor, reproducibility, and transparency in statistical analyses. <em>PLOS ONE</em>, 13(3), e0188299.</p></li>
+<li><p>Blume, J. D., Greevy, R. A., Welty, V. F., Smith, J. R., &amp; Dupont, W. D. (2019). An introduction to second-generation p-values. <em>The American Statistician</em>, 73(sup1), 157–167.</p></li>
+<li><p>Wasserstein, R. L., &amp; Lazar, N. A. (2016). The ASA statement on p-values: Context, process, and purpose. <em>The American Statistician</em>, 70(2), 129–133.</p></li>
+<li><p>Wasserstein, R. L., Schirm, A. L., &amp; Lazar, N. A. (2019). Moving to a world beyond “p &lt; 0.05”. <em>The American Statistician</em>, 73(sup1), 1–19.</p></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>hypothesis testing</category>
+  <category>statistical inference</category>
+  <guid>https://vyasenov.github.io/blog/second-gen-pvalues.html</guid>
+  <pubDate>Wed, 10 Jun 2026 21:00:00 GMT</pubDate>
+</item>
 <item>
   <title>6 Underrated Plot Types</title>
   <link>https://vyasenov.github.io/blog/six-plots-you-should-know.html</link>
@@ -810,7 +1110,7 @@ font-style: inherit;">"Correlation Matrix (Corrgram)"</span>)</span>
   <category>correlation</category>
   <category>statistical inference</category>
   <guid>https://vyasenov.github.io/blog/six-plots-you-should-know.html</guid>
-  <pubDate>Mon, 06 Apr 2026 07:00:00 GMT</pubDate>
+  <pubDate>Sun, 05 Apr 2026 21:00:00 GMT</pubDate>
 </item>
 <item>
   <title>The Many Flavors of Principal Component Analysis</title>
@@ -2165,7 +2465,7 @@ font-style: inherit;">3</span>))</span></code></pre></div></div>
   <category>machine learning</category>
   <category>flavors</category>
   <guid>https://vyasenov.github.io/blog/flavors-pca.html</guid>
-  <pubDate>Sun, 05 Apr 2026 07:00:00 GMT</pubDate>
+  <pubDate>Sat, 04 Apr 2026 21:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Brief Overview of Treatment Effect Bounds</title>
@@ -2298,7 +2598,7 @@ The intuition is that standard IV identifies an average treatment effect only ov
  ]]></description>
   <category>causal inference</category>
   <guid>https://vyasenov.github.io/blog/treatment-effects-bounds.html</guid>
-  <pubDate>Thu, 02 Apr 2026 07:00:00 GMT</pubDate>
+  <pubDate>Wed, 01 Apr 2026 21:00:00 GMT</pubDate>
 </item>
 <item>
   <title>What OLS Estimates in Causal Inference</title>
@@ -2398,7 +2698,7 @@ The intuition is that standard IV identifies an average treatment effect only ov
   <category>causal inference</category>
   <category>parametric models</category>
   <guid>https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html</guid>
-  <pubDate>Wed, 01 Apr 2026 07:00:00 GMT</pubDate>
+  <pubDate>Tue, 31 Mar 2026 21:00:00 GMT</pubDate>
 </item>
 <item>
   <title>The Many Flavors of Lasso</title>
@@ -5000,7 +5300,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
   <category>machine learning</category>
   <category>flavors</category>
   <guid>https://vyasenov.github.io/blog/flavors-lasso.html</guid>
-  <pubDate>Sat, 14 Mar 2026 07:00:00 GMT</pubDate>
+  <pubDate>Fri, 13 Mar 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>The Oracle Property: What It Promises (and What It Doesn’t)</title>
@@ -5100,7 +5400,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
   <category>machine learning</category>
   <category>variable selection</category>
   <guid>https://vyasenov.github.io/blog/oracle-property.html</guid>
-  <pubDate>Fri, 13 Mar 2026 07:00:00 GMT</pubDate>
+  <pubDate>Thu, 12 Mar 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Why Some Confidence Intervals Are Not Symmetric</title>
@@ -5453,7 +5753,7 @@ font-style: inherit;">print</span>(lower_distance, upper_distance)</span></code>
   <category>statistical inference</category>
   <category>hypothesis testing</category>
   <guid>https://vyasenov.github.io/blog/nonsymmetric-conf-int.html</guid>
-  <pubDate>Tue, 10 Mar 2026 07:00:00 GMT</pubDate>
+  <pubDate>Mon, 09 Mar 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>OLS with Fixed vs Random \(X\): What Actually Changes?</title>
@@ -5545,7 +5845,7 @@ font-style: inherit;">print</span>(lower_distance, upper_distance)</span></code>
   <category>parametric models</category>
   <category>statistical inference</category>
   <guid>https://vyasenov.github.io/blog/ols-fixed-random-x.html</guid>
-  <pubDate>Sun, 08 Mar 2026 08:00:00 GMT</pubDate>
+  <pubDate>Sat, 07 Mar 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Logistic Regression in Randomized Trials?</title>
@@ -6168,7 +6468,7 @@ font-style: inherit;">4</span>))</span></code></pre></div></div>
   <category>causal inference</category>
   <category>parametric models</category>
   <guid>https://vyasenov.github.io/blog/logit-randomized-experiments.html</guid>
-  <pubDate>Tue, 17 Feb 2026 08:00:00 GMT</pubDate>
+  <pubDate>Mon, 16 Feb 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Randomization Inference: A Gentle Introduction</title>
@@ -6570,7 +6870,7 @@ font-style: inherit;">print</span>(p_value)</span></code></pre></div></div>
   <category>causal inference</category>
   <category>statistical inference</category>
   <guid>https://vyasenov.github.io/blog/randomization-inference.html</guid>
-  <pubDate>Thu, 12 Feb 2026 08:00:00 GMT</pubDate>
+  <pubDate>Wed, 11 Feb 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Generalized Additive Models: What You Need to Know</title>
@@ -6878,7 +7178,7 @@ font-style: inherit;">0.3</span>)</span>
   <category>semiparametric models</category>
   <category>machine learning</category>
   <guid>https://vyasenov.github.io/blog/generalized-additive-models.html</guid>
-  <pubDate>Thu, 12 Feb 2026 08:00:00 GMT</pubDate>
+  <pubDate>Wed, 11 Feb 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Understanding Correlated Random Effects Models</title>
@@ -7356,7 +7656,7 @@ font-style: inherit;">print</span>(model_cre.summary())</span></code></pre></div
  ]]></description>
   <category>causal inference</category>
   <guid>https://vyasenov.github.io/blog/correlated-random-effects.html</guid>
-  <pubDate>Wed, 11 Feb 2026 08:00:00 GMT</pubDate>
+  <pubDate>Tue, 10 Feb 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>The Many Flavors of Propensity Score Methods In Causal Inference</title>
@@ -8699,7 +8999,7 @@ font-style: inherit;">summary</span>(eb_fit)</span></code></pre></div></div>
   <category>causal inference</category>
   <category>flavors</category>
   <guid>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</guid>
-  <pubDate>Thu, 22 Jan 2026 08:00:00 GMT</pubDate>
+  <pubDate>Wed, 21 Jan 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>The Wilcoxon-Mann-Whitney Test is Not a Test of Medians</title>
@@ -8914,7 +9214,7 @@ font-style: inherit;">print</span>(res)</span></code></pre></div></div>
   <category>statistical inference</category>
   <category>hypothesis testing</category>
   <guid>https://vyasenov.github.io/blog/wmw-test-fails-medians.html</guid>
-  <pubDate>Tue, 20 Jan 2026 08:00:00 GMT</pubDate>
+  <pubDate>Mon, 19 Jan 2026 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Unconditional Quantile Regression and Treatment Effects</title>
@@ -9394,7 +9694,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
  ]]></description>
   <category>causal inference</category>
   <guid>https://vyasenov.github.io/blog/unconditional-qreg.html</guid>
-  <pubDate>Sun, 21 Dec 2025 08:00:00 GMT</pubDate>
+  <pubDate>Sat, 20 Dec 2025 22:00:00 GMT</pubDate>
 </item>
 <item>
   <title>The Many Flavors of Matching for Causal Inference</title>
@@ -9555,7 +9855,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
   <category>causal inference</category>
   <category>flavors</category>
   <guid>https://vyasenov.github.io/blog/flavors-matching-methods.html</guid>
-  <pubDate>Tue, 27 May 2025 07:00:00 GMT</pubDate>
+  <pubDate>Mon, 26 May 2025 21:00:00 GMT</pubDate>
 </item>
 <item>
   <title>The Many Flavors of Variable Selection</title>
@@ -10608,1100 +10908,7 @@ font-style: inherit;">print</span>(feature_names[selected])</span></code></pre><
   <category>machine learning</category>
   <category>flavors</category>
   <guid>https://vyasenov.github.io/blog/flavors-var-selection.html</guid>
-  <pubDate>Mon, 26 May 2025 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>The Many Flavors of Bootstrap</title>
-  <link>https://vyasenov.github.io/blog/flavors-bootstrap.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">8 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>At its heart, the bootstrap poses a simple yet powerful question: “What if we could resample from our existing data, treating it as a stand-in for the population?” By doing so, we can estimate variability, build confidence intervals, and carry out hypothesis tests—without leaning heavily on strong parametric assumptions. It’s especially useful in situations where analytic solutions exist in theory but are too complex to derive or even implement in practice.</p>
-<p>But here’s the thing: there isn’t just <em>one</em> bootstrap. Over the years, statisticians have developed many flavors of the bootstrap to address different challenges in different settings. Some handle small samples better. Some are designed for dependent data like time series. Others shine when the assumptions of classic bootstrapping crumble (think clustered data or heteroskedasticity).</p>
-<p>In this article, I’ll take a tour through the zoo of bootstrap methods: from the classic nonparametric bootstrap to the jackknife, parametric bootstrap, Bayesian bootstrap, wild bootstrap, moving block bootstrap, and more. I’ll explore where each method shines, where it stumbles, and how to pick the right one for your problem. As usual, I won’t just throw formulas at you. The focus here is on understanding <em>why</em> these methods work, not just how to mechanically apply them. There is also plenty of <code>R</code> and <code>Python</code> code to illustrate each method in action.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>We have data <img src="https://latex.codecogs.com/png.latex?%5C%7BY_1,%20Y_2,%20%5Cdots,%20Y_n%5C%7D">, where <img src="https://latex.codecogs.com/png.latex?Y_i"> are independent and identically distributed (i.i.d.) random variables drawn from some unknown distribution <img src="https://latex.codecogs.com/png.latex?F">. We’re interested in estimating some parameter <img src="https://latex.codecogs.com/png.latex?%5Ctheta%20=%20T(F),"> like the mean, median, regression coefficients, or a more complicated functional.</p>
-<p>Our estimator of <img src="https://latex.codecogs.com/png.latex?%5Ctheta"> from the observed sample is <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D%20=%20T(%5Chat%7BF%7D_n),"> where <img src="https://latex.codecogs.com/png.latex?%5Chat%7BF%7D_n"> is the empirical distribution function that puts mass <img src="https://latex.codecogs.com/png.latex?1/n"> on each observed data point.</p>
-<p>The big question is: <em>How variable is <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D">?</em> And that’s where the bootstrap comes in. Regardless of the type of bootstrap, given a bunch of <img src="https://latex.codecogs.com/png.latex?B"> estimates of <img src="https://latex.codecogs.com/png.latex?%5Ctheta">, its variance is computed as: <img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7BV%7D_%7B%5Ctext%7Bboot%7D%7D%20=%20%5Cfrac%7B1%7D%7BB%20-%201%7D%20%5Csum_%7Bb=1%7D%5EB%20%5Cleft(%20%5Chat%7B%5Ctheta%7D%5E*_b%20-%20%5Cbar%7B%5Ctheta%7D%5E*%20%5Cright)%5E2,%0A"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?%5Cbar%7B%5Ctheta%7D%5E*%20=%20%5Cfrac%7B1%7D%7BB%7D%20%5Csum_%7Bb=1%7D%5EB%20%5Chat%7B%5Ctheta%7D%5E*_b"> is the average of the bootstrap estimates.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="the-jackknife" class="level3">
-<h3 class="anchored" data-anchor-id="the-jackknife">The Jackknife</h3>
-<p>Let’s start with the jackknife, developed back in the 1950s by Quenouille and popularized by Tukey. The jackknife isn’t technically a bootstrap, but it’s often the gateway to resampling methods. Here is how it works:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For <img src="https://latex.codecogs.com/png.latex?i%20=%201,%20%5Cdots,%20n">:</p>
-<ol type="1">
-<li>Drop observation <img src="https://latex.codecogs.com/png.latex?i"> at a time and recompute your estimate.</li>
-<li>Compute the jackknife estimate, <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D_%7B(i)%7D%20=%20T(%5Chat%7BF%7D_%7Bn,-i%7D)">, on the remaining <img src="https://latex.codecogs.com/png.latex?n-1"> observations.</li>
-</ol>
-</div>
-</div>
-<p>Here <img src="https://latex.codecogs.com/png.latex?%5Chat%7BF%7D_%7Bn,-i%7D"> is the empirical distribution leaving out the <img src="https://latex.codecogs.com/png.latex?i">-th observation. We then use the variability across these “leave-one-out” estimates to approximate the variance of <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D"> following the formula above.</p>
-<p>The jackknife works well for smooth statistics like the mean or regression coefficients. But it can fail miserably for non-smooth functionals like the median or quantiles.</p>
-<p><strong>Strengths:</strong> Fast, easy to implement, no randomness involved.</p>
-<p><strong>Weaknesses:</strong> Limited to statistics that are smooth in the data. Doesn’t handle complex dependency structures or non-smooth parameters well.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb1-2">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb1-3">jackknife_estimates <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sapply</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(y), <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(i) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(y[<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>i]))</span>
-<span id="cb1-4">jackknife_variance <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> (<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(y) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(y) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(jackknife_estimates)</span>
-<span id="cb1-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(jackknife_variance)</span></code></pre></div></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb2-2">np.random.seed(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb2-3">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.normal(size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb2-4">jackknife_estimates <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.array([np.mean(np.delete(y, i)) <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(y))])</span>
-<span id="cb2-5">jackknife_variance <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> (<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(y) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(y) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> np.var(jackknife_estimates, ddof<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb2-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(jackknife_variance)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="classic-nonparametric-bootstrap" class="level3">
-<h3 class="anchored" data-anchor-id="classic-nonparametric-bootstrap">Classic Nonparametric Bootstrap</h3>
-<p>The classic bootstrap, introduced by Bradley Efron in 1979, takes the idea of resampling and turns it up a notch. Instead of dropping one observation at a time, we repeatedly resample <em>with replacement</em> from our data to create many “new” datasets, each the same size as the original.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For each bootstrap sample <img src="https://latex.codecogs.com/png.latex?b%20=%201,%20%5Cdots,%20B">:</p>
-<ol type="1">
-<li>Sample <img src="https://latex.codecogs.com/png.latex?n"> observations with replacement from your data.</li>
-<li>Compute the statistic <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D%5E*_b%20=%20T(%5Chat%7BF%7D%5E*_b)">.</li>
-</ol>
-</div>
-</div>
-<p><strong>Strengths:</strong> Flexible, broadly applicable, works well for non-smooth statistics.</p>
-<p><strong>Weaknesses:</strong> Can struggle with small samples or dependent data (like time series). Resampling with replacement assumes independence.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" aria-labelledby="tabset-2-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb3-2">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb3-3">B <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span></span>
-<span id="cb3-4">boot_means <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">replicate</span>(B, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sample</span>(y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">replace =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)))</span>
-<span id="cb3-5">boot_variance <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(boot_means)</span>
-<span id="cb3-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(boot_variance)</span></code></pre></div></div>
-</div>
-<div id="tabset-2-2" class="tab-pane" aria-labelledby="tabset-2-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">np.random.seed(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb4-2">B <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span></span>
-<span id="cb4-3">boot_means <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [np.mean(np.random.choice(y, size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(y), replace<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)) <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> _ <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(B)]</span>
-<span id="cb4-4">boot_variance <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.var(boot_means, ddof<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb4-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(boot_variance)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="parametric-bootstrap" class="level3">
-<h3 class="anchored" data-anchor-id="parametric-bootstrap">Parametric Bootstrap</h3>
-<p>The parametric bootstrap is a natural extension of the classic idea with a minor twist. Instead of sampling from the empirical distribution <img src="https://latex.codecogs.com/png.latex?%5Chat%7BF%7D_n">, you <em>assume a parametric model</em> <img src="https://latex.codecogs.com/png.latex?F_%5Ctheta"> for the data, fit it to the sample, and then generate new data from the fitted model.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For each bootstrap sample <img src="https://latex.codecogs.com/png.latex?b%20=%201,%20%5Cdots,%20B">:</p>
-<ol type="1">
-<li>Sample <img src="https://latex.codecogs.com/png.latex?n"> observations from <img src="https://latex.codecogs.com/png.latex?F_%5Ctheta">.</li>
-<li>Compute the statistic <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D%5E*_b%20=%20T(%5Chat%7BF%7D%5E*_b)">.</li>
-</ol>
-</div>
-</div>
-<p>For example, if you assume <img src="https://latex.codecogs.com/png.latex?Y_i%20%5Csim%20N(%5Cmu,%20%5Csigma%5E2)">, estimate <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cmu%7D"> and <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Csigma%7D%5E2">, and then generate bootstrap samples from <img src="https://latex.codecogs.com/png.latex?N(%5Chat%7B%5Cmu%7D,%20%5Chat%7B%5Csigma%7D%5E2)">.</p>
-<p>The parametric bootstrap can be a good idea when you trust your parametric model (or at least trust it more than the empirical distribution) and want to leverage that structure.</p>
-<p><strong>Strengths:</strong> More efficient than nonparametric bootstrap if the model is well-specified. Can handle small samples better.</p>
-<p><strong>Weaknesses:</strong> Garbage in, garbage out—if the parametric model is wrong, so are your bootstrap results.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" aria-labelledby="tabset-3-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb5-2">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb5-3">mu_hat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(y)</span>
-<span id="cb5-4">sigma_hat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sd</span>(y)</span>
-<span id="cb5-5">param_boot_means <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">replicate</span>(B, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, mu_hat, sigma_hat)))</span>
-<span id="cb5-6">param_boot_variance <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(param_boot_means)</span>
-<span id="cb5-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(param_boot_variance)</span></code></pre></div></div>
-</div>
-<div id="tabset-3-2" class="tab-pane" aria-labelledby="tabset-3-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">mu_hat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.mean(y)</span>
-<span id="cb6-2">sigma_hat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.std(y, ddof<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb6-3">param_boot_means <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [np.mean(np.random.normal(mu_hat, sigma_hat, size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(y))) <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> _ <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(B)]</span>
-<span id="cb6-4">param_boot_variance <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.var(param_boot_means, ddof<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb6-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(param_boot_variance)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="bayesian-bootstrap" class="level3">
-<h3 class="anchored" data-anchor-id="bayesian-bootstrap">Bayesian Bootstrap</h3>
-<p>Invented by Rubin in 1981, the Bayesian bootstrap doesn’t resample data points directly. Instead, it puts a <em>Dirichlet prior</em> on the weights assigned to each observation.</p>
-<p>Whereas the classical bootstrap simulates sampling from a population by creating new samples from the observed data, the Bayesian bootstrap simulates uncertainty about the population distribution itself using the Bayesian framework—specifically by placing a nonparametric prior over the unknown distribution (implicitly, a Dirichlet process prior).</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For each bootstrap replicate <img src="https://latex.codecogs.com/png.latex?b%20=%201,%20%5Cdots,%20B">:</p>
-<ol type="1">
-<li>Draw weights <img src="https://latex.codecogs.com/png.latex?(w_1,%20%5Cdots,%20w_n)%20%5Csim%20%5Ctext%7BDirichlet%7D(1,%20%5Cdots,%201)">.</li>
-<li>Construct the weighted empirical distribution <img src="https://latex.codecogs.com/png.latex?%5Chat%7BF%7D%5E*_b%20=%20%5Csum_%7Bi=1%7D%5En%20w_i%5E%7B(b)%7D%20%5Cdelta_%7BY_i%7D">, where <img src="https://latex.codecogs.com/png.latex?%5Cdelta_%7BY_i%7D"> is a point mass at observation <img src="https://latex.codecogs.com/png.latex?Y_i">.</li>
-<li>Compute the weighted statistic: <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D%5E*_b%20=%20T(%5Chat%7BF%7D%5E*_b)">.</li>
-</ol>
-</div>
-</div>
-<p><strong>Strengths:</strong> Smooth, avoids ties from discrete resampling, easy to implement.</p>
-<p><strong>Weaknesses:</strong> Interpretation may feel less intuitive if you’re used to classical frequentist bootstrap.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" aria-labelledby="tabset-4-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(MCMCpack)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># for rdirichlet</span></span>
-<span id="cb7-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb7-3">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb7-4">B <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span></span>
-<span id="cb7-5">bayes_boot_means <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">replicate</span>(B, {</span>
-<span id="cb7-6">  weights <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rdirichlet</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(y))))</span>
-<span id="cb7-7">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(weights <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> y)</span>
-<span id="cb7-8">})</span>
-<span id="cb7-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(bayes_boot_means)</span></code></pre></div></div>
-</div>
-<div id="tabset-4-2" class="tab-pane" aria-labelledby="tabset-4-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> scipy.stats <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> dirichlet</span>
-<span id="cb8-2">bayes_boot_means <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> []</span>
-<span id="cb8-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> _ <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(B):</span>
-<span id="cb8-4">    weights <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> dirichlet.rvs([<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(y))[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>]</span>
-<span id="cb8-5">    bayes_boot_means.append(np.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">sum</span>(weights <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> y))</span>
-<span id="cb8-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(np.var(bayes_boot_means, ddof<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="wild-bootstrap" class="level3">
-<h3 class="anchored" data-anchor-id="wild-bootstrap">Wild Bootstrap</h3>
-<p>The wild bootstrap is a lifesaver when dealing with <em>heteroskedasticity</em> or few clusters. Rather than resampling entire observations (which breaks the structure of heteroskedastic errors), the wild bootstrap keeps the design matrix <img src="https://latex.codecogs.com/png.latex?X"> fixed and perturbs only the residuals—in a way that maintains heteroskedasticity-consistent variability. Some versions modify the score function instead of the residuals.</p>
-<p>Suppose you’re estimating a regression model: <img src="https://latex.codecogs.com/png.latex?%0AY_i%20=%20X_i%20%5Cbeta%20+%20%5Cvarepsilon_i.%0A"></p>
-<p>Then, you proceed as follows:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm: Wild Bootstrap">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm: Wild Bootstrap
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For each bootstrap replicate <img src="https://latex.codecogs.com/png.latex?b%20=%201,%20%5Cdots,%20B">:</p>
-<ol type="1">
-<li>Generate a new outcome variable by perturbing the residuals: <img src="https://latex.codecogs.com/png.latex?%0AY%5E*_i%20=%20X_i%20%5Chat%7B%5Cbeta%7D%20+%20v_i%20%5Chat%7B%5Cvarepsilon%7D_i,%0A"></li>
-</ol>
-<p>where <img src="https://latex.codecogs.com/png.latex?v_i"> are random variables with mean zero and variance one (e.g., Rademacher random variables taking values <img src="https://latex.codecogs.com/png.latex?%5Cpm1"> with probability <img src="https://latex.codecogs.com/png.latex?0.5">).</p>
-<ol start="2" type="1">
-<li>Refit the model using the perturbed outcomes and compute the statistic <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D%5E*_b%20=%20T(%5Chat%7BF%7D%5E*_b)">.</li>
-</ol>
-</div>
-</div>
-<p><strong>Strengths:</strong> Handles heteroskedasticity gracefully, robust in small-sample settings.</p>
-<p><strong>Weaknesses:</strong> Mostly designed for regression contexts. Choice of perturbation distribution matters.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-5-1" class="tab-pane active" aria-labelledby="tabset-5-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb9-2">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb9-3">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(x))</span>
-<span id="cb9-4">model <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lm</span>(y <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> x)</span>
-<span id="cb9-5">residuals <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">resid</span>(model)</span>
-<span id="cb9-6">predicted <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">fitted</span>(model)</span>
-<span id="cb9-7">B <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span></span>
-<span id="cb9-8">wild_means <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">replicate</span>(B, {</span>
-<span id="cb9-9">  v <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(residuals), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">replace =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb9-10">  y_star <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> predicted <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> v <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> residuals</span>
-<span id="cb9-11">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coef</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lm</span>(y_star <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> x))[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>]</span>
-<span id="cb9-12">})</span>
-<span id="cb9-13"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(wild_means)</span></code></pre></div></div>
-</div>
-<div id="tabset-5-2" class="tab-pane" aria-labelledby="tabset-5-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> LinearRegression</span>
-<span id="cb10-2">x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.normal(size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>).reshape(<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb10-3">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> x.flatten() <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> np.random.normal(scale<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>np.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">abs</span>(x.flatten()))</span>
-<span id="cb10-4">model <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> LinearRegression().fit(x, y)</span>
-<span id="cb10-5">residuals <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> model.predict(x)</span>
-<span id="cb10-6">predicted <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> model.predict(x)</span>
-<span id="cb10-7">wild_boot_coefs <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> []</span>
-<span id="cb10-8"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> _ <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(B):</span>
-<span id="cb10-9">    v <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.choice([<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>], size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(residuals))</span>
-<span id="cb10-10">    y_star <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> predicted <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> v <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> residuals</span>
-<span id="cb10-11">    coef <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> LinearRegression().fit(x, y_star).coef_[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>]</span>
-<span id="cb10-12">    wild_boot_coefs.append(coef)</span>
-<span id="cb10-13"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(np.var(wild_boot_coefs, ddof<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="cluster-bootstrap" class="level3">
-<h3 class="anchored" data-anchor-id="cluster-bootstrap">Cluster Bootstrap</h3>
-<p>The cluster bootstrap is essential when working with clustered data, where observations within the same group (e.g., students in schools, workers in firms) may be correlated. Unlike standard bootstrap methods that resample individuals, the cluster bootstrap resamples <em>entire clusters</em>, preserving the internal dependence structure of the data.</p>
-<p>Suppose you’re estimating a model like:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AY_%7Big%7D%20=%20X_%7Big%7D%20%5Cbeta%20+%20%5Cvarepsilon_%7Big%7D,%0A"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?g"> indexes clusters and <img src="https://latex.codecogs.com/png.latex?i"> indexes observations within cluster <img src="https://latex.codecogs.com/png.latex?g">.</p>
-<p>The cluster bootstrap generates resampled datasets by:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For each bootstrap sample <img src="https://latex.codecogs.com/png.latex?b%20=%201,%20%5Cdots,%20B">:</p>
-<ol type="1">
-<li>Sample clusters <img src="https://latex.codecogs.com/png.latex?g"> from your data with replacement and include <em>all observations</em> <img src="https://latex.codecogs.com/png.latex?i"> from each selected cluster.</li>
-<li>Compute the statistic <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D%5E*_b%20=%20T(%5Chat%7BF%7D%5E*_b)">.</li>
-</ol>
-</div>
-</div>
-<p><strong>Strengths:</strong> Simple to implement, preserves cluster dependence, consistent under many forms of within-cluster correlation.</p>
-<p><strong>Weaknesses:</strong> Requires a reasonably large number of clusters (typically <img src="https://latex.codecogs.com/png.latex?G%20%5Cgeq%2030">). Can be biased or unstable with few clusters. (Luckily, the United States was broken down into 50 states. The Swiss were not as fortunate.)</p>
-<hr>
-</section>
-<section id="moving-block-bootstrap" class="level3">
-<h3 class="anchored" data-anchor-id="moving-block-bootstrap">Moving Block Bootstrap</h3>
-<p>If your data are <em>dependent</em>, like time series, the classic bootstrap fails because it breaks the correlation structure. The moving block bootstrap fixes this by resampling blocks of adjacent observations instead of individual data points. You can easily see how this makes sense for time series: you want to maintain the local dependence structure while still resampling.</p>
-<p>You choose a block length <img src="https://latex.codecogs.com/png.latex?l"> and create overlapping blocks of data: <img src="https://latex.codecogs.com/png.latex?%0A%5C%7BY_1,%20%5Cdots,%20Y_l%5C%7D,%20%5C%7BY_2,%20%5Cdots,%20Y_%7Bl+1%7D%5C%7D,%20%5Cdots,%20%5C%7BY_%7Bn-l+1%7D,%20%5Cdots,%20Y_n%5C%7D.%0A"></p>
-<p>Then, you proceed as follows:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For each bootstrap sample <img src="https://latex.codecogs.com/png.latex?b%20=%201,%20%5Cdots,%20B">:</p>
-<ol type="1">
-<li>Sample these blocks with replacement to form a new dataset.</li>
-<li>Compute the statistic <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D%5E*_b%20=%20T(%5Chat%7BF%7D%5E*_b)">.</li>
-</ol>
-</div>
-</div>
-<p><strong>Strengths:</strong> Maintains local dependence within blocks.</p>
-<p><strong>Weaknesses:</strong> Choice of block size can be tricky; too small loses dependence, too big reduces variability.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-6-1" class="tab-pane active" aria-labelledby="tabset-6-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(boot)</span>
-<span id="cb11-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb11-3">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">arima.sim</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">model =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ar =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.7</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb11-4">block_length <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span></span>
-<span id="cb11-5">B <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span></span>
-<span id="cb11-6">block_boot_means <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tsboot</span>(y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">statistic =</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(x) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(x), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">R =</span> B, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">l =</span> block_length, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sim =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"fixed"</span>)</span>
-<span id="cb11-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">var</span>(block_boot_means<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>t)</span></code></pre></div></div>
-</div>
-<div id="tabset-6-2" class="tab-pane" aria-labelledby="tabset-6-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> arch.bootstrap <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> MovingBlockBootstrap</span>
-<span id="cb12-2">np.random.seed(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb12-3">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.normal(size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb12-4">block_length <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span></span>
-<span id="cb12-5">bs <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> MovingBlockBootstrap(block_length, y)</span>
-<span id="cb12-6">boot_means <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.array([np.mean(data[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>]) <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> data <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> bs.bootstrap(B)])</span>
-<span id="cb12-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(np.var(boot_means, ddof<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>The bootstrap is not a single method—it’s a whole family of techniques, each with its own sweet spot.</li>
-<li>The jackknife is fast and simple but struggles with non-smooth statistics.</li>
-<li>The classic bootstrap works great for i.i.d. data and smooth or non-smooth statistics, but fails with dependence or small samples.</li>
-<li>Specialized bootstraps (wild, block, Bayesian, subsampling) handle heteroskedasticity, clustering, dependence, and other real-world challenges that trip up the classic approach.</li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Careful readers of this blog may have noticed that I frequently recommend Efron and Hastie’s <em>Computer Age Statistical Inference</em> for its modern perspective on statistical methods, including bootstrapping. While it’s an excellent and insightful text, it can be a bit too technical for many applied practitioners. If you’re looking for more approachable resources, I recommend exploring how various statistical software packages implement the bootstrap—Stata, in particular, offers great documentation and examples. You’ll also find high-quality lecture notes from advanced econometrics courses online that treat these topics with a contemporary lens. Finally, any of the references listed below will give you a solid grounding in bootstrap techniques.</p>
-<hr>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Cameron, A. C., Gelbach, J. B., &amp; Miller, D. L. (2008). Bootstrap-based improvements for inference with clustered errors. The review of economics and statistics, 90(3), 414-427.</p>
-<p>Davidson, R., &amp; Flachaire, E. (2008). The wild bootstrap, tamed at last. Journal of Econometrics, 146(1), 162-169.</p>
-<p>Davison, A. C., &amp; Hinkley, D. V. (1997). <em>Bootstrap Methods and Their Application</em>. Cambridge University Press.</p>
-<p>Efron, B. (1979). Bootstrap methods: Another look at the jackknife. <em>Annals of Statistics</em>, 7(1), 1–26.</p>
-<p>Efron, B., &amp; Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.</p>
-<p>Lahiri, S. N. (2003). <em>Resampling Methods for Dependent Data</em>. Springer.</p>
-<p>Rubin, D. B. (1981). The Bayesian bootstrap. <em>Annals of Statistics</em>, 9(1), 130–134.</p>
-
-
-</section>
-
- ]]></description>
-  <category>bootstrap</category>
-  <category>statistical inference</category>
-  <category>flavors</category>
-  <guid>https://vyasenov.github.io/blog/flavors-bootstrap.html</guid>
-  <pubDate>Mon, 26 May 2025 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>The Secret Life of Correlation: Myths and Thirteen Views</title>
-  <link>https://vyasenov.github.io/blog/corr-myths-13-views.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">7 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Statistical correlation has long captivated me—it’s probably the topic I’ve written about most on this blog. What makes it so compelling is the combination of theoretical richness and deceptive simplicity. In an age dominated by deep learning and opaque models, correlation remains a refreshingly transparent and interpretable quantity. When I encounter a new dataset, it’s often the first tool I reach for to explore relationships among variables.</p>
-<p>Despite its familiarity, correlation is also one of the most frequently misunderstood and misapplied concepts in statistics. It seems straightforward: a value between –1 and 1 that quantifies the strength and direction of a relationship between two variables. But beneath that tidy number lies a complex web of assumptions, limitations, and interpretations—many of which are overlooked even by seasoned practitioners.</p>
-<p>In this article, I revisit two insightful papers—van den Heuvel and Zhan (2022), and Rodgers and Nicewander (1988)—that peel back the layers of meaning surrounding correlation. My aim is to deepen our intuition and clear up common misconceptions about three of the most widely used correlation measures: Pearson’s <em>r</em>, Spearman’s <em>ρ</em>, and Kendall’s <em>τ</em>. Along the way, I’ll explore thirteen different lenses through which correlation can be understood.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let <img src="https://latex.codecogs.com/png.latex?X"> and <img src="https://latex.codecogs.com/png.latex?Y"> be two random variables with realizations <img src="https://latex.codecogs.com/png.latex?(x_i,%20y_i)"> for a random sample indexed by <img src="https://latex.codecogs.com/png.latex?i%20=%201,%20%5Cldots,%20n">. I assume all variables are centered (i.e., de-meaned) unless stated otherwise. Below are the three most commonly used correlation coefficients in practice.</p>
-<p>As a refresher, here are the three correlation coefficients I’ll focus on:</p>
-<ul>
-<li><strong>Pearson’s <img src="https://latex.codecogs.com/png.latex?r"></strong> is defined as: <img src="https://latex.codecogs.com/png.latex?r(X,Y)%20=%20%5Cfrac%7B%5Csum%20(x_i%20-%20%5Cbar%7Bx%7D)(y_i%20-%20%5Cbar%7By%7D)%7D%7B%5Csqrt%7B%5Csum%20(x_i%20-%20%5Cbar%7Bx%7D)%5E2%7D%20%5Csqrt%7B%5Csum%20(y_i%20-%20%5Cbar%7By%7D)%5E2%7D%7D."></li>
-<li><strong>Spearman’s <img src="https://latex.codecogs.com/png.latex?%5Crho"></strong> is Pearson’s <img src="https://latex.codecogs.com/png.latex?r"> computed on the ranks of the data: <img src="https://latex.codecogs.com/png.latex?%5Crho(X,Y)=r(%5Ctext%7Brank%7D(X),%20%5Ctext%7Brank%7D(Y))."></li>
-<li><strong>Kendall’s <img src="https://latex.codecogs.com/png.latex?%5Ctau"></strong> is based on the number of concordant and discordant pairs: <img src="https://latex.codecogs.com/png.latex?%5Ctau%20=%20%5Cfrac%7B%5C#%5Ctext%7Bconcordant%7D%20-%20%5C#%5Ctext%7Bdiscordant%7D%7D%7B%5Cbinom%7Bn%7D%7B2%7D%7D."></li>
-</ul>
-<p>Concordant pairs of observations refer to pairs where the ranks of both variables move in the same direction. For example, if one observation is higher than another in both variables, they are concordant. Conversely, discordant pairs occur when the ranks of the variables move in opposite directions; one observation is higher in one variable but lower in the other.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="some-myths" class="level3">
-<h3 class="anchored" data-anchor-id="some-myths">Some Myths</h3>
-<p>Pearson’s <img src="https://latex.codecogs.com/png.latex?r"> is traditionally described as a measure of linear association, while Spearman’s <img src="https://latex.codecogs.com/png.latex?%5Crho"> and Kendall’s <img src="https://latex.codecogs.com/png.latex?%5Ctau"> are thought to capture monotonic relationships. This textbook distinction often leads analysts to default to rank-based methods when faced with nonlinear relationships. But as appealing as this neat categorization may be, it oversimplifies the reality.</p>
-<p>Van den Heuvel and Zhan (2022) challenge this conventional wisdom. They argue that none of these three correlation coefficients are intrinsically limited to detecting “linear” or “monotonic” associations. Instead, their sensitivity depends on the underlying distributional structure, presence of heteroskedasticity, and even how the data were transformed. Through carefully constructed counterexamples, they demonstrate that Pearson’s <img src="https://latex.codecogs.com/png.latex?r"> can sometimes outperform Spearman’s <img src="https://latex.codecogs.com/png.latex?%5Crho"> and Kendall’s <img src="https://latex.codecogs.com/png.latex?%5Ctau"> even when the association is nonlinear. Conversely, rank-based methods can be more powerful than <img src="https://latex.codecogs.com/png.latex?r"> even when the association is linear—particularly in distributions outside the bivariate normal family.</p>
-<p>Another persistent myth is that rank correlations are categorically “more robust.” While it’s true that <img src="https://latex.codecogs.com/png.latex?%5Crho"> and <img src="https://latex.codecogs.com/png.latex?%5Ctau"> are less sensitive to outliers in marginal distributions, this robustness has limits. Rank-based methods can still underperform or behave erratically in the presence of non-monotonic relationships or certain forms of heteroskedasticity. For instance, a <img src="https://latex.codecogs.com/png.latex?U">-shaped relationship will likely elude all three measures.</p>
-</section>
-<section id="new-framework-for-association" class="level3">
-<h3 class="anchored" data-anchor-id="new-framework-for-association">New Framework for Association</h3>
-<p>To overcome these misconceptions and some of the counterexamples previously suggested in the literature, the authors propose a more nuanced framework for understanding linear and monotonic associations. They developed the following extended definitions:</p>
-<p><strong>Linear Association:</strong> <img src="https://latex.codecogs.com/png.latex?X"> and <img src="https://latex.codecogs.com/png.latex?Y"> are linearly associated if there exist known monotone functions <img src="https://latex.codecogs.com/png.latex?%5Cphi(%5Ccdot)"> and <img src="https://latex.codecogs.com/png.latex?%5Cpsi(%5Ccdot)"> such that: <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5B%5Cpsi(Y)%20%5Cmid%20%5Cphi(X)%5D%20=%20%5Cbeta_0%20+%20%5Cbeta_1%20%5Cphi(X)."></p>
-<p>Similarly,</p>
-<p><strong>Monotonic Association:</strong> <img src="https://latex.codecogs.com/png.latex?X"> and <img src="https://latex.codecogs.com/png.latex?Y"> are monotonically associated if there exist two potentially unknown monotonic functions <img src="https://latex.codecogs.com/png.latex?%5Cphi(%5Ccdot)"> and <img src="https://latex.codecogs.com/png.latex?%5Cpsi(%5Ccdot)"> such that <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5B%5Cpsi(Y)%20%5Cmid%20%5Cphi(X)%5D%20=%20%5Cphi(X)."></p>
-<p>Under these updated definitions, the conventional understanding of which correlation coefficient is best suited for linear or monotonic relationships holds better ground. These definitions capture a richer set of relationships by accounting for transformations, rather than relying on raw scale comparisons. They also emphasize the importance of conditional expectation as the lens through which to define association, rather than relying solely on scatter plot geometry or regression output.</p>
-<p>Overall, what becomes clear is that no correlation coefficient offers a complete or universally superior summary of association. Each captures different aspects of dependence. They are tools, not truths—and should be interpreted in context. Visualizations and complementary diagnostic tests remain indispensable.</p>
-</section>
-<section id="thirteen-ways-to-look-at-pearsons-r" class="level3">
-<h3 class="anchored" data-anchor-id="thirteen-ways-to-look-at-pearsons-r">Thirteen Ways to Look at Pearson’s <img src="https://latex.codecogs.com/png.latex?r"></h3>
-<p>If this wasn’t enough for you, Rodgers and Nicewander (1988) offer a brilliant framing of correlation by listing thirteen distinct ways to interpret Pearson’s <img src="https://latex.codecogs.com/png.latex?r">. Here’s a quick tour, each providing a slightly different angle:</p>
-<ol type="1">
-<li><strong>As a measure of standardized covariance</strong>, it tells you how two variables co-vary after accounting for their units.</li>
-<li><strong>As a regression slope between standardized variables</strong>, it equals the slope of the line predicting <img src="https://latex.codecogs.com/png.latex?z">-scored <img src="https://latex.codecogs.com/png.latex?Y"> from <img src="https://latex.codecogs.com/png.latex?z">-scored <img src="https://latex.codecogs.com/png.latex?X">.</li>
-<li><strong>As the centered and standardized sum</strong> of cross-product of two variables. This is merely the definition of Pearson’s <img src="https://latex.codecogs.com/png.latex?r"> shown above.</li>
-<li><strong>As the cosine of the angle between two vectors</strong>, showing their geometric alignment.</li>
-<li><strong>As a geometric mean of the two regression slopes</strong>. It equals the square root of the product of the slopes of the regression of <img src="https://latex.codecogs.com/png.latex?Y"> on <img src="https://latex.codecogs.com/png.latex?X"> and <img src="https://latex.codecogs.com/png.latex?X"> on <img src="https://latex.codecogs.com/png.latex?Y">.</li>
-<li><strong>As a square root of the ratio of two variances</strong>, where <img src="https://latex.codecogs.com/png.latex?r%5E2"> is the proportion of variance in <img src="https://latex.codecogs.com/png.latex?Y"> explained by <img src="https://latex.codecogs.com/png.latex?X"> by linear regression.</li>
-<li><strong>As a function of the angle between the two standardized regression lines</strong>, where it equals the sum of the inverse of the cosine and the tangent of the angle between the two lines.</li>
-<li><strong>As an average cross-product of standardized variables</strong>, which is obtained by dividing both the numerator and the denominator by the product of the two sample standard deviations.</li>
-<li><strong>As a rescaled variance of the difference between standardized scores</strong></li>
-<li><strong>As a balloon rule</strong>: A visual approximation of <img src="https://latex.codecogs.com/png.latex?r"> using the ellipse-shaped scatterplot “balloon” width and height.</li>
-<li><strong>As a geometric property of elliptical contours (isoconcentration ellipses)</strong> in a bivariate distribution—essentially more precise versions of the “balloon” idea from the prior rule.</li>
-<li><strong>As a test statistic in randomized experiments</strong>, <img src="https://latex.codecogs.com/png.latex?r"> can be computed from a t-statistic or F-statistic (e.g., from ANOVA).</li>
-<li><strong>As a ratio of two means</strong> following Galton, <img src="https://latex.codecogs.com/png.latex?r"> reflects how the mean of Y changes with selected values of X.</li>
-</ol>
-<p>Each interpretation highlights a different trade-off or caveat. For example, the geometric view gives a great intuition, but the regression slope interpretation connects more directly to causal inference. And perhaps most importantly, several of these views are not invariant to nonlinear transformations, which matters a lot in real data.</p>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li><p>Pearson’s <img src="https://latex.codecogs.com/png.latex?r">, Spearman’s <img src="https://latex.codecogs.com/png.latex?%5Crho">, and Kendall’s <img src="https://latex.codecogs.com/png.latex?%5Ctau"> measure different aspects of association—none is a catch-all indicator.</p></li>
-<li><p>The “monotonic vs.&nbsp;linear” framing is a helpful heuristic, but it can break down in some real-world scenarios.</p></li>
-<li><p>Rodgers and Nicewander’s thirteen perspectives on correlation reveal its multifaceted nature and limitations.</p></li>
-<li><p>Always visualize your data—correlation coefficients should not replace your eyes or your understanding of the domain.</p></li>
-</ul>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>van den Heuvel, E., &amp; Zhan, Z. (2022). Myths about linear and monotonic associations: Pearson’s <img src="https://latex.codecogs.com/png.latex?r">, Spearman’s <img src="https://latex.codecogs.com/png.latex?%5Crho">, and Kendall’s <img src="https://latex.codecogs.com/png.latex?%5Ctau">. <em>The American Statistician</em>, 76(1), 44–52.</p>
-<p>Lee Rodgers, J., &amp; Nicewander, W. A. (1988). Thirteen ways to look at the correlation coefficient. <em>The American Statistician</em>, 42(1), 59–66.</p>
-
-
-</section>
-
- ]]></description>
-  <category>statistical inference</category>
-  <category>correlation</category>
-  <guid>https://vyasenov.github.io/blog/corr-myths-13-views.html</guid>
-  <pubDate>Sat, 24 May 2025 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>The Kolmogorov–Smirnov Test as a Goodness-of-fit</title>
-  <link>https://vyasenov.github.io/blog/ks-test-one-sample.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">4 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>The Kolmogorov–Smirnov (KS) test is a staple in the statistical toolbox for checking how well data fit a hypothesized distribution. It comes in both a one-sample and a two-sample version. A common application in causal inference is covariates distribution balance checks between the treatment and control groups. It’s nonparametric, straightforward to compute, and widely implemented in just about every statistical software. But—and this is a big but—using the KS test naively can lead to some serious misinterpretations, especially when parameters are estimated from the data.</p>
-<p>This article is based on the 2024 <a href="https://www.tandfonline.com/doi/abs/10.1080/00031305.2024.2356095">paper</a> by Zeimbekakis, Schifano, and Yan, which takes a hard look at the common misuses of the <em>one-sample</em> KS test. I’ll walk through what the KS test is supposed to do, when it goes wrong, and how to think more clearly about assessing goodness-of-fit.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let <img src="https://latex.codecogs.com/png.latex?X_1,%20%5Cdots,%20X_n"> be i.i.d. random variables with unknown distribution function <img src="https://latex.codecogs.com/png.latex?F">. We want to test whether <img src="https://latex.codecogs.com/png.latex?F%20=%20F_0">, for some known distribution function <img src="https://latex.codecogs.com/png.latex?F_0">.</p>
-<p>The empirical distribution function (EDF) is: <img src="https://latex.codecogs.com/png.latex?F_n(x)%20=%20%5Cfrac%7B1%7D%7Bn%7D%20%5Csum_%7Bi=1%7D%5En%20I(X_i%20%5Cleq%20x)"></p>
-<p>You are probably familiar with this. It is a step function that estimates the true cumulative distribution function of a random variable based on a sample. At any point <img src="https://latex.codecogs.com/png.latex?x">, the ECDF gives the proportion of observations in the sample that are less than or equal to <img src="https://latex.codecogs.com/png.latex?x">. It is the nonparametric maximum likelihood estimator of the cumulative distribution function (CDF).</p>
-<p>The KS statistic is: <img src="https://latex.codecogs.com/png.latex?D_n%20=%20%5Csup_%7Bx%20%5Cin%20%5Cmathbb%7BR%7D%7D%20%7CF_n(x)%20-%20F_0(x)%7C"></p>
-<p>Under the null hypothesis, this test statistic converges to the Kolmogorov distribution, a distribution with no closed-form density but a known CDF. This is under the assumption that <img src="https://latex.codecogs.com/png.latex?F_0"> is fully specified, i.e., no parameters have been estimated from the data.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="a-refresher-on-ks" class="level3">
-<h3 class="anchored" data-anchor-id="a-refresher-on-ks">A Refresher on KS</h3>
-<p>Intuitively, the KS test statistic measures the largest vertical distance between the EDF and the hypothesized CDF <img src="https://latex.codecogs.com/png.latex?F_0">. It is sensitive to discrepancies in the CDF. This gives you a global measure of discrepancy, not a local one—so it’s less powerful for detecting issues like tail misspecification or multimodality. This is important because in many applications, tail behavior is critically important, such as in risk modeling or extreme value analysis.</p>
-<p>A well known limitation of the KS test is that with small samples, it has limited power to detect distributional differences, while with very large samples, it may detect statistically significant but practically trivial deviations from the hypothesized distribution. This problem in the context of “big data” is obviously broader and goes beyond the KS test.</p>
-</section>
-<section id="the-problem" class="level3">
-<h3 class="anchored" data-anchor-id="the-problem">The Problem</h3>
-<p>Here’s the catch: the null distribution of the KS statistic assumes <img src="https://latex.codecogs.com/png.latex?F_0"> is fully known. But in practice, people often use the test to evaluate model fit <em>after</em> estimating parameters—e.g., fitting a normal distribution by MLE and then checking fit with KS.</p>
-<p>That invalidates the test.</p>
-<p>Why? Because the theoretical distribution of <img src="https://latex.codecogs.com/png.latex?D_n"> changes when parameters are estimated. The true distribution of the test statistic becomes conditional on the data, and the critical values are no longer accurate. This leads to a deflated Type I error rate: you’re less likely to incorrectly reject the null. In other words, the test is too conservative.</p>
-</section>
-<section id="better-alternatives" class="level3">
-<h3 class="anchored" data-anchor-id="better-alternatives">Better Alternatives</h3>
-<p>When parameters are estimated, we need modified procedures:</p>
-<ul>
-<li><strong>Lilliefors test</strong>: An adaptation of the KS test that adjusts the null distribution when testing for normality with estimated parameters.</li>
-<li><strong>Parametric bootstrap</strong>: Simulate the null distribution of the test statistic by repeatedly fitting the model and computing <img src="https://latex.codecogs.com/png.latex?D_n"> on simulated data.</li>
-<li><strong>Other GOF tests</strong>: Anderson-Darling and Cramér-von Mises tests have versions that handle estimated parameters more gracefully.</li>
-</ul>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li><p>The KS test is a popular and flexible method for testing differences between statistical distributions.</p></li>
-<li><p>It assumes no parameters are estimated—violating this leads to invalid inference.</p></li>
-<li><p>Estimating parameters from the same data used in the test deflates Type I error.</p></li>
-<li><p>Use alternatives like the Lilliefors test or bootstrap methods when parameters are estimated.</p></li>
-</ul>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Lilliefors, H. W. (1967). On the Kolmogorov-Smirnov test for normality with mean and variance unknown. Journal of the American statistical Association, 62(318), 399-402.</p>
-<p>Zeimbekakis, A., Schifano, E. D., &amp; Yan, J. (2024). On Misuses of the Kolmogorov–Smirnov Test for One-Sample Goodness-of-Fit. <em>The American Statistician</em>, 78(4), 481-487.</p>
-
-
-</section>
-
- ]]></description>
-  <category>statistical inference</category>
-  <category>hypothesis testing</category>
-  <guid>https://vyasenov.github.io/blog/ks-test-one-sample.html</guid>
-  <pubDate>Mon, 05 May 2025 07:00:00 GMT</pubDate>
+  <pubDate>Sun, 25 May 2025 21:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
