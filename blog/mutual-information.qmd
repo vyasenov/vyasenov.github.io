@@ -8,7 +8,7 @@ categories: [correlation]
 
 When exploring dependencies between variables, the data scientist’s toolbox often relies on correlation measures to reveal relationships and potential patterns. But what if we’re looking to capture relationships beyond linear correlations? Mutual Information (MI) quantifies the “amount of information” shared between variables in a more general sense. It measures how much we know about $Y$ by observing $X$. This approach goes beyond linear patterns and can help us uncover more complex relationships within data.
 
-MI can be especially helpful for applications such as feature selection and unsupervised learning. For readers familiar with various types of correlation metrics, Mutual Information provides an additional lens to interpret relationships within data.
+MI can be especially helpful for applications such as feature selection and unsupervised learning. For readers familiar with [various types of correlation metrics](https://vyasenov.github.io/blog/corr-myths-13-views.html), Mutual Information provides an additional lens to interpret relationships within data.
 
 In this article, I’ll guide you through the concept of Mutual Information, its definition, properties, and usage, as well as comparisons with other dependency measures. We’ll explore MI’s mathematical foundations, its advantages and limitations, and its applications, concluding with an example demonstrating MI’s behavior alongside more traditional measures like Pearson’s correlation.
 
@@ -67,7 +67,7 @@ MI has several intriguing properties:
 
 - **Non-negativity**: $MI(X;Y) \geq 0$. Mutual Information is always non-negative, as it measures the amount of information one variable provides about the other. Higher values correspond to stronger association.
 - **Symmetry**: $MI(X,Y) = MI(Y,X)$. This symmetry implies that the information $X$ provides about $Y$ is the same as what $Y$ provides about $X$.
-- **Independence**: Similarly to Chatterjee’s correlation coefficient, $MI(X,Y) = 0$ if and only if $X$ and $Y$ are independent.
+- **Independence**: Similarly to [Chatterjee’s correlation coefficient](https://vyasenov.github.io/blog/flavors-correlation-coef.html), $MI(X,Y) = 0$ if and only if $X$ and $Y$ are independent.
 - **Scale-invariance**: Mutual information is scale invariant. If you apply a scaling transformation to the variables, their MI will not be affected.
 
 ### Conditional MI
@@ -82,7 +82,7 @@ This can be valuable in causal inference, where understanding dependencies condi
 
 In machine learning, MI serves as a useful metric for feature selection (Brown et al. 2012, Vergara and Estévez 2014). Consider an outcome variable $Y$ and a set of features $X\in\mathbb{R}^p$ with $n$ i.i.d. observations. By evaluating the MI between each feature and the target variable, one can retain features with the highest information content, passing a certain threshold. This is somewhat primitive since it assumes independence across features. More sophisticated approaches take feature dependency into account.
 
-For instance, methods like Minimum Redundancy Maximum Relevance (mRMR, Peng et al. 2005) aim to maximize the relevance of features to the target while minimizing redundancy among features. Here is a concise version of the mRMR algorithm:
+For instance, methods like Minimum Redundancy Maximum Relevance (mRMR, Peng et al. 2005) aim to maximize the relevance of features to the target while minimizing redundancy among features. I've written about a related dependence-based approach in my post on [FOCI](https://vyasenov.github.io/blog/foci.html). Here is a concise version of the mRMR algorithm:
 
 ::: {.callout-note title="Algorithm:"}
 1. Calculate MI between each feature and the target (relevance).

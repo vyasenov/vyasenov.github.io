@@ -49,7 +49,7 @@ So why did we begin with defining smoothness? Because the jackknife estimates bi
 - **Jackknife**: Analytic, leaves out one data point at a time.
 - **Bootstrap**: Simulation-based, creates synthetic datasets by resampling with replacement.
 
-The bootstrap became feasible thanks to improvements in computing. It provided a practical, general-purpose way to get confidence intervals and bias corrections for almost any estimator—not just the well-behaved ones.
+The bootstrap became feasible thanks to improvements in computing. It provided a practical, general-purpose way to get confidence intervals and bias corrections for almost any estimator—not just the well-behaved ones. This flexibility is also why the bootstrap has since branched into [many different flavors](https://vyasenov.github.io/blog/flavors-bootstrap.html), including some unconventional ones like the [column-sampling bootstrap](https://vyasenov.github.io/blog/column-sampling-bootstrap.html).
 
 ## Bottom Line
 

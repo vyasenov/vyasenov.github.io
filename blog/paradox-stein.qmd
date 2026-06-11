@@ -6,7 +6,7 @@ categories: [statistical inference, paradox]
 
 ## Background
 
-In the realm of statistics, few findings are as counterintuitive and fascinating as Stein’s paradox. It defies our common sense about estimation and provides a glimpse into the potential of shrinkage estimators. For aspiring and seasoned data scientists, grasping Stein’s paradox is not merely about memorizing an oddity—it’s about recognizing the delicate balance inherent in statistical decision-making.
+In the realm of statistics, few findings are as counterintuitive and fascinating as Stein’s paradox. It defies our common sense about estimation and provides a glimpse into the potential of shrinkage estimators. For aspiring and seasoned data scientists, grasping Stein’s paradox is not merely about memorizing an oddity—it’s about recognizing the delicate balance inherent in statistical decision-making. It joins the other statistical paradoxes I have illustrated, including [Simpson’s paradox](https://vyasenov.github.io/blog/paradox-simpson.html) and [Lord’s paradox](https://vyasenov.github.io/blog/paradox-lord.html).
 
 In essence, Stein’s paradox asserts that when estimating the means of multiple variables simultaneously, it’s possible to achieve better results compared to relying solely on the sample averages.
 
@@ -145,7 +145,7 @@ In this example, average MSE of the James-Stein estimator ($5.06$) is consistent
 
 - The James-Stein estimator achieves lower MSE by balancing variance reduction and bias introduction.
 
-- Understanding this result highlights the power of shrinkage techniques in high-dimensional statistics.
+- Understanding this result highlights the power of [shrinkage techniques](https://vyasenov.github.io/blog/flavors-lasso.html) in high-dimensional statistics.
 
 ## References
 

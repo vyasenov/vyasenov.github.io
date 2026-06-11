@@ -8,7 +8,7 @@ categories: [randomized experiments, causal inference]
 
 Properly implemented randomized experiments (such as randomized controlled trials (RCTs) and A/B tests) guarantee unbiased estimates of the causal effect of a treatment $T$ on an outcome $Y$. A natural question that arises is whether information on covariates $X$ is still useful in these settings. This is a question I often get from data scientists.
 
-The short answer is: *yes*, covariates are often essential not for identifying causal effects per se, but for enhancing precision, robustness, and interpretability.
+The short answer is: *yes*, covariates are often essential not for identifying causal effects per se, but for enhancing precision, robustness, and interpretability. (Here I focus on the design and estimation roles of covariates rather than testing, which I cover separately in my post on [randomization inference](https://vyasenov.github.io/blog/randomization-inference.html).)
 
 This short blog post outlines the most common and important roles covariates play in randomized experiments.
 
@@ -16,13 +16,13 @@ This short blog post outlines the most common and important roles covariates pla
 
 ## A Closer Look
 
-* **Variance Reduction.**  Adjusting for covariates often leads to more precise estimates and higher statistical power, especially when $X$ is strongly correlated with the outcome $Y$. In some cases, this gain in efficiency can be the difference between detecting a statistically significant effect or not. This is the logic behind methods like ANCOVA or regression adjustment in randomized settings.
+* **Variance Reduction.**  Adjusting for covariates often leads to more precise estimates and higher statistical power, especially when $X$ is strongly correlated with the outcome $Y$. In some cases, this gain in efficiency can be the difference between detecting a statistically significant effect or not. This is the logic behind methods like ANCOVA or [regression adjustment](https://vyasenov.github.io/blog/ml-based-adjustments.html) in randomized settings.
 
 * **Heterogeneous Treatment Effects.** Covariates are indispensable when exploring treatment effect heterogeneity—how the effect of the treatment varies across subpopulations. This can uncover insights like “the intervention works better for older users” or “only high-engagement customers benefit.” Understanding these patterns is often as important as estimating the average effect.
 
 * **Balance Checks and Covariate Adjustment.** Randomization balances covariates on average, but imbalances can occur in finite samples—especially small ones. Covariate data lets you check whether treatment and control groups look similar at baseline, and it allows you to adjust for any discrepancies that might influence outcomes. This helps bolster the credibility of your findings.
 
-* **Stratification or Blocking.** Covariates can be used *before* treatment assignment to form strata or blocks (e.g., by age group or location). Randomization is then done within each block, leading to better balance across treatment groups and often greater statistical efficiency.
+* **Stratification or Blocking.** Covariates can be used *before* treatment assignment to [form strata or blocks](https://vyasenov.github.io/blog/stratified-sampling-cont-var.html) (e.g., by age group or location). Randomization is then done within each block, leading to better balance across treatment groups and often greater statistical efficiency.
 
 * **External Validity.** Covariates help describe your experimental sample and compare it to a broader population of interest. For example, are your participants younger or wealthier than your target market? This matters when considering how generalizable your results are beyond the experimental setting.
 

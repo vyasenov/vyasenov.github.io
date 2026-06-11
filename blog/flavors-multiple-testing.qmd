@@ -8,7 +8,7 @@ categories: [multiple testing, statistical inference, flavors]
 
 The abundance of data around us is a major factor making the data science field so attractive. It enables all kinds of impactful, interesting, or fun analyses. I admit this is what got me into statistics and causal inference in the first place. However, this luxury has downsides – it might require deeper methodological knowledge and attention.
 
-If we are interested in measuring statistical significance, the standard frequentist framework relies on testing a single hypothesis on any given dataset. Once we start using the same data multiple times – i.e., testing several hypotheses at once – as we often do, we might have to make some additional adjustments.
+If we are interested in measuring statistical significance, the standard frequentist framework relies on testing a single hypothesis on any given dataset. (I have written before about how this framework changes when we have [population rather than sample data](https://vyasenov.github.io/blog/hypothesis-testing-all-data.html).) Once we start using the same data multiple times – i.e., testing several hypotheses at once – as we often do, we might have to make some additional adjustments.
 
 In this article, I will walk you through the most popular multiple hypotheses (MH) testing corrections. Common examples of when these come to play include estimating the impact of several variables on a single outcome or estimating the effect of an intervention on several subgroups of users to mine for heterogeneous treatment effects. Both scenarios are ubiquitous in most data analysis projects.
 
@@ -18,7 +18,7 @@ To illustrate the problem, imagine we are testing seven hypotheses at the $5\%$ 
 
 That is, roughly one in three times, we will reach a wrong conclusion.
 
-Vaguely speaking, MH adjustments can be viewed as inflating the calculated p-values and hence decreasing the probability that we reject any given hypothesis. In other words, we are accounting for using the data multiple times by making the definition of statistical significance more stringent.
+Vaguely speaking, MH adjustments can be viewed as inflating the calculated p-values and hence decreasing the probability that we reject any given hypothesis. In other words, we are accounting for using the data multiple times by making the definition of statistical significance more stringent. (For a different take on the p-value itself, I have written about [second-generation p-values](https://vyasenov.github.io/blog/second-gen-pvalues.html) elsewhere.)
 
 ## Notation
 
@@ -195,7 +195,7 @@ The knockoff idea presents a big step forward because it solves two statistical 
 
 There is certainly no shortage of statistical methods in this field. Each week, there is at least one new paper dealing with some aspects of FDR or FWER control. Knockoffs, in particular, have gotten a lot of attention recently, with researchers extending the idea to all kinds of settings and models.
 
-I will briefly mention some of the newer methods that have caught my eye in recent months. Many of these control the FDR asymptotically, and some are valid under general dependency structures among the test statistics.
+I will briefly mention some of the [newer methods that have caught my eye](https://vyasenov.github.io/blog/recent-dev-fdr.html) in recent months. Many of these control the FDR asymptotically, and some are valid under general dependency structures among the test statistics.
 
 One recent variation of the knockoffs idea uses [Gaussian Mirrors](https://doi.org/10.1080/01621459.2021.1923510); while others rely on subsampling approaches – [Data Splitting](https://doi.org/10.1080/01621459.2022.2060113) (based on estimating two independent regression coefficients after splitting the dataset in half) and [Data Aggregation](https://www.tandfonline.com/doi/full/10.1080/01621459.2021.1945459?src=recsys). Clever ideas to improve power include using covariate information to optimally [weigh hypotheses](https://www.nature.com/articles/nmeth.3885) in the BH framework or incorporating them into [FDR regressions](https://www.tandfonline.com/doi/abs/10.1080/01621459.2014.990973).
 

@@ -10,7 +10,7 @@ Most of us were trained to think of a $95\%$ confidence interval as
 
 $$\hat{\theta} \pm 1.96 \cdot \mathrm{SE}(\hat{\theta}).$$
 
-That template is deeply ingrained. It works beautifully for estimators whose sampling distributions are symmetric and well behaved. But have you ever come across a confidence interval with an off-center point estimate?
+That template is deeply ingrained. It works beautifully for estimators whose sampling distributions are symmetric and well behaved. But have you ever come across a confidence interval with an off-center point estimate? (Confidence intervals trip people up in other ways too—I have written about how [overlapping confidence intervals do not imply statistical insignificance](https://vyasenov.github.io/blog/overlapping-conf-intervals.html).)
 
 The “$\pm$ margin of error” representation is not a defining property of confidence intervals. It is a *consequence of* symmetry. Once symmetry disappears because of skewed sampling distributions, nonlinear transformations, boundary constraints, or small-sample behavior, the interval need not be centered around the point estimate.
 
@@ -58,7 +58,7 @@ $$\hat{\phi} = g(\hat{\theta})$$
 
 is generally not symmetric in finite samples.
 
-A first-order delta method approximation gives
+A first-order [delta method](https://vyasenov.github.io/blog/delta-method.html) approximation gives
 
 $$\sqrt{n}\big(\hat{\phi} - \phi\big)
 \;\overset{d}{\longrightarrow}\;

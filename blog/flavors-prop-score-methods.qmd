@@ -9,7 +9,7 @@ categories: [causal inference, flavors]
 
 Introduced by Rosenbaum and Rubin in 1983, the propensity score, the probability of receiving treatment given observed covariates, has become the workhorse for handling confounding in observational studies.
 
-But here's the thing: the propensity score itself is just the starting point. It designates an entire class of statistical methods for treatment effect estimation. In practice, there are tons of ways to use propensity scores. You can match on them, stratify your sample, weight your observations, or plug them into doubly robust estimators that combine modeling of both the treatment and the outcome. You can tweak how you weight the units—downweighting those with extreme scores or focusing on the region where treated and control groups overlap.
+But here's the thing: the propensity score itself is just the starting point. It designates an entire class of statistical methods for treatment effect estimation. In practice, there are tons of ways to use propensity scores. You can [match on them](https://vyasenov.github.io/blog/flavors-matching-methods.html), stratify your sample, weight your observations, or plug them into doubly robust estimators that combine modeling of both the treatment and the outcome. You can tweak how you weight the units—downweighting those with extreme scores or focusing on the region where treated and control groups overlap.
 
 In this post, I’ll explore the many flavors of propensity score methods. As always, the focus is on the intuition, the basic math, and practical considerations. Oh, there is also some `R` and `python` code.
 
@@ -92,7 +92,7 @@ This is often the first method people try after estimating the propensity score.
 
 This class of methods tends to work well when the number of controls is large enough to find good matches for treated units. The approach is simple and intuitive, reducing high-dimensional matching to a single dimension. However, it's worth noting that balance on the propensity score doesn't guarantee balance on covariates, and the method can be sensitive to poor matches when suitable controls are scarce.
 
-Lastly, inference after matching is subtle; standard errors must account for the matching procedure, and naïve bootstrap methods are generally invalid. Matching with replacement introduces some additional complexity since some data points are used more than once. 
+Lastly, [inference after matching](https://vyasenov.github.io/blog/variance-ps-matching.html) is subtle; standard errors must account for the matching procedure, and naïve bootstrap methods are generally invalid. Matching with replacement introduces some additional complexity since some data points are used more than once. 
 
 ::::{.panel-tabset}
 
@@ -234,7 +234,7 @@ print(f"Stratified ATE: {ate_stratified:.3f}")
 
 *Target Estimand*: ATT/ATE.
 
-IPW turns the propensity score into weights:
+IPW turns the propensity score into [weights](https://vyasenov.github.io/blog/two-types-weights-causality.html):
 $$
 w_i = \frac{D_i}{e(X_i)} + \frac{1 - D_i}{1 - e(X_i)}.
 $$

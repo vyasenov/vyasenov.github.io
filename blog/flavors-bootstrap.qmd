@@ -8,7 +8,7 @@ categories: [bootstrap, statistical inference, flavors]
 
 At its heart, the bootstrap poses a simple yet powerful question: “What if we could resample from our existing data, treating it as a stand-in for the population?” By doing so, we can estimate variability, build confidence intervals, and carry out hypothesis tests—without leaning heavily on strong parametric assumptions. It’s especially useful in situations where analytic solutions exist in theory but are too complex to derive or even implement in practice.
 
-But here's the thing: there isn’t just *one* bootstrap. Over the years, statisticians have developed many flavors of the bootstrap to address different challenges in different settings. Some handle small samples better. Some are designed for dependent data like time series. Others shine when the assumptions of classic bootstrapping crumble (think clustered data or heteroskedasticity).
+But here's the thing: there isn’t just *one* bootstrap. Over the years, statisticians have developed many flavors of the bootstrap to address different challenges in different settings. Some handle small samples better. Some are designed for dependent data like time series. Others shine when the [assumptions of classic bootstrapping crumble](https://vyasenov.github.io/blog/bootstrap-limitations.html) (think clustered data or heteroskedasticity).
 
 In this article, I’ll take a tour through the zoo of bootstrap methods: from the classic nonparametric bootstrap to the jackknife, parametric bootstrap, Bayesian bootstrap, wild bootstrap, moving block bootstrap, and more. I’ll explore where each method shines, where it stumbles, and how to pick the right one for your problem.  As usual, I won’t just throw formulas at you. The focus here is on understanding *why* these methods work, not just how to mechanically apply them. There is also plenty of `R` and `Python` code to illustrate each method in action.
 
@@ -29,7 +29,7 @@ where $\bar{\theta}^* = \frac{1}{B} \sum_{b=1}^B \hat{\theta}^*_b$ is the averag
 
 ### The Jackknife
 
-Let’s start with the jackknife, developed back in the 1950s by Quenouille and popularized by Tukey. The jackknife isn’t technically a bootstrap, but it’s often the gateway to resampling methods. Here is how it works:
+Let’s start with the jackknife, developed back in the 1950s by Quenouille and popularized by Tukey. The [jackknife isn’t technically a bootstrap](https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html), but it’s often the gateway to resampling methods. Here is how it works:
 
 ::: {.callout-note title="Algorithm:"}
 For $i = 1, \dots, n$:
@@ -350,7 +350,7 @@ print(np.var(boot_means, ddof=1))
 - The bootstrap is not a single method—it’s a whole family of techniques, each with its own sweet spot.
 - The jackknife is fast and simple but struggles with non-smooth statistics.
 - The classic bootstrap works great for i.i.d. data and smooth or non-smooth statistics, but fails with dependence or small samples.
-- Specialized bootstraps (wild, block, Bayesian, subsampling) handle heteroskedasticity, clustering, dependence, and other real-world challenges that trip up the classic approach.
+- Specialized bootstraps (wild, block, Bayesian, subsampling) handle heteroskedasticity, clustering, dependence, and other real-world challenges that trip up the classic approach. I have even written about a more exotic [column-sampling variant](https://vyasenov.github.io/blog/column-sampling-bootstrap.html) for wide datasets.
 
 ## Where to Learn More 
 

@@ -1,9 +1,17 @@
 ---
-title: "Research Publications"
+title: "Research"
 format: html
 ---
 
-## Peer-Reviewed
+## Patents
+
+::: {.research-item}
+- “Translating User-Level Marketing Effects To Organizational Revenue In B2B Software” (2026) (w/ Nicholas Adams-Cohen)
+    * [**US Patent Pending**]
+    * _Summary_: A framework for quantifying the dollar-value impact of B2B marketing programs on retention and revenue by linking causal effects from user adoption to organizational financial outcomes, without requiring randomized experiments.
+:::
+
+## Peer-Reviewed Articles
 
 ::: {.research-item}
 - “The socioeconomic returns to citizenship: A randomized controlled trial” (w/ J. Hainmueller, E. Cascardi, M. Hotard, R. Koslowski, D. Lawrence, and D. Laitin)
@@ -84,7 +92,7 @@ format: html
     * [IZA WP No. 13197](https://www.iza.org/en/publications/dp/13197/imprint); [replication package](https://github.com/vyasenov/who-can-work-from-home).
 :::
 
-## Non-Academic
+## Non-Academic Writing
 
 ::: {.research-item}
 - “Immigration in Local US Economies was Associated with Strong Native Wage Growth for 40 Years” (w/ Giovanni Peri) [Global Migration Center](https://globalmigration.ucdavis.edu/immigration-local-us-economies-was-associated-strong-native-wage-growth-40-years){target="_blank"} (UC Davis) 03/2020

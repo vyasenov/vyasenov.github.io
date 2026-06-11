@@ -36,7 +36,7 @@ Intuitively, if we want to use the survey to accurately represent the population
 
 For example, households in rural areas might be less likely to enter a survey due to the increased resources required to reach remote locations. Conversely, urban households are typically easier to sample and thus more likely to appear in the data.
 
-This weighting approach is also common in causal inference analyses using propensity score methods. Similarly, in machine learning, weighting is often employed to adjust for unbalanced samples in the context of rare events (e.g., fraud detection, cancer diagnosis).
+This weighting approach is also common in [causal inference analyses using propensity score methods](https://vyasenov.github.io/blog/two-types-weights-causality.html). Similarly, in machine learning, weighting is often employed to adjust for unbalanced samples in the context of rare events (e.g., fraud detection, cancer diagnosis).
 
 Let’s now get back to the discussion on variance estimation. With sampling weights, we have:
 

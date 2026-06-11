@@ -6,7 +6,7 @@ categories: [paradox, causal inference]
 
 ## Background
 
-Simpson’s paradox is one of the most counterintuitive phenomena in data analysis. It describes situations where a trend observed within groups disappears—or even reverses—when the data is aggregated. The underlying cause is often a confounding variable that distorts the overall trend. Let’s examine a concrete example.
+Simpson’s paradox is one of the most counterintuitive phenomena in data analysis. It describes situations where a trend observed within groups disappears—or even reverses—when the data is aggregated. The underlying cause is often a confounding variable that distorts the overall trend. It is one of several statistical paradoxes I have written about, alongside [Lord's paradox](https://vyasenov.github.io/blog/paradox-lord.html) and [Stein's paradox](https://vyasenov.github.io/blog/paradox-stein.html). Let’s examine a concrete example.
 
 ## A Closer Look
 

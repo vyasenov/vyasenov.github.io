@@ -8,7 +8,7 @@ categories: [correlation, flavors]
 
 Much of data science is concerned with learning about the relationships between different variables. The most basic tool to quantify relationship strength is the correlation coefficient. In 2021 Sourav Chatterjee of Stanford [published a paper](http://tandfonline.com/doi/abs/10.1080/01621459.2020.1758115) outlining a novel correlation coefficient which has ignited many discussions in the statistics community.
 
-In this article I will go over the basics of Chatterjee’s correlation measure. Before we get there, let’s first review some of the more traditional approaches in assessing bivariate relationship strength.
+In this article I will go over the basics of Chatterjee’s correlation measure. Before we get there, let’s first review some of the [more traditional approaches](https://vyasenov.github.io/blog/corr-myths-13-views.html) in assessing bivariate relationship strength.
 
 For simplicity, let’s assume away ties. Let’s also set hypothesis testing aside. All test statistics I describe below have well-established asymptotic theory for hypothesis testing and calculating $p$-values. Thus, we can gauge not only the strength of the relationship between the variables but also the uncertainty associated with that measurement and whether or not it is statistically significant.
 
@@ -132,7 +132,7 @@ where $n$ is the sample size. This looks complicated, so let’s try to simplify
 
   $$corr^{C}(X,Y) = 1 - \frac{3\sum_{i=1}^{n-1}|R(Y_{i+1})-R(Y_i)|}{n^2-1}.$$
 
-So, this new coefficient is a scaled version of the sum of the absolute differences in the consecutive ranks of $Y$ when ordered by $X$. It is perhaps best to think about Chatterjee’s method as a measure of dependence and not strictly a correlation coefficient.
+So, this new coefficient is a scaled version of the sum of the absolute differences in the consecutive ranks of $Y$ when ordered by $X$. It is perhaps best to think about Chatterjee’s method as a [measure of dependence](https://vyasenov.github.io/blog/mutual-information.html) and not strictly a correlation coefficient.
 
 There are some major differences compared to the previous correlation measures. Chatterjee’s correlation coefficient lies in the $[0,1]$ interval. It is equal to zero if and only if $X$ and $Y$ are independent and to one if one of them is a function of the other. Unlike the coefficients described above, it is not symmetric in $X$ and $Y$, meaning $corr^{C}(X,Y) \neq corr^{C}(Y,X)$. This is understandable since we are interested in whether $X$ is a function of $Y$, which does not imply the opposite. The author also develops asymptotic theory for calculating $p$-values although some researchers have [raised concerns](https://academic.oup.com/biomet/article-abstract/109/2/317/6259083) about the coefficient’s power.
 
@@ -179,7 +179,7 @@ print(f"Chatterjee's correlation: {chatterjee_corr:.4f}")
 
 *Software Package*: [XICOR](https://www.rdocumentation.org/packages/XICOR/versions/0.4.1).
 
-There you have it. You are now well-equipped to dive deeper into your datasets and find new exciting relationships.
+There you have it. You are now well-equipped to dive deeper into your datasets and find new exciting relationships. If you'd like to see this coefficient put to work for variable selection, take a look at my post on [FOCI](https://vyasenov.github.io/blog/foci.html).
 
 ## Bottom Line
 

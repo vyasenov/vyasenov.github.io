@@ -28,7 +28,7 @@ The confidence interval for the change in this underlying homicide rate is:
 
 $$ (14,123-13,927) \pm 1.96 \times \sqrt{14,123+13,927}=(-132.26, 524.26). $$
 
-This interval clearly contains $0$, so we cannot conclude that there was a real drop in the crime rate between 2018 and 2019. In other words, the $1.4\%$ drop in homicides between 2018 and 2019 was within the range consistent with the noise in our world. It should not be confused with increased underlying safety in the US.
+This interval clearly contains $0$, so we cannot conclude that there was a real drop in the crime rate between 2018 and 2019. (Here we are testing a single hypothesis; when testing many at once, I have written about the necessary [multiple testing adjustments](https://vyasenov.github.io/blog/flavors-multiple-testing.html).) In other words, the $1.4\%$ drop in homicides between 2018 and 2019 was within the range consistent with the noise in our world. It should not be confused with increased underlying safety in the US.
 
 ### One More Thing
 

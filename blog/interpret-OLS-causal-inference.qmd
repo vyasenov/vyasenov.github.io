@@ -40,7 +40,7 @@ $$
 Y_i = \alpha + \tau_{\text{OLS}} D_i + X_i'\beta + u_i.
 $$
 
-The coefficient $\tau_{\text{OLS}}$ is the population linear projection coefficient on $D$. By Frisch-Waugh-Lovell,
+The coefficient $\tau_{\text{OLS}}$ is the population linear projection coefficient on $D$. By [Frisch-Waugh-Lovell](https://vyasenov.github.io/blog/ci-residualized-reg.html),
 
 $$
 \tau_{\text{OLS}} = \frac{\mathbb{E}[V_iY_i]}{\mathbb{E}[V_iD_i]},
@@ -62,7 +62,7 @@ $$
 Y_i = \alpha + \tau D_i + X_i'\beta + u_i
 $$
 
-does not, by itself, assume homogeneous treatment effects or even invoke potential outcomes. It simply defines the best linear predictor of $Y$ given $D$ and $X$. If the goal is prediction, that is the end of the story.
+does not, by itself, assume homogeneous treatment effects or even invoke potential outcomes. It simply defines the best linear predictor of $Y$ given $D$ and $X$. If the goal is prediction, that is the end of the story. (For a related distinction about what randomness this projection is defined over, see my note on [OLS with fixed versus random $X$](https://vyasenov.github.io/blog/ols-fixed-random-x.html).)
 
 For causal interpretation, however, we need more. Under random assignment or selection on observables, plus enough structure on how outcomes vary with $X$, the projection coefficient may line up with a causal estimand. Under constant treatment effects and correct linear adjustment, that estimand is often the ATE. Once treatment effects vary with $X$, the coefficient generally becomes a weighted average of heterogeneous effects rather than the plain sample average.
 
@@ -82,7 +82,7 @@ $$
 
 where the weights are functions of only $D$ and $X$, not the realized outcomes.
 
-This is useful for two reasons. First, it makes regression adjustment look less mysterious: OLS is implicitly constructing a weighted comparison between treated and control outcomes. Second, the implied weights can be inspected directly. In their framework, the weights clarify when regression adjustment achieves exact balance on included covariates, how dispersed the weights are, and whether the regression is targeting a population that still looks like the observed sample. That is a much more practical diagnostic than simply reporting a coefficient table.
+This is useful for two reasons. First, it makes regression adjustment look less mysterious: OLS is [implicitly constructing a weighted comparison](https://vyasenov.github.io/blog/two-types-weights-causality.html) between treated and control outcomes. Second, the implied weights can be inspected directly. In their framework, the weights clarify when regression adjustment achieves exact balance on included covariates, how dispersed the weights are, and whether the regression is targeting a population that still looks like the observed sample. That is a much more practical diagnostic than simply reporting a coefficient table.
 
 ### Słoczyński: Heterogeneous Effects View
 

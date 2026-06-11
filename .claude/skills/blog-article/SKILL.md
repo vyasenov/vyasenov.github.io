@@ -104,15 +104,26 @@ categories: [topic1, topic2, topic3]
 :::
 ```
 
+## Cross-linking to earlier posts
+
+The blog has a large back catalog, and internal links between related posts help readers and SEO. Always look for opportunities to link the new article to the author's earlier work — and to surface obvious links the author may have missed.
+
+- **Link syntax:** full absolute URLs to the rendered HTML, e.g. `[oracle property](https://vyasenov.github.io/blog/oracle-property.html)`. (The site does not use relative `.qmd` links.)
+- **Find candidates** by scanning existing `blog/*.qmd` titles and `categories:`. A quick way to see what already links where is to grep for `vyasenov.github.io/blog/` across posts.
+- **Propose, don't impose.** After drafting, present the candidate cross-links and let the author choose which to include — they know the catalog and which connections are worth making. Use a short multi-select question for a handful, or write an editable checklist file for a larger set. Mark the strongest/most obvious ones, and separate genuinely weak guesses so they don't clutter the list.
+- **Complement, don't duplicate.** If an earlier post already covers a subtopic in depth (e.g. `oracle-property` covers selection consistency), link to it and keep the new treatment lighter rather than repeating it.
+- Weave links into the prose naturally (Background "I have written about X", or at the relevant point in a subsection), not as a bare list.
+
 ## Workflow
 
 1. **Gather inputs** — topic, notes, papers, rough notes. Ask once if missing.
 2. **Skim a couple existing posts** in `blog/` (e.g. `flavors-bootstrap.qmd`, one non-flavors post) to match voice and formatting exactly. Do this only if you haven't in the current session.
 3. **If papers/URLs were provided**, fetch their content (WebFetch) so citations and claims are grounded.
 4. **Write the draft** at `blog/<slug>.qmd` with today's date (pull from environment, not a guess).
-5. **Render** the site: `quarto render blog/<slug>.qmd` first to catch errors on the new file; if clean, optionally `quarto render` the full site.
-6. **Preview**: launch `quarto preview` in the background so the user can see it. Report the URL/port when it's up.
-7. **Tell the user** the file path, the word count, and the preview URL.
+5. **Propose cross-links** to earlier posts (see "Cross-linking to earlier posts" above) and ask the author which to include before finalizing.
+6. **Render** the site: `quarto render blog/<slug>.qmd` first to catch errors on the new file; if clean, run a full `quarto render` so the `code/build-related.py` pre-render hook picks up the new post and refreshes `code/related-posts.json` (single-file renders skip pre-render hooks, so the new post would otherwise be missing from other posts' "Related posts" lists).
+7. **Preview**: launch `quarto preview` in the background so the user can see it. Report the URL/port when it's up.
+8. **Tell the user** the file path, the word count, and the preview URL.
 
 ## What not to do
 

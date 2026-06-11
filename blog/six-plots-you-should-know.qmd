@@ -209,7 +209,7 @@ plt.show()
 
 Scatterplots are great until they are not. Have you tried a scatterplot with a million points? It's slow and it's hard to see anything. Once the sample gets large enough, overplotting hides the very structure you want to see. Hexbin plots solve that by aggregating points into small hexagonal cells and coloring those cells by count. You give up the exact point cloud, but in return you get a much clearer view of where the data are concentrated.
 
-The `iris` data are too small to truly need a hexbin, which is worth saying out loud. But the plot still illustrates the logic well. On genuinely large datasets, this is often the right substitute for a scatterplot. The cost is that rare points and local outliers become less visible, so it is better for density structure than for point-level inspection.
+The `iris` data are too small to truly need a hexbin, which is worth saying out loud. But the plot still illustrates the logic well. On genuinely large datasets, this is often the right substitute for a scatterplot, as is the [binscatter](https://vyasenov.github.io/blog/binscatter.html) I have written about elsewhere. The cost is that rare points and local outliers become less visible, so it is better for density structure than for point-level inspection.
 
 ![](/files/hexbin-plot.png){fig-alt="Hexbin plot of iris sepal length and petal length" fig-align="center" width="85%"}
 

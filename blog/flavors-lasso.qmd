@@ -6,7 +6,7 @@ categories: [machine learning, flavors]
 
 ## Background
 
-The Lasso (Least Absolute Shrinkage and Selection Operator), introduced by Tibshirani in 1996, has become one of the go-to tools for variable selection and shrinkage in regression problems. But the classic Lasso is just the starting point. Over the years, researchers have developed many variants of Lasso, each designed to address specific limitations or tailor the method to different kinds of data structures.
+The Lasso (Least Absolute Shrinkage and Selection Operator), introduced by Tibshirani in 1996, has become one of the go-to tools for [variable selection](https://vyasenov.github.io/blog/flavors-var-selection.html) and shrinkage in regression problems. But the classic Lasso is just the starting point. Over the years, researchers have developed many variants of Lasso, each designed to address specific limitations or tailor the method to different kinds of data structures.
 
 This article provides a tour of the most popular flavors of Lasso — from standard $\ell_1$-penalized regression to modern adaptations like Adaptive Lasso, Elastic Net, Square-root Lasso, and more. For each version, I'll lay out the objective function, describe when it's applicable, and summarize its key characteristics.
 
@@ -35,7 +35,7 @@ $$
 
 The appeal of Lasso is straightforward: it trades a convex penalty for exact zeros in the solution. In moderately high dimensions, this often works surprisingly well as a first pass.
 
-The main issue shows up when predictors are correlated. Lasso will typically pick one variable from a correlated group and ignore the rest, and which one it picks can be unstable across folds or small perturbations of the data. At the same time, all coefficients are shrunk, including the large ones, which introduces bias that doesn’t go away even with large samples.
+The main issue shows up when predictors are correlated. Lasso will typically pick one variable from a correlated group and ignore the rest, and which one it picks can be unstable across folds or small perturbations of the data. At the same time, all coefficients are [shrunk](https://vyasenov.github.io/blog/paradox-stein.html), including the large ones, which introduces bias that doesn’t go away even with large samples.
 
 In practice, I treat standard Lasso as a baseline rather than a final model. If it’s stable and predictive, great. If not, it’s usually pointing to a structural issue in the design.
 
@@ -95,7 +95,7 @@ $$
 $$
 where $w_j = 1 / |\hat{\beta}_j^{\text{init}}|^\gamma$ and $\hat{\beta}_j^{\text{init}}$ comes from an initial estimator like OLS or Ridge.
 
-The idea here is to penalize coefficients unevenly. Variables that look important in a first-stage model get penalized less, while weaker ones get pushed harder toward zero. This reduces the bias on large coefficients and improves variable selection consistency under certain conditions.
+The idea here is to penalize coefficients unevenly. Variables that look important in a first-stage model get penalized less, while weaker ones get pushed harder toward zero. This reduces the bias on large coefficients and improves variable selection consistency under certain conditions—one of the ingredients of the [oracle property](https://vyasenov.github.io/blog/oracle-property.html).
 
 In practice, Adaptive Lasso is less about prediction and more about recovering a meaningful support. If you care about which variables are selected—not just the predictive accuracy—it’s often worth the extra step.
 

@@ -6,9 +6,9 @@ categories: [statistical inference, semiparametric models]
 
 ## Background
 
-The efficiency bound is a cornerstone of the academic literature on semiparametric models, and it’s easy to see why. This bound quantifies the potential loss in efficiency (i.e., increase in variance) that arises when opting for a semiparametric model over a fully parametric one. In doing so, it offers a rigorous benchmark for evaluating the asymptotic variance of any estimator. By providing insights into the trade-offs between model flexibility and statistical precision, the efficiency bound occupies a critical role in understanding the theoretical limits of estimation. Despite its importance, this concept and the broader class of semiparametric models remain underappreciated within much of the data science community.
+The efficiency bound is a cornerstone of the academic literature on semiparametric models, and it’s easy to see why. This bound quantifies the potential loss in efficiency (i.e., increase in variance) that arises when opting for a semiparametric model over a fully parametric one. In doing so, it offers a rigorous benchmark for evaluating the asymptotic variance of any estimator. By providing insights into the trade-offs between model flexibility and statistical precision, the efficiency bound occupies a critical role in understanding the theoretical limits of estimation. Despite its importance, this concept and the broader [class of semiparametric models](https://vyasenov.github.io/blog/three-classes-stat-models.html) remain underappreciated within much of the data science community.
 
-This article aims to demystify the notion of the semiparametric efficiency bound and its relevance to practical applications. It unpacks the mathematical foundations underlying this concept, shedding light on its relationship with the Cramér-Rao lower bound (CRLB). I will also touch on the bound’s implications for real-world data analysis, where balancing flexibility and efficiency is often a key concern.
+This article aims to demystify the notion of the semiparametric efficiency bound and its relevance to practical applications. It unpacks the mathematical foundations underlying this concept, shedding light on its relationship with the [Cramér-Rao lower bound (CRLB)](https://vyasenov.github.io/blog/limits-parametric-models.html). I will also touch on the bound’s implications for real-world data analysis, where balancing flexibility and efficiency is often a key concern.
 
 ## Notation
 
@@ -16,13 +16,13 @@ Before diving in, let’s establish the necessary notation to guide our technica
 Moreover:
 
 - $\theta \in \mathbb{R}^d$ is the parameter of interest, a finite-dimensional vector we want to estimate. Often $\theta$ is a scalar. It represents the parametric component of the model. 
-- $\eta$ is a nuisance parameter, which is infinite-dimensional (e.g., a nonparametric density or function). It is a nuisance in the sense that it is part of the model, but we are not interested in it for its own sake. It represents the nonparametric component of the model.
+- $\eta$ is a nuisance parameter, which is infinite-dimensional (e.g., a [nonparametric density or function](https://vyasenov.github.io/blog/limits-nonparametric-models.html)). It is a nuisance in the sense that it is part of the model, but we are not interested in it for its own sake. It represents the nonparametric component of the model.
 
 A leading example is the partially linear model:
 
 $$Y= \theta X+g(Z)+\epsilon,$$
 
-where $Y$ is the outcome variable, $Z$ represents a vector of covariates, $g(\cdot)$ is a function characterized by $\eta$, while $\epsilon$ is an error term. To fit this model in the likelihood notation above, think of $Z$ as a component of $X$. We assume we have a random i.i.d. sample of all necessary variables.
+where $Y$ is the outcome variable, $Z$ represents a vector of covariates, $g(\cdot)$ is a function characterized by $\eta$ (often estimated with [generalized additive models](https://vyasenov.github.io/blog/generalized-additive-models.html)), while $\epsilon$ is an error term. To fit this model in the likelihood notation above, think of $Z$ as a component of $X$. We assume we have a random i.i.d. sample of all necessary variables.
 
 ## A Closer Look
 

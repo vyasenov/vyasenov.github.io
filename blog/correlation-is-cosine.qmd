@@ -6,7 +6,7 @@ categories: [correlation, statistical inference]
 
 ## Background
 
-You might have come across the statement, “correlation is a cosine,” but never taken the time to explore its precise meaning. It certainly sounds intriguing—how can the simplest bivariate summary statistic be connected to a trigonometric function you first encountered in sixth grade? What exactly is the relationship between correlation and cosines?
+You might have come across the statement, “correlation is a cosine,” but never taken the time to explore its precise meaning. It certainly sounds intriguing—how can the simplest bivariate summary statistic be connected to a trigonometric function you first encountered in sixth grade? What exactly is the relationship between correlation and cosines? This is one of [thirteen ways](https://vyasenov.github.io/blog/corr-myths-13-views.html) I've written about of looking at Pearson's correlation coefficient.
 
 ## A Closer Look
 

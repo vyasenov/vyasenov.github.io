@@ -178,7 +178,7 @@ The actual sepal length value in the test set was $6.2$ while the conformal infe
 
 ## Where to Learn More
 
-Conformal inference in machine learning is an ongoing research topic and I do not know of any review papers or textbook treatments of the subject. If you are interested in learning more, check the paper referenced below.
+Conformal inference in machine learning is an ongoing research topic and I do not know of any review papers or textbook treatments of the subject. If you are interested in learning more, check the paper referenced below. In a follow-up article I also describe how to use [conformal inference for measuring variable importance](https://vyasenov.github.io/blog/conformal-inference-var-selection.html).
 
 ## References
 

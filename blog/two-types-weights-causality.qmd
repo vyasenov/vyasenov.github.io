@@ -8,7 +8,7 @@ categories: [weights, causal inference]
 
 Causal inference fundamentally seeks to answer: What is the effect of a treatment or intervention? The challenge lies in ensuring that the comparison groups—treated versus untreated—are balanced in terms of their characteristics, so differences in outcomes can be attributed solely to the intervention. This idea, often referred to as “like-with-like” or “apples-to-apples” comparison, is as simple as it is intuitive.
 
-Balance is thus fundamental to causal inference. [Weighting methods](https://doi.org/10.1080/01621459.2016.1260466), central to achieving this balance, have evolved to include two primary types: inverse propensity score weights and covariate balancing weights. This article briefly describes these weights, their mathematical foundations, and the intuition behind them, with an example in `R` to bring it all together.
+Balance is thus fundamental to causal inference. [Weighting methods](https://doi.org/10.1080/01621459.2016.1260466), central to achieving this balance, have evolved to include two primary types: inverse propensity score weights and covariate balancing weights. (These are distinct from the [general types of weights](https://vyasenov.github.io/blog/weights-statistics.html) one encounters in statistical analyses more broadly.) This article briefly describes these weights, their mathematical foundations, and the intuition behind them, with an example in `R` to bring it all together.
 
 ## Notation
 
@@ -37,13 +37,13 @@ IPS weights intuitively correct for the unequal probability of treatment assignm
 
 A few notes. First, these weights [adjust the observed data](https://academic.oup.com/biomet/article/70/1/41/240879) such that the distribution of covariates in the weighted treated and control groups resembles that of the overall population. This helps mitigate selection bias, ensuring that comparisons between treated and control groups reflect a treatment effect rather than confounded differences in covariates (e.g., the control group is older).
 
-A second key property is that the weighted average of the outcomes for the treated group is an unbiased estimator for the mean outcome under treatment, $\mu_1$. This can be expressed mathematically as:
+A second key property is that the weighted average of the outcomes for the treated group is an unbiased estimator for the mean outcome under treatment, $\mu_1$. This is a cleaner target than the implicit weighting baked into a regression, which I have discussed in [what OLS estimates in causal inference](https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html). This can be expressed mathematically as:
 
 $$ \hat{\mu}_1(X)=\frac{\sum_i W_i Y_i/ \hat{e}(X)}{ \sum_i W_i / \hat{e}(X)}=\frac{1}{n_T}\sum_i  \gamma_{\text{IPS}}(X_i) W_i Y_i. $$
 
 This equality is particularly useful in the next step, when estimating the treatment effect $\tau$.
 
-Third, these IPS weights are generally unknown and have to be estimated from the data. A leading exception is controlled randomized experiments where the researcher determines the probability of treatment. This is, however, uncommon. Traditionally, practitioners rely on methods like logistic regression to first obtain $\hat{e}(X)$ and then take its reciprocal to construct the weights.
+Third, these IPS weights are generally unknown and have to be estimated from the data. A leading exception is controlled randomized experiments where the researcher determines the probability of treatment. This is, however, uncommon. Traditionally, practitioners rely on methods like logistic regression to first obtain $\hat{e}(X)$ and then take its reciprocal to construct the weights. Weighting is, of course, just one of [many flavors of propensity score methods](https://vyasenov.github.io/blog/flavors-prop-score-methods.html).
 
 Using IPS weights entails two primary challenges. When $\hat{e}(X)$ is close to $0$ or $1$, weights can become excessively large, leading to high variance in estimates. Practitioners then turn to trim observations with “too large” or “too small” $\hat{e}(X)$ values. Moreover, model misspecification in $\hat{e}(X)$ can lead to poor covariate balance, introducing bias. More flexible methods such as machine learning models can alleviate this problem.
 
@@ -63,7 +63,7 @@ $$ \frac{1}{n} \sum_{i=1}^n W_i \gamma(X_i) f(X_i) \approx \frac{1}{n} \sum_{i=1
 
 with $f(x_i)=x$. The same idea can be applied to higher moments of $X$ like variance or skewness. Example methods relying on this type of weights include [Hainmueller (2012)](https://doi.org/10.1093/pan/mpr025), [Chan et al. (2016)](https://doi.org/10.1111/rssb.12129), and [Athey et al. (2018)](https://doi.org/10.1111/rssb.12268), among many others.
 
-Covariate balancing weights bypass the need to explicitly estimate $e(X)$. Instead, they solve for weights that ensure the treated and control groups are balanced across predefined covariates or their transformations. This method aligns closely with the goal of causal inference: achieving balance. The main challenge is selecting the right set of covariates to be balanced. Variance estimation can also be more involved, although modern statistical packages take care of it.
+Covariate balancing weights bypass the need to explicitly estimate $e(X)$. Instead, they solve for weights that ensure the treated and control groups are balanced across predefined covariates or their transformations. This method aligns closely with the goal of causal inference: achieving balance. The main challenge is selecting the right set of covariates to be balanced. [Variance estimation](https://vyasenov.github.io/blog/variance-ps-matching.html) can also be more involved, although modern statistical packages take care of it.
 
 *Software Packages*: [MatchIt](https://www.rdocumentation.org/packages/MatchIt), [Matching](https://www.rdocumentation.org/packages/Matching).
 

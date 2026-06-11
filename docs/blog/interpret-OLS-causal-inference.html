@@ -471,7 +471,7 @@ m_d(x)=\mathbb{E}[Y(d)\mid X=x], \qquad \tau(x)=m_1(x)-m_0(x),
 <p><span class="math display">\[
 Y_i = \alpha + \tau_{\text{OLS}} D_i + X_i'\beta + u_i.
 \]</span></p>
-<p>The coefficient <span class="math inline">\(\tau_{\text{OLS}}\)</span> is the population linear projection coefficient on <span class="math inline">\(D\)</span>. By Frisch-Waugh-Lovell,</p>
+<p>The coefficient <span class="math inline">\(\tau_{\text{OLS}}\)</span> is the population linear projection coefficient on <span class="math inline">\(D\)</span>. By <a href="https://vyasenov.github.io/blog/ci-residualized-reg.html">Frisch-Waugh-Lovell</a>,</p>
 <p><span class="math display">\[
 \tau_{\text{OLS}} = \frac{\mathbb{E}[V_iY_i]}{\mathbb{E}[V_iD_i]},
 \qquad
@@ -488,7 +488,7 @@ V_i = D_i - \mathbb{L}(D_i\mid X_i),
 <p><span class="math display">\[
 Y_i = \alpha + \tau D_i + X_i'\beta + u_i
 \]</span></p>
-<p>does not, by itself, assume homogeneous treatment effects or even invoke potential outcomes. It simply defines the best linear predictor of <span class="math inline">\(Y\)</span> given <span class="math inline">\(D\)</span> and <span class="math inline">\(X\)</span>. If the goal is prediction, that is the end of the story.</p>
+<p>does not, by itself, assume homogeneous treatment effects or even invoke potential outcomes. It simply defines the best linear predictor of <span class="math inline">\(Y\)</span> given <span class="math inline">\(D\)</span> and <span class="math inline">\(X\)</span>. If the goal is prediction, that is the end of the story. (For a related distinction about what randomness this projection is defined over, see my note on <a href="https://vyasenov.github.io/blog/ols-fixed-random-x.html">OLS with fixed versus random <span class="math inline">\(X\)</span></a>.)</p>
 <p>For causal interpretation, however, we need more. Under random assignment or selection on observables, plus enough structure on how outcomes vary with <span class="math inline">\(X\)</span>, the projection coefficient may line up with a causal estimand. Under constant treatment effects and correct linear adjustment, that estimand is often the ATE. Once treatment effects vary with <span class="math inline">\(X\)</span>, the coefficient generally becomes a weighted average of heterogeneous effects rather than the plain sample average.</p>
 </section>
 <section id="aronow-and-samii-asymptotic-view" class="level3">
@@ -503,7 +503,7 @@ Y_i = \alpha + \tau D_i + X_i'\beta + u_i
 \hat{\tau}_{\text{OLS}} = \sum_{i:D_i=1} w_i^{(1)}Y_i - \sum_{i:D_i=0} w_i^{(0)}Y_i,
 \]</span></p>
 <p>where the weights are functions of only <span class="math inline">\(D\)</span> and <span class="math inline">\(X\)</span>, not the realized outcomes.</p>
-<p>This is useful for two reasons. First, it makes regression adjustment look less mysterious: OLS is implicitly constructing a weighted comparison between treated and control outcomes. Second, the implied weights can be inspected directly. In their framework, the weights clarify when regression adjustment achieves exact balance on included covariates, how dispersed the weights are, and whether the regression is targeting a population that still looks like the observed sample. That is a much more practical diagnostic than simply reporting a coefficient table.</p>
+<p>This is useful for two reasons. First, it makes regression adjustment look less mysterious: OLS is <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">implicitly constructing a weighted comparison</a> between treated and control outcomes. Second, the implied weights can be inspected directly. In their framework, the weights clarify when regression adjustment achieves exact balance on included covariates, how dispersed the weights are, and whether the regression is targeting a population that still looks like the observed sample. That is a much more practical diagnostic than simply reporting a coefficient table.</p>
 </section>
 <section id="słoczyński-heterogeneous-effects-view" class="level3">
 <h3 class="anchored" data-anchor-id="słoczyński-heterogeneous-effects-view">Słoczyński: Heterogeneous Effects View</h3>

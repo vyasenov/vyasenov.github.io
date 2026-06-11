@@ -27,7 +27,7 @@ where:
 - $\beta$ represents the coefficients on the controls,
 - $\varepsilon$ is the error term.
 
-We assume that $X$ includes all relevant confounders, the linear model is correct, etc. so that this model has a causal interpretation. In econometrics jargon, this is a "structural" model. 
+We assume that $X$ includes all relevant confounders, the linear model is correct, etc. so that this model has a [causal interpretation](https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html). In econometrics jargon, this is a "structural" model.
 
 ## A Closer Look
 

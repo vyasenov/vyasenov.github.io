@@ -6,7 +6,7 @@ categories: [bootstrap, statistical inference]
 
 ## Background
 
-The bootstrap is a versatile resampling technique traditionally focused on rows. Let’s add a twist to the plain vanilla bootstrap. Imagine you have a wide dataset—many variables but few rows—and want to test the statistical significance of a correlation between two variables. An example is a genetic dataset with thousands of columns (genetic information and outcomes) but a limited number of rows (patients). Can you use the bootstrap to determine if the correlation between a specific gene-outcome pair is statistically significant?
+The bootstrap is a versatile resampling technique traditionally focused on rows. Let’s add a twist to the [plain vanilla bootstrap](https://vyasenov.github.io/blog/flavors-bootstrap.html). Imagine you have a wide dataset—many variables but few rows—and want to test the statistical significance of a correlation between two variables. An example is a genetic dataset with thousands of columns (genetic information and outcomes) but a limited number of rows (patients). Can you use the bootstrap to determine if the correlation between a specific gene-outcome pair is statistically significant?
 
 One creative approach is *resampling columns instead of rows*, generating a distribution of correlation coefficients to assess the significance of your observed correlation.
 
@@ -26,7 +26,7 @@ Here’s the basic algorithm:
 
 This approach allows you to explore a large number of possible correlations in a computationally efficient way. But does it actually work? Let’s unpack the key considerations.
 
-The column-sampling bootstrap is most valuable when a dataset has many columns but too few rows for traditional bootstrap methods. The abundance of columns provides a rich sampling landscape. The goal is determining whether a correlation is significantly stronger or weaker than what might occur by chance. Let’s simplify the problem and ignore any issues stemming from being unable to estimate the correlation coefficients well enough.
+The column-sampling bootstrap is most valuable when a dataset has many columns but [too few rows for traditional bootstrap methods](https://vyasenov.github.io/blog/bootstrap-limitations.html). The abundance of columns provides a rich sampling landscape. The goal is determining whether a correlation is significantly stronger or weaker than what might occur by chance. Let’s simplify the problem and ignore any issues stemming from being unable to estimate the correlation coefficients well enough.
 
 ### Problems
 
@@ -111,7 +111,7 @@ The observed correlation is quite low and equal to $0.058$. Its associated $p$-v
 
 ## Bottom Line
 
-- The column-sampling bootstrap is a thought-provoking twist on traditional resampling techniques that leverages the width of your dataset.
+- The column-sampling bootstrap is a thought-provoking twist on [traditional resampling techniques](https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html) that leverages the width of your dataset.
 
 - While it offers computational efficiency and flexibility, its reliance on the i.i.d. assumption and potential to overlook row-level dependencies highlight the need for careful application.
 

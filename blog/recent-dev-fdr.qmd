@@ -6,7 +6,7 @@ categories: [multiple testing, statistical inference]
 
 ## Background
 
-A while back I wrote an article summarizing various approaches to correcting for multiple hypothesis testing. The dominant framework, False Discovery Rate (FDR), controls the share of hypotheses that are incorrectly rejected at a pre-specified level $\alpha$. Its foundations were laid out in 1995 by Benjamini and Hochberg (BH) and to date, their method remains the most popular approach for controlling FDR. Since then, the literature has gone in a few directions.
+A while back I wrote an article [summarizing various approaches to correcting for multiple hypothesis testing](https://vyasenov.github.io/blog/flavors-multiple-testing.html). The dominant framework, False Discovery Rate (FDR), controls the share of hypotheses that are incorrectly rejected at a pre-specified level $\alpha$. Its foundations were laid out in 1995 by Benjamini and Hochberg (BH) and to date, their method remains the most popular approach for controlling FDR. Since then, the literature has gone in a few directions.
 
 One [strand of research](https://www.jstor.org/stable/2674075) generalizes the BH procedure to accommodate cases in which there is a dependency (i.e., correlation) among the hypotheses being tested. Another [group of papers](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1716-1?ref=https://githubhelp.com) makes use of covariates that carry information about whether a given hypothesis is likely to be false. While intuitive in theory, in practice this idea is of limited use as such covariates are not often available.
 

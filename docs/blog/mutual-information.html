@@ -493,7 +493,7 @@ window.Quarto = {
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>When exploring dependencies between variables, the data scientist’s toolbox often relies on correlation measures to reveal relationships and potential patterns. But what if we’re looking to capture relationships beyond linear correlations? Mutual Information (MI) quantifies the “amount of information” shared between variables in a more general sense. It measures how much we know about <span class="math inline">\(Y\)</span> by observing <span class="math inline">\(X\)</span>. This approach goes beyond linear patterns and can help us uncover more complex relationships within data.</p>
-<p>MI can be especially helpful for applications such as feature selection and unsupervised learning. For readers familiar with various types of correlation metrics, Mutual Information provides an additional lens to interpret relationships within data.</p>
+<p>MI can be especially helpful for applications such as feature selection and unsupervised learning. For readers familiar with <a href="https://vyasenov.github.io/blog/corr-myths-13-views.html">various types of correlation metrics</a>, Mutual Information provides an additional lens to interpret relationships within data.</p>
 <p>In this article, I’ll guide you through the concept of Mutual Information, its definition, properties, and usage, as well as comparisons with other dependency measures. We’ll explore MI’s mathematical foundations, its advantages and limitations, and its applications, concluding with an example demonstrating MI’s behavior alongside more traditional measures like Pearson’s correlation.</p>
 </section>
 <section id="notation" class="level2">
@@ -538,7 +538,7 @@ window.Quarto = {
 <ul>
 <li><strong>Non-negativity</strong>: <span class="math inline">\(MI(X;Y) \geq 0\)</span>. Mutual Information is always non-negative, as it measures the amount of information one variable provides about the other. Higher values correspond to stronger association.</li>
 <li><strong>Symmetry</strong>: <span class="math inline">\(MI(X,Y) = MI(Y,X)\)</span>. This symmetry implies that the information <span class="math inline">\(X\)</span> provides about <span class="math inline">\(Y\)</span> is the same as what <span class="math inline">\(Y\)</span> provides about <span class="math inline">\(X\)</span>.</li>
-<li><strong>Independence</strong>: Similarly to Chatterjee’s correlation coefficient, <span class="math inline">\(MI(X,Y) = 0\)</span> if and only if <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent.</li>
+<li><strong>Independence</strong>: Similarly to <a href="https://vyasenov.github.io/blog/flavors-correlation-coef.html">Chatterjee’s correlation coefficient</a>, <span class="math inline">\(MI(X,Y) = 0\)</span> if and only if <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent.</li>
 <li><strong>Scale-invariance</strong>: Mutual information is scale invariant. If you apply a scaling transformation to the variables, their MI will not be affected.</li>
 </ul>
 </section>
@@ -551,7 +551,7 @@ window.Quarto = {
 <section id="feature-selection-with-mi" class="level3">
 <h3 class="anchored" data-anchor-id="feature-selection-with-mi">Feature Selection with MI</h3>
 <p>In machine learning, MI serves as a useful metric for feature selection (Brown et al.&nbsp;2012, Vergara and Estévez 2014). Consider an outcome variable <span class="math inline">\(Y\)</span> and a set of features <span class="math inline">\(X\in\mathbb{R}^p\)</span> with <span class="math inline">\(n\)</span> i.i.d. observations. By evaluating the MI between each feature and the target variable, one can retain features with the highest information content, passing a certain threshold. This is somewhat primitive since it assumes independence across features. More sophisticated approaches take feature dependency into account.</p>
-<p>For instance, methods like Minimum Redundancy Maximum Relevance (mRMR, Peng et al.&nbsp;2005) aim to maximize the relevance of features to the target while minimizing redundancy among features. Here is a concise version of the mRMR algorithm:</p>
+<p>For instance, methods like Minimum Redundancy Maximum Relevance (mRMR, Peng et al.&nbsp;2005) aim to maximize the relevance of features to the target while minimizing redundancy among features. I’ve written about a related dependence-based approach in my post on <a href="https://vyasenov.github.io/blog/foci.html">FOCI</a>. Here is a concise version of the mRMR algorithm:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

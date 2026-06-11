@@ -32,7 +32,7 @@ In the univariate $k=1$ case, we have:
 
   $$\text{Var}(g(X)) = \sigma^2 [g(\cdot)']^2.$$
 
-If $X$ is a sample-based estimator (e.g., sample mean, regression coefficients), then $\Sigma$ would be its estimated covariance matrix, and the Delta Method gives us an approximate standard error for $g(X)$. This approximation works well for large samples but may break down when variances are high or sample sizes are small.
+If $X$ is a sample-based estimator (e.g., sample mean, regression coefficients), then $\Sigma$ would be its estimated covariance matrix, and the Delta Method gives us an approximate standard error for $g(X)$. This approximation works well for large samples but may break down when variances are high or sample sizes are small. Note that the symmetric interval it implies in $g(X)$-space can mask asymmetry in the original parameter, which I discuss in [why some confidence intervals are not symmetric](https://vyasenov.github.io/blog/nonsymmetric-conf-int.html).
 
 ## An Example
 

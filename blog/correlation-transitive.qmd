@@ -6,7 +6,7 @@ categories: [correlation, statistical inference]
 
 ## Background
 
-At first, I found this really puzzling. $X$ is correlated (Pearson) with $Y$, and $Y$ is correlated with $Z$. Does this mean $X$ is necessarily correlated with $Z$? Intuitively, this totally makes sense. The answer, however, is “no.”
+At first, I found this really puzzling. $X$ is correlated (Pearson) with $Y$, and $Y$ is correlated with $Z$. Does this mean $X$ is necessarily correlated with $Z$? Intuitively, this totally makes sense. The answer, however, is “no.” This is just one of the many [myths and surprises](https://vyasenov.github.io/blog/corr-myths-13-views.html) I've explored around correlation.
 
 Perhaps the strangest thing is how easy it is to rationalize this “puzzle.” I drink more beer ($X$) and read more books ($Z$) when I am on a vacation ($Y$). That is, both pairs – $X$ and $Y$ and $Z$ and $Y$ – are positively correlated. But I do not drink more beer when I read more books – $X$ and $Z$ are not correlated. It is now obvious that correlation is not (always) transitive, but a second ago, this sounded bizarre.
 

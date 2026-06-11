@@ -68,7 +68,7 @@
 </section>
 <section id="extensions" class="level3">
 <h3 class="anchored" data-anchor-id="extensions">Extensions</h3>
-<p>The ideas above are the foundation; the literature built a great deal on top of them. When the first stage is weak — assignment barely moves treatment — IV estimates become badly biased and their standard inference unreliable, which spawned an entire literature on <em>weak instruments</em> and the diagnostics (such as first-stage F-statistics) used to detect them. Moving beyond a single average, <em>marginal treatment effects</em> (MTE) generalize LATE to trace out how effects vary across the latent propensity to be treated, connecting the IV world to richer models of selection.</p>
+<p>The ideas above are the foundation; the literature built a great deal on top of them. When the first stage is weak — assignment barely moves treatment — IV estimates become badly biased and their standard inference unreliable, which spawned an entire literature on <em>weak instruments</em> and the diagnostics (such as first-stage F-statistics) used to detect them. Moving beyond a single average, <em>marginal treatment effects</em> (MTE) generalize LATE to trace out how effects vary across the latent propensity to be treated, connecting the IV world to richer models of selection. A complementary route, which I have explored in a <a href="https://vyasenov.github.io/blog/treatment-effects-bounds.html">separate note on treatment effect bounds</a>, asks what the data imply about effects for the <em>whole</em> population under weaker assumptions, rather than the compliers alone.</p>
 <p>It is worth noting that LATE has not been without controversy. The estimand is defined by the instrument — change the instrument and you change which compliers you are averaging over — which struck some as letting the tool dictate the question. This is the substance of the long-running, occasionally pointed exchange between James Heckman, who favored structural models with externally meaningful parameters, and Guido Imbens, whose pragmatic rejoinder was essentially “better LATE than nothing.” Finally, the framework is finding new life in <em>nudge</em> (encouragement) trials, where a low-cost randomized prompt — a text, an email, a letter — serves as the instrument for a behavior like vaccination or medication adherence, converting a small nudge effect into the much larger effect on those who actually comply.</p>
 </section>
 </section>
@@ -276,7 +276,7 @@
 <section id="why-it-helps-and-where-it-falls-short" class="level3">
 <h3 class="anchored" data-anchor-id="why-it-helps-and-where-it-falls-short">Why It Helps, and Where It Falls Short</h3>
 <p>The appeal is that the SGPV bakes scientific relevance into the inference itself, rather than leaving it as an afterthought to be eyeballed from a confidence interval. By construction it can support the null, it indicates when the data are inconclusive instead of forcing a verdict, and — a genuinely attractive frequency property — its Type I error rate shrinks toward zero as the sample grows, instead of hovering at <img src="https://latex.codecogs.com/png.latex?%5Calpha"> forever. That directly attacks the big-data significance problem and tends to yield lower false discovery rates.</p>
-<p>So why did it not catch on? A few reasons. The interval null must be specified in advance, and pinning down the width of “scientifically trivial” is a real judgment call that invites disagreement and can feel arbitrary. The statistic is a proportion rather than a probability, which makes it unfamiliar and harder to slot into existing reporting conventions. And it competes in a crowded field: practitioners who care about false discoveries already reach for <a href="https://vyasenov.github.io/blog/recent-dev-fdr.html">false discovery rate (FDR)</a> or family-wise error rate (FWER) procedures, while those who specifically want to test for negligible effects often use equivalence testing (the two one-sided tests, or TOST), which predates the SGPV and is closely related in spirit. The SGPV is, in my view, a cleaner idea than its adoption suggests — but a cleaner idea is not always the one the field converges on.</p>
+<p>So why did it not catch on? A few reasons. The interval null must be specified in advance, and pinning down the width of “scientifically trivial” is a real judgment call that invites disagreement and can feel arbitrary. The statistic is a proportion rather than a probability, which makes it unfamiliar and harder to slot into existing reporting conventions. And it competes in a crowded field: practitioners who care about false discoveries already reach for <a href="https://vyasenov.github.io/blog/recent-dev-fdr.html">false discovery rate (FDR)</a> or <a href="https://vyasenov.github.io/blog/flavors-multiple-testing.html">family-wise error rate (FWER)</a> procedures, while those who specifically want to test for negligible effects often use equivalence testing (the two one-sided tests, or TOST), which predates the SGPV and is closely related in spirit. The SGPV is, in my view, a cleaner idea than its adoption suggests — but a cleaner idea is not always the one the field converges on.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
@@ -915,7 +915,7 @@ font-style: inherit;">"Sepal Length"</span>)</span>
 <section id="hexbin-plot" class="level3">
 <h3 class="anchored" data-anchor-id="hexbin-plot">Hexbin Plot</h3>
 <p>Scatterplots are great until they are not. Have you tried a scatterplot with a million points? It’s slow and it’s hard to see anything. Once the sample gets large enough, overplotting hides the very structure you want to see. Hexbin plots solve that by aggregating points into small hexagonal cells and coloring those cells by count. You give up the exact point cloud, but in return you get a much clearer view of where the data are concentrated.</p>
-<p>The <code>iris</code> data are too small to truly need a hexbin, which is worth saying out loud. But the plot still illustrates the logic well. On genuinely large datasets, this is often the right substitute for a scatterplot. The cost is that rare points and local outliers become less visible, so it is better for density structure than for point-level inspection.</p>
+<p>The <code>iris</code> data are too small to truly need a hexbin, which is worth saying out loud. But the plot still illustrates the logic well. On genuinely large datasets, this is often the right substitute for a scatterplot, as is the <a href="https://vyasenov.github.io/blog/binscatter.html">binscatter</a> I have written about elsewhere. The cost is that rare points and local outliers become less visible, so it is better for density structure than for point-level inspection.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><a href="../files/hexbin-plot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="https://vyasenov.github.io/files/hexbin-plot.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%" alt="Hexbin plot of iris sepal length and petal length"></a></p>
@@ -2528,7 +2528,7 @@ font-style: inherit;">3</span>))</span></code></pre></div></div>
 </section>
 <section id="balke-pearl-bounds-for-noncompliance" class="level3">
 <h3 class="anchored" data-anchor-id="balke-pearl-bounds-for-noncompliance">Balke-Pearl Bounds for Noncompliance</h3>
-<p>Balke and Pearl (1997) address randomized assignment with imperfect compliance. Instead of jumping directly to LATE under exclusion and monotonicity, they ask a broader question: what does the observed joint distribution of <img src="https://latex.codecogs.com/png.latex?(Y,D,Z)"> imply about the population treatment effect under weaker assumptions?</p>
+<p>Balke and Pearl (1997) address randomized assignment with imperfect compliance. Instead of jumping directly to <a href="https://vyasenov.github.io/blog/iv-randomized-experiments.html">LATE under exclusion and monotonicity</a>, they ask a broader question: what does the observed joint distribution of <img src="https://latex.codecogs.com/png.latex?(Y,D,Z)"> imply about the population treatment effect under weaker assumptions?</p>
 <p>The answer is a sharp nonparametric bound obtained by optimizing over all latent compliance-response types consistent with the observed data:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmin_%7Bq%20%5Cin%20%5Cmathcal%7BQ%7D(P_%7BYDZ%7D)%7D%20%5Cmathbb%7BE%7D_q%5BY(1)-Y(0)%5D%0A%5C;%5Cle%5C;%0A%5Ctau%0A%5C;%5Cle%5C;%0A%5Cmax_%7Bq%20%5Cin%20%5Cmathcal%7BQ%7D(P_%7BYDZ%7D)%7D%20%5Cmathbb%7BE%7D_q%5BY(1)-Y(0)%5D.%0A"></p>
 <p>This is best viewed as a separation between what the experiment identifies and what extra assumptions identify. Balke-Pearl bounds are often much wider than a LATE estimate, but they answer a different question. LATE is a point-identified effect for compliers under stronger structure. Balke-Pearl bounds are partial-identification statements about broader causal quantities. When the policy question is about the full eligible population rather than compliers, that distinction matters.</p>
@@ -2632,7 +2632,7 @@ The intuition is that standard IV identifies an average treatment effect only ov
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctext%7BATE%7D%20=%20%5Cmathbb%7BE%7D%5B%5Ctau(X)%5D,%20%5Cqquad%20%5Ctext%7BATT%7D%20=%20%5Cmathbb%7BE%7D%5B%5Ctau(X)%5Cmid%20D=1%5D,%20%5Cqquad%20%5Ctext%7BATU%7D%20=%20%5Cmathbb%7BE%7D%5B%5Ctau(X)%5Cmid%20D=0%5D.%0A"></p>
 <p>Now consider the linear regression</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0AY_i%20=%20%5Calpha%20+%20%5Ctau_%7B%5Ctext%7BOLS%7D%7D%20D_i%20+%20X_i'%5Cbeta%20+%20u_i.%0A"></p>
-<p>The coefficient <img src="https://latex.codecogs.com/png.latex?%5Ctau_%7B%5Ctext%7BOLS%7D%7D"> is the population linear projection coefficient on <img src="https://latex.codecogs.com/png.latex?D">. By Frisch-Waugh-Lovell,</p>
+<p>The coefficient <img src="https://latex.codecogs.com/png.latex?%5Ctau_%7B%5Ctext%7BOLS%7D%7D"> is the population linear projection coefficient on <img src="https://latex.codecogs.com/png.latex?D">. By <a href="https://vyasenov.github.io/blog/ci-residualized-reg.html">Frisch-Waugh-Lovell</a>,</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctau_%7B%5Ctext%7BOLS%7D%7D%20=%20%5Cfrac%7B%5Cmathbb%7BE%7D%5BV_iY_i%5D%7D%7B%5Cmathbb%7BE%7D%5BV_iD_i%5D%7D,%0A%5Cqquad%0AV_i%20=%20D_i%20-%20%5Cmathbb%7BL%7D(D_i%5Cmid%20X_i),%0A"></p>
 <p>where <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BL%7D(D_i%5Cmid%20X_i)"> is the best linear predictor of <img src="https://latex.codecogs.com/png.latex?D_i"> using <img src="https://latex.codecogs.com/png.latex?X_i">. This expression is purely statistical.</p>
 <p>The causal question is whether <img src="https://latex.codecogs.com/png.latex?%5Ctau_%7B%5Ctext%7BOLS%7D%7D"> coincides with a treatment effect parameter under additional assumptions.</p>
@@ -2643,7 +2643,7 @@ The intuition is that standard IV identifies an average treatment effect only ov
 <h3 class="anchored" data-anchor-id="regression-is-a-projection-not-a-causal-model">Regression Is a Projection, Not a Causal Model</h3>
 <p>This is the first point I would emphasize in practice. Writing down</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0AY_i%20=%20%5Calpha%20+%20%5Ctau%20D_i%20+%20X_i'%5Cbeta%20+%20u_i%0A"></p>
-<p>does not, by itself, assume homogeneous treatment effects or even invoke potential outcomes. It simply defines the best linear predictor of <img src="https://latex.codecogs.com/png.latex?Y"> given <img src="https://latex.codecogs.com/png.latex?D"> and <img src="https://latex.codecogs.com/png.latex?X">. If the goal is prediction, that is the end of the story.</p>
+<p>does not, by itself, assume homogeneous treatment effects or even invoke potential outcomes. It simply defines the best linear predictor of <img src="https://latex.codecogs.com/png.latex?Y"> given <img src="https://latex.codecogs.com/png.latex?D"> and <img src="https://latex.codecogs.com/png.latex?X">. If the goal is prediction, that is the end of the story. (For a related distinction about what randomness this projection is defined over, see my note on <a href="https://vyasenov.github.io/blog/ols-fixed-random-x.html">OLS with fixed versus random <img src="https://latex.codecogs.com/png.latex?X"></a>.)</p>
 <p>For causal interpretation, however, we need more. Under random assignment or selection on observables, plus enough structure on how outcomes vary with <img src="https://latex.codecogs.com/png.latex?X">, the projection coefficient may line up with a causal estimand. Under constant treatment effects and correct linear adjustment, that estimand is often the ATE. Once treatment effects vary with <img src="https://latex.codecogs.com/png.latex?X">, the coefficient generally becomes a weighted average of heterogeneous effects rather than the plain sample average.</p>
 </section>
 <section id="aronow-and-samii-asymptotic-view" class="level3">
@@ -2656,7 +2656,7 @@ The intuition is that standard IV identifies an average treatment effect only ov
 <p>One limitation of the Aronow-Samii perspective is that it is asymptotic. Chattopadhyay and Zubizarreta (2023) go further by showing that common linear regression estimators admit exact finite-sample weighting representations. For a regression-adjusted ATE estimator,</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Ctau%7D_%7B%5Ctext%7BOLS%7D%7D%20=%20%5Csum_%7Bi:D_i=1%7D%20w_i%5E%7B(1)%7DY_i%20-%20%5Csum_%7Bi:D_i=0%7D%20w_i%5E%7B(0)%7DY_i,%0A"></p>
 <p>where the weights are functions of only <img src="https://latex.codecogs.com/png.latex?D"> and <img src="https://latex.codecogs.com/png.latex?X">, not the realized outcomes.</p>
-<p>This is useful for two reasons. First, it makes regression adjustment look less mysterious: OLS is implicitly constructing a weighted comparison between treated and control outcomes. Second, the implied weights can be inspected directly. In their framework, the weights clarify when regression adjustment achieves exact balance on included covariates, how dispersed the weights are, and whether the regression is targeting a population that still looks like the observed sample. That is a much more practical diagnostic than simply reporting a coefficient table.</p>
+<p>This is useful for two reasons. First, it makes regression adjustment look less mysterious: OLS is <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">implicitly constructing a weighted comparison</a> between treated and control outcomes. Second, the implied weights can be inspected directly. In their framework, the weights clarify when regression adjustment achieves exact balance on included covariates, how dispersed the weights are, and whether the regression is targeting a population that still looks like the observed sample. That is a much more practical diagnostic than simply reporting a coefficient table.</p>
 </section>
 <section id="słoczyński-heterogeneous-effects-view" class="level3">
 <h3 class="anchored" data-anchor-id="słoczyński-heterogeneous-effects-view">Słoczyński: Heterogeneous Effects View</h3>
@@ -2716,7 +2716,7 @@ The intuition is that standard IV identifies an average treatment effect only ov
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>The Lasso (Least Absolute Shrinkage and Selection Operator), introduced by Tibshirani in 1996, has become one of the go-to tools for variable selection and shrinkage in regression problems. But the classic Lasso is just the starting point. Over the years, researchers have developed many variants of Lasso, each designed to address specific limitations or tailor the method to different kinds of data structures.</p>
+<p>The Lasso (Least Absolute Shrinkage and Selection Operator), introduced by Tibshirani in 1996, has become one of the go-to tools for <a href="https://vyasenov.github.io/blog/flavors-var-selection.html">variable selection</a> and shrinkage in regression problems. But the classic Lasso is just the starting point. Over the years, researchers have developed many variants of Lasso, each designed to address specific limitations or tailor the method to different kinds of data structures.</p>
 <p>This article provides a tour of the most popular flavors of Lasso — from standard <img src="https://latex.codecogs.com/png.latex?%5Cell_1">-penalized regression to modern adaptations like Adaptive Lasso, Elastic Net, Square-root Lasso, and more. For each version, I’ll lay out the objective function, describe when it’s applicable, and summarize its key characteristics.</p>
 </section>
 <section id="notation" class="level2">
@@ -2737,7 +2737,7 @@ The intuition is that standard IV identifies an average treatment effect only ov
 <h3 class="anchored" data-anchor-id="standard-lasso">Standard Lasso</h3>
 <p>The standard Lasso solves the following optimization problem: <img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Cbeta%7D%20=%20%5Carg%20%5Cmin_%7B%5Cbeta%7D%20%5Cleft(%20%5Cfrac%7B1%7D%7B2n%7D%20%5C%7C%20y%20-%20X%20%5Cbeta%20%5C%7C_2%5E2%20+%20%5Clambda%20%5C%7C%20%5Cbeta%20%5C%7C_1%20%5Cright)%0A"></p>
 <p>The appeal of Lasso is straightforward: it trades a convex penalty for exact zeros in the solution. In moderately high dimensions, this often works surprisingly well as a first pass.</p>
-<p>The main issue shows up when predictors are correlated. Lasso will typically pick one variable from a correlated group and ignore the rest, and which one it picks can be unstable across folds or small perturbations of the data. At the same time, all coefficients are shrunk, including the large ones, which introduces bias that doesn’t go away even with large samples.</p>
+<p>The main issue shows up when predictors are correlated. Lasso will typically pick one variable from a correlated group and ignore the rest, and which one it picks can be unstable across folds or small perturbations of the data. At the same time, all coefficients are <a href="https://vyasenov.github.io/blog/paradox-stein.html">shrunk</a>, including the large ones, which introduces bias that doesn’t go away even with large samples.</p>
 <p>In practice, I treat standard Lasso as a baseline rather than a final model. If it’s stable and predictive, great. If not, it’s usually pointing to a structural issue in the design.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
@@ -2981,7 +2981,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 <section id="adaptive-lasso" class="level3">
 <h3 class="anchored" data-anchor-id="adaptive-lasso">Adaptive Lasso</h3>
 <p>Adaptive Lasso extends the standard Lasso by using data-driven weights for each coefficient: <img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Cbeta%7D%20=%20%5Carg%20%5Cmin_%7B%5Cbeta%7D%20%5Cleft(%20%5Cfrac%7B1%7D%7B2n%7D%20%5C%7C%20y%20-%20X%20%5Cbeta%20%5C%7C_2%5E2%20+%20%5Clambda%20%5Csum_%7Bj=1%7D%5Ep%20w_j%20%7C%20%5Cbeta_j%20%7C%20%5Cright)%0A"> where <img src="https://latex.codecogs.com/png.latex?w_j%20=%201%20/%20%7C%5Chat%7B%5Cbeta%7D_j%5E%7B%5Ctext%7Binit%7D%7D%7C%5E%5Cgamma"> and <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cbeta%7D_j%5E%7B%5Ctext%7Binit%7D%7D"> comes from an initial estimator like OLS or Ridge.</p>
-<p>The idea here is to penalize coefficients unevenly. Variables that look important in a first-stage model get penalized less, while weaker ones get pushed harder toward zero. This reduces the bias on large coefficients and improves variable selection consistency under certain conditions.</p>
+<p>The idea here is to penalize coefficients unevenly. Variables that look important in a first-stage model get penalized less, while weaker ones get pushed harder toward zero. This reduces the bias on large coefficients and improves variable selection consistency under certain conditions—one of the ingredients of the <a href="https://vyasenov.github.io/blog/oracle-property.html">oracle property</a>.</p>
 <p>In practice, Adaptive Lasso is less about prediction and more about recovering a meaningful support. If you care about which variables are selected—not just the predictive accuracy—it’s often worth the extra step.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
@@ -5318,7 +5318,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>In high-dimensional regression, we sometimes hear that a method possesses the oracle property. The phrase sounds impressive: it suggests that an estimator behaves as if the true sparsity pattern were known in advance—hence the name, as though an oracle had revealed the true support beforehand.</p>
+<p>In high-dimensional regression, we sometimes hear that a <a href="https://vyasenov.github.io/blog/flavors-var-selection.html">variable selection</a> method possesses the oracle property. The phrase sounds impressive: it suggests that an estimator behaves as if the true sparsity pattern were known in advance—hence the name, as though an oracle had revealed the true support beforehand.</p>
 <p>This note explains what the oracle property actually means, why it is considered desirable, and where its practical relevance is limited. The goal is to distinguish asymptotic guarantees from practical performance. As usual, I introduce some notation so that the discussion rests on a clear mathematical foundation and a shared framework.</p>
 </section>
 <section id="notation" class="level2">
@@ -5356,7 +5356,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 </section>
 <section id="which-methods-achieve-it" class="level3">
 <h3 class="anchored" data-anchor-id="which-methods-achieve-it">Which Methods Achieve It</h3>
-<p>Classical LASSO does not generally satisfy the oracle property. Its <img src="https://latex.codecogs.com/png.latex?%5Cell_1"> penalty introduces shrinkage bias that persists asymptotically.</p>
+<p>Classical <a href="https://vyasenov.github.io/blog/flavors-lasso.html">LASSO</a> does not generally satisfy the oracle property. Its <img src="https://latex.codecogs.com/png.latex?%5Cell_1"> penalty introduces shrinkage bias that persists asymptotically.</p>
 <p>Nonconvex penalties (e.g., SCAD and MCP) were explicitly designed to achieve the oracle property under regularity conditions. Adaptive LASSO can also achieve it when weights are constructed from a root-<img src="https://latex.codecogs.com/png.latex?n"> consistent pilot estimator.</p>
 <p>The key mechanism is reduced shrinkage for large coefficients while still penalizing small ones.</p>
 </section>
@@ -5369,7 +5369,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 <li>regularity conditions on the design matrix,</li>
 <li>appropriate tuning parameter rates.</li>
 </ul>
-<p>In finite samples, especially when signals are weak or highly correlated, procedures that theoretically satisfy the oracle property may not outperform simpler methods. In practice, prediction risk often matters more than exact support recovery.</p>
+<p>I have written about the <a href="https://vyasenov.github.io/blog/lasso-theory-guarantees.html">theoretical guarantees of LASSO</a> and the design conditions they rely on before. In finite samples, especially when signals are weak or highly correlated, procedures that theoretically satisfy the oracle property may not outperform simpler methods. In practice, prediction risk often matters more than exact support recovery.</p>
 <p>There is also a conceptual point: the oracle benchmark assumes that the “true” model is sparse and well-defined. In many modern applications, sparsity is an approximation rather than a literal truth.</p>
 </section>
 </section>
@@ -5411,7 +5411,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 
 
 
-<div class="reading-time">4 min read</div>
+<div class="reading-time">5 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -5420,7 +5420,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>Most of us were trained to think of a <img src="https://latex.codecogs.com/png.latex?95%5C%25"> confidence interval as</p>
 <p><img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D%20%5Cpm%201.96%20%5Ccdot%20%5Cmathrm%7BSE%7D(%5Chat%7B%5Ctheta%7D)."></p>
-<p>That template is deeply ingrained. It works beautifully for estimators whose sampling distributions are symmetric and well behaved. But have you ever come across a confidence interval with an off-center point estimate?</p>
+<p>That template is deeply ingrained. It works beautifully for estimators whose sampling distributions are symmetric and well behaved. But have you ever come across a confidence interval with an off-center point estimate? (Confidence intervals trip people up in other ways too—I have written about how <a href="https://vyasenov.github.io/blog/overlapping-conf-intervals.html">overlapping confidence intervals do not imply statistical insignificance</a>.)</p>
 <p>The “<img src="https://latex.codecogs.com/png.latex?%5Cpm"> margin of error” representation is not a defining property of confidence intervals. It is a <em>consequence of</em> symmetry. Once symmetry disappears because of skewed sampling distributions, nonlinear transformations, boundary constraints, or small-sample behavior, the interval need not be centered around the point estimate.</p>
 <p>The goal of this note is to unpack where asymmetry comes from, when it is expected, and how different construction principles lead to intervals that look very different from the textbook <img src="https://latex.codecogs.com/png.latex?t">-interval. I will also illustrate the phenomenon with a bootstrap example in <code>R</code> and <code>Python</code>.</p>
 </section>
@@ -5450,7 +5450,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 <p>Suppose <img src="https://latex.codecogs.com/png.latex?%5Cphi%20=%20g(%5Ctheta)"> for a nonlinear <img src="https://latex.codecogs.com/png.latex?g">. Even if <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Ctheta%7D"> is approximately normal, the distribution of</p>
 <p><img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cphi%7D%20=%20g(%5Chat%7B%5Ctheta%7D)"></p>
 <p>is generally not symmetric in finite samples.</p>
-<p>A first-order delta method approximation gives</p>
+<p>A first-order <a href="https://vyasenov.github.io/blog/delta-method.html">delta method</a> approximation gives</p>
 <p><img src="https://latex.codecogs.com/png.latex?%5Csqrt%7Bn%7D%5Cbig(%5Chat%7B%5Cphi%7D%20-%20%5Cphi%5Cbig)%0A%5C;%5Coverset%7Bd%7D%7B%5Clongrightarrow%7D%5C;%0A%5Cmathcal%7BN%7D%5Cleft(0,%20%5Cbig(g'(%5Ctheta)%5Cbig)%5E2%20V(%5Ctheta)%5Cright),%0A"></p>
 <p>which suggests a symmetric interval in <img src="https://latex.codecogs.com/png.latex?%5Cphi">-space. However, mapping that interval back to <img src="https://latex.codecogs.com/png.latex?%5Ctheta">-space via <img src="https://latex.codecogs.com/png.latex?g%5E%7B-1%7D"> typically produces asymmetry.</p>
 <p>This is routine in practice. Log-scale confidence intervals for positive parameters (e.g., rate ratios, hazard ratios) are symmetric in <img src="https://latex.codecogs.com/png.latex?%5Clog%20%5Ctheta"> but asymmetric in <img src="https://latex.codecogs.com/png.latex?%5Ctheta">. The asymmetry reflects curvature in <img src="https://latex.codecogs.com/png.latex?g">.</p>
@@ -5764,7 +5764,7 @@ font-style: inherit;">print</span>(lower_distance, upper_distance)</span></code>
 
 
 
-<div class="reading-time">3 min read</div>
+<div class="reading-time">4 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -5815,7 +5815,7 @@ font-style: inherit;">print</span>(lower_distance, upper_distance)</span></code>
 <h3 class="anchored" data-anchor-id="what-actually-changes">What Actually Changes?</h3>
 <p>Three things matter.</p>
 <p>First, the object of inference. With fixed <img src="https://latex.codecogs.com/png.latex?X">, inference is conditional on the design. With random <img src="https://latex.codecogs.com/png.latex?X">, inference is about repeated sampling of <img src="https://latex.codecogs.com/png.latex?F_%7BX,Y%7D">.</p>
-<p>Second, exogeneity assumptions. In the fixed-<img src="https://latex.codecogs.com/png.latex?X"> model, we require <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5B%5Cvarepsilon%20%5Cmid%20X%5D%20=%200">. In the random-<img src="https://latex.codecogs.com/png.latex?X"> case, we need the same condition, but it now constrains the joint distribution: it says that once we know the regressors, there is no systematic remaining signal in the error term. Violations become statements about endogeneity, meaning <img src="https://latex.codecogs.com/png.latex?X"> is statistically related to omitted factors inside <img src="https://latex.codecogs.com/png.latex?%5Cvarepsilon">.</p>
+<p>Second, exogeneity assumptions. In the fixed-<img src="https://latex.codecogs.com/png.latex?X"> model, we require <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5B%5Cvarepsilon%20%5Cmid%20X%5D%20=%200">. In the random-<img src="https://latex.codecogs.com/png.latex?X"> case, we need the same condition, but it now constrains the joint distribution: it says that once we know the regressors, there is no systematic remaining signal in the error term. Violations become statements about endogeneity, meaning <img src="https://latex.codecogs.com/png.latex?X"> is statistically related to omitted factors inside <img src="https://latex.codecogs.com/png.latex?%5Cvarepsilon">. Whether the resulting coefficient carries a causal meaning at all is a separate question I take up in <a href="https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html">what OLS estimates in causal inference</a>.</p>
 <p>Third, robustness. Heteroskedasticity-robust standard errors are naturally derived in the random-<img src="https://latex.codecogs.com/png.latex?X"> framework, where the conditional variance may depend on <img src="https://latex.codecogs.com/png.latex?X_i">. In other words, different parts of the regressor distribution can come with different noise levels, so inference has to account for that variation rather than rely on a single common variance.</p>
 <p>What does not change is the formula for <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta">. Nor does unbiasedness depend on <img src="https://latex.codecogs.com/png.latex?X"> being fixed; it depends on the conditional mean-zero assumption.</p>
 </section>
@@ -6545,7 +6545,7 @@ font-style: inherit;">4</span>))</span></code></pre></div></div>
 <section id="strengths-and-limitations" class="level3">
 <h3 class="anchored" data-anchor-id="strengths-and-limitations">Strengths and Limitations</h3>
 <p>Randomization inference is particularly powerful when the randomization scheme is known and controlled, as in experiments, when the test statistic is chosen to be pivotal, and when exact finite-sample error control is important.</p>
-<p>However, it becomes less effective when covariates are correlated with treatment assignment but not properly accounted for, or when the sample size is too small to approximate the randomization distribution reliably through subsampling.</p>
+<p>However, it becomes less effective when <a href="https://vyasenov.github.io/blog/roles-covariates-rtc.html">covariates</a> are correlated with treatment assignment but not properly accounted for, or when the sample size is too small to approximate the randomization distribution reliably through subsampling.</p>
 </section>
 </section>
 <section id="an-example" class="level2">
@@ -6888,7 +6888,7 @@ font-style: inherit;">print</span>(p_value)</span></code></pre></div></div>
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Generalized Additive Models (GAMs) are one of the most powerful and flexible tools in a data scientist’s toolbox for modeling complex, nonlinear relationships between covariates and an outcome. They generalize linear models by allowing smooth, nonparametric functions of the predictors while still maintaining interpretability and manageable computation. The core idea is simple: instead of forcing relationships to be straight lines, let the data speak for itself.</p>
+<p>Generalized Additive Models (GAMs) are one of the most powerful and flexible tools in a data scientist’s toolbox for modeling complex, nonlinear relationships between covariates and an outcome. They generalize linear models by allowing smooth, nonparametric functions of the predictors while still maintaining interpretability and manageable computation, placing them squarely among the <a href="https://vyasenov.github.io/blog/three-classes-stat-models.html">semiparametric class of statistical models</a>. The core idea is simple: instead of forcing relationships to be straight lines, let the data speak for itself.</p>
 <p>This article explains what you really need to know about GAMs, following the excellent review by Simon Wood (2025). I’ll go over the basics of how GAMs work, how smoothness is controlled, the computational strategies involved, and key pitfalls to watch out for. I’ll also walk through a code example in both <code>R</code> and <code>Python</code> to show how to fit and interpret these models in practice.</p>
 </section>
 <section id="notation" class="level2">
@@ -6938,7 +6938,7 @@ font-style: inherit;">print</span>(p_value)</span></code></pre></div></div>
 <section id="beyond-the-mean" class="level3">
 <h3 class="anchored" data-anchor-id="beyond-the-mean">Beyond the Mean</h3>
 <p>GAMs aren’t limited to modeling the mean and naturally extend to modeling other aspects of the distribution. They can handle <em>location, scale, and shape</em> modeling — meaning that the variance, skewness, or other distributional parameters can also depend on smooth functions of predictors. This generalization brings GAMs into the world of generalized additive models for location, scale, and shape (GAMLSS).</p>
-<p>They can even be extended to quantile regression and non-exponential family distributions, making them incredibly versatile. However, while GAMs allow flexible modeling of conditional expectations, they do not by themselves address common thorny issues such as endogeneity, causal identification, or selection bias. They simply allow for more depth in modeling the relationship between the outcome and the covariates and thus should be utilized in the context of machine learning/prediction.</p>
+<p>They can even be extended to quantile regression and non-exponential family distributions, making them incredibly versatile. However, while GAMs allow flexible modeling of conditional expectations, they do not by themselves address common thorny issues such as endogeneity, causal identification, or selection bias. They simply allow for more depth in modeling the relationship between the outcome and the covariates and thus should be utilized in the context of machine learning/prediction. The price of this flexibility shows up in the <a href="https://vyasenov.github.io/blog/limits-semiparam-models.html">semiparametric efficiency bound</a>, which I discuss elsewhere.</p>
 </section>
 <section id="hypothesis-testing" class="level3">
 <h3 class="anchored" data-anchor-id="hypothesis-testing">Hypothesis Testing</h3>
@@ -7675,7 +7675,7 @@ font-style: inherit;">print</span>(model_cre.summary())</span></code></pre></div
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>Introduced by Rosenbaum and Rubin in 1983, the propensity score, the probability of receiving treatment given observed covariates, has become the workhorse for handling confounding in observational studies.</p>
-<p>But here’s the thing: the propensity score itself is just the starting point. It designates an entire class of statistical methods for treatment effect estimation. In practice, there are tons of ways to use propensity scores. You can match on them, stratify your sample, weight your observations, or plug them into doubly robust estimators that combine modeling of both the treatment and the outcome. You can tweak how you weight the units—downweighting those with extreme scores or focusing on the region where treated and control groups overlap.</p>
+<p>But here’s the thing: the propensity score itself is just the starting point. It designates an entire class of statistical methods for treatment effect estimation. In practice, there are tons of ways to use propensity scores. You can <a href="https://vyasenov.github.io/blog/flavors-matching-methods.html">match on them</a>, stratify your sample, weight your observations, or plug them into doubly robust estimators that combine modeling of both the treatment and the outcome. You can tweak how you weight the units—downweighting those with extreme scores or focusing on the region where treated and control groups overlap.</p>
 <p>In this post, I’ll explore the many flavors of propensity score methods. As always, the focus is on the intuition, the basic math, and practical considerations. Oh, there is also some <code>R</code> and <code>python</code> code.</p>
 </section>
 <section id="notation" class="level2">
@@ -7868,7 +7868,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 <p><em>Target Estimand</em>: Typically ATT.</p>
 <p>This is often the first method people try after estimating the propensity score. Once <img src="https://latex.codecogs.com/png.latex?e(X)"> is estimated, treated units are matched to control units with the closest propensity scores (nearest neighbor). You can match one-to-one, one-to-many, with or without replacement.</p>
 <p>This class of methods tends to work well when the number of controls is large enough to find good matches for treated units. The approach is simple and intuitive, reducing high-dimensional matching to a single dimension. However, it’s worth noting that balance on the propensity score doesn’t guarantee balance on covariates, and the method can be sensitive to poor matches when suitable controls are scarce.</p>
-<p>Lastly, inference after matching is subtle; standard errors must account for the matching procedure, and naïve bootstrap methods are generally invalid. Matching with replacement introduces some additional complexity since some data points are used more than once.</p>
+<p>Lastly, <a href="https://vyasenov.github.io/blog/variance-ps-matching.html">inference after matching</a> is subtle; standard errors must account for the matching procedure, and naïve bootstrap methods are generally invalid. Matching with replacement introduces some additional complexity since some data points are used more than once.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
 <div class="tab-content">
@@ -8444,7 +8444,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 <section id="inverse-probability-weighting-ipw" class="level3">
 <h3 class="anchored" data-anchor-id="inverse-probability-weighting-ipw">Inverse Probability Weighting (IPW)</h3>
 <p><em>Target Estimand</em>: ATT/ATE.</p>
-<p>IPW turns the propensity score into weights: <img src="https://latex.codecogs.com/png.latex?%0Aw_i%20=%20%5Cfrac%7BD_i%7D%7Be(X_i)%7D%20+%20%5Cfrac%7B1%20-%20D_i%7D%7B1%20-%20e(X_i)%7D.%0A"> This reweights the sample so that treated and control groups resemble each other on observed covariates.</p>
+<p>IPW turns the propensity score into <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">weights</a>: <img src="https://latex.codecogs.com/png.latex?%0Aw_i%20=%20%5Cfrac%7BD_i%7D%7Be(X_i)%7D%20+%20%5Cfrac%7B1%20-%20D_i%7D%7B1%20-%20e(X_i)%7D.%0A"> This reweights the sample so that treated and control groups resemble each other on observed covariates.</p>
 <p>This method is ideal when you want to utilize the entire dataset without discarding any units. IPW is conceptually simple and makes full use of all available observations. The main challenge, however, is its sensitivity to extreme propensity scores near 0 or 1. When units have very low or very high probabilities of treatment, the inverse weighting can produce extremely large weights, leading to unstable estimates with high variance. This is why trimming or other stabilization techniques are often employed alongside IPW.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
@@ -9713,7 +9713,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>If you’ve worked on causal inference with observational data, you’ve likely faced the fundamental challenge: the treated and control groups often look very different. Matching methods aim to fix that. The idea is simple and intuitive—let’s compare treated units to similar control units and mimic the conditions of a randomized experiment as best as we can.</p>
-<p>But here’s the twist: there are multiple ways to define “similar.” Should we look for exact matches? Should we match on covariates directly or on some summary score like the propensity score? Should we optimize the matches globally or locally? Over the years, researchers have developed a wide variety of matching methods, each with its own advantages and pitfalls. The landscape can be overwhelming, especially if you’re new to causal inference.</p>
+<p>But here’s the twist: there are multiple ways to define “similar.” Should we look for exact matches? Should we match on covariates directly or on some summary score like the <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">propensity score</a>? Should we optimize the matches globally or locally? Over the years, researchers have developed a wide variety of matching methods, each with its own advantages and pitfalls. The landscape can be overwhelming, especially if you’re new to causal inference.</p>
 <p>In this article, I’ll walk through the most popular matching strategies for causal inference. I’ll talk about what each method does, when to use it, and where it might lead you astray. The focus is on the intuition and technical description—not on the code. Whether you’re doing matching for the first time or looking to expand your toolkit, you will find something useful here.</p>
 </section>
 <section id="notation" class="level2">
@@ -9770,7 +9770,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 <p>This is the key idea: propensity scores reduce the curse of dimensionality. By summarizing the information in <img src="https://latex.codecogs.com/png.latex?X"> into one number that captures the likelihood of treatment, we make matching more feasible and scalable, especially when <img src="https://latex.codecogs.com/png.latex?X"> includes many variables.</p>
 <p>In practice, the propensity score is rarely known and must be estimated—typically using logistic regression, probit models, or machine learning methods like random forests or gradient boosting. Once estimated, treated and control units are matched based on the closeness of their propensity scores, often using nearest-neighbor matching, caliper matching, or kernel methods. Trimming is therefore an important aspect of the process, where units with very high or very low propensity scores are excluded to improve balance and reduce bias.</p>
 <p>PSM improves comparability between groups by balancing the covariates in expectation, but it comes with trade-offs. Matching on the propensity score alone does not guarantee covariate balance in any particular dataset, so it’s important to assess and diagnose balance post-matching. Moreover, PSM is sensitive to model misspecification and can perform poorly if the propensity score is estimated inaccurately or if the overlap between groups is weak.</p>
-<p>Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks. It can be particularly helpful when the number of covariates is large or mostly continuous.</p>
+<p>Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks. It can be particularly helpful when the number of covariates is large or mostly continuous. I have written separately about <a href="https://vyasenov.github.io/blog/variance-ps-matching.html">estimating the variance of PSM estimators</a>, which is subtler than it first appears.</p>
 <hr>
 </section>
 <section id="coarsened-exact-matching" class="level3">
@@ -9866,7 +9866,7 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
 
 
 
-<div class="reading-time">11 min read</div>
+<div class="reading-time">10 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -10065,7 +10065,7 @@ font-style: inherit;">=</span>X.columns))</span></code></pre></div></div>
 <p>Lasso introduced the big idea of <em>sparsity</em>, that only some variables enter the model. It penalizes the sum of the absolute values of the coefficients:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Cbeta%7D%5E%7B%5Ctext%7Blasso%7D%7D%20=%20%5Carg%5Cmin_%7B%5Cbeta%7D%20%5Cleft%5C%7B%20%5C%7C%20Y%20-%20X%20%5Cbeta%20%5C%7C_2%5E2%20+%20%5Clambda%20%5C%7C%20%5Cbeta%20%5C%7C_1%20%5Cright%5C%7D.%0A"></p>
 <p>The magic of the <img src="https://latex.codecogs.com/png.latex?%5Cell_1"> penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. Its theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios.</p>
-<p>Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of flavors, including group lasso, adaptive lasso, and fused lasso, which I will probably cover in a future blog post. Be careful, though, lasso is known to be biased, so it’s great for prediction, but don’t take its coefficients at face value.</p>
+<p>Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of <a href="https://vyasenov.github.io/blog/flavors-lasso.html">flavors</a>, including group lasso, adaptive lasso, and fused lasso, which I cover in a separate post. Be careful, though, lasso is known to be biased, so it’s great for prediction, but don’t take its coefficients at face value.</p>
 <p>Lasso is a good idea when you believe that only a subset of predictors are relevant and want an interpretable model. It can struggle with groups of correlated predictors (tends to pick one arbitrarily), and is known to be biased due to shrinkage.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
@@ -10545,7 +10545,7 @@ font-style: inherit;">=</span>X.columns))</span></code></pre></div></div>
 <li>For moderate coefficients <img src="https://latex.codecogs.com/png.latex?%5Clambda%20%3C%20%7C%5Cbeta%7C%20%3C%20a%20%5Clambda">, the penalty decreases gradually.</li>
 <li>For large coefficients <img src="https://latex.codecogs.com/png.latex?%7C%5Cbeta%7C%20%5Cge%20a%5Clambda">, the penalty becomes flat—effectively applying no further shrinkage.</li>
 </ul>
-<p>This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and oracle-like properties under certain conditions. The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.</p>
+<p>This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and <a href="https://vyasenov.github.io/blog/oracle-property.html">oracle-like properties</a> under certain conditions. The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
 <div class="tab-content">

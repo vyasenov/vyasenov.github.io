@@ -438,7 +438,7 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">3 min read</div>
+<div class="reading-time">4 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -493,7 +493,7 @@ window.Quarto = {
 <h3 class="anchored" data-anchor-id="what-actually-changes">What Actually Changes?</h3>
 <p>Three things matter.</p>
 <p>First, the object of inference. With fixed <span class="math inline">\(X\)</span>, inference is conditional on the design. With random <span class="math inline">\(X\)</span>, inference is about repeated sampling of <span class="math inline">\(F_{X,Y}\)</span>.</p>
-<p>Second, exogeneity assumptions. In the fixed-<span class="math inline">\(X\)</span> model, we require <span class="math inline">\(\mathbb{E}[\varepsilon \mid X] = 0\)</span>. In the random-<span class="math inline">\(X\)</span> case, we need the same condition, but it now constrains the joint distribution: it says that once we know the regressors, there is no systematic remaining signal in the error term. Violations become statements about endogeneity, meaning <span class="math inline">\(X\)</span> is statistically related to omitted factors inside <span class="math inline">\(\varepsilon\)</span>.</p>
+<p>Second, exogeneity assumptions. In the fixed-<span class="math inline">\(X\)</span> model, we require <span class="math inline">\(\mathbb{E}[\varepsilon \mid X] = 0\)</span>. In the random-<span class="math inline">\(X\)</span> case, we need the same condition, but it now constrains the joint distribution: it says that once we know the regressors, there is no systematic remaining signal in the error term. Violations become statements about endogeneity, meaning <span class="math inline">\(X\)</span> is statistically related to omitted factors inside <span class="math inline">\(\varepsilon\)</span>. Whether the resulting coefficient carries a causal meaning at all is a separate question I take up in <a href="https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html">what OLS estimates in causal inference</a>.</p>
 <p>Third, robustness. Heteroskedasticity-robust standard errors are naturally derived in the random-<span class="math inline">\(X\)</span> framework, where the conditional variance may depend on <span class="math inline">\(X_i\)</span>. In other words, different parts of the regressor distribution can come with different noise levels, so inference has to account for that variation rather than rely on a single common variance.</p>
 <p>What does not change is the formula for <span class="math inline">\(\hat\beta\)</span>. Nor does unbiasedness depend on <span class="math inline">\(X\)</span> being fixed; it depends on the conditional mean-zero assumption.</p>
 </section>

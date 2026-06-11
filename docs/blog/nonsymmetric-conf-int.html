@@ -474,7 +474,7 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">4 min read</div>
+<div class="reading-time">5 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -483,7 +483,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>Most of us were trained to think of a <span class="math inline">\(95\%\)</span> confidence interval as</p>
 <p><span class="math display">\[\hat{\theta} \pm 1.96 \cdot \mathrm{SE}(\hat{\theta}).\]</span></p>
-<p>That template is deeply ingrained. It works beautifully for estimators whose sampling distributions are symmetric and well behaved. But have you ever come across a confidence interval with an off-center point estimate?</p>
+<p>That template is deeply ingrained. It works beautifully for estimators whose sampling distributions are symmetric and well behaved. But have you ever come across a confidence interval with an off-center point estimate? (Confidence intervals trip people up in other ways too—I have written about how <a href="https://vyasenov.github.io/blog/overlapping-conf-intervals.html">overlapping confidence intervals do not imply statistical insignificance</a>.)</p>
 <p>The “<span class="math inline">\(\pm\)</span> margin of error” representation is not a defining property of confidence intervals. It is a <em>consequence of</em> symmetry. Once symmetry disappears because of skewed sampling distributions, nonlinear transformations, boundary constraints, or small-sample behavior, the interval need not be centered around the point estimate.</p>
 <p>The goal of this note is to unpack where asymmetry comes from, when it is expected, and how different construction principles lead to intervals that look very different from the textbook <span class="math inline">\(t\)</span>-interval. I will also illustrate the phenomenon with a bootstrap example in <code>R</code> and <code>Python</code>.</p>
 </section>
@@ -515,7 +515,7 @@ window.Quarto = {
 <p>Suppose <span class="math inline">\(\phi = g(\theta)\)</span> for a nonlinear <span class="math inline">\(g\)</span>. Even if <span class="math inline">\(\hat{\theta}\)</span> is approximately normal, the distribution of</p>
 <p><span class="math display">\[\hat{\phi} = g(\hat{\theta})\]</span></p>
 <p>is generally not symmetric in finite samples.</p>
-<p>A first-order delta method approximation gives</p>
+<p>A first-order <a href="https://vyasenov.github.io/blog/delta-method.html">delta method</a> approximation gives</p>
 <p><span class="math display">\[\sqrt{n}\big(\hat{\phi} - \phi\big)
 \;\overset{d}{\longrightarrow}\;
 \mathcal{N}\left(0, \big(g'(\theta)\big)^2 V(\theta)\right),

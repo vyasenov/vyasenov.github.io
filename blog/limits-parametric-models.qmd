@@ -6,9 +6,9 @@ categories: [statistical inference, parametric models]
 
 ## Background
 
-Obtaining the lowest possible variance is a primary goal for anyone working with statistical models. Efficiency (or precision), as is the jargon, is a cornerstone of statistics and econometrics, guiding us toward estimators that extract the maximum possible information from the data. It can make or break a data project.
+Obtaining the lowest possible variance is a primary goal for anyone working with [statistical models](https://vyasenov.github.io/blog/three-classes-stat-models.html). Efficiency (or precision), as is the jargon, is a cornerstone of statistics and econometrics, guiding us toward estimators that extract the maximum possible information from the data. It can make or break a data project.
 
-The Cramér-Rao lower bound (CRLB) plays a pivotal role in this context by establishing a theoretical limit on the variance of unbiased estimators. Unbiased estimators are those that yield the true answer (on average), rendering them a highly attractive class of methods. The CRLB highlights the best achievable precision for parameter estimation based on the Fisher information in the data. This article explores the theoretical foundation of the CRLB, its computation, and its implications for practical estimation.
+The Cramér-Rao lower bound (CRLB) plays a pivotal role in this context by establishing a theoretical limit on the variance of unbiased estimators. Unbiased estimators are those that yield the true answer (on average), rendering them a highly attractive class of methods. The CRLB highlights the best achievable precision for parameter estimation based on the Fisher information in the data. This article explores the theoretical foundation of the CRLB, its computation, and its implications for practical estimation. It also serves as the springboard for the [semiparametric efficiency bound](https://vyasenov.github.io/blog/limits-semiparam-models.html), which I take up separately.
 
 In what follows, I am concerned with unbiased estimators, a common practice that should not be taken for granted. As a counterexample, consider the [James-Stein estimator](http://yasenov.com/2025/01/steins-paradox-a-simple-illustration/) —a biased but attractive technique.
 

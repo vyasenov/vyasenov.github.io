@@ -8,7 +8,7 @@ categories: [bootstrap, statistical inference]
 
 The bootstrap is a powerful resampling technique used to estimate the sampling distribution of a statistic. By repeatedly drawing observations with replacement from the original dataset, it enables practitioners to perform tasks like hypothesis testing, computing standard errors, and constructing confidence intervals—without relying on strong parametric assumptions about the underlying population.
 
-It is particularly valuable when analytical expressions for the variance of an estimator are unavailable or computationally complex. Moreover, the bootstrap is grounded in robust statistical theory and offers versatile adaptations, such as [the wild bootstrap](https://onlinelibrary.wiley.com/doi/abs/10.1002/jae.2508), which is commonly used for estimating cluster-robust variance. This combination of methodological flexibility and statistical rigor has established the bootstrap as a central tool in modern data science.
+It is particularly valuable when analytical expressions for the variance of an estimator are unavailable or computationally complex. Moreover, the bootstrap is grounded in robust statistical theory and offers [versatile adaptations](https://vyasenov.github.io/blog/flavors-bootstrap.html), such as [the wild bootstrap](https://onlinelibrary.wiley.com/doi/abs/10.1002/jae.2508), which is commonly used for estimating cluster-robust variance. This combination of methodological flexibility and statistical rigor has established the bootstrap as a central tool in modern data science.
 
 However, like any statistical method, the bootstrap has its limitations. This article examines scenarios where the bootstrap will yield unreliable results.
 
@@ -16,7 +16,7 @@ However, like any statistical method, the bootstrap has its limitations. This ar
 
 Consider the following scenarios:
 
-- **Very Small Sample Sizes** – The bootstrap relies on resampling the observed data to approximate the population distribution. With very small samples, there is not enough variability in the data to accurately capture the underlying distribution, leading to unreliable estimates.
+- **Very Small Sample Sizes** – The bootstrap relies on resampling the observed data to approximate the population distribution. With very small samples, there is not enough variability in the data to accurately capture the underlying distribution, leading to unreliable estimates. (I have explored one creative attempt to sidestep this in wide datasets in my post on the [column-sampling bootstrap](https://vyasenov.github.io/blog/column-sampling-bootstrap.html).)
 - **Parameter at the Edge of the Parameter Space** – When the parameter being estimated lies at or near a boundary (e.g., estimating a proportion close to $0$ or $1$), the bootstrap may fail to reflect the true sampling distribution. The resampling process cannot fully mimic the constraints of the parameter space. This includes situations in which we are interested in learning more about the minimum or maximum value of some statistic.
 - **Presence of Outliers** – Outliers can heavily influence bootstrap resamples, leading to biased or overly variable estimates.
 - **Dependence in the Data** – The bootstrap assumes the data are independent and identically distributed (i.i.d.). For time series or spatial data where observations are dependent, naive application of the bootstrap can yield incorrect inferences unless adapted for the structure (e.g., block bootstrap).

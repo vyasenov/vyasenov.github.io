@@ -88,7 +88,7 @@ The general principle is simple: asymptotic validity requires asymptotic pivotal
 
 Randomization inference is particularly powerful when the randomization scheme is known and controlled, as in experiments, when the test statistic is chosen to be pivotal, and when exact finite-sample error control is important.
 
-However, it becomes less effective when covariates are correlated with treatment assignment but not properly accounted for, or when the sample size is too small to approximate the randomization distribution reliably through subsampling.
+However, it becomes less effective when [covariates](https://vyasenov.github.io/blog/roles-covariates-rtc.html) are correlated with treatment assignment but not properly accounted for, or when the sample size is too small to approximate the randomization distribution reliably through subsampling.
 
 ## An Example
 

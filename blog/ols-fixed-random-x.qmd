@@ -74,7 +74,7 @@ Three things matter.
 
 First, the object of inference. With fixed $X$, inference is conditional on the design. With random $X$, inference is about repeated sampling of $F_{X,Y}$.
 
-Second, exogeneity assumptions. In the fixed-$X$ model, we require $\mathbb{E}[\varepsilon \mid X] = 0$. In the random-$X$ case, we need the same condition, but it now constrains the joint distribution: it says that once we know the regressors, there is no systematic remaining signal in the error term. Violations become statements about endogeneity, meaning $X$ is statistically related to omitted factors inside $\varepsilon$.
+Second, exogeneity assumptions. In the fixed-$X$ model, we require $\mathbb{E}[\varepsilon \mid X] = 0$. In the random-$X$ case, we need the same condition, but it now constrains the joint distribution: it says that once we know the regressors, there is no systematic remaining signal in the error term. Violations become statements about endogeneity, meaning $X$ is statistically related to omitted factors inside $\varepsilon$. Whether the resulting coefficient carries a causal meaning at all is a separate question I take up in [what OLS estimates in causal inference](https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html).
 
 Third, robustness. Heteroskedasticity-robust standard errors are naturally derived in the random-$X$ framework, where the conditional variance may depend on $X_i$. In other words, different parts of the regressor distribution can come with different noise levels, so inference has to account for that variation rather than rely on a single common variance.
 

@@ -43,7 +43,7 @@ The key insight is that the choice of analysis reflects underlying assumptions a
 
 ### Simpson’s Paradox Once Again
 
-I recently illustrated the more commonly discussed Simpson’s paradox. Interestingly, a [2008 paper](https://link.springer.com/article/10.1186/1742-7622-5-2) claims that the two phenomena are closely related, with Lord’s paradox being a “continuous version” of Simpson’s paradox.
+I recently illustrated the more commonly discussed [Simpson’s paradox](https://vyasenov.github.io/blog/paradox-simpson.html). Interestingly, a [2008 paper](https://link.springer.com/article/10.1186/1742-7622-5-2) claims that the two phenomena are closely related, with Lord’s paradox being a “continuous version” of Simpson’s paradox. I have also written about [Stein’s paradox](https://vyasenov.github.io/blog/paradox-stein.html), another counterintuitive result in this vein.
 
 ## An Example
 

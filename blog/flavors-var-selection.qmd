@@ -105,7 +105,7 @@ $$
 
 The magic of the $\ell_1$ penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. Its theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios.
 
-Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of flavors, including group lasso, adaptive lasso, and fused lasso, which I will probably cover in a future blog post. Be careful, though, lasso is known to be biased, so it's great for prediction, but don't take its coefficients at face value.
+Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of [flavors](https://vyasenov.github.io/blog/flavors-lasso.html), including group lasso, adaptive lasso, and fused lasso, which I cover in a separate post. Be careful, though, lasso is known to be biased, so it's great for prediction, but don't take its coefficients at face value.
 
 Lasso is a good idea when you believe that only a subset of predictors are relevant and want an interpretable model. It can struggle with groups of correlated predictors (tends to pick one arbitrarily), and is known to be biased due to shrinkage.
 
@@ -320,7 +320,7 @@ where $a > 2$ (typically $a = 3.7$) and $(x)_+ = \max(0, x)$ denotes the positiv
 * For moderate coefficients $\lambda < |\beta| < a \lambda$, the penalty decreases gradually.
 * For large coefficients $|\beta| \ge a\lambda$, the penalty becomes flat—effectively applying no further shrinkage.
 
-This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and oracle-like properties under certain conditions. The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.
+This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and [oracle-like properties](https://vyasenov.github.io/blog/oracle-property.html) under certain conditions. The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.
 
 ::: {.panel-tabset}
 

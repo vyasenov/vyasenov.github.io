@@ -486,7 +486,7 @@ window.Quarto = {
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>At its heart, the bootstrap poses a simple yet powerful question: “What if we could resample from our existing data, treating it as a stand-in for the population?” By doing so, we can estimate variability, build confidence intervals, and carry out hypothesis tests—without leaning heavily on strong parametric assumptions. It’s especially useful in situations where analytic solutions exist in theory but are too complex to derive or even implement in practice.</p>
-<p>But here’s the thing: there isn’t just <em>one</em> bootstrap. Over the years, statisticians have developed many flavors of the bootstrap to address different challenges in different settings. Some handle small samples better. Some are designed for dependent data like time series. Others shine when the assumptions of classic bootstrapping crumble (think clustered data or heteroskedasticity).</p>
+<p>But here’s the thing: there isn’t just <em>one</em> bootstrap. Over the years, statisticians have developed many flavors of the bootstrap to address different challenges in different settings. Some handle small samples better. Some are designed for dependent data like time series. Others shine when the <a href="https://vyasenov.github.io/blog/bootstrap-limitations.html">assumptions of classic bootstrapping crumble</a> (think clustered data or heteroskedasticity).</p>
 <p>In this article, I’ll take a tour through the zoo of bootstrap methods: from the classic nonparametric bootstrap to the jackknife, parametric bootstrap, Bayesian bootstrap, wild bootstrap, moving block bootstrap, and more. I’ll explore where each method shines, where it stumbles, and how to pick the right one for your problem. As usual, I won’t just throw formulas at you. The focus here is on understanding <em>why</em> these methods work, not just how to mechanically apply them. There is also plenty of <code>R</code> and <code>Python</code> code to illustrate each method in action.</p>
 </section>
 <section id="notation" class="level2">
@@ -502,7 +502,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="the-jackknife" class="level3">
 <h3 class="anchored" data-anchor-id="the-jackknife">The Jackknife</h3>
-<p>Let’s start with the jackknife, developed back in the 1950s by Quenouille and popularized by Tukey. The jackknife isn’t technically a bootstrap, but it’s often the gateway to resampling methods. Here is how it works:</p>
+<p>Let’s start with the jackknife, developed back in the 1950s by Quenouille and popularized by Tukey. The <a href="https://vyasenov.github.io/blog/jackknife-vs-bootstrap.html">jackknife isn’t technically a bootstrap</a>, but it’s often the gateway to resampling methods. Here is how it works:</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -843,7 +843,7 @@ Y_{ig} = X_{ig} \beta + \varepsilon_{ig},
 <li>The bootstrap is not a single method—it’s a whole family of techniques, each with its own sweet spot.</li>
 <li>The jackknife is fast and simple but struggles with non-smooth statistics.</li>
 <li>The classic bootstrap works great for i.i.d. data and smooth or non-smooth statistics, but fails with dependence or small samples.</li>
-<li>Specialized bootstraps (wild, block, Bayesian, subsampling) handle heteroskedasticity, clustering, dependence, and other real-world challenges that trip up the classic approach.</li>
+<li>Specialized bootstraps (wild, block, Bayesian, subsampling) handle heteroskedasticity, clustering, dependence, and other real-world challenges that trip up the classic approach. I have even written about a more exotic <a href="https://vyasenov.github.io/blog/column-sampling-bootstrap.html">column-sampling variant</a> for wide datasets.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">

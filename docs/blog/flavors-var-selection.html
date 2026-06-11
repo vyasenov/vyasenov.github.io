@@ -480,7 +480,7 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">11 min read</div>
+<div class="reading-time">10 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -567,7 +567,7 @@ Y = X \beta + \varepsilon,
 \hat{\beta}^{\text{lasso}} = \arg\min_{\beta} \left\{ \| Y - X \beta \|_2^2 + \lambda \| \beta \|_1 \right\}.
 \]</span></p>
 <p>The magic of the <span class="math inline">\(\ell_1\)</span> penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. Its theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios.</p>
-<p>Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of flavors, including group lasso, adaptive lasso, and fused lasso, which I will probably cover in a future blog post. Be careful, though, lasso is known to be biased, so it’s great for prediction, but don’t take its coefficients at face value.</p>
+<p>Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of <a href="https://vyasenov.github.io/blog/flavors-lasso.html">flavors</a>, including group lasso, adaptive lasso, and fused lasso, which I cover in a separate post. Be careful, though, lasso is known to be biased, so it’s great for prediction, but don’t take its coefficients at face value.</p>
 <p>Lasso is a good idea when you believe that only a subset of predictors are relevant and want an interpretable model. It can struggle with groups of correlated predictors (tends to pick one arbitrarily), and is known to be biased due to shrinkage.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
@@ -757,7 +757,7 @@ P'_\lambda(\beta) = \lambda \left[ I(|\beta| \leq \lambda) + \frac{(a \lambda - 
 <li>For moderate coefficients <span class="math inline">\(\lambda &lt; |\beta| &lt; a \lambda\)</span>, the penalty decreases gradually.</li>
 <li>For large coefficients <span class="math inline">\(|\beta| \ge a\lambda\)</span>, the penalty becomes flat—effectively applying no further shrinkage.</li>
 </ul>
-<p>This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and oracle-like properties under certain conditions. The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.</p>
+<p>This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and <a href="https://vyasenov.github.io/blog/oracle-property.html">oracle-like properties</a> under certain conditions. The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
 <div class="tab-content">

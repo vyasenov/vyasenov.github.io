@@ -10,7 +10,7 @@ Propensity score matching (PSM) is among the most popular methods for estimating
 
 While estimating treatment effects is common and straightforward, calculating their variance along with the associated confidence intervals and $p$-values can be more challenging.  So, how exactly do you compute the variance of PSM methods? In this article I will describe the most popular ways of doing that. My goal is to cover the intuition and I will spare the technical details. Interested readers can refer to the References section below for more detailed expositions.
 
-Statistical methods based on the propensity score function come in different flavors (e.g., weighting, matching, subclassification, etc.), but today I will focus on $1:1$ or $1:N$ matching. There are also several potential estimands of interest, such as ATE (average treatment effect) and ATT (ATE for the treatment group), but I will talk specifically about the latter.  
+Statistical methods based on the propensity score function come in [different flavors](https://vyasenov.github.io/blog/flavors-prop-score-methods.html) (e.g., [weighting](https://vyasenov.github.io/blog/two-types-weights-causality.html), [matching](https://vyasenov.github.io/blog/flavors-matching-methods.html), subclassification, etc.), but today I will focus on $1:1$ or $1:N$ matching. There are also several potential estimands of interest, such as ATE (average treatment effect) and ATT (ATE for the treatment group), but I will talk specifically about the latter.  
 
 ## A Closer Look
 

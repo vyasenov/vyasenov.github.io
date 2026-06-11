@@ -26,7 +26,7 @@ Imagine two beaches with vastly different safety protocols ($Z$): one has lifegu
 
 ### Example 3: Nonlinearity
 
-A more trivial scenario leading to the lack of correlation in causal relationships is non-linearity. I do not find this scenario too insightful simply because it can be avoided by using more sophisticated measures of correlation. See my earlier post on the Chatterjee correlation coefficient.
+A more trivial scenario leading to the lack of correlation in causal relationships is non-linearity. I do not find this scenario too insightful simply because it can be avoided by using [more sophisticated measures of correlation](https://vyasenov.github.io/blog/corr-myths-13-views.html). See my earlier post on the Chatterjee correlation coefficient.
 
 Examples of such relationships abound. Consider a parabolic relationship, where increasing a drug’s dosage initially improves patient outcomes but becomes harmful at higher doses. Despite a clear causal relationship, the (Pearson) correlation coefficient might be close to zero because the relationship is not linear.
 
@@ -46,7 +46,7 @@ Suppose two hospitals treat patients with different levels of severity. Hospital
 
 - Correlation—or the lack thereof—can obscure our understanding of causal relationships.
 
-- With the right tools and frameworks, we can disentangle the true causal effects, even when correlation gives us a wrong answer.
+- With the right tools and frameworks, including [methods that recover causal effects without experiments or instruments](https://vyasenov.github.io/blog/causality-wo-experiments.html), we can disentangle the true causal effects, even when correlation gives us a wrong answer.
 
 ## References
 

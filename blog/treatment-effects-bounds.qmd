@@ -103,7 +103,7 @@ In words, MIV lets us use the ordering in $Z$ to intersect bounds across instrum
 
 ### Balke-Pearl Bounds for Noncompliance
 
-Balke and Pearl (1997) address randomized assignment with imperfect compliance. Instead of jumping directly to LATE under exclusion and monotonicity, they ask a broader question: what does the observed joint distribution of $(Y,D,Z)$ imply about the population treatment effect under weaker assumptions?
+Balke and Pearl (1997) address randomized assignment with imperfect compliance. Instead of jumping directly to [LATE under exclusion and monotonicity](https://vyasenov.github.io/blog/iv-randomized-experiments.html), they ask a broader question: what does the observed joint distribution of $(Y,D,Z)$ imply about the population treatment effect under weaker assumptions?
 
 The answer is a sharp nonparametric bound obtained by optimizing over all latent compliance-response types consistent with the observed data:
 

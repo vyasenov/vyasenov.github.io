@@ -33,7 +33,7 @@ Crucially, we can also construct a confidence interval for the difference:
 
 $$ (\hat{Y_1} - \hat{Y_2}) \pm 1.96 \times \sqrt{ \hat{SE}(Y_1)^2+ \hat{SE}(Y_2)^2}. $$
 
-This is the interval we should be analyzing when testing whether $Y_1$ and $Y_2$ differ significantly. Gelman and Stern (2006) make the same point from a slightly different angle.
+This is the interval we should be analyzing when testing whether $Y_1$ and $Y_2$ differ significantly. Gelman and Stern (2006) make the same point from a slightly different angle. (Here I assume the usual symmetric $\pm$ interval, though I have also written about [why some confidence intervals are not symmetric](https://vyasenov.github.io/blog/nonsymmetric-conf-int.html).)
 
 ### Two Approaches, One Mistake
 

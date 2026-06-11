@@ -8,7 +8,7 @@ categories: [machine learning, statistical inference, variable selection]
 
 Many machine learning (ML) methods operate as opaque systems, generating predictions when given a dataset as input. Identifying which variables have the greatest impact on these predictions is often crucial. This adds a touch of interpretability and transparency and aids stakeholders in better understanding the relevant context. Examples abound. For instance, identifying the house attributes most important for predicting home prices, the school or hospital characteristics most strongly associated with better students’ and patients’ outcomes, etc. 
 
-[Conformal inference](https://www.tandfonline.com/doi/abs/10.1080/01621459.2017.1307116) offers a novel way of measuring variable importance in ML. In an earlier article I introduced conformal inference as a tool for generating confidence intervals when making predictions for new observations, and here I will describe how we can adapt it to the context of feature importance. The approach is thus similar in spirit to the Gini Importance-based methods discussed below.
+[Conformal inference](https://www.tandfonline.com/doi/abs/10.1080/01621459.2017.1307116) offers a novel way of measuring variable importance in ML. In an [earlier article](https://vyasenov.github.io/blog/conformal-inference.html) I introduced conformal inference as a tool for generating confidence intervals when making predictions for new observations, and here I will describe how we can adapt it to the context of feature importance. The approach is thus similar in spirit to the Gini Importance-based methods discussed below.
 
 ## Notation
 

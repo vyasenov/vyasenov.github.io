@@ -438,16 +438,16 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">6 min read</div>
+<div class="reading-time">7 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>In our data-abundant world, we often have access to tens, hundreds, or even thousands of variables. Most of these features are usually irrelevant or redundant, leading to increased computational complexity and potentially overfit models. Variable selection algorithms are designed to mitigate these challenges by selecting the subset of columns that is most relevant to the problem at hand. This, in turn, can result in simplified, more efficient, and interpretable machine learning (ML) models. Examples of such methods abound—lasso, ridge, elastic net utilizing <span class="math inline">\(L1\)</span> and <span class="math inline">\(L2\)</span> regularization or a linear combination of both; forward/backward stepwise regression algorithms, etc.</p>
+<p>In our data-abundant world, we often have access to tens, hundreds, or even thousands of variables. Most of these features are usually irrelevant or redundant, leading to increased computational complexity and potentially overfit models. <a href="https://vyasenov.github.io/blog/flavors-var-selection.html">Variable selection</a> algorithms are designed to mitigate these challenges by selecting the subset of columns that is most relevant to the problem at hand. This, in turn, can result in simplified, more efficient, and interpretable machine learning (ML) models. Examples of such methods abound—lasso, ridge, elastic net utilizing <span class="math inline">\(L1\)</span> and <span class="math inline">\(L2\)</span> regularization or a linear combination of both; forward/backward stepwise regression algorithms, etc.</p>
 <p>In this article, I will describe a new variable selection method built on the idea of Chatterjee’s correlation coefficient, which has been a hot topic of discussion among statisticians. The new method goes by the abbreviation FOCI, which stands for Feature Ordering by Conditional Independence. It is somewhat similar to forward stepwise regression but overcomes some of the critiques most often associated with it.</p>
-<p>Let’s start with setting up some basic notation. We are focused on studying the correlation between <span class="math inline">\(Y\)</span> (e.g., income) and <span class="math inline">\(X\)</span> (education level) while interested in conditioning on/controlling for <span class="math inline">\(Z\)</span> (parental education and other factors). As always, we are armed with a random sample of size <span class="math inline">\(n\)</span> of all these variables and assume everything is well-behaved. If you have not had a chance, I recommend you first read my earlier post on Chatterjee’s correlation measure, which lays some of the foundations necessary to understand the algorithm under the hood.</p>
+<p>Let’s start with setting up some basic notation. We are focused on studying the correlation between <span class="math inline">\(Y\)</span> (e.g., income) and <span class="math inline">\(X\)</span> (education level) while interested in conditioning on/controlling for <span class="math inline">\(Z\)</span> (parental education and other factors). As always, we are armed with a random sample of size <span class="math inline">\(n\)</span> of all these variables and assume everything is well-behaved. If you have not had a chance, I recommend you first read my earlier post on <a href="https://vyasenov.github.io/blog/flavors-correlation-coef.html">Chatterjee’s correlation measure</a>, which lays some of the foundations necessary to understand the algorithm under the hood.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
@@ -489,7 +489,7 @@ window.Quarto = {
 <li>Asymptotically converges to a limit in <span class="math inline">\([0,1]\)</span>. Its limit is <span class="math inline">\(0\)</span> when <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span> are conditionally independent, and it is <span class="math inline">\(1\)</span> when <span class="math inline">\(Y\)</span> is a measurable function of <span class="math inline">\(X\)</span>, conditionally.</li>
 <li>It is a nonlinear generalization of the partial <span class="math inline">\(R^2\)</span> coefficient in a linear regression of <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span>.</li>
 </ul>
-<p>All this is to say – <span class="math inline">\(T(\cdot)\)</span> has many things going for it, and it is a pretty good measure of conditional correlation.</p>
+<p>All this is to say – <span class="math inline">\(T(\cdot)\)</span> has many things going for it, and it is a pretty good measure of conditional correlation. In that sense it plays a role similar to <a href="https://vyasenov.github.io/blog/mutual-information.html">mutual information</a>, capturing nonlinear dependence rather than just linear association.</p>
 </section>
 <section id="the-variable-selection-algorithm" class="level3">
 <h3 class="anchored" data-anchor-id="the-variable-selection-algorithm">The Variable Selection Algorithm</h3>

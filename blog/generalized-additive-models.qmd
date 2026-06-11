@@ -6,7 +6,7 @@ categories: [semiparametric models, machine learning]
 
 ## Background
 
-Generalized Additive Models (GAMs) are one of the most powerful and flexible tools in a data scientist's toolbox for modeling complex, nonlinear relationships between covariates and an outcome. They generalize linear models by allowing smooth, nonparametric functions of the predictors while still maintaining interpretability and manageable computation. The core idea is simple: instead of forcing relationships to be straight lines, let the data speak for itself.
+Generalized Additive Models (GAMs) are one of the most powerful and flexible tools in a data scientist's toolbox for modeling complex, nonlinear relationships between covariates and an outcome. They generalize linear models by allowing smooth, nonparametric functions of the predictors while still maintaining interpretability and manageable computation, placing them squarely among the [semiparametric class of statistical models](https://vyasenov.github.io/blog/three-classes-stat-models.html). The core idea is simple: instead of forcing relationships to be straight lines, let the data speak for itself.
 
 This article explains what you really need to know about GAMs, following the excellent review by Simon Wood (2025). I’ll go over the basics of how GAMs work, how smoothness is controlled, the computational strategies involved, and key pitfalls to watch out for. I’ll also walk through a code example in both `R` and `Python` to show how to fit and interpret these models in practice.
 
@@ -83,7 +83,7 @@ Full spline bases can be large and computationally expensive. To address this, G
 
 GAMs aren’t limited to modeling the mean and naturally extend to modeling other aspects of the distribution. They can handle *location, scale, and shape* modeling — meaning that the variance, skewness, or other distributional parameters can also depend on smooth functions of predictors. This generalization brings GAMs into the world of generalized additive models for location, scale, and shape (GAMLSS).
 
-They can even be extended to quantile regression and non-exponential family distributions, making them incredibly versatile. However, while GAMs allow flexible modeling of conditional expectations, they do not by themselves address common thorny issues such as endogeneity, causal identification, or selection bias. They simply allow for more depth in modeling the relationship between the outcome and the covariates and thus should be utilized in the context of machine learning/prediction.
+They can even be extended to quantile regression and non-exponential family distributions, making them incredibly versatile. However, while GAMs allow flexible modeling of conditional expectations, they do not by themselves address common thorny issues such as endogeneity, causal identification, or selection bias. They simply allow for more depth in modeling the relationship between the outcome and the covariates and thus should be utilized in the context of machine learning/prediction. The price of this flexibility shows up in the [semiparametric efficiency bound](https://vyasenov.github.io/blog/limits-semiparam-models.html), which I discuss elsewhere.
 
 ### Hypothesis Testing
 

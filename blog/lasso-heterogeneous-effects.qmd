@@ -116,7 +116,7 @@ You can find the code in [this GitHub repo](https://github.com/vyasenov/lasso-kn
 
 - I am not aware of simulation studies comparing both approaches.
 
-- While Lasso is among the simplest and most popular machine learning algorithms, more suitable methods may exist for estimating HTEs.
+- While Lasso is among the simplest and most popular machine learning algorithms, more suitable methods may exist for estimating HTEs — I survey several of them in my post on the [$S$-, $T$-, $X$-, and $R$-learners](https://vyasenov.github.io/blog/flavors-het-treatment-effects.html).
 
 ## Where to Learn More
 
