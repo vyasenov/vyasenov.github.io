@@ -2,6 +2,8 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/tmle-estimation-recipe.html",
+      "/blog/double-ml-causal-inference.html",
       "/blog/iv-randomized-experiments.html",
       "/blog/lasso-theory-guarantees.html",
       "/blog/second-gen-pvalues.html",

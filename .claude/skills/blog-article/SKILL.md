@@ -49,6 +49,9 @@ Advanced data scientists and applied statisticians who:
 - Do not oversimplify or talk down. Do not pile on caveats or hedging.
 - Avoid bullet-heavy prose in the body — use paragraphs. Reserve bullets for the Bottom Line section.
 - Direct and grounded tone, not breathless or promotional.
+- **Hooks.** The Background usually opens with something human, not a definition. Recurring patterns in the author's posts: a personal confession ("This is a mistake I've made myself—more times than I'd like to admit"), a stated fascination ("Statistical correlation has long captivated me"), a vivid anecdote or joke (the statistician with her head in the oven and feet in ice, "fine on average"), or a myth/misconception to bust. Pick one; don't force all of them.
+- **Occasional direct address.** Opening with a reader-facing "you" and a light rhetorical question is in-voice ("You've likely encountered this scenario… Seems straightforward, doesn't it?"). Use sparingly, mostly in the hook; the body stays in "I"/pedagogical-"we".
+- **Register.** Em-dashes for asides and a dash of dry humor are part of the signature. Warm and personable, never stiff — but the moment the math starts, precision takes over.
 
 ## Code conventions
 
@@ -117,7 +120,7 @@ The blog has a large back catalog, and internal links between related posts help
 ## Workflow
 
 1. **Gather inputs** — topic, notes, papers, rough notes. Ask once if missing.
-2. **Skim a couple existing posts** in `blog/` (e.g. `flavors-bootstrap.qmd`, one non-flavors post) to match voice and formatting exactly. Do this only if you haven't in the current session.
+2. **Check the metadata that drifts**, not the prose. Voice and formatting are fully specified above — don't read posts to absorb them. Instead, run a quick scan of `blog/*.qmd` to (a) list the `categories:` currently in use so you reuse existing tags, and (b) list existing slugs so the new filename avoids collisions and matches the naming style. A one-liner like `grep -h '^categories:' blog/*.qmd | sort | uniq -c` plus `ls blog/*.qmd` is enough.
 3. **If papers/URLs were provided**, fetch their content (WebFetch) so citations and claims are grounded.
 4. **Write the draft** at `blog/<slug>.qmd` with today's date (pull from environment, not a guess).
 5. **Propose cross-links** to earlier posts (see "Cross-linking to earlier posts" above) and ask the author which to include before finalizing.

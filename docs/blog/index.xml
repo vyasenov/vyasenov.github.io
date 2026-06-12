@@ -10,7 +10,1543 @@
 <atom:link href="https://vyasenov.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Personal Site of Vasco Yasenov</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Wed, 10 Jun 2026 21:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 11 Jun 2026 21:00:00 GMT</lastBuildDate>
+<item>
+  <title>A Simple Estimation Recipe for Targeted Learning</title>
+  <link>https://vyasenov.github.io/blog/tmle-estimation-recipe.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">7 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Targeted learning is extremely popular in public health and epidemiology, yet it has never really made its way into the economics and econometrics world. It was introduced and extended by Mark van der Laan and coauthors in a long series of papers and books. Among practitioners outside biostatistics, though, it remains something of a mystery.</p>
+<p>One challenge standing in the way of translating these methods is the language. The terminology is different — epidemiologists talk about the <em>outcome mechanism</em> and the <em>exposure mechanism</em> where an economist would say outcome regression and propensity score. Barriers of vocabulary aside, the targeted learning class of methods enjoys very attractive theoretical properties. It is doubly robust and, under the right conditions, semiparametrically efficient, and it is method-agnostic in that it can plug in a wide range of machine learning algorithms.</p>
+<p>This note aims to demystify targeted learning for a broader audience. From a practical standpoint, I find the best way to do that is through the lens of <em>estimation</em>, since that is where practitioners actually spend their time with a method. It is also the easiest way to compare it against the causal inference tools you already know — be it <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">propensity score methods</a>, double machine learning, or <a href="https://vyasenov.github.io/blog/ml-based-adjustments.html">regression adjustment</a>. My focus is on the how-to and less on theoretical derivations or guarantees, and the overview borrows heavily from Schuler and Rose (2017). I deliberately stay with the <em>basic</em> version of targeted learning — targeted maximum likelihood estimation (TMLE) for the average treatment effect in a cross-sectional observational study. The framework extends to many other estimands, longitudinal data, and beyond, but those are out of scope here.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Suppose we observe <img src="https://latex.codecogs.com/png.latex?n"> i.i.d. draws of <img src="https://latex.codecogs.com/png.latex?O%20=%20(X,%20A,%20Y)">, where <img src="https://latex.codecogs.com/png.latex?A%20%5Cin%20%5C%7B0,%201%5C%7D"> is a binary treatment (the “exposure”), <img src="https://latex.codecogs.com/png.latex?X"> is a vector of confounders, and <img src="https://latex.codecogs.com/png.latex?Y"> is a continuous outcome. Each unit has a pair of potential outcomes <img src="https://latex.codecogs.com/png.latex?Y(1)"> and <img src="https://latex.codecogs.com/png.latex?Y(0)">, and the target is the average treatment effect (ATE),</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cpsi%20=%20%5Cmathbb%7BE%7D%5Cbig%5BY(1)%20-%20Y(0)%5Cbig%5D."></p>
+<p>Two nuisance functions do all the work. The <strong>outcome regression</strong> (outcome mechanism) is the conditional mean of the outcome,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cbar%7BQ%7D(A,%20X)%20=%20%5Cmathbb%7BE%7D%5BY%20%5Cmid%20A,%20X%5D,"></p>
+<p>and the <strong>propensity score</strong> (exposure mechanism) is the conditional probability of treatment,</p>
+<p><img src="https://latex.codecogs.com/png.latex?g(X)%20=%20%5Cmathbb%7BP%7D(A%20=%201%20%5Cmid%20X)."></p>
+<p>For <img src="https://latex.codecogs.com/png.latex?%5Cpsi"> to carry a causal interpretation we need the usual trio of assumptions — no unmeasured confounding, positivity (<img src="https://latex.codecogs.com/png.latex?0%20%3C%20g(X)%20%3C%201">), and SUTVA — which I will take as given since the focus here is estimation, not identification. A concrete example to fix ideas, taken from the paper: <img src="https://latex.codecogs.com/png.latex?A"> is whether a person exercises regularly, <img src="https://latex.codecogs.com/png.latex?Y"> is a depression score, and <img src="https://latex.codecogs.com/png.latex?X"> collects sex, use of psychosocial therapy, and antidepressant use.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="two-nuisances-three-estimators" class="level3">
+<h3 class="anchored" data-anchor-id="two-nuisances-three-estimators">Two Nuisances, Three Estimators</h3>
+<p>The reason TMLE is easy to place on a mental map is that it shares its ingredients with methods you already use. <a href="https://vyasenov.github.io/blog/ml-based-adjustments.html">G-computation</a> (regression adjustment) models only the outcome regression <img src="https://latex.codecogs.com/png.latex?%5Cbar%7BQ%7D"> and then averages the predicted difference. Inverse probability weighting (IPW) models only the propensity score <img src="https://latex.codecogs.com/png.latex?g"> and reweights the observed outcomes. Each leans entirely on getting <em>one</em> of the two nuisances right.</p>
+<p>TMLE uses <em>both</em>. It starts from an outcome-regression prediction and then nudges it using the propensity score, in a way designed specifically for the ATE. That extra step is what buys <strong>double robustness</strong>: the final estimate is consistent if <em>either</em> <img src="https://latex.codecogs.com/png.latex?%5Cbar%7BQ%7D"> or <img src="https://latex.codecogs.com/png.latex?g"> is correctly estimated, not necessarily both. If both are consistent, the estimator is also efficient. This is the practical payoff, and it is why the method is worth the extra bookkeeping.</p>
+<hr>
+</section>
+<section id="the-recipe-four-steps" class="level3">
+<h3 class="anchored" data-anchor-id="the-recipe-four-steps">The Recipe: Four Steps</h3>
+<p>Here is the whole procedure for the ATE, stripped to its essentials. One technical preliminary: because the targeting step runs through a logistic regression, the continuous outcome <img src="https://latex.codecogs.com/png.latex?Y"> is first rescaled to the unit interval <img src="https://latex.codecogs.com/png.latex?(0,%201)">, and everything is undone at the end.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Algorithm: TMLE for the ATE">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Algorithm: TMLE for the ATE
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><strong>Initial outcome model.</strong> Fit <img src="https://latex.codecogs.com/png.latex?%5Cbar%7BQ%7D(A,%20X)"> and use it to predict each unit’s pair of potential outcomes, <img src="https://latex.codecogs.com/png.latex?%5Cbar%7BQ%7D(1,%20X_i)"> and <img src="https://latex.codecogs.com/png.latex?%5Cbar%7BQ%7D(0,%20X_i)">.</li>
+<li><strong>Propensity model.</strong> Fit <img src="https://latex.codecogs.com/png.latex?g(X)%20=%20%5Cmathbb%7BP%7D(A%20=%201%20%5Cmid%20X)">, giving <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cpi%7D_1%20=%20%5Chat%20g(X_i)"> and <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cpi%7D_0%20=%201%20-%20%5Chat%20g(X_i)">.</li>
+<li><strong>Targeting step.</strong> Form the “clever covariate” <img src="https://latex.codecogs.com/png.latex?H(A,%20X)%20=%20%5Cfrac%7BA%7D%7B%5Chat%7B%5Cpi%7D_1%7D%20-%20%5Cfrac%7B1%20-%20A%7D%7B%5Chat%7B%5Cpi%7D_0%7D">, run a one-parameter logistic regression of <img src="https://latex.codecogs.com/png.latex?Y"> on <img src="https://latex.codecogs.com/png.latex?H"> using the initial <img src="https://latex.codecogs.com/png.latex?%5Cbar%7BQ%7D"> as an offset to estimate a fluctuation <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cvarepsilon%7D">, and update the predicted potential outcomes on the logit scale.</li>
+<li><strong>Plug-in estimate.</strong> Average the difference between the <em>updated</em> potential outcomes: <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cpsi%7D%20=%20%5Cfrac%7B1%7D%7Bn%7D%5Csum_i%20%5Cbig%5B%5Cbar%7BQ%7D%5E*(1,%20X_i)%20-%20%5Cbar%7BQ%7D%5E*(0,%20X_i)%5Cbig%5D">.</li>
+</ol>
+</div>
+</div>
+<p>The only genuinely new object is the clever covariate <img src="https://latex.codecogs.com/png.latex?H">. Note that it looks a lot like an inverse-probability weight — and that is no accident — but here it enters as a <em>regressor</em> in the fluctuation rather than as a weight. Step 3 is the “targeting”: it tilts the initial fit just enough to remove first-order bias in the direction that matters for the ATE, while leaving the rest of the outcome model alone.</p>
+<p>The code below implements all four steps from scratch on simulated data, so each line maps onto a step above.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1988</span>)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Simulate data (Schuler &amp; Rose-style) ----</span></span>
+<span id="cb1-4">n  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span></span>
+<span id="cb1-5">X1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.55</span>)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># sex</span></span>
+<span id="cb1-6">X2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.30</span>)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># psychosocial therapy</span></span>
+<span id="cb1-7">X3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.25</span>)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># antidepressant use</span></span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Exposure: regular physical exercise</span></span>
+<span id="cb1-10">pA <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plogis</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.75</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.0</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X2 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X3)</span>
+<span id="cb1-11">A  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, pA)</span>
+<span id="cb1-12"></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Continuous outcome: a depression score</span></span>
+<span id="cb1-14">muY <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">24</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> A <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X2 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X3 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> A <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X3</span>
+<span id="cb1-15">Y   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n, muY, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4.5</span>)</span>
+<span id="cb1-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># True marginal ATE = 0.25 * (-4.5) + 0.75 * (-3) = -3.375</span></span>
+<span id="cb1-17"></span>
+<span id="cb1-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Bound the continuous outcome to (0, 1) ----</span></span>
+<span id="cb1-19">a <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(Y); b <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(Y)</span>
+<span id="cb1-20">Ystar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (Y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> a) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (b <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> a)</span>
+<span id="cb1-21"></span>
+<span id="cb1-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Step 1: initial outcome model Qbar(A, X) ----</span></span>
+<span id="cb1-23">qfit <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glm</span>(Ystar <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> A <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X2 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X3, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">quasibinomial</span>())</span>
+<span id="cb1-24">Q_A  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(qfit, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"response"</span>)                                       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Qbar(A_i, X_i)</span></span>
+<span id="cb1-25">Q_1  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(qfit, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">newdata =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">A =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, X1, X2, X3), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"response"</span>)</span>
+<span id="cb1-26">Q_0  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(qfit, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">newdata =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">A =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, X1, X2, X3), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"response"</span>)</span>
+<span id="cb1-27"></span>
+<span id="cb1-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Step 2: propensity score g(X) = P(A = 1 | X) ----</span></span>
+<span id="cb1-29">gfit <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glm</span>(A <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> X1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X2 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X3, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">binomial</span>())</span>
+<span id="cb1-30">g1   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(gfit, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"response"</span>)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pi_1</span></span>
+<span id="cb1-31">g0   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> g1                             <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pi_0</span></span>
+<span id="cb1-32"></span>
+<span id="cb1-33"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Step 3: targeting step ----</span></span>
+<span id="cb1-34">H_A <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> A <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> g1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> A) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> g0               <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># clever covariate at observed A</span></span>
+<span id="cb1-35">eps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coef</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glm</span>(Ystar <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> H_A <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">offset</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">qlogis</span>(Q_A)), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">quasibinomial</span>()))</span>
+<span id="cb1-36">H_1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span>  <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> g1</span>
+<span id="cb1-37">H_0 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> g0</span>
+<span id="cb1-38">Q_1_star <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plogis</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">qlogis</span>(Q_1) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> eps <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> H_1)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># updated potential outcomes</span></span>
+<span id="cb1-39">Q_0_star <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plogis</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">qlogis</span>(Q_0) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> eps <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> H_0)</span>
+<span id="cb1-40"></span>
+<span id="cb1-41"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Step 4: plug-in ATE (back on the original scale) ----</span></span>
+<span id="cb1-42">ate <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (b <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> a) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(Q_1_star <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> Q_0_star)</span>
+<span id="cb1-43"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sprintf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TMLE ATE estimate: %.3f</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>, ate))   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ~ -3.4, close to the true -3.38</span></span>
+<span id="cb1-44"></span>
+<span id="cb1-45"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># In practice, reach for the package rather than hand-rolling:</span></span>
+<span id="cb1-46"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># install.packages("tmle")</span></span>
+<span id="cb1-47"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># library(tmle)</span></span>
+<span id="cb1-48"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tmle(Y = Y, A = A, W = data.frame(X1, X2, X3))$estimates$ATE$psi</span></span></code></pre></div></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb2-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> statsmodels.api <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> sm</span>
+<span id="cb2-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> scipy.special <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> logit, expit</span>
+<span id="cb2-4"></span>
+<span id="cb2-5">np.random.seed(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1988</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Simulate data (Schuler &amp; Rose-style) ----</span></span>
+<span id="cb2-8">n  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000</span></span>
+<span id="cb2-9">X1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.random.binomial(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.55</span>, n)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># sex</span></span>
+<span id="cb2-10">X2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.random.binomial(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.30</span>, n)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># psychosocial therapy</span></span>
+<span id="cb2-11">X3 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.random.binomial(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.25</span>, n)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># antidepressant use</span></span>
+<span id="cb2-12"></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Exposure: regular physical exercise</span></span>
+<span id="cb2-14">pA <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> expit(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.75</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.0</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X3)</span>
+<span id="cb2-15">A  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.random.binomial(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, pA)</span>
+<span id="cb2-16"></span>
+<span id="cb2-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Continuous outcome: a depression score</span></span>
+<span id="cb2-18">muY <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">24</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> A <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X3 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> A <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X3</span>
+<span id="cb2-19">Y   <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.random.normal(muY, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4.5</span>)</span>
+<span id="cb2-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># True marginal ATE = 0.25 * (-4.5) + 0.75 * (-3) = -3.375</span></span>
+<span id="cb2-21"></span>
+<span id="cb2-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Bound the continuous outcome to (0, 1) ----</span></span>
+<span id="cb2-23">a, b  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> Y.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>(), Y.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>()</span>
+<span id="cb2-24">Ystar <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (Y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> a) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> a)</span>
+<span id="cb2-25"></span>
+<span id="cb2-26"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Step 1: initial outcome model Qbar(A, X) ----</span></span>
+<span id="cb2-27">Xq   <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.column_stack([np.ones(n), A, X1, X2, X3])</span>
+<span id="cb2-28">qfit <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> sm.GLM(Ystar, Xq, family<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>sm.families.Binomial()).fit()</span>
+<span id="cb2-29">Q_A  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> qfit.predict(Xq)</span>
+<span id="cb2-30">Q_1  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> qfit.predict(np.column_stack([np.ones(n), np.ones(n),  X1, X2, X3]))</span>
+<span id="cb2-31">Q_0  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> qfit.predict(np.column_stack([np.ones(n), np.zeros(n), X1, X2, X3]))</span>
+<span id="cb2-32"></span>
+<span id="cb2-33"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Step 2: propensity score g(X) = P(A = 1 | X) ----</span></span>
+<span id="cb2-34">W    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.column_stack([np.ones(n), X1, X2, X3])</span>
+<span id="cb2-35">gfit <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> sm.GLM(A, W, family<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>sm.families.Binomial()).fit()</span>
+<span id="cb2-36">g1   <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> gfit.predict(W)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pi_1</span></span>
+<span id="cb2-37">g0   <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> g1            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pi_0</span></span>
+<span id="cb2-38"></span>
+<span id="cb2-39"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Step 3: targeting step ----</span></span>
+<span id="cb2-40">H_A <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> A <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> g1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> A) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> g0                              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># clever covariate at observed A</span></span>
+<span id="cb2-41">eps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> sm.GLM(Ystar, H_A, family<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>sm.families.Binomial(),</span>
+<span id="cb2-42">             offset<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>logit(Q_A)).fit().params[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span>
+<span id="cb2-43">H_1, H_0 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> g1, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> g0</span>
+<span id="cb2-44">Q_1_star <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> expit(logit(Q_1) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> eps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> H_1)                 <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># updated potential outcomes</span></span>
+<span id="cb2-45">Q_0_star <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> expit(logit(Q_0) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> eps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> H_0)</span>
+<span id="cb2-46"></span>
+<span id="cb2-47"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Step 4: plug-in ATE (back on the original scale) ----</span></span>
+<span id="cb2-48">ate <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (b <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> a) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> np.mean(Q_1_star <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> Q_0_star)</span>
+<span id="cb2-49"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"TMLE ATE estimate: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>ate<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:.3f}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ~ -3.4, close to the true -3.38</span></span></code></pre></div></div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="why-bother-with-the-targeting-step" class="level3">
+<h3 class="anchored" data-anchor-id="why-bother-with-the-targeting-step">Why Bother With the Targeting Step?</h3>
+<p>A fair question is why we do not simply stop after step 1 and report the average difference in predicted outcomes — that is exactly G-computation. The answer is robustness. A plain outcome-model plug-in is only as good as that one model; if it is misspecified, the estimate is biased, full stop. The targeting step injects information from the propensity score so that a mistake in <em>one</em> of the two models can be absorbed by the other. In the paper’s simulation, when either the outcome or the exposure model is deliberately misspecified, TMLE stays essentially unbiased (recovering the true ATE of <img src="https://latex.codecogs.com/png.latex?-3.38">), while G-computation and IPW pick up large bias from the same misspecification.</p>
+<p>Two practical notes follow from this. First, TMLE is a <em>substitution</em> (plug-in) estimator — the ATE is computed by plugging fitted values into the target functional — which makes it more stable than estimating-equation methods like IPW when propensity scores get close to <img src="https://latex.codecogs.com/png.latex?0"> or <img src="https://latex.codecogs.com/png.latex?1">. Second, because the recipe never cares <em>how</em> <img src="https://latex.codecogs.com/png.latex?%5Cbar%7BQ%7D"> and <img src="https://latex.codecogs.com/png.latex?g"> are estimated, you should estimate them with flexible machine learning rather than hand-specified regressions. In practice this means an ensemble (the super learner), which lets the data choose among <a href="https://vyasenov.github.io/blog/flavors-ml-methods-ci.html">a library of ML methods</a> instead of betting on one functional form.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>Targeted maximum likelihood estimation is a very popular class of methods in the public health and epidemiology communities, and underused elsewhere.</li>
+<li>It is doubly robust — consistent if <em>either</em> the outcome regression or the propensity score is right — and semiparametrically efficient when both are.</li>
+<li>It is flexible: the recipe is agnostic to how the two nuisance functions are estimated, so it accommodates a wide range of machine learning algorithms (ideally an ensemble).</li>
+<li>In essence, TMLE is outcome-regression plus propensity-score modeling, with one extra step that removes bias from the outcome model through a clever use of the estimated propensity score.</li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>The most accessible entry point, and the basis for this note, is Schuler and Rose (2017), a step-by-step tutorial aimed squarely at applied researchers. For the full framework — double robustness, efficiency theory, and the many extensions I skipped — the canonical reference is van der Laan and Rose’s book <em>Targeted Learning</em> (2011), with the original method introduced in van der Laan and Rubin (2006). In R, the <code>tmle</code> package implements everything above, including the super-learner option, so there is rarely a need to hand-roll the steps in production.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Schuler, M. S., &amp; Rose, S. (2017). Targeted maximum likelihood estimation for causal inference in observational studies. <em>American Journal of Epidemiology</em>, 185(1), 65–73.</p></li>
+<li><p>van der Laan, M. J., &amp; Rose, S. (2011). <em>Targeted Learning: Causal Inference for Observational and Experimental Data</em>. Springer.</p></li>
+<li><p>van der Laan, M. J., &amp; Rubin, D. (2006). Targeted maximum likelihood learning. <em>The International Journal of Biostatistics</em>, 2(1), Article 11.</p></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>causal inference</category>
+  <category>machine learning</category>
+  <guid>https://vyasenov.github.io/blog/tmle-estimation-recipe.html</guid>
+  <pubDate>Thu, 11 Jun 2026 21:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Simplified Double ML for Causal Inference</title>
+  <link>https://vyasenov.github.io/blog/double-ml-causal-inference.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">7 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Double machine learning (DML) is one of the most influential ideas to come out of econometrics in the last decade. It lets you estimate a causal effect while using flexible machine learning to soak up confounding — random forests, gradient boosting, the lasso, whatever — and still get a <img src="https://latex.codecogs.com/png.latex?%5Csqrt%7Bn%7D">-consistent estimate with honest standard errors. That combination, ML flexibility <em>plus</em> valid inference, is what made it spread so quickly.</p>
+<p>The catch is that the literature is written in a dialect. The foundational paper (Chernozhukov et al., 2018) and excellent reviews like Knaus (2022) speak the language of <em>programme evaluation</em>: programmes indexed by <img src="https://latex.codecogs.com/png.latex?w">, average potential outcomes, nuisance parameters, scores, Neyman orthogonality. None of it is wrong, but it can obscure what is, at heart, a simple recipe that any practitioner who has run a <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">propensity-score analysis</a> will recognize. My goal in this note is to translate the core of DML — estimation of average treatment effects — into the plainer causal-inference vocabulary most readers already carry around. I keep the heterogeneous-effects and policy-learning machinery for another day; this is the basic, average-effects version.</p>
+<p>If you read my recent post on <a href="https://vyasenov.github.io/blog/tmle-estimation-recipe.html">targeted learning</a>, much of this will feel familiar. DML and TMLE are siblings: both build on the same doubly robust score and both use sample splitting to license machine learning. They differ mainly in <em>how</em> they combine the pieces, not in the underlying logic.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Consider the canonical setup: a binary treatment <img src="https://latex.codecogs.com/png.latex?D%20%5Cin%20%5C%7B0,%201%5C%7D">, an outcome <img src="https://latex.codecogs.com/png.latex?Y">, and a vector of pre-treatment confounders <img src="https://latex.codecogs.com/png.latex?X">. Each unit has potential outcomes <img src="https://latex.codecogs.com/png.latex?Y(1)"> and <img src="https://latex.codecogs.com/png.latex?Y(0)">, and the target is the average treatment effect</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Ctau%20=%20%5Cmathbb%7BE%7D%5Cbig%5BY(1)%20-%20Y(0)%5Cbig%5D."></p>
+<p>Two functions of the data — the <em>nuisance parameters</em>, in the paper’s language — carry the weight. The first is the <strong>outcome regression</strong>,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cmu_d(x)%20=%20%5Cmathbb%7BE%7D%5BY%20%5Cmid%20D%20=%20d,%20X%20=%20x%5D,"></p>
+<p>and the second is the <strong>propensity score</strong>,</p>
+<p><img src="https://latex.codecogs.com/png.latex?e(x)%20=%20%5Cmathbb%7BP%7D(D%20=%201%20%5Cmid%20X%20=%20x)."></p>
+<p>As usual, <img src="https://latex.codecogs.com/png.latex?%5Ctau"> is causally identified under unconfoundedness (<img src="https://latex.codecogs.com/png.latex?Y(d)%20%5Cperp%20D%20%5Cmid%20X">), overlap (<img src="https://latex.codecogs.com/png.latex?0%20%3C%20e(x)%20%3C%201">), and SUTVA. I take those as given and focus on estimation.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="a-short-dictionary" class="level3">
+<h3 class="anchored" data-anchor-id="a-short-dictionary">A Short Dictionary</h3>
+<p>Before the method, here is the translation that unlocks most of the program-evaluation literature. None of these are new concepts — they are renamed versions of things you already use.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Program-evaluation term</th>
+<th>Causal-inference reading</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Programme <img src="https://latex.codecogs.com/png.latex?w"></td>
+<td>Treatment arm / treatment level</td>
+</tr>
+<tr class="even">
+<td>Average potential outcome (APO), <img src="https://latex.codecogs.com/png.latex?%5Cgamma_w"></td>
+<td>Mean potential outcome, <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5BY(d)%5D"></td>
+</tr>
+<tr class="odd">
+<td>Nuisance parameters</td>
+<td>The outcome regression <img src="https://latex.codecogs.com/png.latex?%5Cmu_d"> and propensity score <img src="https://latex.codecogs.com/png.latex?e"></td>
+</tr>
+<tr class="even">
+<td>Outcome / exposure mechanism</td>
+<td>Outcome model / treatment-assignment model</td>
+</tr>
+<tr class="odd">
+<td>Doubly robust score <img src="https://latex.codecogs.com/png.latex?%5CGamma"></td>
+<td>The AIPW influence function (per-unit “pseudo-outcome”)</td>
+</tr>
+<tr class="even">
+<td>Cross-fitting</td>
+<td>Sample splitting to estimate nuisances out-of-fold</td>
+</tr>
+<tr class="odd">
+<td>Neyman orthogonality</td>
+<td>Insensitivity of the estimator to small nuisance errors</td>
+</tr>
+</tbody>
+</table>
+<p>With that dictionary in hand, the rest is short.</p>
+<hr>
+</section>
+<section id="the-doubly-robust-score" class="level3">
+<h3 class="anchored" data-anchor-id="the-doubly-robust-score">The Doubly Robust Score</h3>
+<p>Everything in DML for average effects is built on one object: the <strong>doubly robust score</strong>, better known to many as the augmented inverse probability weighting (AIPW) score of Robins et al.&nbsp;(1994). For each unit it combines the outcome regression with an <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">inverse-probability-weighted</a> correction:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cpsi_i%20=%20%5Cunderbrace%7B%5Cmu_1(X_i)%20-%20%5Cmu_0(X_i)%7D_%7B%5Ctext%7Boutcome-regression%20guess%7D%7D%20+%20%5Cunderbrace%7B%5Cfrac%7BD_i%5Cbig(Y_i%20-%20%5Cmu_1(X_i)%5Cbig)%7D%7Be(X_i)%7D%20-%20%5Cfrac%7B(1%20-%20D_i)%5Cbig(Y_i%20-%20%5Cmu_0(X_i)%5Cbig)%7D%7B1%20-%20e(X_i)%7D%7D_%7B%5Ctext%7BIPW%20bias%20correction%20on%20the%20residuals%7D%7D.%0A"></p>
+<p>The ATE estimate is simply the sample average, <img src="https://latex.codecogs.com/png.latex?%5Chat%5Ctau%20=%20%5Cfrac%7B1%7D%7Bn%7D%5Csum_i%20%5Cpsi_i">, and — strikingly — its standard error is just the standard deviation of the <img src="https://latex.codecogs.com/png.latex?%5Cpsi_i"> divided by <img src="https://latex.codecogs.com/png.latex?%5Csqrt%7Bn%7D">, with no adjustment for the fact that the nuisances were estimated. A one-sample <img src="https://latex.codecogs.com/png.latex?t">-test does the rest.</p>
+<p>The name “doubly robust” comes from the structure: if the outcome regression <img src="https://latex.codecogs.com/png.latex?%5Cmu_d"> is correct, the correction term has mean zero and the first part delivers the answer; if instead the propensity score <img src="https://latex.codecogs.com/png.latex?e"> is correct, the correction term repairs a wrong outcome model. You only need <em>one</em> of the two to be right. This is the same insurance policy that TMLE buys — DML just packages it differently.</p>
+<hr>
+</section>
+<section id="cross-fitting" class="level3">
+<h3 class="anchored" data-anchor-id="cross-fitting">Cross-Fitting</h3>
+<p>There is one trap. If you estimate <img src="https://latex.codecogs.com/png.latex?%5Cmu_d"> and <img src="https://latex.codecogs.com/png.latex?e"> with flexible machine learning on the <em>same</em> data you then plug into the score, the overfitting introduces a bias that does not vanish fast enough, and the <img src="https://latex.codecogs.com/png.latex?%5Csqrt%7Bn%7D"> guarantee collapses. The fix is <strong>cross-fitting</strong>: estimate the nuisances on part of the data and evaluate the score on the held-out part, so no observation is used to predict its own nuisance values.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Algorithm: DML for the ATE">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Algorithm: DML for the ATE
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><strong>Split</strong> the sample into <img src="https://latex.codecogs.com/png.latex?K"> folds (5 is typical).</li>
+<li>For each fold <img src="https://latex.codecogs.com/png.latex?k">: <strong>fit</strong> the outcome model <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cmu_d"> and propensity model <img src="https://latex.codecogs.com/png.latex?%5Chat%20e"> on the <em>other</em> <img src="https://latex.codecogs.com/png.latex?K-1"> folds, then <strong>predict</strong> <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cmu_1(X_i)">, <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cmu_0(X_i)">, <img src="https://latex.codecogs.com/png.latex?%5Chat%20e(X_i)"> for the units in fold <img src="https://latex.codecogs.com/png.latex?k">.</li>
+<li><strong>Build</strong> the doubly robust score <img src="https://latex.codecogs.com/png.latex?%5Cpsi_i"> for every unit using its out-of-fold predictions.</li>
+<li><strong>Average</strong>: <img src="https://latex.codecogs.com/png.latex?%5Chat%5Ctau%20=%20%5Cfrac%7B1%7D%7Bn%7D%5Csum_i%20%5Cpsi_i">, with <img src="https://latex.codecogs.com/png.latex?%5Cwidehat%7B%5Ctext%7BSE%7D%7D%20=%20%5Ctext%7Bsd%7D(%5Cpsi_i)/%5Csqrt%7Bn%7D">.</li>
+</ol>
+</div>
+</div>
+<p>The code below runs the whole recipe on simulated data, deliberately using random forests for both nuisances to show that the ML choice is a plug-in decision.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1988</span>)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ranger)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># install.packages("ranger")</span></span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Simulate confounded data ----</span></span>
+<span id="cb1-5">n <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2000</span>; p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span></span>
+<span id="cb1-6">X <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> p), n, p); <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colnames</span>(X) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"X"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>p)</span>
+<span id="cb1-7">e   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plogis</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>])          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># true propensity</span></span>
+<span id="cb1-8">D   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(n, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, e)</span>
+<span id="cb1-9">mu0 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> X[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]</span>
+<span id="cb1-10">tau <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>                                            <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># true ATE</span></span>
+<span id="cb1-11">Y   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> mu0 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> tau <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> D <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rnorm</span>(n)</span>
+<span id="cb1-12"></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- 5-fold cross-fitting of the two nuisances ----</span></span>
+<span id="cb1-14">folds <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out =</span> n))</span>
+<span id="cb1-15">mu1_hat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> mu0_hat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> e_hat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">numeric</span>(n)</span>
+<span id="cb1-16">XD <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">D =</span> D, X)                               <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># predictors for the outcome model</span></span>
+<span id="cb1-17"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> (k <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>) {</span>
+<span id="cb1-18">  tr <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(folds <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> k); te <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(folds <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> k)</span>
+<span id="cb1-19">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># outcome model mu_d(x) = E[Y | D, X]</span></span>
+<span id="cb1-20">  om <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ranger</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> XD[tr, ], <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> Y[tr])</span>
+<span id="cb1-21">  mu1_hat[te] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(om, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">D =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, X[te, ]))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>predictions</span>
+<span id="cb1-22">  mu0_hat[te] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(om, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">D =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, X[te, ]))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>predictions</span>
+<span id="cb1-23">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># propensity e(x) = P(D = 1 | X)</span></span>
+<span id="cb1-24">  ps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ranger</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> X[tr, ], <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(D[tr]), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">probability =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb1-25">  e_hat[te] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">predict</span>(ps, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> X[te, ])<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>predictions[, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1"</span>]</span>
+<span id="cb1-26">}</span>
+<span id="cb1-27">e_hat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pmin</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pmax</span>(e_hat, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>), <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.99</span>)              <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># stabilize extreme weights</span></span>
+<span id="cb1-28"></span>
+<span id="cb1-29"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Doubly robust (AIPW) score, then average ----</span></span>
+<span id="cb1-30">psi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (mu1_hat <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> mu0_hat) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb1-31">       D <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> (Y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> mu1_hat) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> e_hat <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span></span>
+<span id="cb1-32">       (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> D) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> (Y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> mu0_hat) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> e_hat)</span>
+<span id="cb1-33"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sprintf</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"DML ATE: %.3f (SE %.3f), true = %d</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>,</span>
+<span id="cb1-34">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(psi), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sd</span>(psi) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sqrt</span>(n), tau))</span></code></pre></div></div>
+</div>
+<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb2-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> sklearn.ensemble <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> RandomForestRegressor, RandomForestClassifier</span>
+<span id="cb2-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> sklearn.model_selection <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> KFold</span>
+<span id="cb2-4"></span>
+<span id="cb2-5">np.random.seed(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1988</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Simulate confounded data ----</span></span>
+<span id="cb2-8">n, p <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2000</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span></span>
+<span id="cb2-9">X   <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.random.normal(size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(n, p))</span>
+<span id="cb2-10">e   <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> np.exp(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>])))   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># true propensity</span></span>
+<span id="cb2-11">D   <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.random.binomial(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, e)</span>
+<span id="cb2-12">mu0 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> X[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> X[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> X[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span>
+<span id="cb2-13">tau <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.0</span>                                                  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># true ATE</span></span>
+<span id="cb2-14">Y   <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> mu0 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> tau <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> D <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> np.random.normal(size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>n)</span>
+<span id="cb2-15"></span>
+<span id="cb2-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- 5-fold cross-fitting of the two nuisances ----</span></span>
+<span id="cb2-17">mu1_hat, mu0_hat, e_hat <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.zeros(n), np.zeros(n), np.zeros(n)</span>
+<span id="cb2-18">XD <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.column_stack([X, D])                               <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># predictors for the outcome model</span></span>
+<span id="cb2-19"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> tr, te <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> KFold(n_splits<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, shuffle<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, random_state<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1988</span>).split(X):</span>
+<span id="cb2-20">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># outcome model mu_d(x) = E[Y | D, X]</span></span>
+<span id="cb2-21">    om <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> RandomForestRegressor(n_estimators<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">200</span>, min_samples_leaf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,</span>
+<span id="cb2-22">                               random_state<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1988</span>).fit(XD[tr], Y[tr])</span>
+<span id="cb2-23">    mu1_hat[te] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> om.predict(np.column_stack([X[te], np.ones(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(te))]))</span>
+<span id="cb2-24">    mu0_hat[te] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> om.predict(np.column_stack([X[te], np.zeros(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(te))]))</span>
+<span id="cb2-25">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># propensity e(x) = P(D = 1 | X)</span></span>
+<span id="cb2-26">    ps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> RandomForestClassifier(n_estimators<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">200</span>, min_samples_leaf<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,</span>
+<span id="cb2-27">                                random_state<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1988</span>).fit(X[tr], D[tr])</span>
+<span id="cb2-28">    e_hat[te] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ps.predict_proba(X[te])[:, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span>
+<span id="cb2-29"></span>
+<span id="cb2-30">e_hat <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.clip(e_hat, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.99</span>)                         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># stabilize extreme weights</span></span>
+<span id="cb2-31"></span>
+<span id="cb2-32"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---- Doubly robust (AIPW) score, then average ----</span></span>
+<span id="cb2-33">psi <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ((mu1_hat <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> mu0_hat)</span>
+<span id="cb2-34">       <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> D <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> (Y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> mu1_hat) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> e_hat</span>
+<span id="cb2-35">       <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> D) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> (Y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> mu0_hat) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> e_hat))</span>
+<span id="cb2-36"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"DML ATE: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>psi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>mean()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:.3f}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> (SE </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>psi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>std(ddof<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>np<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>sqrt(n)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:.3f}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">), true = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>tau<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span></code></pre></div></div>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="why-it-works-neyman-orthogonality" class="level3">
+<h3 class="anchored" data-anchor-id="why-it-works-neyman-orthogonality">Why It Works: Neyman Orthogonality</h3>
+<p>The reason this whole construction holds together is a property called <strong>Neyman orthogonality</strong>. Loosely, the doubly robust score is built so that small errors in the estimated nuisances have only a <em>second-order</em> effect on the ATE estimate — the first-order sensitivity is zero. A naive outcome-regression plug-in does not have this property: a small bias in <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cmu_d"> passes straight through to the effect.</p>
+<p>The practical consequence is what the literature calls <em>rate double robustness</em>. Because the score is insensitive to nuisance errors, you can estimate <img src="https://latex.codecogs.com/png.latex?%5Cmu_d"> and <img src="https://latex.codecogs.com/png.latex?e"> with machine learning that converges <em>slower</em> than the usual parametric <img src="https://latex.codecogs.com/png.latex?%5Csqrt%7Bn%7D"> rate — <img src="https://latex.codecogs.com/png.latex?n%5E%7B1/4%7D"> each is enough, since what matters is that the <em>product</em> of their error rates beats <img src="https://latex.codecogs.com/png.latex?n%5E%7B-1/2%7D">. Cross-fitting removes the overfitting bias; Neyman orthogonality removes the sensitivity to whatever bias remains. Together they let you bolt flexible ML onto a causal estimand and still hand back a <img src="https://latex.codecogs.com/png.latex?%5Csqrt%7Bn%7D">-consistent, asymptotically normal, efficient estimate. Everything beyond average effects — the DR-learner for heterogeneous effects, optimal policy rules — is built on this very same score, which is exactly why the framework scales so gracefully.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>DML is, at its core, the old doubly robust (AIPW) estimator plus two modern ingredients: cross-fitting and a Neyman-orthogonal score.</li>
+<li>The recipe for the ATE is four lines: cross-fit an outcome model and a propensity model, assemble the per-unit doubly robust score, and average it; the standard error is just the score’s sample standard deviation over <img src="https://latex.codecogs.com/png.latex?%5Csqrt%7Bn%7D">.</li>
+<li>Double robustness means you need only <em>one</em> of the two nuisance models to be correct; rate double robustness means you can estimate both with slow-converging machine learning and still get valid <img src="https://latex.codecogs.com/png.latex?%5Csqrt%7Bn%7D"> inference.</li>
+<li>The dense program-evaluation vocabulary hides a simple idea. Once you map “programme,” “average potential outcome,” and “nuisance parameter” onto treatment, mean potential outcome, and the two familiar regressions, the rest follows.</li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>The original and indispensable reference is Chernozhukov et al.&nbsp;(2018), which introduced the DML framework, Neyman-orthogonal scores, and cross-fitting. Knaus (2022), the basis for this note, is an unusually readable review that walks through DML-based program evaluation end to end, from average effects to heterogeneous effects and policy learning. For the doubly robust score itself, the lineage runs back to Robins et al.&nbsp;(1994). And for a closely related estimator that shares the same doubly robust foundation, see my post on <a href="https://vyasenov.github.io/blog/tmle-estimation-recipe.html">targeted learning</a>.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., &amp; Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. <em>The Econometrics Journal</em>, 21(1), C1–C68.</p></li>
+<li><p>Knaus, M. C. (2022). Double machine learning-based programme evaluation under unconfoundedness. <em>The Econometrics Journal</em>, 25(3), 602–627.</p></li>
+<li><p>Robins, J. M., Rotnitzky, A., &amp; Zhao, L. P. (1994). Estimation of regression coefficients when some regressors are not always observed. <em>Journal of the American Statistical Association</em>, 89(427), 846–866.</p></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>causal inference</category>
+  <category>machine learning</category>
+  <guid>https://vyasenov.github.io/blog/double-ml-causal-inference.html</guid>
+  <pubDate>Thu, 11 Jun 2026 21:00:00 GMT</pubDate>
+</item>
 <item>
   <title>The Role of Instrumental Variables in Randomized Experiments</title>
   <link>https://vyasenov.github.io/blog/iv-randomized-experiments.html</link>
@@ -9695,1220 +11231,6 @@ font-style: inherit;">"</span>)</span></code></pre></div></div>
   <category>causal inference</category>
   <guid>https://vyasenov.github.io/blog/unconditional-qreg.html</guid>
   <pubDate>Sat, 20 Dec 2025 22:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>The Many Flavors of Matching for Causal Inference</title>
-  <link>https://vyasenov.github.io/blog/flavors-matching-methods.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">12 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>If you’ve worked on causal inference with observational data, you’ve likely faced the fundamental challenge: the treated and control groups often look very different. Matching methods aim to fix that. The idea is simple and intuitive—let’s compare treated units to similar control units and mimic the conditions of a randomized experiment as best as we can.</p>
-<p>But here’s the twist: there are multiple ways to define “similar.” Should we look for exact matches? Should we match on covariates directly or on some summary score like the <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">propensity score</a>? Should we optimize the matches globally or locally? Over the years, researchers have developed a wide variety of matching methods, each with its own advantages and pitfalls. The landscape can be overwhelming, especially if you’re new to causal inference.</p>
-<p>In this article, I’ll walk through the most popular matching strategies for causal inference. I’ll talk about what each method does, when to use it, and where it might lead you astray. The focus is on the intuition and technical description—not on the code. Whether you’re doing matching for the first time or looking to expand your toolkit, you will find something useful here.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let’s set up the basic framework with minimal fluff. Suppose we have <img src="https://latex.codecogs.com/png.latex?n"> units indexed by <img src="https://latex.codecogs.com/png.latex?i%20=%201,%20%5Cdots,%20n">. Each unit has:</p>
-<ul>
-<li>A binary treatment indicator <img src="https://latex.codecogs.com/png.latex?D_i%20%5Cin%20%5C%7B0,%201%5C%7D">, where <img src="https://latex.codecogs.com/png.latex?D_i%20=%201"> for treated units and <img src="https://latex.codecogs.com/png.latex?D_i%20=%200"> for controls.</li>
-<li>A vector of observed covariates <img src="https://latex.codecogs.com/png.latex?X_i">.</li>
-<li>Potential outcomes <img src="https://latex.codecogs.com/png.latex?Y_i(1)"> and <img src="https://latex.codecogs.com/png.latex?Y_i(0)">, where <img src="https://latex.codecogs.com/png.latex?Y_i(1)"> is the outcome if treated, and <img src="https://latex.codecogs.com/png.latex?Y_i(0)"> if untreated. We observe only their realized outcome <img src="https://latex.codecogs.com/png.latex?Y_i%20=%20D_i%20Y_i(1)%20+%20(1%20-%20D_i)%20Y_i(0)">.</li>
-</ul>
-<p>We impose the usual assumptions of unconfoundedness (treatment assignment is independent of potential outcomes given covariates) and overlap (treated and control units have similar covariate distributions).</p>
-<p>Our goal is to estimate treatment effects like the Average Treatment Effect (ATE) or the ATE on the Treated (ATT): <img src="https://latex.codecogs.com/png.latex?%0A%5Ctext%7BATT%7D%20=%20%5Cmathbb%7BE%7D%5BY(1)%20-%20Y(0)%20%5Cmid%20D%20=%201%5D.%0A"></p>
-<p>The core idea behind matching is to find comparable untreated units for each treated unit so we can approximate <img src="https://latex.codecogs.com/png.latex?Y(0)"> for the treated group. We then discard the unmatched units and look at the difference in outcomes between treated and matched controls to estimate the treatment effect.</p>
-<p>Let’s abuse notation a bit and define the sample-analogue of the ATT as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%5Cwidehat%7B%5Ctext%7BATT%7D%7D=%5Cfrac%7B1%7D%7BN_%7B%5Ctext%7Btreated%7D%7D%7D%5Csum_%7Bi:D=1%7D%20Y(1)_i%20-%20%5Chat%7BY%7D(0)%5E%7B%5Ctext%7Bimputed%7D%7D_i."></p>
-<p>These methods can be, and often are, combined with regression adjustments to reduce bias and improve efficiency and robustness, but I will leave that aside here.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<p>We are now ready to go through seven of the most popular matching approaches.</p>
-<section id="exact-matching" class="level3">
-<h3 class="anchored" data-anchor-id="exact-matching">Exact Matching</h3>
-<p>Exact matching is the simplest—and most restrictive—approach to causal inference:</p>
-<blockquote class="blockquote">
-<p>Match treated and control units <em>exactly</em> on all observed covariates <img src="https://latex.codecogs.com/png.latex?X">.</p>
-</blockquote>
-<p>That is, if a treated unit has <img src="https://latex.codecogs.com/png.latex?X%20=%20x">, we look for control units with the exact same <img src="https://latex.codecogs.com/png.latex?X%20=%20x">. While this method is conceptually elegant and easy to understand, it’s rarely practical.</p>
-<p>Exact matches become increasingly unlikely in high-dimensional settings or when covariates are continuous, where no two units are likely to be identical. In those cases, exact matching often fails to find matches for many treated units, leading to loss of sample size or biased estimates. Despite its limitations, exact matching is an important baseline: it helps clarify the assumptions behind more flexible methods.</p>
-<p>Exact matching works when covariates are discrete, there aren’t too many of them and there is decent overlap between the treated and control groups. It becomes much more difficult (theoretically infeasible) to find matches as the number of covariates increases or in settings with continuous covariates. In practice, it can often lead to lots of unmatched units which often results in discarded data.</p>
-<hr>
-</section>
-<section id="mahalanobis-distance-matching" class="level3">
-<h3 class="anchored" data-anchor-id="mahalanobis-distance-matching">Mahalanobis Distance Matching</h3>
-<p>Instead of requiring exact equality between covariates, Mahalanobis matching</p>
-<blockquote class="blockquote">
-<p>Uses a <em>continuous distance metric</em> to find treated and control units that are similar in terms of their covariate values.</p>
-</blockquote>
-<p>The Mahalanobis distance between two units <img src="https://latex.codecogs.com/png.latex?i"> and <img src="https://latex.codecogs.com/png.latex?j">, with covariates <img src="https://latex.codecogs.com/png.latex?X_i"> and <img src="https://latex.codecogs.com/png.latex?X_j">, is defined as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0Ad(X_i,%20X_j)%20=%20%5Csqrt%7B(X_i%20-%20X_j)%5E%5Ctop%20S%5E%7B-1%7D%20(X_i%20-%20X_j)%7D,%0A"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?S"> is the sample covariance matrix of the covariates <img src="https://latex.codecogs.com/png.latex?X">.</p>
-<p>This metric accounts for both the scale and the correlation structure of the covariates. Unlike Euclidean distance, which treats each covariate as equally important and independent, Mahalanobis distance adjusts for the fact that some variables may be more variable than others, or may be correlated.</p>
-<p>Intuitively, Mahalanobis distance answers the question: how many standard deviations apart are these two vectors, once we’ve accounted for the spread and correlation of the variables? A small Mahalanobis distance indicates that the two units are close in the joint covariate space, even if they differ somewhat along individual dimensions. It still becomes less reliable in high dimensions, where all units tend to be far from one another.</p>
-<p>Unlike exact matching, Mahalanobis matching can handle continuous covariates and works well in high dimensions. It is also more flexible than exact matching, in that it can handle mixed discrete and continuous variables.</p>
-<hr>
-</section>
-<section id="propensity-score-matching" class="level3">
-<h3 class="anchored" data-anchor-id="propensity-score-matching">Propensity Score Matching</h3>
-<p>Propensity Score Matching (PSM) is one of the most influential ideas in observational causal inference. Rosenbaum and Rubin’s foundational result shows that if treatment assignment is unconfounded given covariates <img src="https://latex.codecogs.com/png.latex?X">, then it is also unconfounded given the propensity score:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0Ae(X)%20=%20%5Cmathbb%7BP%7D(D%20=%201%20%5Cmid%20X),%0A"></p>
-<p>the probability of receiving treatment conditional on observed covariates. In other words,</p>
-<blockquote class="blockquote">
-<p>Instead of matching on the full covariate vector <img src="https://latex.codecogs.com/png.latex?X">, we can just match on a <em>single scalar summary—</em>the estimated propensity score.</p>
-</blockquote>
-<p>This is the key idea: propensity scores reduce the curse of dimensionality. By summarizing the information in <img src="https://latex.codecogs.com/png.latex?X"> into one number that captures the likelihood of treatment, we make matching more feasible and scalable, especially when <img src="https://latex.codecogs.com/png.latex?X"> includes many variables.</p>
-<p>In practice, the propensity score is rarely known and must be estimated—typically using logistic regression, probit models, or machine learning methods like random forests or gradient boosting. Once estimated, treated and control units are matched based on the closeness of their propensity scores, often using nearest-neighbor matching, caliper matching, or kernel methods. Trimming is therefore an important aspect of the process, where units with very high or very low propensity scores are excluded to improve balance and reduce bias.</p>
-<p>PSM improves comparability between groups by balancing the covariates in expectation, but it comes with trade-offs. Matching on the propensity score alone does not guarantee covariate balance in any particular dataset, so it’s important to assess and diagnose balance post-matching. Moreover, PSM is sensitive to model misspecification and can perform poorly if the propensity score is estimated inaccurately or if the overlap between groups is weak.</p>
-<p>Despite these caveats, PSM remains a popular and conceptually powerful tool, especially when combined with diagnostics and robustness checks. It can be particularly helpful when the number of covariates is large or mostly continuous. I have written separately about <a href="https://vyasenov.github.io/blog/variance-ps-matching.html">estimating the variance of PSM estimators</a>, which is subtler than it first appears.</p>
-<hr>
-</section>
-<section id="coarsened-exact-matching" class="level3">
-<h3 class="anchored" data-anchor-id="coarsened-exact-matching">Coarsened Exact Matching</h3>
-<p>Coarsened Exact Matching (CEM) offers a practical compromise between the rigidity of exact matching and the flexibility needed for real-world data. The core idea is to</p>
-<blockquote class="blockquote">
-<p>Coarsen continuous covariates into broader, meaningful categories and then perform exact matching on these coarsened values.</p>
-</blockquote>
-<p>Formally, each covariate is discretized into bins, and treated and control units are matched only if they fall into the <em>same bin across all coarsened covariates</em>. This process reduces the granularity of the match criteria, increasing the likelihood of finding matches, while still ensuring comparability within the matched groups. Examples are turning age into 5-year intervals or income into quantile-based brackets.</p>
-<p>By construction, CEM guarantees balance on the coarsened covariates—unlike propensity score matching, where balance must be checked and cannot be guaranteed a priori. CEM also allows researchers to control the level of approximation: the finer the bins, the closer it is to exact matching; the coarser the bins, the more matches you retain but the more heterogeneity you permit within matched pairs. Researchers can apply finer coarsening to critical variables and coarser groupings to less central ones.</p>
-<p>However, CEM’s effectiveness depends heavily on the choice of binning. Poorly chosen coarsening can either lead to very few matches (if too fine) or poor covariate balance (if too coarse). There is a trade-off between retaining sample size and improving covariate similarity, and CEM makes this trade-off explicit and user-controllable.</p>
-<hr>
-</section>
-<section id="optimal-matching" class="level3">
-<h3 class="anchored" data-anchor-id="optimal-matching">Optimal Matching</h3>
-<p>Optimal matching takes a <em>global approach</em> to the matching problem. Rather than matching each treated unit to its nearest control in isolation (as in nearest neighbor matching), it</p>
-<blockquote class="blockquote">
-<p>Finds the set of matched pairs that <em>minimizes the total distance</em> across all matched units.</p>
-</blockquote>
-<p>Formally, it solves:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmin_%7B%5Ctext%7Bmatching%7D%7D%20%5Csum_%7B(i,%20j)%20%5Cin%20%5Ctext%7Bpairs%7D%7D%20d(X_i,%20X_j),%0A"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?d(X_i,%20X_j)"> is a distance measure between treated unit <img src="https://latex.codecogs.com/png.latex?i"> and control unit <img src="https://latex.codecogs.com/png.latex?j">.</p>
-<p>The key benefit is that it avoids poor global matches that can arise when matching is done greedily or locally, one unit at a time. Optimal matching is especially useful when treatment and control groups differ significantly in size or distribution, and when you want to minimize overall imbalance rather than optimize matches for individual units.</p>
-<p>However, because it solves a global optimization problem, it can be computationally intensive for large datasets. Also, while it minimizes overall distance, it doesn’t necessarily guarantee good covariate balance unless combined with preprocessing (e.g., matching on propensity scores or coarsened covariates).</p>
-<p>Still, optimal matching is a powerful and principled method, particularly when used with careful distance choices and diagnostics.</p>
-<hr>
-</section>
-<section id="genetic-matching" class="level3">
-<h3 class="anchored" data-anchor-id="genetic-matching">Genetic Matching</h3>
-<p>Genetic matching is an advanced matching method that uses a genetic algorithm to find an optimal weighting of covariates in the distance metric. The idea is to</p>
-<blockquote class="blockquote">
-<p>Automate the process of choosing how much weight each covariate should receive when determining similarity between treated and control units.</p>
-</blockquote>
-<p>Rather than manually selecting a distance metric like Mahalanobis or Euclidean, genetic matching searches over a space of weighted Mahalanobis distances, adjusting the weights to minimize covariate imbalance after matching. The optimization goal is to improve covariate balance. The result is a <em>customized distance metric</em> that gives higher weight to variables that are harder to balance and less to those that are already balanced.</p>
-<p>Genetic matching can be used with or without propensity score preprocessing, and can accommodate interactions or higher-order terms. It’s especially powerful in settings with many covariates or complex imbalance patterns that simple metrics fail to capture.</p>
-<p>However, the method is computationally intensive, often requiring many iterations of matching and balance assessment. Its performance also depends on the choice of balance metrics and tuning parameters in the genetic algorithm.</p>
-<hr>
-</section>
-<section id="caliper-matching" class="level3">
-<h3 class="anchored" data-anchor-id="caliper-matching">Caliper Matching</h3>
-<p>Caliper matching introduces a distance threshold to restrict which treated and control units can be matched. Specifically,</p>
-<blockquote class="blockquote">
-<p>A treated unit is only matched to a control unit if the distance between them is <em>within a pre-specified caliper</em>.</p>
-</blockquote>
-<p>That is, if the difference falls below a set limit. For example, when matching on propensity scores, a common rule is to match only if the absolute difference in propensity scores is less than 0.1:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%7Ce(X_i%5E%7B%5Ctext%7Btreated%7D%7D)%20-%20e(X_j%5E%7B%5Ctext%7Bcontrol%7D%7D)%7C%20%3C%20%5Ctext%7Bcaliper%7D%0A"></p>
-<p>This constraint helps <em>avoid poor matches</em>, especially when treated and control groups have limited overlap. Without calipers, nearest neighbor matching might pair units with very different covariate profiles, particularly in the tails of the propensity score distribution. These poor matches can increase bias and undermine the credibility of causal estimates.</p>
-<p>Caliper matching is not a matching method on its own but rather a modification to existing strategies—most often to nearest neighbor matching. It can also be combined with optimal matching or Mahalanobis distance.</p>
-<p>Choosing the right caliper width is important: too wide, and the constraint has little effect; too narrow, and many treated units may be left unmatched, reducing sample size and precision.</p>
-<p>Caliper matching is particularly useful when the common support assumption is questionable—i.e., when treated and control groups do not overlap well in covariate space. In such cases, calipers serve as a safeguard to maintain the quality of matches by explicitly enforcing local comparability.</p>
-<hr>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>Matching methods are powerful tools for causal inference.</li>
-<li>They come in many flavors, each with its own strengths and weaknesses.</li>
-<li>No single method is best for all situations; the choice depends on the data, the research question, and the assumptions you are willing to make.</li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The book <em>Causal Inference for Statistics, Social, and Biomedical Sciences</em> by Imbens and Rubin (2015) provides excellent coverage of matching and its theoretical underpinnings. I also recommend Stuart (2010)’s seminal review paper cited below. The <code>MatchIt</code> and <code>Matching</code> <code>R</code> packages documentation are also goldmines for practical implementation details.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Abadie, A., &amp; Imbens, G. W. (2016). Matching on the estimated propensity score. Econometrica, 84(2), 781-807.</p>
-<p>Ben-Michael, E., Feller, A., Hirshberg, D. A., &amp; Zubizarreta, J. R. (2021). The balancing act in causal inference. arXiv preprint arXiv:2110.14831.</p>
-<p>Diamond, A., &amp; Sekhon, J. S. (2013). Genetic matching for estimating causal effects: A general multivariate matching method for achieving balance in observational studies. Review of Economics and Statistics, 95(3), 932-945.</p>
-<p>Iacus, S. M., King, G., &amp; Porro, G. (2012). Causal inference without balance checking: Coarsened exact matching. Political analysis, 20(1), 1-24.</p>
-<p>Imbens, G. W. (2015). Matching methods in practice: Three examples. Journal of Human Resources, 50(2), 373-419.</p>
-<p>Imbens, G. W., &amp; Rubin, D. B. (2015). <em>Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction</em>. Cambridge University Press.</p>
-<p>Rosenbaum, P. R., &amp; Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. <em>Biometrika</em>, 70(1), 41–55.</p>
-<p>Stuart, E. A. (2010). Matching methods for causal inference: A review and a look forward. <em>Statistical Science</em>, 25(1), 1–21.</p>
-<p>Rosenbaum, P. R. (2002). <em>Observational Studies</em>. Springer.</p>
-
-
-</section>
-
- ]]></description>
-  <category>causal inference</category>
-  <category>flavors</category>
-  <guid>https://vyasenov.github.io/blog/flavors-matching-methods.html</guid>
-  <pubDate>Mon, 26 May 2025 21:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>The Many Flavors of Variable Selection</title>
-  <link>https://vyasenov.github.io/blog/flavors-var-selection.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">10 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>If you’ve ever worked with high-dimensional data, you’ve likely faced a familiar challenge: too many variables. Some features are pure noise, others are redundant or collinear, and only a handful truly matter. The question is: how do you tell the difference? This challenge lies at the heart of what we call variable selection.</p>
-<p>Over time, statisticians and machine learning researchers have created a diverse toolbox of techniques to tackle this problem—each rooted in different ideas, with its own strengths and trade-offs. Some methods apply penalties to shrink coefficients, like Lasso and Ridge. Others use geometric insights, like Principal Components Analysis (PCA). There are methods built on randomization, like Model-X Knockoffs, and some that rely on greedy or stepwise searches, such as Forward Selection and Least Angle Regression (LAR).</p>
-<p>In this post, I’ll take a guided tour through these approaches—what they do, when to use them, and why they work. I’ll also explore their limitations, because no method is a silver bullet. The goal isn’t to pick a winner, but to help you figure out which tool fits your problem. Think of it as a field guide to variable selection, focused on ideas and intuition—so you can navigate the landscape with more confidence and clarity. And, yes, there will be plenty of <code>R</code> and <code>Python</code> code snippets to illustrate each method in action.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Suppose we observe data <img src="https://latex.codecogs.com/png.latex?(Y,%20X)">, where <img src="https://latex.codecogs.com/png.latex?Y%20%5Cin%20%5Cmathbb%7BR%7D%5En"> is the outcome vector and <img src="https://latex.codecogs.com/png.latex?X%20%5Cin%20%5Cmathbb%7BR%7D%5E%7Bn%20%5Ctimes%20p%7D"> is the matrix of predictors (covariates, features, regressors—pick your favorite term).</p>
-<p>We’re interested in estimating a relationship like: <img src="https://latex.codecogs.com/png.latex?%0AY%20=%20X%20%5Cbeta%20+%20%5Cvarepsilon,%0A"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?%5Cbeta%20%5Cin%20%5Cmathbb%7BR%7D%5Ep"> is the vector of coefficients and <img src="https://latex.codecogs.com/png.latex?%5Cvarepsilon"> is the error term.</p>
-<p>In high-dimensional settings, <img src="https://latex.codecogs.com/png.latex?p"> may be large—possibly even larger than <img src="https://latex.codecogs.com/png.latex?n">. The core task of variable selection is to identify which components of <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> are nonzero (or, more generally, which features matter for predicting <img src="https://latex.codecogs.com/png.latex?Y">).</p>
-<p>(Distinguishing prediction and inference is crucial here: we focus on the former, so we ignore things like confidence intervals or <img src="https://latex.codecogs.com/png.latex?p">-values for coefficients altogether. The latter is a much <a href="https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html">more complex problem</a>.)</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<p>We begin by loading the data.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.datasets <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> load_iris</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> pd</span>
-<span id="cb1-3"></span>
-<span id="cb1-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load iris data</span></span>
-<span id="cb1-5">iris <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> load_iris(as_frame<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb1-6">df <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris.frame</span>
-<span id="cb1-7">X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> df[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal width (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal length (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal width (cm)'</span>]]</span>
-<span id="cb1-8">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> df[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal length (cm)'</span>]</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<p>Now let’s examine each of the methods in turn.</p>
-<section id="stepwise-selection-forward-backward-both" class="level3">
-<h3 class="anchored" data-anchor-id="stepwise-selection-forward-backward-both">Stepwise Selection (Forward, Backward, Both)</h3>
-<p>The classic workhorse of variable selection, stepwise procedures iteratively add or remove variables based on some criterion like AIC (Aikake Information Criterion), BIC (Bayesian Information Criterion), or <img src="https://latex.codecogs.com/png.latex?p">-values. In forward selection, you start with no variables and add the one that improves the model the most. In backward elimination with <img src="https://latex.codecogs.com/png.latex?p%3Cn">, you start with all variables and remove the least significant one at each step. Both methods can also be combined in a bidirectional stepwise approach. In either case, you stop when adding or removing variables no longer sufficiently improves the model according to your chosen criterion.</p>
-<p>Stepwise selection can work well for smaller problems where computational cost is low and interpretability is key (although we have recently made some progress on the computation side). However, it is unstable and prone to overfitting.</p>
-<p>We are now ready to start with the modeling part.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" aria-labelledby="tabset-2-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(MASS)</span>
-<span id="cb2-2">full_model <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lm</span>(Sepal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris)</span>
-<span id="cb2-3">step_model <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">stepAIC</span>(full_model, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">direction =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"both"</span>)</span>
-<span id="cb2-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(step_model)</span></code></pre></div></div>
-</div>
-<div id="tabset-2-2" class="tab-pane" aria-labelledby="tabset-2-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> mlxtend.feature_selection <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> SequentialFeatureSelector <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> SFS</span>
-<span id="cb3-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> LinearRegression</span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Stepwise selection (both directions)</span></span>
-<span id="cb3-5">sfs <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> SFS(LinearRegression(),</span>
-<span id="cb3-6">          k_features<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'best'</span>,  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Select best number of features</span></span>
-<span id="cb3-7">          forward<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>,</span>
-<span id="cb3-8">          floating<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>,      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Enables bidirectional selection</span></span>
-<span id="cb3-9">          scoring<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'neg_mean_squared_error'</span>,</span>
-<span id="cb3-10">          cv<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)               <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># No cross-validation, like stepAIC</span></span>
-<span id="cb3-11"></span>
-<span id="cb3-12">sfs <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> sfs.fit(X, y)</span>
-<span id="cb3-13"></span>
-<span id="cb3-14"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Selected features</span></span>
-<span id="cb3-15"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Selected features:'</span>, <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">list</span>(sfs.k_feature_names_))</span>
-<span id="cb3-16"></span>
-<span id="cb3-17"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fit final model</span></span>
-<span id="cb3-18">selected_X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> X[<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">list</span>(sfs.k_feature_names_)]</span>
-<span id="cb3-19">model <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> LinearRegression().fit(selected_X, y)</span>
-<span id="cb3-20"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(pd.Series(model.coef_, index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>X.columns))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="lasso-aka-ell_1-regularization" class="level3">
-<h3 class="anchored" data-anchor-id="lasso-aka-ell_1-regularization">Lasso (aka <img src="https://latex.codecogs.com/png.latex?%5Cell_1"> Regularization)</h3>
-<p>Lasso introduced the big idea of <em>sparsity</em>, that only some variables enter the model. It penalizes the sum of the absolute values of the coefficients:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Cbeta%7D%5E%7B%5Ctext%7Blasso%7D%7D%20=%20%5Carg%5Cmin_%7B%5Cbeta%7D%20%5Cleft%5C%7B%20%5C%7C%20Y%20-%20X%20%5Cbeta%20%5C%7C_2%5E2%20+%20%5Clambda%20%5C%7C%20%5Cbeta%20%5C%7C_1%20%5Cright%5C%7D.%0A"></p>
-<p>The magic of the <img src="https://latex.codecogs.com/png.latex?%5Cell_1"> penalty is that it can shrink some coefficients exactly to zero, performing variable selection as part of the estimation. Over the years, Lasso has become a staple in the variable selection toolkit. Its theoretical properties have been studied extensively, and it has been shown to work well in many practical scenarios.</p>
-<p>Part of its appeal and popularity is the computation efficiency where modern algorithms can solve the entire regularization path efficiently. Lasso comes in a wide variety of <a href="https://vyasenov.github.io/blog/flavors-lasso.html">flavors</a>, including group lasso, adaptive lasso, and fused lasso, which I cover in a separate post. Be careful, though, lasso is known to be biased, so it’s great for prediction, but don’t take its coefficients at face value.</p>
-<p>Lasso is a good idea when you believe that only a subset of predictors are relevant and want an interpretable model. It can struggle with groups of correlated predictors (tends to pick one arbitrarily), and is known to be biased due to shrinkage.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" aria-labelledby="tabset-3-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(glmnet)</span>
-<span id="cb4-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(iris)</span>
-<span id="cb4-3">X <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.matrix</span>(iris[, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Sepal.Width"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Length"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Width"</span>)])</span>
-<span id="cb4-4">Y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Sepal.Length</span>
-<span id="cb4-5">fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cv.glmnet</span>(X, Y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb4-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coef</span>(fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">s =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lambda.min"</span>)</span></code></pre></div></div>
-</div>
-<div id="tabset-3-2" class="tab-pane" aria-labelledby="tabset-3-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> LassoCV</span>
-<span id="cb5-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.datasets <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> load_iris</span>
-<span id="cb5-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> pd</span>
-<span id="cb5-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb5-5"></span>
-<span id="cb5-6">iris <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> load_iris(as_frame<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>).frame</span>
-<span id="cb5-7">X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal width (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal length (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal width (cm)'</span>]]</span>
-<span id="cb5-8">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal length (cm)'</span>]</span>
-<span id="cb5-9">lasso <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> LassoCV(cv<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>).fit(X, y)</span>
-<span id="cb5-10"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(pd.Series(lasso.coef_, index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>X.columns))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="ridge-regression-aka-ell_2-regularization" class="level3">
-<h3 class="anchored" data-anchor-id="ridge-regression-aka-ell_2-regularization">Ridge Regression (aka <img src="https://latex.codecogs.com/png.latex?%5Cell_2"> Regularization)</h3>
-<p>Ridge regression doesn’t exactly <em>select</em> variables—it shrinks them. The idea is to add a penalty on the size of the coefficients:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Cbeta%7D%5E%7B%5Ctext%7Bridge%7D%7D%20=%20%5Carg%5Cmin_%7B%5Cbeta%7D%20%5Cleft%5C%7B%20%5C%7C%20Y%20-%20X%20%5Cbeta%20%5C%7C_2%5E2%20+%20%5Clambda%20%5C%7C%20%5Cbeta%20%5C%7C_2%5E2%20%5Cright%5C%7D.%0A"></p>
-<p>Here, <img src="https://latex.codecogs.com/png.latex?%5Clambda%20%5Cge%200"> is a tuning parameter that controls the strength of the penalty. As <img src="https://latex.codecogs.com/png.latex?%5Clambda"> increases, the solution is increasingly biased toward zero, but the variance decreases, which can improve out-of-sample performance.</p>
-<p>Unlike the lasso, Ridge regression does not produce sparse solutions—none of the coefficients are exactly zero. Instead, it distributes shrinkage smoothly across all variables, which can be helpful when all predictors contribute weakly and roughly equally.</p>
-<p>Ridge is also computationally convenient. The modified normal equations involve the matrix <img src="https://latex.codecogs.com/png.latex?X%5E%5Ctop%20X%20+%20%5Clambda%20I">, which is always invertible when <img src="https://latex.codecogs.com/png.latex?%5Clambda%20%3E%200">, even if <img src="https://latex.codecogs.com/png.latex?X%5E%5Ctop%20X"> is singular. As a result, Ridge provides a unique and stable solution even in high-dimensional settings where <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n">—a situation where ordinary least squares (OLS) fails due to non-identifiability.</p>
-<p>Ridge is especially good when multicollinearity is a problem; when you prefer stability over sparsity; or when many small effects contribute to the outcome.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" aria-labelledby="tabset-4-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(glmnet)</span>
-<span id="cb6-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(iris)</span>
-<span id="cb6-3">X <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.matrix</span>(iris[, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Sepal.Width"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Length"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Width"</span>)])</span>
-<span id="cb6-4">Y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Sepal.Length</span>
-<span id="cb6-5">fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cv.glmnet</span>(X, Y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span>
-<span id="cb6-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coef</span>(fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">s =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lambda.min"</span>)</span></code></pre></div></div>
-</div>
-<div id="tabset-4-2" class="tab-pane" aria-labelledby="tabset-4-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> RidgeCV</span>
-<span id="cb7-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.datasets <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> load_iris</span>
-<span id="cb7-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> pd</span>
-<span id="cb7-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb7-5"></span>
-<span id="cb7-6">iris <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> load_iris(as_frame<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>).frame</span>
-<span id="cb7-7">X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal width (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal length (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal width (cm)'</span>]]</span>
-<span id="cb7-8">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal length (cm)'</span>]</span>
-<span id="cb7-9">lasso <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> RidgeCV(cv<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>).fit(X, y)</span>
-<span id="cb7-10"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(pd.Series(lasso.coef_, index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>X.columns))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="elastic-net" class="level3">
-<h3 class="anchored" data-anchor-id="elastic-net">Elastic Net</h3>
-<p>Elastic Net combines the strengths of both Ridge and Lasso by blending their penalties into a single regularization framework:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Cbeta%7D%5E%7B%5Ctext%7BEN%7D%7D%20=%20%5Carg%5Cmin_%7B%5Cbeta%7D%20%5Cleft%5C%7B%20%5C%7C%20Y%20-%20X%20%5Cbeta%20%5C%7C_2%5E2%20+%20%5Clambda_1%20%5C%7C%20%5Cbeta%20%5C%7C_1%20+%20%5Clambda_2%20%5C%7C%20%5Cbeta%20%5C%7C_2%5E2%20%5Cright%5C%7D.%0A"></p>
-<p>This formulation retains the sparsity-inducing property of the Lasso via the <img src="https://latex.codecogs.com/png.latex?%5Cell_1"> penalty while incorporating the stabilizing effect of Ridge regression through the <img src="https://latex.codecogs.com/png.latex?%5Cell_2"> penalty. The result is a model that not only performs variable selection but also handles groups of correlated predictors more gracefully than Lasso alone, which tends to pick one variable from a group and ignore the rest.</p>
-<p>Elastic Net is especially helpful in high-dimensional settings where predictors are strongly correlated or when <img src="https://latex.codecogs.com/png.latex?p%20%5Cgg%20n">. The two tuning parameters, <img src="https://latex.codecogs.com/png.latex?%5Clambda_1"> and <img src="https://latex.codecogs.com/png.latex?%5Clambda_2">, control the trade-off between sparsity and smooth shrinkage. In practice, these are often reparameterized using a single penalty term <img src="https://latex.codecogs.com/png.latex?%5Clambda"> and a mixing proportion <img src="https://latex.codecogs.com/png.latex?%5Calpha"> (as in many software packages), where:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Clambda_1%20=%20%5Clambda%20%5Calpha,%20%5Cquad%20%5Clambda_2%20=%20%5Clambda%20(1%20-%20%5Calpha).%0A"></p>
-<p>This makes it easy to interpolate between Ridge (<img src="https://latex.codecogs.com/png.latex?%5Calpha%20=%200">) and Lasso (<img src="https://latex.codecogs.com/png.latex?%5Calpha%20=%201">), giving you a continuum of models with different regularization characteristics.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-5-1" class="tab-pane active" aria-labelledby="tabset-5-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(glmnet)</span>
-<span id="cb8-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(iris)</span>
-<span id="cb8-3">X <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.matrix</span>(iris[, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Sepal.Width"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Length"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Width"</span>)])</span>
-<span id="cb8-4">Y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Sepal.Length</span>
-<span id="cb8-5">fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cv.glmnet</span>(X, Y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.5</span>)</span>
-<span id="cb8-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coef</span>(fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">s =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lambda.min"</span>)</span></code></pre></div></div>
-</div>
-<div id="tabset-5-2" class="tab-pane" aria-labelledby="tabset-5-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> ElasticNetCV</span>
-<span id="cb9-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.datasets <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> load_iris</span>
-<span id="cb9-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> pd</span>
-<span id="cb9-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb9-5"></span>
-<span id="cb9-6">iris <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> load_iris(as_frame<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>).frame</span>
-<span id="cb9-7">X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal width (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal length (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal width (cm)'</span>]]</span>
-<span id="cb9-8">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal length (cm)'</span>]</span>
-<span id="cb9-9">lasso <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> ElasticNetCV(cv<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>).fit(X, y)</span>
-<span id="cb9-10"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(pd.Series(lasso.coef_, index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>X.columns))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="principal-components-regression-pcr" class="level3">
-<h3 class="anchored" data-anchor-id="principal-components-regression-pcr">Principal Components Regression (PCR)</h3>
-<p>Principal Components Analysis (PCA) finds linear combinations of the original variables that explain the most variance of the entire dataset.</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cmax_%7Bw%20%5Cin%20%5Cmathbb%7BR%7D%5Ep,%5C,%20%5C%7Cw%5C%7C%20=%201%7D%20%5C;%20%5Cmathrm%7BVar%7D(Xw)%20=%20w%5E%5Ctop%20%5CSigma%20w%0A"></p>
-<p>In Principal Components Regression, we regress <img src="https://latex.codecogs.com/png.latex?Y"> on the top <img src="https://latex.codecogs.com/png.latex?k"> principal components of <img src="https://latex.codecogs.com/png.latex?X"> instead of on the original variables.</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Cbeta%7D_%7B%5Ctext%7BPCR%7D%7D%20=%20V_k%20(Z%5E%5Ctop%20Z)%5E%7B-1%7D%20Z%5E%5Ctop%20y%0A"></p>
-<p>PCA is among the most popular methods for dimensionality reduction even among junior data scientists, so I won’t spend too much time on it here. PCA lives in dual nature, with one foot in unsupervised learning (finding components) and the other in supervised learning (variable selection). Note how the term variable selection here is used indirectly, since it selects combinations of variables, not individual variables. Its main strength is its incredible versatility and ability to handle high-dimensional data, but its output can be challenging to interpret.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-6-1" class="tab-pane active" aria-labelledby="tabset-6-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(pls)</span>
-<span id="cb10-2">pcr_model <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pcr</span>(Sepal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">scale =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">validation =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"CV"</span>)</span>
-<span id="cb10-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(pcr_model)</span></code></pre></div></div>
-</div>
-<div id="tabset-6-2" class="tab-pane" aria-labelledby="tabset-6-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.decomposition <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> PCA</span>
-<span id="cb11-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> LinearRegression</span>
-<span id="cb11-3">pca <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> PCA(n_components<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb11-4">X_pca <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pca.fit_transform(X)</span>
-<span id="cb11-5">reg <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> LinearRegression().fit(X_pca, y)</span>
-<span id="cb11-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(pd.Series(reg.coef_, index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>pca.get_feature_names_out()))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="least-angle-regression-lar" class="level3">
-<h3 class="anchored" data-anchor-id="least-angle-regression-lar">Least Angle Regression (LAR)</h3>
-<p>Least Angle Regression (LAR) is a greedy, stepwise variable selection algorithm that adds predictors to a linear model incrementally. At each step, it moves in the direction of the predictor most correlated with the current residual, just like forward selection—but with a twist: it adjusts the direction gradually as more variables become equally correlated with the residuals. How it works:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Start with all coefficients set to zero.</li>
-<li>Find the predictor most correlated with the current residual.</li>
-<li>Move the coefficient of that variable in the direction of its sign until another predictor becomes equally correlated with the residual.</li>
-<li>Continue in a “least angle” direction, adjusting the path to include both predictors, and so on.</li>
-</ol>
-</div>
-</div>
-<p>The result is a sequence of models, each with one more active variable—just like in forward stepwise regression, but using geometry rather than brute force.</p>
-<p>Geometrically, LAR moves along piecewise linear paths toward the least squares solution, and its trajectory closely tracks that of Lasso. In fact, with a small modification, LAR can be used to compute the entire Lasso solution path.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" aria-controls="tabset-7-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-7-1" class="tab-pane active" aria-labelledby="tabset-7-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(lars)</span>
-<span id="cb12-2">lar_model <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lars</span>(X, Y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lar"</span>)</span>
-<span id="cb12-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(lar_model)</span></code></pre></div></div>
-</div>
-<div id="tabset-7-2" class="tab-pane" aria-labelledby="tabset-7-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> Lars</span>
-<span id="cb13-2">lar <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> Lars().fit(X, y)</span>
-<span id="cb13-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(pd.Series(lar.coef_, index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>X.columns))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="scad-smoothly-clipped-absolute-deviation" class="level3">
-<h3 class="anchored" data-anchor-id="scad-smoothly-clipped-absolute-deviation">SCAD (Smoothly Clipped Absolute Deviation)</h3>
-<p>SCAD (Smoothly Clipped Absolute Deviation) is a non-convex penalty introduced by Fan and Li (2001) to address a key limitation of the Lasso: its tendency to over-shrink large coefficients, leading to biased estimates for important variables.</p>
-<p>The SCAD penalty is designed to encourage sparsity like the Lasso for small coefficients, but to relax the penalty for larger ones. In other words, it behaves like Lasso near zero—pushing small coefficients toward zero—but reduces shrinkage as coefficients grow, effectively preserving the size of large signals.</p>
-<p>Mathematically, the derivative of the SCAD penalty is defined as:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AP'_%5Clambda(%5Cbeta)%20=%20%5Clambda%20%5Cleft%5B%20I(%7C%5Cbeta%7C%20%5Cleq%20%5Clambda)%20+%20%5Cfrac%7B(a%20%5Clambda%20-%20%7C%5Cbeta%7C)_+%7D%7B(a%20-%201)%5Clambda%7D%20I(%7C%5Cbeta%7C%20%3E%20%5Clambda)%20%5Cright%5D,%0A"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?a%20%3E%202"> (typically <img src="https://latex.codecogs.com/png.latex?a%20=%203.7">) and <img src="https://latex.codecogs.com/png.latex?(x)_+%20=%20%5Cmax(0,%20x)"> denotes the positive part. This piecewise definition ensures a smooth transition:</p>
-<ul>
-<li>For small coefficients <img src="https://latex.codecogs.com/png.latex?%7C%5Cbeta%7C%20%5Cleq%20%5Clambda">, it behaves like the Lasso.</li>
-<li>For moderate coefficients <img src="https://latex.codecogs.com/png.latex?%5Clambda%20%3C%20%7C%5Cbeta%7C%20%3C%20a%20%5Clambda">, the penalty decreases gradually.</li>
-<li>For large coefficients <img src="https://latex.codecogs.com/png.latex?%7C%5Cbeta%7C%20%5Cge%20a%5Clambda">, the penalty becomes flat—effectively applying no further shrinkage.</li>
-</ul>
-<p>This adaptive behavior helps SCAD achieve a balance between sparsity and unbiasedness. Although the non-convexity makes optimization more challenging than with Lasso or Ridge, the SCAD penalty is continuous and piecewise smooth, allowing the use of local coordinate descent algorithms and <a href="https://vyasenov.github.io/blog/oracle-property.html">oracle-like properties</a> under certain conditions. The non-convex objective can lead to multiple local minima, making optimization more delicate and computationally intensive.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-8-1" class="tab-pane active" aria-labelledby="tabset-8-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ncvreg)</span>
-<span id="cb14-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(iris)</span>
-<span id="cb14-3">X <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.matrix</span>(iris[, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Sepal.Width"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Length"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Width"</span>)])</span>
-<span id="cb14-4">Y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Sepal.Length</span>
-<span id="cb14-5"></span>
-<span id="cb14-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fit SCAD-penalized regression</span></span>
-<span id="cb14-7">scad_fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ncvreg</span>(X, Y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">penalty =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"SCAD"</span>)</span>
-<span id="cb14-8"></span>
-<span id="cb14-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Plot cross-validated error</span></span>
-<span id="cb14-10">cv <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cv.ncvreg</span>(X, Y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">penalty =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"SCAD"</span>)</span>
-<span id="cb14-11"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(cv)</span>
-<span id="cb14-12"></span>
-<span id="cb14-13"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Coefficients at optimal lambda</span></span>
-<span id="cb14-14"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coef</span>(cv, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lambda =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"min"</span>)</span></code></pre></div></div>
-</div>
-<div id="tabset-8-2" class="tab-pane" aria-labelledby="tabset-8-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> skglm <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> GeneralizedLinearEstimator</span>
-<span id="cb15-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> skglm.datafits <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> Quadratic</span>
-<span id="cb15-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> skglm.penalties <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> SCAD</span>
-<span id="cb15-4"></span>
-<span id="cb15-5">scad <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> GeneralizedLinearEstimator(Quadratic(), SCAD(alpha<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>, gamma<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3.7</span>))</span>
-<span id="cb15-6">scad.fit(X, y)</span>
-<span id="cb15-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(pd.Series(scad.coef_, index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>X.columns))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="knockoffs" class="level3">
-<h3 class="anchored" data-anchor-id="knockoffs">Knockoffs</h3>
-<p>Knockoffs, introduced by Barber and Candès (2015), is a clever framework for variable selection with <strong>false discovery rate (FDR) control</strong>. The method constructs “knockoff copies” of each feature—artificial variables that mimic the correlation structure of the real ones but are known to be null. Then it tests whether the real variables outperform their knockoffs.</p>
-<p>I have <a href="https://vyasenov.github.io/blog/flavors-multiple-testing.html">written about knockoffs</a> in more detail in previous posts, so I won’t go into the details here. Just like PCA, knockoffs live in dual nature, with one foot in the multiple testing literature (constructing knockoffs) and the other in supervised learning world (variable selection).</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li></ul>
-<div class="tab-content">
-<div id="tabset-9-1" class="tab-pane active" aria-labelledby="tabset-9-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"></span>
-<span id="cb16-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Clear workspace</span></span>
-<span id="cb16-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rm</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">list =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span>())</span>
-<span id="cb16-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(knockoff)</span>
-<span id="cb16-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(glmnet)</span>
-<span id="cb16-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb16-7"></span>
-<span id="cb16-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load data</span></span>
-<span id="cb16-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(iris)</span>
-<span id="cb16-10"></span>
-<span id="cb16-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 1: Prepare the data (binary classification)</span></span>
-<span id="cb16-12">iris_binary <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> iris <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(Species <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"setosa"</span>)</span>
-<span id="cb16-13">X <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.matrix</span>(iris_binary[, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>])  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># numeric predictors</span></span>
-<span id="cb16-14">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.numeric</span>(iris_binary<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Species <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"virginica"</span>)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># binary target: virginica vs versicolor</span></span>
-<span id="cb16-15"></span>
-<span id="cb16-16"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 2: Create knockoff copies</span></span>
-<span id="cb16-17"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Use the default Gaussian model-X knockoffs</span></span>
-<span id="cb16-18">knockoffs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">create.fixed</span>(X)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># creates a list with X and X_k (knockoffs)</span></span>
-<span id="cb16-19"></span>
-<span id="cb16-20">X_knock <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> knockoffs<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Xk</span>
-<span id="cb16-21"></span>
-<span id="cb16-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 3: Combine X and knockoffs and fit a Lasso model</span></span>
-<span id="cb16-23">X_combined <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cbind</span>(X, X_knock)</span>
-<span id="cb16-24">fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cv.glmnet</span>(X_combined, y, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">family =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"binomial"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">alpha =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb16-25"></span>
-<span id="cb16-26"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 4: Compute importance statistics (lasso coefficients at lambda.min)</span></span>
-<span id="cb16-27">coefs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coef</span>(fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">s =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"lambda.min"</span>)[<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># remove intercept</span></span>
-<span id="cb16-28">p <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ncol</span>(X)</span>
-<span id="cb16-29"></span>
-<span id="cb16-30">W <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(coefs[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>p]) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(coefs[(p<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>p)])  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># feature importance W-statistic</span></span>
-<span id="cb16-31"></span>
-<span id="cb16-32"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 5: Apply knockoff threshold to select features</span></span>
-<span id="cb16-33">threshold <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">knockoff.threshold</span>(W, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fdr =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.1</span>)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># control FDR at 10%</span></span>
-<span id="cb16-34">selected <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">which</span>(W <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;=</span> threshold)</span>
-<span id="cb16-35"></span>
-<span id="cb16-36"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 6: Print results</span></span>
-<span id="cb16-37">feature_names <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">colnames</span>(X)</span>
-<span id="cb16-38"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Selected features controlling FDR at 10%:</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb16-39"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(feature_names[selected])</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<hr>
-</section>
-<section id="foci-feature-ordering-by-conditional-independence" class="level3">
-<h3 class="anchored" data-anchor-id="foci-feature-ordering-by-conditional-independence">FOCI (Feature Ordering by Conditional Independence)</h3>
-<p>FOCI is a recent, information-theoretic method that orders features by how much conditional mutual information they contribute to the outcome. It’s model-free and does not assume a particular parametric form. I have also written about FOCI in a <a href="https://vyasenov.github.io/blog/foci.html">previous post</a>, so I won’t repeat the details here.</p>
-<hr>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>Lasso, Ridge, and Elastic Net are the go-to penalized regression methods, with Lasso giving sparsity, Ridge providing stability, and Elastic Net blending the two.</li>
-<li>Non-convex penalties like SCAD address Lasso’s bias issue but at a computational cost.</li>
-<li>PCA-based methods reduce dimensionality but don’t directly select variables.</li>
-<li>Knockoffs offer strong statistical guarantees like FDR control but require careful implementation.</li>
-<li>Modern approaches like FOCI expand the toolkit to nonlinear and information-theoretic settings.</li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>For a great introduction to penalized regression methods, <em>The Elements of Statistical Learning</em> by Hastie, Tibshirani, and Friedman is a classic. As always, you can reach for <em>Computer Age Statistical Inference</em> or <em>All of Statistics</em> and they won’t let you down.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Barber, R. F., &amp; Candès, E. J. (2015). Controlling the false discovery rate via knockoffs. <em>Annals of Statistics</em>, 43(5), 2055–2085.</p>
-<p>Efron, B., &amp; Hastie, T. (2021). Computer age statistical inference, student edition: algorithms, evidence, and data science (Vol. 6). Cambridge University Press.</p>
-<p>Efron, B., Hastie, T., Johnstone, I., &amp; Tibshirani, R. (2004). Least angle regression.</p>
-<p>Fan, J., &amp; Li, R. (2001). Variable selection via nonconcave penalized likelihood and its oracle properties. <em>Journal of the American Statistical Association</em>, 96(456), 1348–1360.</p>
-<p>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em>. Springer.</p>
-<p>Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. Journal of the Royal Statistical Society Series B: Statistical Methodology, 58(1), 267-288.</p>
-<p>Wasserman, L. (2004). All of statistics: a concise course in statistical inference. Springer Science &amp; Business Media.</p>
-
-
-</section>
-
- ]]></description>
-  <category>variable selection</category>
-  <category>machine learning</category>
-  <category>flavors</category>
-  <guid>https://vyasenov.github.io/blog/flavors-var-selection.html</guid>
-  <pubDate>Sun, 25 May 2025 21:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
