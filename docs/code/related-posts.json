@@ -146,6 +146,17 @@
     "href": "diff-causal-predictive-models.html"
   },
   {
+    "slug": "double-descent",
+    "title": "Double Descent Without the Neural Networks",
+    "date": "2026-06-22",
+    "categories": [
+      "parametric models",
+      "statistical inference",
+      "machine learning"
+    ],
+    "href": "double-descent.html"
+  },
+  {
     "slug": "double-ml-causal-inference",
     "title": "Simplified Double ML for Causal Inference",
     "date": "2026-06-12",
@@ -421,6 +432,17 @@
       "semiparametric models"
     ],
     "href": "limits-semiparam-models.html"
+  },
+  {
+    "slug": "linear-models-p-over-n",
+    "title": "Linear Models and $p > n$: What Can You Do?",
+    "date": "2026-06-22",
+    "categories": [
+      "parametric models",
+      "statistical inference",
+      "machine learning"
+    ],
+    "href": "linear-models-p-over-n.html"
   },
   {
     "slug": "logit-randomized-experiments",

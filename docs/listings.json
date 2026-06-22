@@ -2,6 +2,8 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/double-descent.html",
+      "/blog/linear-models-p-over-n.html",
       "/blog/tmle-estimation-recipe.html",
       "/blog/double-ml-causal-inference.html",
       "/blog/iv-randomized-experiments.html",
