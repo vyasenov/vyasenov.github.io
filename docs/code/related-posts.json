@@ -146,17 +146,6 @@
     "href": "diff-causal-predictive-models.html"
   },
   {
-    "slug": "double-descent",
-    "title": "Double Descent Without the Neural Networks",
-    "date": "2026-06-22",
-    "categories": [
-      "parametric models",
-      "statistical inference",
-      "machine learning"
-    ],
-    "href": "double-descent.html"
-  },
-  {
     "slug": "filling-missing-data-mcmc",
     "title": "Filling in Missing Data with MCMC",
     "date": "2025-01-31",
@@ -484,17 +473,6 @@
     "href": "ols-fixed-random-x.html"
   },
   {
-    "slug": "online-multiple-testing",
-    "title": "Always-Valid $p$-Values and Online Multiple Testing",
-    "date": "2026-06-24",
-    "categories": [
-      "multiple testing",
-      "hypothesis testing",
-      "statistical inference"
-    ],
-    "href": "online-multiple-testing.html"
-  },
-  {
     "slug": "oracle-property",
     "title": "The Oracle Property: What It Promises (and What It Doesn't)",
     "date": "2026-03-13",
@@ -662,17 +640,6 @@
       "causal inference"
     ],
     "href": "variance-ps-matching.html"
-  },
-  {
-    "slug": "weak-instruments",
-    "title": "Working with Weak Instruments",
-    "date": "2026-06-24",
-    "categories": [
-      "causal inference",
-      "statistical inference",
-      "hypothesis testing"
-    ],
-    "href": "weak-instruments.html"
   },
   {
     "slug": "weights-statistics",
