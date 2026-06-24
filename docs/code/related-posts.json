@@ -157,16 +157,6 @@
     "href": "double-descent.html"
   },
   {
-    "slug": "double-ml-causal-inference",
-    "title": "Simplified Double ML for Causal Inference",
-    "date": "2026-06-12",
-    "categories": [
-      "causal inference",
-      "machine learning"
-    ],
-    "href": "double-ml-causal-inference.html"
-  },
-  {
     "slug": "filling-missing-data-mcmc",
     "title": "Filling in Missing Data with MCMC",
     "date": "2025-01-31",
@@ -494,6 +484,17 @@
     "href": "ols-fixed-random-x.html"
   },
   {
+    "slug": "online-multiple-testing",
+    "title": "Always-Valid p-Values and Online Multiple Testing",
+    "date": "2026-06-24",
+    "categories": [
+      "multiple testing",
+      "hypothesis testing",
+      "statistical inference"
+    ],
+    "href": "online-multiple-testing.html"
+  },
+  {
     "slug": "oracle-property",
     "title": "The Oracle Property: What It Promises (and What It Doesn't)",
     "date": "2026-03-13",
@@ -661,6 +662,17 @@
       "causal inference"
     ],
     "href": "variance-ps-matching.html"
+  },
+  {
+    "slug": "weak-instruments",
+    "title": "Working with Weak Instruments",
+    "date": "2026-06-24",
+    "categories": [
+      "causal inference",
+      "statistical inference",
+      "hypothesis testing"
+    ],
+    "href": "weak-instruments.html"
   },
   {
     "slug": "weights-statistics",

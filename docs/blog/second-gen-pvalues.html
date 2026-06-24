@@ -398,7 +398,8 @@ window.Quarto = {
   <li><a href="#the-first-generation-p-value" id="toc-the-first-generation-p-value" class="nav-link" data-scroll-target="#the-first-generation-p-value">The First-Generation P-Value</a></li>
   <li><a href="#the-problem" id="toc-the-problem" class="nav-link" data-scroll-target="#the-problem">The Problem</a></li>
   <li><a href="#the-main-idea" id="toc-the-main-idea" class="nav-link" data-scroll-target="#the-main-idea">The Main Idea</a></li>
-  <li><a href="#why-it-helps-and-where-it-falls-short" id="toc-why-it-helps-and-where-it-falls-short" class="nav-link" data-scroll-target="#why-it-helps-and-where-it-falls-short">Why It Helps, and Where It Falls Short</a></li>
+  <li><a href="#quick-example" id="toc-quick-example" class="nav-link" data-scroll-target="#quick-example">Quick Example</a></li>
+  <li><a href="#pros-and-cons" id="toc-pros-and-cons" class="nav-link" data-scroll-target="#pros-and-cons">Pros and Cons</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -439,7 +440,7 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">8 min read</div>
+<div class="reading-time">7 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -448,23 +449,26 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>Hardly a data science interview goes by without the person in power bringing up the definition of the infamous <span class="math inline">\(p\)</span>-value. Normally, chaos ensues. For good or ill, <span class="math inline">\(p\)</span>-values are omnipresent in a data scientist’s world. A grad school professor of mine once described them as summaries of an entire dataset into a single number — or even, I would add, into a single yes/no decision.</p>
 <p>The downsides of <span class="math inline">\(p\)</span>-values have been well understood and widely publicized for decades. They conflate effect size and precision, they are routinely misinterpreted, and they say nothing about scientific relevance or practical importance. Famously, the American Statistical Association issued a formal statement on their use and misuse (Wasserstein and Lazar, 2016). Predictably, there has been no shortage of proposed alternatives — <span class="math inline">\(e\)</span>-values, Bayes factors, posterior probabilities, and more.</p>
-<p>In this note I describe one such alternative: the second-generation <span class="math inline">\(p\)</span>-value (SGPV) of Blume et al.&nbsp;(2019). The point is to broaden how we think about using data to test scientific claims, and to get acquainted with a genuinely different approach. As usual, I keep the mathematical rigor to a minimum and focus on the intellectual idea behind the proposal — including, in the end, why I think a good idea like this one never quite caught on.</p>
+<p>In this note I describe one such alternative: the second-generation <span class="math inline">\(p\)</span>-value (SGPV) of Blume et al.&nbsp;(2019). The point is to broaden how we think about using data to test scientific claims, and to get acquainted with a genuinely different approach. I keep the mathematical rigor to a minimum and focus on the intellectual idea behind the proposal.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
 <p>Suppose we are interested in some parameter <span class="math inline">\(\theta\)</span> — a difference in means, a log odds ratio, a regression coefficient, whatever the scientific question demands. Classical testing pits a <em>simple</em> (point) null hypothesis against everything else:</p>
 <p><span class="math display">\[H_0: \theta = \theta_0 \quad \text{versus} \quad H_1: \theta \neq \theta_0.\]</span></p>
 <p>A simple hypothesis pins <span class="math inline">\(\theta\)</span> to a single value; a <em>composite</em> hypothesis allows a whole set of values. The key move in what follows is to replace the point null with a composite one.</p>
-<p>Let <span class="math inline">\(I = [\theta_\ell, \theta_u]\)</span> denote an interval estimate of <span class="math inline">\(\theta\)</span> — for concreteness, a 95% confidence interval — with length <span class="math inline">\(|I| = \theta_u - \theta_\ell\)</span>. Let</p>
-<p><span class="math display">\[H_0 = [\theta_\ell^0, \theta_u^0]\]</span></p>
+<p>Let <span class="math inline">\(I = [\theta_\ell, \theta_u]\)</span> denote an interval estimate of <span class="math inline">\(\theta\)</span> — for concreteness, a 95% confidence interval — with length <span class="math inline">\(|I| = \theta_u - \theta_\ell\)</span>.</p>
+<p>Also, let <span class="math display">\[H_0 = [\theta_\ell^0, \theta_u^0]\]</span></p>
 <p>denote an <em>interval null hypothesis</em>: the range of effect sizes that are too small to matter scientifically, with length <span class="math inline">\(|H_0|\)</span>. This interval includes the exact null <span class="math inline">\(\theta_0\)</span> but widens it to absorb effects that are technically non-zero yet practically trivial. Choosing its width is a scientific judgment, made <em>before</em> seeing the data.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="the-first-generation-p-value" class="level3">
 <h3 class="anchored" data-anchor-id="the-first-generation-p-value">The First-Generation P-Value</h3>
-<p>Start with the object everyone already knows. We observe a dataset, and the <span class="math inline">\(p\)</span>-value is the probability of seeing data at least as extreme — weirder, loosely speaking — than what we actually observed, <em>if the null hypothesis were true</em>. A large <span class="math inline">\(p\)</span>-value means the data are unsurprising under the null and therefore offer no evidence against it. Famously, this is <em>not</em> the probability that the null is true; getting at that requires a Bayesian apparatus and a prior.</p>
-<p>This single number has carried an enormous load for nearly a century, and that is precisely the source of trouble.</p>
+<p>Start with the object everyone already knows. We observe a dataset, and the <span class="math inline">\(p\)</span>-value is the probability of seeing data at least as extreme — weirder, loosely speaking — than what we actually observed, <em>if the null hypothesis were true</em>.</p>
+<p><span class="math display">\[
+p = P(\text{data at least as extreme as } \text{observed} | H_0)
+\]</span></p>
+<p>A large <span class="math inline">\(p\)</span>-value means the data are unsurprising under the null and therefore offer no evidence against it. Famously, this is <em>not</em> the probability that the null is true; getting at that requires a Bayesian apparatus and a prior. This single number has carried an enormous load for nearly a century, and that is precisely the source of trouble.</p>
 <hr>
 </section>
 <section id="the-problem" class="level3">
@@ -480,33 +484,36 @@ window.Quarto = {
 p_\delta = \frac{|I \cap H_0|}{|I|} \times \max\left\{ \frac{|I|}{2|H_0|},\, 1 \right\},
 \]</span></p>
 <p>where <span class="math inline">\(|I \cap H_0|\)</span> is the length of the overlap between the two intervals. When the interval estimate is reasonably precise (specifically, <span class="math inline">\(|I| \leq 2|H_0|\)</span>), the correction term is <span class="math inline">\(1\)</span> and the formula reduces to the clean fraction <span class="math inline">\(p_\delta = |I \cap H_0| / |I|\)</span> — the share of the interval estimate that falls inside the null zone. The correction factor only kicks in when <span class="math inline">\(I\)</span> is very wide relative to the null, capping the statistic to reflect that the data are simply too imprecise to say much.</p>
-<p>The interpretation is refreshingly direct:</p>
+<p>The interpretation is direct:</p>
 <ul>
 <li><span class="math inline">\(p_\delta = 0\)</span>: the interval estimate does not overlap the null at all. The data are incompatible with a trivial effect and support a scientifically meaningful one.</li>
 <li><span class="math inline">\(p_\delta = 1\)</span>: the interval estimate lies entirely inside the null. The data support <em>only</em> the null premise — something a classical <span class="math inline">\(p\)</span>-value can never tell you.</li>
 <li><span class="math inline">\(0 &lt; p_\delta &lt; 1\)</span>: the data are inconclusive, with <span class="math inline">\(p_\delta \approx 1/2\)</span> being the maximally inconclusive case.</li>
 </ul>
+</section>
+<section id="quick-example" class="level3">
+<h3 class="anchored" data-anchor-id="quick-example">Quick Example</h3>
 <p>A quick worked example from the paper makes it concrete. In a study of 100 smokers and 100 non-smokers, suppose 65 smokers and 50 non-smokers develop lung cancer. The odds ratio is <span class="math inline">\(1.86\)</span> with a 95% confidence interval of <span class="math inline">\([1.03, 3.36]\)</span>. Take the interval null to be odds ratios between <span class="math inline">\(0.9\)</span> and <span class="math inline">\(1.1\)</span> — associations too weak to care about. The interval estimate overlaps the null only slightly, and the SGPV works out to <span class="math inline">\(p_\delta = 0.175\)</span>: suggestive, but not conclusive. Bump the smokers’ cancer count from 65 to 70 and the odds ratio rises to <span class="math inline">\(2.33\)</span> with interval <span class="math inline">\([1.27, 4.27]\)</span>, which no longer touches the null. Now <span class="math inline">\(p_\delta = 0\)</span>, and we would report a scientifically meaningful association.</p>
 <hr>
 </section>
-<section id="why-it-helps-and-where-it-falls-short" class="level3">
-<h3 class="anchored" data-anchor-id="why-it-helps-and-where-it-falls-short">Why It Helps, and Where It Falls Short</h3>
+<section id="pros-and-cons" class="level3">
+<h3 class="anchored" data-anchor-id="pros-and-cons">Pros and Cons</h3>
 <p>The appeal is that the SGPV bakes scientific relevance into the inference itself, rather than leaving it as an afterthought to be eyeballed from a confidence interval. By construction it can support the null, it indicates when the data are inconclusive instead of forcing a verdict, and — a genuinely attractive frequency property — its Type I error rate shrinks toward zero as the sample grows, instead of hovering at <span class="math inline">\(\alpha\)</span> forever. That directly attacks the big-data significance problem and tends to yield lower false discovery rates.</p>
-<p>So why did it not catch on? A few reasons. The interval null must be specified in advance, and pinning down the width of “scientifically trivial” is a real judgment call that invites disagreement and can feel arbitrary. The statistic is a proportion rather than a probability, which makes it unfamiliar and harder to slot into existing reporting conventions. And it competes in a crowded field: practitioners who care about false discoveries already reach for <a href="https://vyasenov.github.io/blog/recent-dev-fdr.html">false discovery rate (FDR)</a> or <a href="https://vyasenov.github.io/blog/flavors-multiple-testing.html">family-wise error rate (FWER)</a> procedures, while those who specifically want to test for negligible effects often use equivalence testing (the two one-sided tests, or TOST), which predates the SGPV and is closely related in spirit. The SGPV is, in my view, a cleaner idea than its adoption suggests — but a cleaner idea is not always the one the field converges on.</p>
+<p>The interval null must be specified in advance, and pinning down the width of “scientifically trivial” is a real judgment call that invites disagreement and can feel arbitrary. The statistic is a proportion rather than a probability, which makes it unfamiliar and harder to slot into existing reporting conventions. And it competes in a crowded field: practitioners who care about false discoveries already reach for <a href="https://vyasenov.github.io/blog/recent-dev-fdr.html">false discovery rate (FDR)</a> or <a href="https://vyasenov.github.io/blog/flavors-multiple-testing.html">family-wise error rate (FWER)</a> procedures.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
 <li><span class="math inline">\(P\)</span>-values are among the most widely used and most widely misused tools in applied statistics; their core flaw is conflating effect size with precision.</li>
-<li>The second-generation <span class="math inline">\(p\)</span>-value is an alternative worth knowing when false discovery is a concern — which, frankly, is most of the time.</li>
+<li>The second-generation <span class="math inline">\(p\)</span>-value is an alternative worth knowing when false discovery is a concern.</li>
 <li>Its main idea is simple: measure the overlap between an interval estimate and an interval null that absorbs both the exact null and all scientifically trivial effects.</li>
 <li>Despite its elegance, the SGPV never gained traction. FDR/FWER control and equivalence testing remain the dominant ways practitioners guard against spurious findings.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The original proposal is Blume et al.&nbsp;(2018) in <em>PLOS ONE</em>, with the gentler, non-technical treatment I have leaned on here appearing as Blume et al.&nbsp;(2019) in <em>The American Statistician</em>. For the broader context — why the profession soured on bright-line significance in the first place — the ASA statement (Wasserstein and Lazar, 2016) and the follow-up special issue editorial (Wasserstein, Schirm, and Lazar, 2019) are essential reading. On the competing approaches mentioned above, see Benjamini and Hochberg (1995) for the foundational FDR procedure.</p>
+<p>See the papers referenced below and look around my blog for more details on multiple testing and false discovery rate control.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>

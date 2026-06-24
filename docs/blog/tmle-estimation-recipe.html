@@ -24,41 +24,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -435,7 +400,6 @@ window.Quarto = {
   <li><a href="#why-bother-with-the-targeting-step" id="toc-why-bother-with-the-targeting-step" class="nav-link" data-scroll-target="#why-bother-with-the-targeting-step">Why Bother With the Targeting Step?</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
-  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -473,33 +437,40 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">7 min read</div>
+<div class="reading-time">6 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Targeted learning is extremely popular in public health and epidemiology, yet it has never really made its way into the economics and econometrics world. It was introduced and extended by Mark van der Laan and coauthors in a long series of papers and books. Among practitioners outside biostatistics, though, it remains something of a mystery.</p>
-<p>One challenge standing in the way of translating these methods is the language. The terminology is different — epidemiologists talk about the <em>outcome mechanism</em> and the <em>exposure mechanism</em> where an economist would say outcome regression and propensity score. Barriers of vocabulary aside, the targeted learning class of methods enjoys very attractive theoretical properties. It is doubly robust and, under the right conditions, semiparametrically efficient, and it is method-agnostic in that it can plug in a wide range of machine learning algorithms.</p>
-<p>This note aims to demystify targeted learning for a broader audience. From a practical standpoint, I find the best way to do that is through the lens of <em>estimation</em>, since that is where practitioners actually spend their time with a method. It is also the easiest way to compare it against the causal inference tools you already know — be it <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">propensity score methods</a>, double machine learning, or <a href="https://vyasenov.github.io/blog/ml-based-adjustments.html">regression adjustment</a>. My focus is on the how-to and less on theoretical derivations or guarantees, and the overview borrows heavily from Schuler and Rose (2017). I deliberately stay with the <em>basic</em> version of targeted learning — targeted maximum likelihood estimation (TMLE) for the average treatment effect in a cross-sectional observational study. The framework extends to many other estimands, longitudinal data, and beyond, but those are out of scope here.</p>
+<p>Targeted learning is extremely popular in public health and epidemiology, yet it has never really made its way into the economics and econometrics world. It was introduced and extended by Mark van der Laan and coauthors in a long series of papers and books.The targeted learning class of methods enjoys very attractive theoretical properties. It is doubly robust and, under the right conditions, semiparametrically efficient, and it is method-agnostic in that it can plug in a wide range of machine learning algorithms.</p>
+<p>This note aims to demystify targeted learning for a broader audience. From a practical standpoint, I find the best way to do that is through the lens of <em>estimation</em>, since that is where practitioners actually spend their time with a method. It is also the easiest way to compare it against the causal inference tools you already know — be it <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">propensity score methods</a>, double machine learning, or <a href="https://vyasenov.github.io/blog/ml-based-adjustments.html">regression adjustment</a>.</p>
+<p>My focus is on the how-to and less on theoretical derivations or guarantees, and the overview borrows heavily from Schuler and Rose (2017). I deliberately stay with the <em>basic</em> version of targeted learning — targeted maximum likelihood estimation (TMLE) for the average treatment effect in a cross-sectional observational study. The framework extends to many other estimands, longitudinal data, and beyond, but those are out of scope here.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Suppose we observe <span class="math inline">\(n\)</span> i.i.d. draws of <span class="math inline">\(O = (X, A, Y)\)</span>, where <span class="math inline">\(A \in \{0, 1\}\)</span> is a binary treatment (the “exposure”), <span class="math inline">\(X\)</span> is a vector of confounders, and <span class="math inline">\(Y\)</span> is a continuous outcome. Each unit has a pair of potential outcomes <span class="math inline">\(Y(1)\)</span> and <span class="math inline">\(Y(0)\)</span>, and the target is the average treatment effect (ATE),</p>
+<p>Suppose we observe <span class="math inline">\(n\)</span> i.i.d. draws of <span class="math inline">\(O = (X, A, Y)\)</span>, where:</p>
+<ul>
+<li><span class="math inline">\(A \in \{0, 1\}\)</span> is a binary treatment (the “exposure”),</li>
+<li><span class="math inline">\(X\)</span> is a vector of confounders, and</li>
+<li><span class="math inline">\(Y\)</span> is a continuous outcome.</li>
+</ul>
+<p>Each unit has a pair of potential outcomes <span class="math inline">\(Y(1)\)</span> and <span class="math inline">\(Y(0)\)</span>, and the target is the average treatment effect (ATE),</p>
 <p><span class="math display">\[\psi = \mathbb{E}\big[Y(1) - Y(0)\big].\]</span></p>
-<p>Two nuisance functions do all the work. The <strong>outcome regression</strong> (outcome mechanism) is the conditional mean of the outcome,</p>
+<p>Two nuisance functions do all the work. The <em>outcome regression</em> is the conditional mean of the outcome,</p>
 <p><span class="math display">\[\bar{Q}(A, X) = \mathbb{E}[Y \mid A, X],\]</span></p>
-<p>and the <strong>propensity score</strong> (exposure mechanism) is the conditional probability of treatment,</p>
+<p>and the <em>propensity score</em> is the conditional probability of treatment,</p>
 <p><span class="math display">\[g(X) = \mathbb{P}(A = 1 \mid X).\]</span></p>
-<p>For <span class="math inline">\(\psi\)</span> to carry a causal interpretation we need the usual trio of assumptions — no unmeasured confounding, positivity (<span class="math inline">\(0 &lt; g(X) &lt; 1\)</span>), and SUTVA — which I will take as given since the focus here is estimation, not identification. A concrete example to fix ideas, taken from the paper: <span class="math inline">\(A\)</span> is whether a person exercises regularly, <span class="math inline">\(Y\)</span> is a depression score, and <span class="math inline">\(X\)</span> collects sex, use of psychosocial therapy, and antidepressant use.</p>
+<p>For <span class="math inline">\(\psi\)</span> to carry a causal interpretation we need the usual trio of assumptions — no unmeasured confounding, positivity (<span class="math inline">\(0 &lt; g(X) &lt; 1\)</span>), and SUTVA — which I will take as given since the focus here is estimation, not identification.</p>
+<p>A concrete example to fix ideas, taken from the paper: <span class="math inline">\(A\)</span> is whether a person exercises regularly, <span class="math inline">\(Y\)</span> is a depression score, and <span class="math inline">\(X\)</span> collects sex, use of psychosocial therapy, and antidepressant use.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="two-nuisances-three-estimators" class="level3">
 <h3 class="anchored" data-anchor-id="two-nuisances-three-estimators">Two Nuisances, Three Estimators</h3>
 <p>The reason TMLE is easy to place on a mental map is that it shares its ingredients with methods you already use. <a href="https://vyasenov.github.io/blog/ml-based-adjustments.html">G-computation</a> (regression adjustment) models only the outcome regression <span class="math inline">\(\bar{Q}\)</span> and then averages the predicted difference. Inverse probability weighting (IPW) models only the propensity score <span class="math inline">\(g\)</span> and reweights the observed outcomes. Each leans entirely on getting <em>one</em> of the two nuisances right.</p>
-<p>TMLE uses <em>both</em>. It starts from an outcome-regression prediction and then nudges it using the propensity score, in a way designed specifically for the ATE. That extra step is what buys <strong>double robustness</strong>: the final estimate is consistent if <em>either</em> <span class="math inline">\(\bar{Q}\)</span> or <span class="math inline">\(g\)</span> is correctly estimated, not necessarily both. If both are consistent, the estimator is also efficient. This is the practical payoff, and it is why the method is worth the extra bookkeeping.</p>
+<p>TMLE uses <em>both</em>. It starts from an outcome-regression prediction and then nudges it using the propensity score, in a way designed specifically for the ATE. That extra step is what buys <em>double robustness</em>: the final estimate is consistent if <em>either</em> <span class="math inline">\(\bar{Q}\)</span> or <span class="math inline">\(g\)</span> is correctly estimated, not necessarily both. If both are consistent, the estimator is also efficient. This is the practical payoff, and it is why the method is worth the extra bookkeeping.</p>
 <hr>
 </section>
 <section id="the-recipe-four-steps" class="level3">
@@ -524,118 +495,11 @@ window.Quarto = {
 </div>
 </div>
 <p>The only genuinely new object is the clever covariate <span class="math inline">\(H\)</span>. Note that it looks a lot like an inverse-probability weight — and that is no accident — but here it enters as a <em>regressor</em> in the fluctuation rather than as a weight. Step 3 is the “targeting”: it tilts the initial fit just enough to remove first-order bias in the direction that matters for the ATE, while leaving the rest of the outcome model alone.</p>
-<p>The code below implements all four steps from scratch on simulated data, so each line maps onto a step above.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Simulate data (Schuler &amp; Rose-style) ----</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>n  <span class="ot">&lt;-</span> <span class="dv">1000</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>X1 <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.55</span>)   <span class="co"># sex</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>X2 <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.30</span>)   <span class="co"># psychosocial therapy</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>X3 <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.25</span>)   <span class="co"># antidepressant use</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Exposure: regular physical exercise</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>pA <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="sc">-</span><span class="fl">0.5</span> <span class="sc">+</span> <span class="fl">0.75</span> <span class="sc">*</span> X1 <span class="sc">+</span> <span class="fl">1.0</span> <span class="sc">*</span> X2 <span class="sc">+</span> <span class="fl">1.5</span> <span class="sc">*</span> X3)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>A  <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, pA)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Continuous outcome: a depression score</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>muY <span class="ot">&lt;-</span> <span class="dv">24</span> <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> A <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> X1 <span class="sc">-</span> <span class="dv">4</span> <span class="sc">*</span> X2 <span class="sc">-</span> <span class="dv">6</span> <span class="sc">*</span> X3 <span class="sc">-</span> <span class="fl">1.5</span> <span class="sc">*</span> A <span class="sc">*</span> X3</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>Y   <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, muY, <span class="fl">4.5</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># True marginal ATE = 0.25 * (-4.5) + 0.75 * (-3) = -3.375</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Bound the continuous outcome to (0, 1) ----</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">min</span>(Y); b <span class="ot">&lt;-</span> <span class="fu">max</span>(Y)</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>Ystar <span class="ot">&lt;-</span> (Y <span class="sc">-</span> a) <span class="sc">/</span> (b <span class="sc">-</span> a)</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Step 1: initial outcome model Qbar(A, X) ----</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>qfit <span class="ot">&lt;-</span> <span class="fu">glm</span>(Ystar <span class="sc">~</span> A <span class="sc">+</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, <span class="at">family =</span> <span class="fu">quasibinomial</span>())</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Q_A  <span class="ot">&lt;-</span> <span class="fu">predict</span>(qfit, <span class="at">type =</span> <span class="st">"response"</span>)                                       <span class="co"># Qbar(A_i, X_i)</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>Q_1  <span class="ot">&lt;-</span> <span class="fu">predict</span>(qfit, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">A =</span> <span class="dv">1</span>, X1, X2, X3), <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>Q_0  <span class="ot">&lt;-</span> <span class="fu">predict</span>(qfit, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">A =</span> <span class="dv">0</span>, X1, X2, X3), <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Step 2: propensity score g(X) = P(A = 1 | X) ----</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>gfit <span class="ot">&lt;-</span> <span class="fu">glm</span>(A <span class="sc">~</span> X1 <span class="sc">+</span> X2 <span class="sc">+</span> X3, <span class="at">family =</span> <span class="fu">binomial</span>())</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>g1   <span class="ot">&lt;-</span> <span class="fu">predict</span>(gfit, <span class="at">type =</span> <span class="st">"response"</span>)   <span class="co"># pi_1</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>g0   <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> g1                             <span class="co"># pi_0</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Step 3: targeting step ----</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>H_A <span class="ot">&lt;-</span> A <span class="sc">/</span> g1 <span class="sc">-</span> (<span class="dv">1</span> <span class="sc">-</span> A) <span class="sc">/</span> g0               <span class="co"># clever covariate at observed A</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">glm</span>(Ystar <span class="sc">~</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> H_A <span class="sc">+</span> <span class="fu">offset</span>(<span class="fu">qlogis</span>(Q_A)), <span class="at">family =</span> <span class="fu">quasibinomial</span>()))</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>H_1 <span class="ot">&lt;-</span>  <span class="dv">1</span> <span class="sc">/</span> g1</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>H_0 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">/</span> g0</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>Q_1_star <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">qlogis</span>(Q_1) <span class="sc">+</span> eps <span class="sc">*</span> H_1)   <span class="co"># updated potential outcomes</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>Q_0_star <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">qlogis</span>(Q_0) <span class="sc">+</span> eps <span class="sc">*</span> H_0)</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Step 4: plug-in ATE (back on the original scale) ----</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>ate <span class="ot">&lt;-</span> (b <span class="sc">-</span> a) <span class="sc">*</span> <span class="fu">mean</span>(Q_1_star <span class="sc">-</span> Q_0_star)</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"TMLE ATE estimate: %.3f</span><span class="sc">\n</span><span class="st">"</span>, ate))   <span class="co"># ~ -3.4, close to the true -3.38</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="co"># In practice, reach for the package rather than hand-rolling:</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("tmle")</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="co"># library(tmle)</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="co"># tmle(Y = Y, A = A, W = data.frame(X1, X2, X3))$estimates$ATE$psi</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> logit, expit</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Simulate data (Schuler &amp; Rose-style) ----</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>n  <span class="op">=</span> <span class="dv">1000</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, <span class="fl">0.55</span>, n)   <span class="co"># sex</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>X2 <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, <span class="fl">0.30</span>, n)   <span class="co"># psychosocial therapy</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>X3 <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, <span class="fl">0.25</span>, n)   <span class="co"># antidepressant use</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Exposure: regular physical exercise</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>pA <span class="op">=</span> expit(<span class="op">-</span><span class="fl">0.5</span> <span class="op">+</span> <span class="fl">0.75</span> <span class="op">*</span> X1 <span class="op">+</span> <span class="fl">1.0</span> <span class="op">*</span> X2 <span class="op">+</span> <span class="fl">1.5</span> <span class="op">*</span> X3)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>A  <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, pA)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Continuous outcome: a depression score</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>muY <span class="op">=</span> <span class="dv">24</span> <span class="op">-</span> <span class="dv">3</span> <span class="op">*</span> A <span class="op">+</span> <span class="dv">3</span> <span class="op">*</span> X1 <span class="op">-</span> <span class="dv">4</span> <span class="op">*</span> X2 <span class="op">-</span> <span class="dv">6</span> <span class="op">*</span> X3 <span class="op">-</span> <span class="fl">1.5</span> <span class="op">*</span> A <span class="op">*</span> X3</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>Y   <span class="op">=</span> np.random.normal(muY, <span class="fl">4.5</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># True marginal ATE = 0.25 * (-4.5) + 0.75 * (-3) = -3.375</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Bound the continuous outcome to (0, 1) ----</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>a, b  <span class="op">=</span> Y.<span class="bu">min</span>(), Y.<span class="bu">max</span>()</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>Ystar <span class="op">=</span> (Y <span class="op">-</span> a) <span class="op">/</span> (b <span class="op">-</span> a)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Step 1: initial outcome model Qbar(A, X) ----</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>Xq   <span class="op">=</span> np.column_stack([np.ones(n), A, X1, X2, X3])</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>qfit <span class="op">=</span> sm.GLM(Ystar, Xq, family<span class="op">=</span>sm.families.Binomial()).fit()</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>Q_A  <span class="op">=</span> qfit.predict(Xq)</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>Q_1  <span class="op">=</span> qfit.predict(np.column_stack([np.ones(n), np.ones(n),  X1, X2, X3]))</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>Q_0  <span class="op">=</span> qfit.predict(np.column_stack([np.ones(n), np.zeros(n), X1, X2, X3]))</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Step 2: propensity score g(X) = P(A = 1 | X) ----</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>W    <span class="op">=</span> np.column_stack([np.ones(n), X1, X2, X3])</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>gfit <span class="op">=</span> sm.GLM(A, W, family<span class="op">=</span>sm.families.Binomial()).fit()</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>g1   <span class="op">=</span> gfit.predict(W)   <span class="co"># pi_1</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>g0   <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> g1            <span class="co"># pi_0</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Step 3: targeting step ----</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>H_A <span class="op">=</span> A <span class="op">/</span> g1 <span class="op">-</span> (<span class="dv">1</span> <span class="op">-</span> A) <span class="op">/</span> g0                              <span class="co"># clever covariate at observed A</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>eps <span class="op">=</span> sm.GLM(Ystar, H_A, family<span class="op">=</span>sm.families.Binomial(),</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>             offset<span class="op">=</span>logit(Q_A)).fit().params[<span class="dv">0</span>]</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>H_1, H_0 <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> g1, <span class="op">-</span><span class="dv">1</span> <span class="op">/</span> g0</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>Q_1_star <span class="op">=</span> expit(logit(Q_1) <span class="op">+</span> eps <span class="op">*</span> H_1)                 <span class="co"># updated potential outcomes</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>Q_0_star <span class="op">=</span> expit(logit(Q_0) <span class="op">+</span> eps <span class="op">*</span> H_0)</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Step 4: plug-in ATE (back on the original scale) ----</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>ate <span class="op">=</span> (b <span class="op">-</span> a) <span class="op">*</span> np.mean(Q_1_star <span class="op">-</span> Q_0_star)</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"TMLE ATE estimate: </span><span class="sc">{</span>ate<span class="sc">:.3f}</span><span class="ss">"</span>)   <span class="co"># ~ -3.4, close to the true -3.38</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
 <hr>
 </section>
 <section id="why-bother-with-the-targeting-step" class="level3">
 <h3 class="anchored" data-anchor-id="why-bother-with-the-targeting-step">Why Bother With the Targeting Step?</h3>
-<p>A fair question is why we do not simply stop after step 1 and report the average difference in predicted outcomes — that is exactly G-computation. The answer is robustness. A plain outcome-model plug-in is only as good as that one model; if it is misspecified, the estimate is biased, full stop. The targeting step injects information from the propensity score so that a mistake in <em>one</em> of the two models can be absorbed by the other. In the paper’s simulation, when either the outcome or the exposure model is deliberately misspecified, TMLE stays essentially unbiased (recovering the true ATE of <span class="math inline">\(-3.38\)</span>), while G-computation and IPW pick up large bias from the same misspecification.</p>
+<p>A fair question is why we do not simply stop after step 1 and report the average difference in predicted outcomes — that is exactly G-computation. The answer is robustness. A plain outcome-model plug-in is only as good as that one model; if it is misspecified, the estimate is biased, full stop. The targeting step injects information from the propensity score so that a mistake in <em>one</em> of the two models can be absorbed by the other. In the paper’s simulation, when either the outcome or the exposure model is deliberately misspecified, TMLE stays essentially unbiased, while G-computation and IPW pick up large bias from the same misspecification.</p>
 <p>Two practical notes follow from this. First, TMLE is a <em>substitution</em> (plug-in) estimator — the ATE is computed by plugging fitted values into the target functional — which makes it more stable than estimating-equation methods like IPW when propensity scores get close to <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span>. Second, because the recipe never cares <em>how</em> <span class="math inline">\(\bar{Q}\)</span> and <span class="math inline">\(g\)</span> are estimated, you should estimate them with flexible machine learning rather than hand-specified regressions. In practice this means an ensemble (the super learner), which lets the data choose among <a href="https://vyasenov.github.io/blog/flavors-ml-methods-ci.html">a library of ML methods</a> instead of betting on one functional form.</p>
 </section>
 </section>
@@ -647,10 +511,6 @@ window.Quarto = {
 <li>It is flexible: the recipe is agnostic to how the two nuisance functions are estimated, so it accommodates a wide range of machine learning algorithms (ideally an ensemble).</li>
 <li>In essence, TMLE is outcome-regression plus propensity-score modeling, with one extra step that removes bias from the outcome model through a clever use of the estimated propensity score.</li>
 </ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The most accessible entry point, and the basis for this note, is Schuler and Rose (2017), a step-by-step tutorial aimed squarely at applied researchers. For the full framework — double robustness, efficiency theory, and the many extensions I skipped — the canonical reference is van der Laan and Rose’s book <em>Targeted Learning</em> (2011), with the original method introduced in van der Laan and Rubin (2006). In R, the <code>tmle</code> package implements everything above, including the super-learner option, so there is rarely a need to hand-roll the steps in production.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>

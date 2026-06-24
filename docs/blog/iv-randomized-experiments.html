@@ -397,7 +397,6 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#use-case-1-noncompliance" id="toc-use-case-1-noncompliance" class="nav-link" data-scroll-target="#use-case-1-noncompliance">Use Case #1: Noncompliance</a></li>
   <li><a href="#use-case-2-selection-bias" id="toc-use-case-2-selection-bias" class="nav-link" data-scroll-target="#use-case-2-selection-bias">Use Case #2: Selection Bias</a></li>
-  <li><a href="#extensions" id="toc-extensions" class="nav-link" data-scroll-target="#extensions">Extensions</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -438,7 +437,7 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">8 min read</div>
+<div class="reading-time">6 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -451,23 +450,45 @@ window.Quarto = {
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Index participants by <span class="math inline">\(i\)</span>. Let <span class="math inline">\(Z_i \in \{0, 1\}\)</span> denote random <em>assignment</em> to treatment, and <span class="math inline">\(T_i \in \{0, 1\}\)</span> denote the treatment actually <em>received</em>. In a clean experiment these coincide, but with noncompliance they need not: a participant can have <span class="math inline">\(Z_i = 1, T_i = 0\)</span> (assigned but untreated) or <span class="math inline">\(Z_i = 0, T_i = 1\)</span> (a control who crossed over). The instrument is the randomized assignment <span class="math inline">\(Z_i\)</span>; the endogenous variable is the received treatment <span class="math inline">\(T_i\)</span>. Let <span class="math inline">\(Y_i\)</span> be the outcome.</p>
-<p>Following the potential-outcomes framework, write <span class="math inline">\(Y_i(1)\)</span> and <span class="math inline">\(Y_i(0)\)</span> for participant <span class="math inline">\(i\)</span>’s outcome with and without treatment; the individual causal effect is <span class="math inline">\(Y_i(1) - Y_i(0)\)</span>, forever unobservable since only one of the two is realized. Likewise, let <span class="math inline">\(T_i(z)\)</span> be the treatment <span class="math inline">\(i\)</span> would take under assignment <span class="math inline">\(z\)</span>. This last object lets us partition the population into four latent types:</p>
+<p>Index participants by <span class="math inline">\(i\)</span>. Let</p>
+<ul>
+<li><span class="math inline">\(Y_i\)</span> be the outcome.</li>
+<li><span class="math inline">\(Z_i \in \{0, 1\}\)</span> denote random <em>assignment</em> to treatment, and</li>
+<li><span class="math inline">\(T_i \in \{0, 1\}\)</span> denote the treatment actually <em>received</em>.</li>
+</ul>
+<p>In a clean experiment these coincide, but with noncompliance they need not: a participant can have <span class="math inline">\(Z_i = 1, T_i = 0\)</span> (assigned but untreated) or <span class="math inline">\(Z_i = 0, T_i = 1\)</span> (a control who crossed over). The instrument is the randomized assignment <span class="math inline">\(Z_i\)</span>; the endogenous variable is the received treatment <span class="math inline">\(T_i\)</span>.</p>
+<p>Following the potential-outcomes framework, write <span class="math inline">\(Y_i(1)\)</span> and <span class="math inline">\(Y_i(0)\)</span> for participant <span class="math inline">\(i\)</span>’s outcome with and without treatment; the individual causal effect is</p>
+<p><span class="math display">\[Y_i(1) - Y_i(0),\]</span></p>
+<p>forever unobservable since only one of the two is realized.</p>
+<p>Likewise, let <span class="math inline">\(T_i(z)\)</span> be the treatment <span class="math inline">\(i\)</span> would take under assignment <span class="math inline">\(z\)</span>. This last object lets us partition the population into four latent types:</p>
 <ul>
 <li><strong>Compliers</strong> take treatment when assigned and not otherwise: <span class="math inline">\(T_i(1) = 1, T_i(0) = 0\)</span>.</li>
 <li><strong>Always-takers</strong> take treatment regardless: <span class="math inline">\(T_i(1) = T_i(0) = 1\)</span>.</li>
 <li><strong>Never-takers</strong> refuse regardless: <span class="math inline">\(T_i(1) = T_i(0) = 0\)</span>.</li>
 <li><strong>Defiers</strong> do the opposite of their assignment — assumed away below.</li>
 </ul>
-<p>Three quantities organize the analysis. The <strong>first stage</strong> is the effect of assignment on treatment received, i.e.&nbsp;the difference in treatment rates between the assigned-treatment and assigned-control groups — also called <em>compliance</em>. The <strong>reduced form</strong> (or intention-to-treat, ITT, effect) is the effect of assignment on the outcome. And the <strong>local average treatment effect</strong> (LATE) is the average causal effect among compliers.</p>
-<p>The whole apparatus rests on four assumptions: (i) random assignment of <span class="math inline">\(Z_i\)</span>; (ii) a <em>first-stage</em> (relevance) condition — assignment must actually move treatment, so compliance is non-zero; (iii) <em>monotonicity</em> — assignment never pushes anyone <em>away</em> from treatment, which rules out defiers; and (iv) the <em>exclusion restriction</em> — assignment affects the outcome only through treatment receipt, never directly.</p>
-<p>To keep things concrete I will borrow the survey’s running example: the ISCHEMIA trial, which randomized roughly 5,000 patients with coronary artery disease to an invasive revascularization strategy (<span class="math inline">\(Z_i = 1\)</span>) or conservative medical therapy (<span class="math inline">\(Z_i = 0\)</span>), measuring quality of life one year later on the Seattle Angina Questionnaire (SAQ).</p>
+<p>Three quantities organize the analysis.</p>
+<ol type="1">
+<li>The <strong>first stage</strong> is the effect of assignment (<span class="math inline">\(Z\)</span>) on treatment (<span class="math inline">\(T\)</span>) received, i.e.&nbsp;the difference in treatment rates between the assigned-treatment and assigned-control groups — also called <em>compliance</em>.</li>
+<li>The <strong>reduced form</strong> (or intention-to-treat, ITT, effect) is the effect of assignment (<span class="math inline">\(Z\)</span>) on the outcome (<span class="math inline">\(Y\)</span>).</li>
+<li>The <strong>local average treatment effect</strong> (LATE) is the average causal effect among compliers.</li>
+</ol>
+<p>The whole framework rests on four assumptions:</p>
+<ol type="1">
+<li>random assignment of <span class="math inline">\(Z_i\)</span>;</li>
+<li>a <em>first-stage</em> (relevance) condition — assignment must actually move treatment, so compliance is non-zero;</li>
+<li><em>monotonicity</em> — assignment never pushes anyone <em>away</em> from treatment, which rules out defiers; and</li>
+<li>the <em>exclusion restriction</em> — assignment affects the outcome only through treatment receipt, never directly.</li>
+</ol>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="use-case-1-noncompliance" class="level3">
 <h3 class="anchored" data-anchor-id="use-case-1-noncompliance">Use Case #1: Noncompliance</h3>
-<p>In a trial where everyone complies, <span class="math inline">\(T_i = Z_i\)</span>, and the difference in mean outcomes by assignment <em>is</em> the average treatment effect. Noncompliance breaks this. Suppose treatment effects are constant and equal to <span class="math inline">\(\beta\)</span>, so that <span class="math inline">\(Y_i = Y_i(0) + \beta T_i\)</span>. Then a little algebra on the assignment-based comparison gives</p>
+<p>In a trial where everyone complies, <span class="math inline">\(T_i = Z_i\)</span>, and the difference in mean outcomes by assignment <em>is</em> the average treatment effect. Noncompliance breaks this.</p>
+<p>Suppose treatment effects are constant and equal to <span class="math inline">\(\beta\)</span>, so that</p>
+<p><span class="math display">\[Y_i = Y_i(0) + \beta T_i.\]</span></p>
+<p>Then a little algebra on the assignment-based comparison gives</p>
 <p><span class="math display">\[
 \underbrace{\text{ITT effect}}_{\text{reduced form}} = \beta \times \underbrace{\text{Compliance}}_{\text{first stage}}.
 \]</span></p>
@@ -480,28 +501,21 @@ window.Quarto = {
 <p><span class="math display">\[
 \frac{\text{ITT effect}}{\text{Compliance}} = \mathbb{E}\big[Y_i(1) - Y_i(0) \mid \text{complier}\big].
 \]</span></p>
-<p>In ISCHEMIA, the assigned-invasive group scored about <span class="math inline">\(3.66\)</span> points higher on SAQ quality of life than the assigned-conservative group (the reduced form). Compliance was about <span class="math inline">\(0.69\)</span> — roughly <span class="math inline">\(80\%\)</span> revascularized when assigned invasive minus <span class="math inline">\(12\%\)</span> revascularized when assigned conservative. Dividing gives a LATE of <span class="math inline">\(3.66 / 0.69 \approx 5.3\)</span>, nearly <span class="math inline">\(50\%\)</span> larger than the ITT and, unlike it, in the range clinicians consider meaningful. In practice these estimates and their standard errors are computed by two-stage least squares (2SLS), which conveniently accommodates <a href="https://vyasenov.github.io/blog/roles-covariates-rtc.html">covariates</a>, randomization strata, and multiple sites.</p>
 <hr>
 </section>
 <section id="use-case-2-selection-bias" class="level3">
 <h3 class="anchored" data-anchor-id="use-case-2-selection-bias">Use Case #2: Selection Bias</h3>
 <p>The second problem IVs solve is subtler, and it is where practitioners most often go wrong. Faced with noncompliance, the tempting move is a <em>per-protocol</em> or <em>as-treated</em> analysis: just compare people by the treatment they actually received, <span class="math inline">\(T_i\)</span>. The trouble is that <span class="math inline">\(T_i\)</span> is not randomized. The people who comply, cross over, or refuse differ systematically, so comparing by treatment received reintroduces exactly the confounding that randomization was designed to eliminate.</p>
-<p>ISCHEMIA illustrates the damage vividly. The always-takers — control patients who got revascularized anyway — entered the trial substantially <em>sicker</em> than compliers, while never-takers were somewhat <em>healthier</em>. An as-treated comparison therefore stacks sicker patients on the treated side and healthier ones on the untreated side, biasing the estimate downward. That is precisely why the paper’s as-treated estimates come in below the IV estimates.</p>
 <p>The IV approach sidesteps this entirely by comparing groups defined by <em>randomized</em> assignment <span class="math inline">\(Z_i\)</span>, not by <span class="math inline">\(T_i\)</span>. The comparison is apples-to-apples — the complier subpopulation on the treated side is statistically identical to the complier subpopulation on the control side, differing only in the luck of the draw. The estimate is a per-protocol effect, but one purged of selection bias. As a bonus, although individual compliers cannot be identified, their average baseline characteristics <em>can</em> be computed, letting the analyst check how representative they are of the broader patient population.</p>
 <hr>
-</section>
-<section id="extensions" class="level3">
-<h3 class="anchored" data-anchor-id="extensions">Extensions</h3>
-<p>The ideas above are the foundation; the literature built a great deal on top of them. When the first stage is weak — assignment barely moves treatment — IV estimates become badly biased and their standard inference unreliable, which spawned an entire literature on <em>weak instruments</em> and the diagnostics (such as first-stage F-statistics) used to detect them. Moving beyond a single average, <em>marginal treatment effects</em> (MTE) generalize LATE to trace out how effects vary across the latent propensity to be treated, connecting the IV world to richer models of selection. A complementary route, which I have explored in a <a href="https://vyasenov.github.io/blog/treatment-effects-bounds.html">separate note on treatment effect bounds</a>, asks what the data imply about effects for the <em>whole</em> population under weaker assumptions, rather than the compliers alone.</p>
-<p>It is worth noting that LATE has not been without controversy. The estimand is defined by the instrument — change the instrument and you change which compliers you are averaging over — which struck some as letting the tool dictate the question. This is the substance of the long-running, occasionally pointed exchange between James Heckman, who favored structural models with externally meaningful parameters, and Guido Imbens, whose pragmatic rejoinder was essentially “better LATE than nothing.” Finally, the framework is finding new life in <em>nudge</em> (encouragement) trials, where a low-cost randomized prompt — a text, an email, a letter — serves as the instrument for a behavior like vaccination or medication adherence, converting a small nudge effect into the much larger effect on those who actually comply.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
 <li>Instrumental variables are ubiquitous in academic econometrics and applied microeconomics; their footprint in industry remains comparatively small.</li>
-<li>Randomized experiments do not always go according to plan — noncompliance and crossovers are the rule, not the exception, in pragmatic and clinical trials.</li>
-<li>IVs come to the rescue for two distinct, thorny problems: noncompliance (which dilutes intention-to-treat effects) and selection bias (which contaminates per-protocol and as-treated comparisons).</li>
+<li>Randomized experiments do not always go according to plan — noncompliance and crossovers are common in pragmatic and clinical trials.</li>
+<li>IVs come to the rescue for two distinct, thorny problems: noncompliance and selection bias.</li>
 <li>The price is interpretational: IV identifies the LATE, an effect specific to the compliers induced by the instrument — not necessarily the average effect for the whole population. Whether that is the estimand you want is a question worth asking before you run the regression.</li>
 </ul>
 </section>

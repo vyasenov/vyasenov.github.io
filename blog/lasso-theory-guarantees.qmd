@@ -8,7 +8,7 @@ categories: [machine learning, variable selection, statistical inference]
 
 Every data scientist has heard of the Lasso, and I have written plenty about it here as well — its [many flavors](https://vyasenov.github.io/blog/flavors-lasso.html), its [oracle property](https://vyasenov.github.io/blog/oracle-property.html), and its [use in estimating heterogeneous treatment effects](https://vyasenov.github.io/blog/lasso-heterogeneous-effects.html), among other things. It is appealing for several reasons: simplicity, cheap and fast computation, interpretability, and a solid theoretical foundation.
 
-In this note I focus on that last item — what makes the Lasso attractive from a theoretical standpoint. The goal is to give a high-level overview of the kinds of guarantees the Lasso promises. The literature here is heavy and, frankly, daunting, so I keep the mathematical rigor to a minimum. I am after intuition: what can the Lasso deliver in ideal settings, and what does "ideal" actually require?
+In this note I focus on that last item — what makes the Lasso attractive from a theoretical standpoint. The goal is to give a high-level overview of the kinds of guarantees the Lasso promises. The literature here is heavy and daunting, so I keep the mathematical rigor to a minimum. I am after intuition: what can the Lasso deliver and under what conditions?
 
 The punchline, which I will return to repeatedly, is that these guarantees are not free. Each one rests on assumptions about the design matrix, the noise, and the true signal — and those assumptions get stronger as the promises get bolder.
 
@@ -38,43 +38,51 @@ For every $\lambda$ there is a $t$ that yields the same solution. The $\ell_1$ p
 
 ## A Closer Look
 
-I will examine four broad groups of theoretical results. Each comes with its own assumptions and works only under specific conditions — sparse true support, a particular growth rate for $n$ relative to $p$, a well-behaved design matrix, and so on. I have ordered the sections in roughly ascending order of how demanding those assumptions are. This ordering is the most important takeaway of the post: prediction is cheap, estimation costs more, and exact support recovery is expensive.
+I will examine three broad groups of theoretical results. Each comes with its own assumptions and works only under specific conditions — sparse true support, a particular growth rate for $n$ relative to $p$, a well-behaved design matrix, and so on. I have ordered the sections in roughly ascending order of how demanding those assumptions are. This ordering is the most important takeaway of the post: prediction is cheap, estimation costs more, and exact support recovery is expensive.
 
 ---
 
 ### Prediction Error
 
-This is the most basic guarantee, and the cheapest to buy. It says the Lasso will predict "well enough" — the in-sample prediction error will not exceed a certain bound. Formally, with the penalty chosen at the canonical rate $\lambda \asymp \sigma\sqrt{\tfrac{\log p}{n}}$, one can show that with high probability
+This is the most basic guarantee. It says the Lasso will predict "well enough" — the in-sample prediction error will not exceed a certain bound. 
+
+Formally, with the penalty chosen at the canonical rate $\lambda \asymp \sigma\sqrt{\tfrac{\log p}{n}}$, one can show that with high probability
 
 $$\frac{1}{n} \| X(\hat\beta - \beta^*) \|_2^2 \;\lesssim\; \lambda \, \|\beta^*\|_1 \;\asymp\; \sigma \, \|\beta^*\|_1 \sqrt{\frac{\log p}{n}}.$$
 
-This is the so-called *slow rate*. What is remarkable is how little it requires: essentially no conditions on the design matrix $X$ beyond standardizing the columns. All you need is for $\lambda$ to be large enough to dominate the noise — which is exactly what the $\sqrt{\log p / n}$ scaling ensures. The $\log p$ term is the price of searching over $p$ candidate predictors, and it enters only logarithmically, which is why the Lasso tolerates enormous $p$.
+This is the so-called *slow rate*. 
+
+What is remarkable is how little it requires: essentially no conditions on the design matrix $X$ beyond standardizing the columns. All you need is for $\lambda$ to be large enough to dominate the noise — which is exactly what the $\sqrt{\log p / n}$ scaling ensures. The $\log p$ term is the price of searching over $p$ candidate predictors, and it enters only logarithmically, which is why the Lasso tolerates enormous $p$.
 
 If you are willing to assume more about the design (see the next section), the bound sharpens to the *fast rate*,
 
 $$\frac{1}{n} \| X(\hat\beta - \beta^*) \|_2^2 \;\lesssim\; \frac{s\, \sigma^2 \log p}{n},$$
 
-which scales with the number of true signals $s$ rather than with $\|\beta^*\|_1$. The practical reading: good predictive behavior is the Lasso's most robust property. If all you care about is forecasting, you can lean on the Lasso with relatively little hand-wringing about the design.
+which scales with the number of true signals $s$ rather than with $\|\beta^*\|_1$.
 
 ---
 
 ### Estimation Error
 
-Here the question shifts from predictions $X\hat\beta$ to the coefficients $\hat\beta$ themselves — how close is $\hat\beta$ to $\beta^*$? This is a genuinely harder problem, and it requires a genuine condition on the design matrix.
+Here the question shifts from predictions $X\hat\beta$ to the coefficients $\hat\beta$ themselves — how close is $\hat\beta$ to $\beta^*$? This is a harder problem, and it requires a condition on the design matrix.
 
-The standard assumption is the *restricted eigenvalue* (RE) condition (or the closely related compatibility condition). Loosely, it requires that $\tfrac{1}{n} X^\top X$ behave like a well-conditioned matrix — bounded away from singularity — but only over the directions that matter, namely vectors that are approximately sparse. We cannot ask $X^\top X$ to be invertible outright, since $p > n$ makes that impossible; the restriction to a sparse cone is what rescues the argument. Under the RE condition with constant $\kappa > 0$, and again $\lambda \asymp \sigma\sqrt{\tfrac{\log p}{n}}$,
+The standard assumption is the *restricted eigenvalue* (RE) condition. Loosely, it requires that $\tfrac{1}{n} X^\top X$ behave like a well-conditioned matrix — bounded away from singularity — but only over the directions that matter, namely vectors that are approximately sparse. We cannot ask $X^\top X$ to be invertible outright, since $p > n$ makes that impossible; the restriction to a sparse cone is what rescues the argument. 
+
+Under the RE condition with constant $\kappa > 0$, and again $\lambda \asymp \sigma\sqrt{\tfrac{\log p}{n}}$,
 
 $$\|\hat\beta - \beta^*\|_2 \;\lesssim\; \frac{\sigma}{\kappa} \sqrt{\frac{s \log p}{n}}, \qquad \|\hat\beta - \beta^*\|_1 \;\lesssim\; \frac{\sigma s}{\kappa} \sqrt{\frac{\log p}{n}}.$$
 
 The intuition is that strong correlations among predictors flatten the objective function in certain directions, making the coefficients poorly identified even when predictions are fine. The RE condition rules out the worst of this. When it holds, the $\ell_2$ error decays at essentially the rate an oracle who knew $S$ would achieve, up to the $\log p$ factor.
 
-A reminder is in order here: never take the coefficients — or the implied $p$-values — from a Lasso fit too seriously without an extreme degree of caution. The shrinkage that makes the Lasso work also biases every non-zero coefficient toward zero, and standard inference ignores the selection step entirely. I have written about [hypothesis testing in linear ML models](https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html) elsewhere on the blog; the estimation bounds above are about *rates*, not about valid confidence intervals.
+You know to never take the coefficients — or the implied $p$-values — from a Lasso fit too seriously without an extreme degree of caution. The shrinkage that makes the Lasso work also biases every non-zero coefficient toward zero, and standard inference ignores the selection step entirely. I have written about [hypothesis testing in linear ML models](https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html) elsewhere on the blog; the estimation bounds above are about *rates*, not about valid confidence intervals.
 
 ---
 
 ### Support Recovery
 
-This is the most intriguing guarantee and, fittingly, the most expensive. It is relevant for model selection rather than prediction: it asks whether the Lasso picks out exactly the right set of variables, $\hat S = S$, where $\hat S = \{j : \hat\beta_j \neq 0\}$. The goal is *selection consistency*,
+This is the most intriguing guarantee and, fittingly, the most expensive. It is relevant for model selection rather than prediction: it asks whether the Lasso picks out exactly the right set of variables, $\hat S = S$, where $\hat S = \{j : \hat\beta_j \neq 0\}$. 
+
+The goal is *selection consistency*,
 
 $$\mathbb{P}(\hat S = S) \to 1.$$
 
@@ -88,24 +96,16 @@ The practical implication is sobering. Exact support recovery is fragile: it dem
 
 ---
 
-### Beyond the Basics
-
-The three results above are the backbone, but the theory has grown well past them. A few directions worth knowing about:
-
-*Debiased (desparsified) Lasso* removes the shrinkage bias by adding a correction term, yielding estimators that are asymptotically normal and support honest confidence intervals and $p$-values — the very thing the raw Lasso cannot provide. *Square-root (scaled) Lasso* modifies the loss so that the optimal $\lambda$ no longer depends on the unknown noise level $\sigma$, which makes tuning pivotal and robust to heteroskedasticity. On the lower-bound side, *minimax* analyses show that the rates above are not artifacts of the Lasso but are essentially optimal: no estimator can do uniformly better over sparse classes, so the $s \log p / n$ rate is the best one can hope for. There is also a large literature on *post-selection inference*, which tackles the problem of doing valid hypothesis tests after the selection step.
-
-These all share a theme: the basic Lasso is excellent at prediction and decent at estimation, but turning it into a tool for *inference* requires extra machinery layered on top.
-
 ## Bottom Line
 
 - The Lasso is among the most popular machine learning methods, and a good part of its appeal comes from a strong theoretical foundation.
-- Under suitable conditions, one can show that the Lasso performs well across three distinct tasks — prediction, coefficient estimation, and exact support recovery — but these come at increasing assumption costs, in that order.
+- Under suitable conditions, one can show that the Lasso performs well across three distinct tasks — prediction, coefficient estimation, and exact support recovery..
 - Prediction error is nearly free; estimation error needs a restricted-eigenvalue-type condition on the design; support recovery additionally needs an irrepresentable condition and a minimum-signal-strength condition.
-- Not all of these guarantees will hold on any given dataset. The researcher must evaluate the regularity conditions carefully for each claim she makes — and treat raw Lasso coefficients and $p$-values with skepticism unless a debiasing step has been applied.
+- Not all of these guarantees will hold on any given dataset. The researcher must evaluate the regularity conditions carefully for each claim she makes.
 
 ## Where to Learn More
 
-For a focused, modern treatment, "Statistical Learning with Sparsity" by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with "The Elements of Statistical Learning" (2009) as gentler background. For the theory proper, Bühlmann and van de Geer's "Statistics for High-Dimensional Data" (2011) and Wainwright's "High-Dimensional Statistics" (2019) are the standard references, though both are dense. On the original results, Bickel, Ritov, and Tsybakov (2009) established the prediction and estimation bounds under the restricted eigenvalue condition, while Zhao and Yu (2006) and Wainwright (2009) characterized support recovery via the irrepresentable condition.
+For a focused, modern treatment, "Statistical Learning with Sparsity" by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with "The Elements of Statistical Learning" (2009) as gentler background. For the theory nerds, Bühlmann and van de Geer's "Statistics for High-Dimensional Data" (2011) and Wainwright's "High-Dimensional Statistics" (2019) are the standard references, though both are too dense for most mortals`.
 
 ## References
 

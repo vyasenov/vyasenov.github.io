@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-06-12">
+<meta name="dcterms.date" content="2026-06-24">
 
-<title>Simplified Double ML for Causal Inference – Vasco Yasenov</title>
+<title>Always-Valid p-Values and Online Multiple Testing – Vasco Yasenov</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,41 +23,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -158,10 +123,10 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="../code/styles.css">
-<meta property="og:title" content="Simplified Double ML for Causal Inference – Vasco Yasenov">
+<meta property="og:title" content="Always-Valid p-Values and Online Multiple Testing – Vasco Yasenov">
 <meta property="og:description" content="Personal Site of Vasco Yasenov">
 <meta property="og:site_name" content="Vasco Yasenov">
-<meta name="twitter:title" content="Simplified Double ML for Causal Inference – Vasco Yasenov">
+<meta name="twitter:title" content="Always-Valid p-Values and Online Multiple Testing – Vasco Yasenov">
 <meta name="twitter:description" content="Personal Site of Vasco Yasenov">
 <meta name="twitter:card" content="summary_large_image">
 </head>
@@ -430,10 +395,12 @@ window.Quarto = {
   <li><a href="#notation" id="toc-notation" class="nav-link" data-scroll-target="#notation">Notation</a></li>
   <li><a href="#a-closer-look" id="toc-a-closer-look" class="nav-link" data-scroll-target="#a-closer-look">A Closer Look</a>
   <ul class="collapse">
-  <li><a href="#a-short-dictionary" id="toc-a-short-dictionary" class="nav-link" data-scroll-target="#a-short-dictionary">A Short Dictionary</a></li>
-  <li><a href="#the-doubly-robust-score" id="toc-the-doubly-robust-score" class="nav-link" data-scroll-target="#the-doubly-robust-score">The Doubly Robust Score</a></li>
-  <li><a href="#cross-fitting" id="toc-cross-fitting" class="nav-link" data-scroll-target="#cross-fitting">Cross-Fitting</a></li>
-  <li><a href="#why-it-works-neyman-orthogonality" id="toc-why-it-works-neyman-orthogonality" class="nav-link" data-scroll-target="#why-it-works-neyman-orthogonality">Why It Works: Neyman Orthogonality</a></li>
+  <li><a href="#three-things-people-call-sequential" id="toc-three-things-people-call-sequential" class="nav-link" data-scroll-target="#three-things-people-call-sequential">Three things people call “sequential”</a></li>
+  <li><a href="#always-valid-p-values-the-inner-process" id="toc-always-valid-p-values-the-inner-process" class="nav-link" data-scroll-target="#always-valid-p-values-the-inner-process">Always-valid p-values: the inner process</a></li>
+  <li><a href="#error-rates-for-the-outer-process" id="toc-error-rates-for-the-outer-process" class="nav-link" data-scroll-target="#error-rates-for-the-outer-process">Error rates for the outer process</a></li>
+  <li><a href="#alpha-investing-testing-on-a-budget" id="toc-alpha-investing-testing-on-a-budget" class="nav-link" data-scroll-target="#alpha-investing-testing-on-a-budget">Alpha-investing: testing on a budget</a></li>
+  <li><a href="#lord-saffron-addis" id="toc-lord-saffron-addis" class="nav-link" data-scroll-target="#lord-saffron-addis">LORD, SAFFRON, ADDIS</a></li>
+  <li><a href="#where-dependence-bites" id="toc-where-dependence-bites" class="nav-link" data-scroll-target="#where-dependence-bites">Where dependence bites</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -447,10 +414,11 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Simplified Double ML for Causal Inference</h1>
+<h1 class="title">Always-Valid p-Values and Online Multiple Testing</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">causal inference</div>
-    <div class="quarto-category">machine learning</div>
+    <div class="quarto-category">multiple testing</div>
+    <div class="quarto-category">hypothesis testing</div>
+    <div class="quarto-category">statistical inference</div>
   </div>
   </div>
 
@@ -462,7 +430,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 12, 2026</p>
+      <p class="date">June 24, 2026</p>
     </div>
   </div>
   
@@ -474,216 +442,108 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">7 min read</div>
+<div class="reading-time">13 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Double machine learning (DML) is one of the most influential ideas to come out of econometrics in the last decade. It lets you estimate a causal effect while using flexible machine learning to soak up confounding — random forests, gradient boosting, the lasso, whatever — and still get a <span class="math inline">\(\sqrt{n}\)</span>-consistent estimate with honest standard errors. That combination, ML flexibility <em>plus</em> valid inference, is what made it spread so quickly.</p>
-<p>The catch is that the literature is written in a dialect. The foundational paper (Chernozhukov et al., 2018) and excellent reviews like Knaus (2022) speak the language of <em>programme evaluation</em>: programmes indexed by <span class="math inline">\(w\)</span>, average potential outcomes, nuisance parameters, scores, Neyman orthogonality. None of it is wrong, but it can obscure what is, at heart, a simple recipe that any practitioner who has run a <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">propensity-score analysis</a> will recognize. My goal in this note is to translate the core of DML — estimation of average treatment effects — into the plainer causal-inference vocabulary most readers already carry around. I keep the heterogeneous-effects and policy-learning machinery for another day; this is the basic, average-effects version.</p>
-<p>If you read my recent post on <a href="https://vyasenov.github.io/blog/tmle-estimation-recipe.html">targeted learning</a>, much of this will feel familiar. DML and TMLE are siblings: both build on the same doubly robust score and both use sample splitting to license machine learning. They differ mainly in <em>how</em> they combine the pieces, not in the underlying logic.</p>
+<p>Here is a confession. Early in my career, I would open the dashboard for a running A/B test every morning, and the moment the p-value dipped below <span class="math inline">\(0.05\)</span> I would call it: ship the variant, move on. It felt rigorous—I was, after all, looking at a real significance test. It was not rigorous. It was a near-perfect machine for manufacturing false positives, and I was the operator.</p>
+<p>The problem is that the classical p-value is built for a world that modern data science has largely abandoned. That world has two defining features. First, you collect a <em>fixed</em> sample, compute <em>one</em> test statistic, and decide <em>once</em>. Second, when you do test many hypotheses, you have all of them—and all their p-values—sitting in front of you at the same time, so a procedure like Benjamini–Hochberg can sort them and pick a threshold. Neither feature survives contact with how experiments actually run today. A major tech company runs tens of thousands of A/B tests a year, each one monitored continuously as data trickle in. A genomics platform tests new gene knockouts as they are discovered, with no idea how many tests there will eventually be. A platform trial adds and drops treatment arms over months. Hypotheses arrive in a <em>stream</em>, and decisions have to be made <em>now</em>.</p>
+<p>This breaks classical inference in two distinct places, and the single biggest source of confusion in this area is that people use the word “sequential” for both. I have written before about <a href="https://vyasenov.github.io/blog/recent-dev-fdr.html">false discovery rate control</a> and the <a href="https://vyasenov.github.io/blog/flavors-multiple-testing.html">many flavors of multiple testing adjustments</a>; this post is about what happens to all of that machinery when time enters the picture. My goal is to draw a clean map of the terminology—sequential testing, always-valid p-values, online multiple testing—and then walk through the algorithms that make the streaming world tractable, following the exposition of Robertson, Wason and Ramdas (2023).</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Consider the canonical setup: a binary treatment <span class="math inline">\(D \in \{0, 1\}\)</span>, an outcome <span class="math inline">\(Y\)</span>, and a vector of pre-treatment confounders <span class="math inline">\(X\)</span>. Each unit has potential outcomes <span class="math inline">\(Y(1)\)</span> and <span class="math inline">\(Y(0)\)</span>, and the target is the average treatment effect</p>
-<p><span class="math display">\[\tau = \mathbb{E}\big[Y(1) - Y(0)\big].\]</span></p>
-<p>Two functions of the data — the <em>nuisance parameters</em>, in the paper’s language — carry the weight. The first is the <strong>outcome regression</strong>,</p>
-<p><span class="math display">\[\mu_d(x) = \mathbb{E}[Y \mid D = d, X = x],\]</span></p>
-<p>and the second is the <strong>propensity score</strong>,</p>
-<p><span class="math display">\[e(x) = \mathbb{P}(D = 1 \mid X = x).\]</span></p>
-<p>As usual, <span class="math inline">\(\tau\)</span> is causally identified under unconfoundedness (<span class="math inline">\(Y(d) \perp D \mid X\)</span>), overlap (<span class="math inline">\(0 &lt; e(x) &lt; 1\)</span>), and SUTVA. I take those as given and focus on estimation.</p>
+<p>Hypotheses arrive at times <span class="math inline">\(t = 1, 2, \dots\)</span>. At each time <span class="math inline">\(t\)</span> we observe a p-value <span class="math inline">\(P_t\)</span> for a null hypothesis <span class="math inline">\(H_t\)</span> and must decide whether to reject <span class="math inline">\(H_t\)</span> <em>before</em> moving on to <span class="math inline">\(t+1\)</span>. We assume each <span class="math inline">\(P_t\)</span> is a valid p-value, meaning that whenever <span class="math inline">\(H_t\)</span> is true, <span class="math display">\[
+\Pr(P_t \le x) \le x \quad \text{for all } x \in [0,1].
+\]</span></p>
+<p>A testing procedure supplies a sequence of test levels <span class="math inline">\(\alpha_t\)</span> and rejects via the rule <span class="math display">\[
+R_t = \mathbb{1}\{P_t \le \alpha_t\}.
+\]</span> Crucially, <span class="math inline">\(\alpha_t\)</span> may depend only on the past decisions <span class="math inline">\(R_1, \dots, R_{t-1}\)</span>—not on the future, and not on the total number of tests, which may be unknown or infinite.</p>
+<p>Let <span class="math inline">\(R(T) = \sum_{t=1}^{T} R_t\)</span> be the number of rejections (discoveries) by time <span class="math inline">\(T\)</span>, and let <span class="math inline">\(V(T)\)</span> be the number of those that are false. Write <span class="math inline">\(a \vee b = \max(a,b)\)</span>.</p>
+<p>For the <em>inner</em> process—repeated monitoring within a single experiment—a richer object is needed. An <strong>anytime-valid</strong> (or <strong>always-valid</strong>) p-value is a <em>sequence</em> <span class="math inline">\((P_{t,n})_{n \ge 1}\)</span> indexed by the within-experiment sample size <span class="math inline">\(n\)</span>, such that <span class="math display">\[
+\Pr(P_{t,N} \le x) \le x \quad \text{for all } x \in [0,1] \text{ and any data-dependent stopping time } N.
+\]</span> The phrase “any stopping time” is the whole point: the guarantee holds no matter when—or why—you decide to stop looking.</p>
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="a-short-dictionary" class="level3">
-<h3 class="anchored" data-anchor-id="a-short-dictionary">A Short Dictionary</h3>
-<p>Before the method, here is the translation that unlocks most of the program-evaluation literature. None of these are new concepts — they are renamed versions of things you already use.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Program-evaluation term</th>
-<th>Causal-inference reading</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Programme <span class="math inline">\(w\)</span></td>
-<td>Treatment arm / treatment level</td>
-</tr>
-<tr class="even">
-<td>Average potential outcome (APO), <span class="math inline">\(\gamma_w\)</span></td>
-<td>Mean potential outcome, <span class="math inline">\(\mathbb{E}[Y(d)]\)</span></td>
-</tr>
-<tr class="odd">
-<td>Nuisance parameters</td>
-<td>The outcome regression <span class="math inline">\(\mu_d\)</span> and propensity score <span class="math inline">\(e\)</span></td>
-</tr>
-<tr class="even">
-<td>Outcome / exposure mechanism</td>
-<td>Outcome model / treatment-assignment model</td>
-</tr>
-<tr class="odd">
-<td>Doubly robust score <span class="math inline">\(\Gamma\)</span></td>
-<td>The AIPW influence function (per-unit “pseudo-outcome”)</td>
-</tr>
-<tr class="even">
-<td>Cross-fitting</td>
-<td>Sample splitting to estimate nuisances out-of-fold</td>
-</tr>
-<tr class="odd">
-<td>Neyman orthogonality</td>
-<td>Insensitivity of the estimator to small nuisance errors</td>
-</tr>
-</tbody>
-</table>
-<p>With that dictionary in hand, the rest is short.</p>
+<section id="three-things-people-call-sequential" class="level3">
+<h3 class="anchored" data-anchor-id="three-things-people-call-sequential">Three things people call “sequential”</h3>
+<p>Untangling the vocabulary is half the battle, so let me be explicit about three ideas that are routinely conflated.</p>
+<p><strong>Classical sequential testing</strong> concerns a <em>single</em> hypothesis whose data accumulate over time, with the sample size <em>not</em> fixed in advance. Wald’s sequential probability ratio test is the canonical example: keep sampling until the evidence is decisive, then stop. The hard part is that naive optional stopping destroys the type I error guarantee—if you re-test after every new observation and stop the first time you see <span class="math inline">\(p \le 0.05\)</span>, you will eventually cross that line even when the null is true.</p>
+<p><strong>Always-valid p-values</strong> are the modern device that <em>fixes</em> optional stopping. They are the inner process: a single experiment, monitored continuously, with a validity guarantee that survives stopping at any time for any reason.</p>
+<p><strong>Online multiple testing</strong> is a different problem entirely. Here a <em>stream of distinct hypotheses</em> <span class="math inline">\(H_1, H_2, \dots\)</span> arrives over time, each tested once, and the goal is to control a false discovery criterion across the whole stream while deciding each case in real time. This is the outer process.</p>
+<p>The clean way to hold these together, due to Robertson, Wason and Ramdas, is the <strong>inner/outer</strong> framing. Each experiment in the stream is itself an inner sequential process—possibly monitored continuously—that ultimately emits a single valid p-value <span class="math inline">\(P_t\)</span>. The outer online-testing procedure then strings those <span class="math inline">\(P_t\)</span> together and controls error rates across experiments. The two layers compose cleanly: you can run an always-valid test inside each experiment and an online-FDR algorithm across them, and the guarantees stack. (A fourth cousin, the multi-armed bandit, also allocates effort across arms over time, but it is a <em>single</em> adaptive experiment, not a stream of hypotheses—so it sits outside this taxonomy.)</p>
 <hr>
 </section>
-<section id="the-doubly-robust-score" class="level3">
-<h3 class="anchored" data-anchor-id="the-doubly-robust-score">The Doubly Robust Score</h3>
-<p>Everything in DML for average effects is built on one object: the <strong>doubly robust score</strong>, better known to many as the augmented inverse probability weighting (AIPW) score of Robins et al.&nbsp;(1994). For each unit it combines the outcome regression with an <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">inverse-probability-weighted</a> correction:</p>
-<p><span class="math display">\[
-\psi_i = \underbrace{\mu_1(X_i) - \mu_0(X_i)}_{\text{outcome-regression guess}} + \underbrace{\frac{D_i\big(Y_i - \mu_1(X_i)\big)}{e(X_i)} - \frac{(1 - D_i)\big(Y_i - \mu_0(X_i)\big)}{1 - e(X_i)}}_{\text{IPW bias correction on the residuals}}.
-\]</span></p>
-<p>The ATE estimate is simply the sample average, <span class="math inline">\(\hat\tau = \frac{1}{n}\sum_i \psi_i\)</span>, and — strikingly — its standard error is just the standard deviation of the <span class="math inline">\(\psi_i\)</span> divided by <span class="math inline">\(\sqrt{n}\)</span>, with no adjustment for the fact that the nuisances were estimated. A one-sample <span class="math inline">\(t\)</span>-test does the rest.</p>
-<p>The name “doubly robust” comes from the structure: if the outcome regression <span class="math inline">\(\mu_d\)</span> is correct, the correction term has mean zero and the first part delivers the answer; if instead the propensity score <span class="math inline">\(e\)</span> is correct, the correction term repairs a wrong outcome model. You only need <em>one</em> of the two to be right. This is the same insurance policy that TMLE buys — DML just packages it differently.</p>
+<section id="always-valid-p-values-the-inner-process" class="level3">
+<h3 class="anchored" data-anchor-id="always-valid-p-values-the-inner-process">Always-valid p-values: the inner process</h3>
+<p>Why does peeking break a fixed-<span class="math inline">\(n\)</span> p-value? Because validity is a statement about a <em>single</em> pre-committed test. The event “<span class="math inline">\(P_n \le \alpha\)</span> for <em>some</em> <span class="math inline">\(n\)</span> along the way” is a union over many looks, and its probability under the null can climb toward <span class="math inline">\(1\)</span> as you keep looking. A fixed-sample p-value makes no promise about that union.</p>
+<p>An always-valid p-value is constructed precisely so that the union is controlled: <span class="math inline">\(\Pr(P_{t,N} \le x) \le x\)</span> simultaneously over all stopping times <span class="math inline">\(N\)</span>. The modern route to such objects runs through martingales and <strong>e-values</strong>—nonnegative statistics with expectation at most <span class="math inline">\(1\)</span> under the null, whose running products form a test supermartingale. Ville’s inequality then bounds the probability that the process <em>ever</em> exceeds a threshold, which is exactly the optional-stopping guarantee. The confidence-interval analog is the <strong>confidence sequence</strong>: a sequence of intervals that covers the true parameter simultaneously at all sample sizes with probability <span class="math inline">\(1 - \alpha\)</span>.</p>
+<p>The practical payoff is enormous and is why this matters for industry. If an A/B testing platform reports always-valid p-values or confidence sequences, the experimenter can watch the dashboard continuously, stop whenever the result is decisive (or whenever business pressure demands), and still retain a valid inference. My morning-dashboard habit becomes legitimate—provided the platform does the math correctly. This is the rigorous foundation under continuous monitoring, and it complements the <a href="https://vyasenov.github.io/blog/bayesian-ab-tests.html">Bayesian approach to A/B tests</a> that achieves a related flexibility from a different direction.</p>
+<p>The catch is conservatism. Buying validity at every stopping time means always-valid p-values are, by construction, <em>conservative</em>: under the null they are stochastically larger than uniform. Hold onto that fact—it resurfaces below as an opportunity rather than a cost.</p>
 <hr>
 </section>
-<section id="cross-fitting" class="level3">
-<h3 class="anchored" data-anchor-id="cross-fitting">Cross-Fitting</h3>
-<p>There is one trap. If you estimate <span class="math inline">\(\mu_d\)</span> and <span class="math inline">\(e\)</span> with flexible machine learning on the <em>same</em> data you then plug into the score, the overfitting introduces a bias that does not vanish fast enough, and the <span class="math inline">\(\sqrt{n}\)</span> guarantee collapses. The fix is <strong>cross-fitting</strong>: estimate the nuisances on part of the data and evaluate the score on the held-out part, so no observation is used to predict its own nuisance values.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm: DML for the ATE">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm: DML for the ATE
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li><strong>Split</strong> the sample into <span class="math inline">\(K\)</span> folds (5 is typical).</li>
-<li>For each fold <span class="math inline">\(k\)</span>: <strong>fit</strong> the outcome model <span class="math inline">\(\hat\mu_d\)</span> and propensity model <span class="math inline">\(\hat e\)</span> on the <em>other</em> <span class="math inline">\(K-1\)</span> folds, then <strong>predict</strong> <span class="math inline">\(\hat\mu_1(X_i)\)</span>, <span class="math inline">\(\hat\mu_0(X_i)\)</span>, <span class="math inline">\(\hat e(X_i)\)</span> for the units in fold <span class="math inline">\(k\)</span>.</li>
-<li><strong>Build</strong> the doubly robust score <span class="math inline">\(\psi_i\)</span> for every unit using its out-of-fold predictions.</li>
-<li><strong>Average</strong>: <span class="math inline">\(\hat\tau = \frac{1}{n}\sum_i \psi_i\)</span>, with <span class="math inline">\(\widehat{\text{SE}} = \text{sd}(\psi_i)/\sqrt{n}\)</span>.</li>
-</ol>
-</div>
-</div>
-<p>The code below runs the whole recipe on simulated data, deliberately using random forests for both nuisances to show that the ML choice is a plug-in decision.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ranger)   <span class="co"># install.packages("ranger")</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Simulate confounded data ----</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">2000</span>; p <span class="ot">&lt;-</span> <span class="dv">5</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> p), n, p); <span class="fu">colnames</span>(X) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"X"</span>, <span class="dv">1</span><span class="sc">:</span>p)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>e   <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fl">0.8</span> <span class="sc">*</span> X[, <span class="dv">1</span>] <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> X[, <span class="dv">2</span>])          <span class="co"># true propensity</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>D   <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, e)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>mu0 <span class="ot">&lt;-</span> X[, <span class="dv">1</span>] <span class="sc">+</span> X[, <span class="dv">2</span>] <span class="sc">+</span> X[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> X[, <span class="dv">1</span>] <span class="sc">*</span> X[, <span class="dv">2</span>]</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>tau <span class="ot">&lt;-</span> <span class="dv">2</span>                                            <span class="co"># true ATE</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>Y   <span class="ot">&lt;-</span> mu0 <span class="sc">+</span> tau <span class="sc">*</span> D <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- 5-fold cross-fitting of the two nuisances ----</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>folds <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">length.out =</span> n))</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>mu1_hat <span class="ot">&lt;-</span> mu0_hat <span class="ot">&lt;-</span> e_hat <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>XD <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">D =</span> D, X)                               <span class="co"># predictors for the outcome model</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) {</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  tr <span class="ot">&lt;-</span> <span class="fu">which</span>(folds <span class="sc">!=</span> k); te <span class="ot">&lt;-</span> <span class="fu">which</span>(folds <span class="sc">==</span> k)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># outcome model mu_d(x) = E[Y | D, X]</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  om <span class="ot">&lt;-</span> <span class="fu">ranger</span>(<span class="at">x =</span> XD[tr, ], <span class="at">y =</span> Y[tr])</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  mu1_hat[te] <span class="ot">&lt;-</span> <span class="fu">predict</span>(om, <span class="at">data =</span> <span class="fu">cbind</span>(<span class="at">D =</span> <span class="dv">1</span>, X[te, ]))<span class="sc">$</span>predictions</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  mu0_hat[te] <span class="ot">&lt;-</span> <span class="fu">predict</span>(om, <span class="at">data =</span> <span class="fu">cbind</span>(<span class="at">D =</span> <span class="dv">0</span>, X[te, ]))<span class="sc">$</span>predictions</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># propensity e(x) = P(D = 1 | X)</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  ps <span class="ot">&lt;-</span> <span class="fu">ranger</span>(<span class="at">x =</span> X[tr, ], <span class="at">y =</span> <span class="fu">factor</span>(D[tr]), <span class="at">probability =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  e_hat[te] <span class="ot">&lt;-</span> <span class="fu">predict</span>(ps, <span class="at">data =</span> X[te, ])<span class="sc">$</span>predictions[, <span class="st">"1"</span>]</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>e_hat <span class="ot">&lt;-</span> <span class="fu">pmin</span>(<span class="fu">pmax</span>(e_hat, <span class="fl">0.01</span>), <span class="fl">0.99</span>)              <span class="co"># stabilize extreme weights</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Doubly robust (AIPW) score, then average ----</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>psi <span class="ot">&lt;-</span> (mu1_hat <span class="sc">-</span> mu0_hat) <span class="sc">+</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>       D <span class="sc">*</span> (Y <span class="sc">-</span> mu1_hat) <span class="sc">/</span> e_hat <span class="sc">-</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>       (<span class="dv">1</span> <span class="sc">-</span> D) <span class="sc">*</span> (Y <span class="sc">-</span> mu0_hat) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> e_hat)</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"DML ATE: %.3f (SE %.3f), true = %d</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>            <span class="fu">mean</span>(psi), <span class="fu">sd</span>(psi) <span class="sc">/</span> <span class="fu">sqrt</span>(n), tau))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor, RandomForestClassifier</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Simulate confounded data ----</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>n, p <span class="op">=</span> <span class="dv">2000</span>, <span class="dv">5</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>X   <span class="op">=</span> np.random.normal(size<span class="op">=</span>(n, p))</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>e   <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> np.exp(<span class="op">-</span>(<span class="fl">0.8</span> <span class="op">*</span> X[:, <span class="dv">0</span>] <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> X[:, <span class="dv">1</span>])))   <span class="co"># true propensity</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>D   <span class="op">=</span> np.random.binomial(<span class="dv">1</span>, e)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>mu0 <span class="op">=</span> X[:, <span class="dv">0</span>] <span class="op">+</span> X[:, <span class="dv">1</span>] <span class="op">+</span> X[:, <span class="dv">2</span>] <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> X[:, <span class="dv">0</span>] <span class="op">*</span> X[:, <span class="dv">1</span>]</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>tau <span class="op">=</span> <span class="fl">2.0</span>                                                  <span class="co"># true ATE</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>Y   <span class="op">=</span> mu0 <span class="op">+</span> tau <span class="op">*</span> D <span class="op">+</span> np.random.normal(size<span class="op">=</span>n)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- 5-fold cross-fitting of the two nuisances ----</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>mu1_hat, mu0_hat, e_hat <span class="op">=</span> np.zeros(n), np.zeros(n), np.zeros(n)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>XD <span class="op">=</span> np.column_stack([X, D])                               <span class="co"># predictors for the outcome model</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> tr, te <span class="kw">in</span> KFold(n_splits<span class="op">=</span><span class="dv">5</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">1988</span>).split(X):</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># outcome model mu_d(x) = E[Y | D, X]</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    om <span class="op">=</span> RandomForestRegressor(n_estimators<span class="op">=</span><span class="dv">200</span>, min_samples_leaf<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>                               random_state<span class="op">=</span><span class="dv">1988</span>).fit(XD[tr], Y[tr])</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    mu1_hat[te] <span class="op">=</span> om.predict(np.column_stack([X[te], np.ones(<span class="bu">len</span>(te))]))</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    mu0_hat[te] <span class="op">=</span> om.predict(np.column_stack([X[te], np.zeros(<span class="bu">len</span>(te))]))</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># propensity e(x) = P(D = 1 | X)</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    ps <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">200</span>, min_samples_leaf<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>                                random_state<span class="op">=</span><span class="dv">1988</span>).fit(X[tr], D[tr])</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    e_hat[te] <span class="op">=</span> ps.predict_proba(X[te])[:, <span class="dv">1</span>]</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>e_hat <span class="op">=</span> np.clip(e_hat, <span class="fl">0.01</span>, <span class="fl">0.99</span>)                         <span class="co"># stabilize extreme weights</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># ---- Doubly robust (AIPW) score, then average ----</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>psi <span class="op">=</span> ((mu1_hat <span class="op">-</span> mu0_hat)</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>       <span class="op">+</span> D <span class="op">*</span> (Y <span class="op">-</span> mu1_hat) <span class="op">/</span> e_hat</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>       <span class="op">-</span> (<span class="dv">1</span> <span class="op">-</span> D) <span class="op">*</span> (Y <span class="op">-</span> mu0_hat) <span class="op">/</span> (<span class="dv">1</span> <span class="op">-</span> e_hat))</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DML ATE: </span><span class="sc">{</span>psi<span class="sc">.</span>mean()<span class="sc">:.3f}</span><span class="ss"> (SE </span><span class="sc">{</span>psi<span class="sc">.</span>std(ddof<span class="op">=</span><span class="dv">1</span>)<span class="op">/</span>np<span class="sc">.</span>sqrt(n)<span class="sc">:.3f}</span><span class="ss">), true = </span><span class="sc">{</span>tau<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
+<section id="error-rates-for-the-outer-process" class="level3">
+<h3 class="anchored" data-anchor-id="error-rates-for-the-outer-process">Error rates for the outer process</h3>
+<p>Now zoom out to the stream. Which error rate should an online procedure control? The <strong>false discovery proportion</strong> up to time <span class="math inline">\(T\)</span> is <span class="math display">\[
+\mathrm{FDP}(T) = \frac{V(T)}{R(T) \vee 1},
+\]</span> and the headline quantity, the <strong>false discovery rate</strong>, is its expectation, <span class="math inline">\(\mathrm{FDR}(T) = \mathbb{E}[\mathrm{FDP}(T)]\)</span>. The FDR is the right default for most applied work: it has a long track record in genetics, an intuitive reading as the expected share of discoveries that are wrong, and it scales gracefully to large streams.</p>
+<p>Two variants show up constantly. The <strong>marginal FDR</strong>, <span class="math inline">\(\mathrm{mFDR}(T) = \mathbb{E}[V(T)] / \mathbb{E}[R(T) \vee 1]\)</span>, replaces the expectation of a ratio with a ratio of expectations. It is not identical to the FDR, but it is far more tractable, and many online algorithms can only be <em>proven</em> to control the mFDR. Treat it as a pragmatic stand-in when an FDR proof is unavailable for your setting. The <strong>false discovery exceedance</strong> goes the other way and controls a tail: <span class="math inline">\(\mathrm{FDX}_\epsilon(T) = \Pr(\sup_{t \le T} \mathrm{FDP}(t) \ge \epsilon)\)</span>. This is the right tool when the FDP can swing far from its mean—few hypotheses, or heavy dependence—and you want a guarantee about the realized proportion, not just its average. Finally, the <strong>familywise error rate</strong>, <span class="math inline">\(\mathrm{FWER}(T) = \Pr(V(T) \ge 1)\)</span>, the probability of <em>any</em> false rejection, remains the standard in confirmatory clinical trials where regulators demand it.</p>
+<p>The defining constraint of the online setting is informational: when deciding on <span class="math inline">\(H_t\)</span>, you know only the past rejections, not the future and not even the eventual number of tests. The crudest response is <strong>alpha-spending</strong>—a Bonferroni-type split with <span class="math inline">\(\sum_{t=1}^{\infty} \alpha_t = \alpha\)</span>. It controls the FWER, and hence the FDR, but at a ruinous price: the levels <span class="math inline">\(\alpha_t\)</span> must shrink toward zero, so the power to reject <span class="math inline">\(H_t\)</span> collapses as <span class="math inline">\(t\)</span> grows. A procedure that becomes blind to discoveries simply because they arrive late is not viable. This is what motivates everything that follows.</p>
 <hr>
 </section>
-<section id="why-it-works-neyman-orthogonality" class="level3">
-<h3 class="anchored" data-anchor-id="why-it-works-neyman-orthogonality">Why It Works: Neyman Orthogonality</h3>
-<p>The reason this whole construction holds together is a property called <strong>Neyman orthogonality</strong>. Loosely, the doubly robust score is built so that small errors in the estimated nuisances have only a <em>second-order</em> effect on the ATE estimate — the first-order sensitivity is zero. A naive outcome-regression plug-in does not have this property: a small bias in <span class="math inline">\(\hat\mu_d\)</span> passes straight through to the effect.</p>
-<p>The practical consequence is what the literature calls <em>rate double robustness</em>. Because the score is insensitive to nuisance errors, you can estimate <span class="math inline">\(\mu_d\)</span> and <span class="math inline">\(e\)</span> with machine learning that converges <em>slower</em> than the usual parametric <span class="math inline">\(\sqrt{n}\)</span> rate — <span class="math inline">\(n^{1/4}\)</span> each is enough, since what matters is that the <em>product</em> of their error rates beats <span class="math inline">\(n^{-1/2}\)</span>. Cross-fitting removes the overfitting bias; Neyman orthogonality removes the sensitivity to whatever bias remains. Together they let you bolt flexible ML onto a causal estimand and still hand back a <span class="math inline">\(\sqrt{n}\)</span>-consistent, asymptotically normal, efficient estimate. Everything beyond average effects — the DR-learner for heterogeneous effects, optimal policy rules — is built on this very same score, which is exactly why the framework scales so gracefully.</p>
+<section id="alpha-investing-testing-on-a-budget" class="level3">
+<h3 class="anchored" data-anchor-id="alpha-investing-testing-on-a-budget">Alpha-investing: testing on a budget</h3>
+<p>The breakthrough idea, originating with Foster and Stine (2008) and generalized by Aharoni and Rosset (2014), reframes testing as the management of an error budget called <strong>alpha-wealth</strong>. You start with wealth <span class="math inline">\(W(0) = w_0 \le \alpha\)</span>. Testing a hypothesis <em>costs</em> you some wealth <span class="math inline">\(\phi_t\)</span>—an investment. Making a discovery <em>pays you back</em> a reward <span class="math inline">\(\varphi_t\)</span>. The wealth evolves as <span class="math display">\[
+W(t) = W(t-1) - \phi_t + R_t \varphi_t,
+\]</span> and must stay nonnegative, which constrains how aggressively you can test (<span class="math inline">\(\phi_t \le W(t-1)\)</span>).</p>
+<p>The intuition for why a <em>reward</em> on rejection is legitimate—rather than a cheat—is worth internalizing. Look back at <span class="math inline">\(\mathrm{FDP}(T) = V(T) / (R(T) \vee 1)\)</span>. Each genuine rejection increases the denominator, which means the procedure can now <em>afford</em> a few more false rejections in the numerator without breaching the target FDR. Discoveries literally buy you room to keep testing. As long as rejections keep coming, the wealth need not decay to zero, and the procedure can run indefinitely without the power collapse that sinks alpha-spending. This family is known as <strong>generalized alpha-investing</strong> (GAI), and a refined version, GAI++ (Ramdas et al., 2017), caps the per-rejection payout precisely enough to guarantee FDR control—a strict improvement over the original rules, which only controlled the mFDR.</p>
+<hr>
+</section>
+<section id="lord-saffron-addis" class="level3">
+<h3 class="anchored" data-anchor-id="lord-saffron-addis">LORD, SAFFRON, ADDIS</h3>
+<p>The wealth metaphor is intuitive but it was a “statistical” reframing by Ramdas et al.&nbsp;(2017) that produced the algorithms practitioners actually use. The idea is to maintain a running <em>overestimate</em> of the FDP and spend wealth to keep that estimate below <span class="math inline">\(\alpha\)</span>—exactly the logic that powers Benjamini–Hochberg offline.</p>
+<p><strong>LORD</strong> (Javanmard and Montanari, 2018), and its uniform improvement <strong>LORD++</strong>, set each test level <span class="math inline">\(\alpha_t\)</span> from a fixed, non-increasing sequence <span class="math inline">\(\{\gamma_i\}\)</span> that sums to one, allocating a slice of the initial wealth plus a slice of the reward earned at each past rejection <span class="math inline">\(\tau_j\)</span>: <span class="math display">\[
+\alpha_t = w_0 \gamma_t + (\alpha - w_0)\,\gamma_{t-\tau_1}\mathbb{1}\{\tau_1 &lt; t\} + \alpha \!\!\sum_{j:\,\tau_j &lt; t,\, \tau_j \ne \tau_1}\!\! \gamma_{t - \tau_j}.
+\]</span> Daunting at a glance, but readable: the first term spends a fraction of the starting budget, and every prior rejection injects fresh budget that is then doled out over future tests on the same schedule <span class="math inline">\(\{\gamma_i\}\)</span>. LORD++ never spends more than it has earned, which is exactly why it keeps the FDP estimate below <span class="math inline">\(\alpha\)</span>. It is best understood as the <strong>online analog of Benjamini–Hochberg</strong>, and under independence (more precisely, when the null p-values are <em>conditionally super-uniform</em>) it controls the FDR; Chen and Arias-Castro (2021) further show it is asymptotically as powerful as BH in a Gaussian model.</p>
+<p><strong>SAFFRON</strong> (Ramdas et al., 2018) makes LORD++ <em>adaptive</em>. It picks a threshold <span class="math inline">\(\lambda\)</span> and refuses to spend wealth on “candidate” p-values larger than <span class="math inline">\(\lambda\)</span>—since a large p-value was never going to be rejected anyway, why pay to test it? By estimating the proportion of true nulls and conserving wealth accordingly, SAFFRON delivers more power than LORD++ whenever a meaningful fraction of hypotheses are non-null with strong signals.</p>
+<p><strong>ADDIS</strong> (Tian and Ramdas, 2019) adds <em>discarding</em> on top of adaptivity. It explicitly throws away the most conservative nulls—the largest p-values—before testing. Here is where the earlier observation pays off: always-valid p-values are <em>conservative under the null</em>. A procedure that exploits conservative nulls is therefore a natural partner for an inner process built on continuous monitoring. The two layers of the inner/outer framing don’t just compose—they reinforce each other.</p>
+<hr>
+</section>
+<section id="where-dependence-bites" class="level3">
+<h3 class="anchored" data-anchor-id="where-dependence-bites">Where dependence bites</h3>
+<p>Which guarantee you actually get depends on how the p-values in the stream relate to one another, and the motivating examples span a clean spectrum. In <strong>A/B testing</strong>, separate experiments on different user populations yield roughly <em>independent</em> p-values—the friendly regime where full FDR control is provable. In <strong>platform trials</strong>, arms share a common control group, inducing <em>known positive dependence</em> among the p-values; the theory bends but does not break. In shared <strong>data repositories</strong>—public genomics databases queried by many researchers over time—the dependence is <em>arbitrary and unknown</em>, and only the most conservative guarantees survive. The practical lesson is to match the algorithm and the target error rate to the dependence structure you actually face, rather than reaching reflexively for FDR control that your setting cannot support.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li>DML is, at its core, the old doubly robust (AIPW) estimator plus two modern ingredients: cross-fitting and a Neyman-orthogonal score.</li>
-<li>The recipe for the ATE is four lines: cross-fit an outcome model and a propensity model, assemble the per-unit doubly robust score, and average it; the standard error is just the score’s sample standard deviation over <span class="math inline">\(\sqrt{n}\)</span>.</li>
-<li>Double robustness means you need only <em>one</em> of the two nuisance models to be correct; rate double robustness means you can estimate both with slow-converging machine learning and still get valid <span class="math inline">\(\sqrt{n}\)</span> inference.</li>
-<li>The dense program-evaluation vocabulary hides a simple idea. Once you map “programme,” “average potential outcome,” and “nuisance parameter” onto treatment, mean potential outcome, and the two familiar regressions, the rest follows.</li>
+<li>“Sequential” hides three distinct ideas. <strong>Classical sequential testing</strong> monitors one hypothesis with a growing sample; <strong>always-valid p-values</strong> make that monitoring rigorous under arbitrary stopping; <strong>online multiple testing</strong> controls error across a <em>stream</em> of distinct hypotheses. Keep them straight.</li>
+<li>The inner/outer framing composes them: run an always-valid test <em>inside</em> each experiment, run an online-FDR algorithm <em>across</em> experiments, and the guarantees stack.</li>
+<li>Always-valid p-values and confidence sequences are what make continuous monitoring of an A/B test legitimate. The price is conservatism under the null.</li>
+<li>For the outer stream, prefer <strong>FDR</strong> as the default error rate, fall back to <strong>mFDR</strong> when an FDR proof is unavailable, and reach for <strong>FDX</strong> when the FDP can swing far from its mean. Avoid naive alpha-spending—its power decays to zero.</li>
+<li>Among algorithms: <strong>LORD++</strong> is the online BH and a safe default; <strong>SAFFRON</strong> adds adaptivity for power when signals are strong; <strong>ADDIS</strong> adds discarding, which pairs especially well with the conservative p-values that continuous monitoring produces.</li>
+<li>Let dependence drive the choice: independence (A/B tests) permits full FDR control; positive dependence (platform trials) and arbitrary dependence (data repositories) demand more conservative guarantees.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The original and indispensable reference is Chernozhukov et al.&nbsp;(2018), which introduced the DML framework, Neyman-orthogonal scores, and cross-fitting. Knaus (2022), the basis for this note, is an unusually readable review that walks through DML-based program evaluation end to end, from average effects to heterogeneous effects and policy learning. For the doubly robust score itself, the lineage runs back to Robins et al.&nbsp;(1994). And for a closely related estimator that shares the same doubly robust foundation, see my post on <a href="https://vyasenov.github.io/blog/tmle-estimation-recipe.html">targeted learning</a>.</p>
+<p>The natural entry point is Robertson, Wason and Ramdas (2023), a <em>Statistical Science</em> review that surveys this entire literature with applied examples and simulations; this post follows its first two sections. For the foundations of the wealth metaphor, Foster and Stine (2008) introduced alpha-investing and Ramdas et al.&nbsp;(2017) put it on rigorous statistical footing with GAI++. Javanmard and Montanari (2018) developed LORD, with SAFFRON and ADDIS following in Ramdas et al.&nbsp;(2018) and Tian and Ramdas (2019). On the inner process, Howard et al.&nbsp;(2021) is the modern reference for confidence sequences, and Johari et al.&nbsp;(2021) is the canonical treatment of always-valid inference for continuous A/B-test monitoring.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<ul>
-<li><p>Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., &amp; Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. <em>The Econometrics Journal</em>, 21(1), C1–C68.</p></li>
-<li><p>Knaus, M. C. (2022). Double machine learning-based programme evaluation under unconfoundedness. <em>The Econometrics Journal</em>, 25(3), 602–627.</p></li>
-<li><p>Robins, J. M., Rotnitzky, A., &amp; Zhao, L. P. (1994). Estimation of regression coefficients when some regressors are not always observed. <em>Journal of the American Statistical Association</em>, 89(427), 846–866.</p></li>
-</ul>
+<p>Aharoni, E., and Rosset, S. (2014). Generalized <span class="math inline">\(\alpha\)</span>-investing: definitions, optimality results and application to public databases. <em>Journal of the Royal Statistical Society: Series B</em>, 76(4), 771–794.</p>
+<p>Chen, S., and Arias-Castro, E. (2021). On the power of some sequential multiple testing procedures. <em>Annals of the Institute of Statistical Mathematics</em>, 73(2), 311–336.</p>
+<p>Foster, D. P., and Stine, R. A. (2008). <span class="math inline">\(\alpha\)</span>-investing: a procedure for sequential control of expected false discoveries. <em>Journal of the Royal Statistical Society: Series B</em>, 70(2), 429–444.</p>
+<p>Howard, S. R., Ramdas, A., McAuliffe, J., and Sekhon, J. (2021). Time-uniform, nonparametric, nonasymptotic confidence sequences. <em>Annals of Statistics</em>, 49(2), 1055–1080.</p>
+<p>Javanmard, A., and Montanari, A. (2018). Online rules for control of false discovery rate and false discovery exceedance. <em>Annals of Statistics</em>, 46(2), 526–554.</p>
+<p>Johari, R., Koomen, P., Pekelis, L., and Walsh, D. (2021). Always valid inference: continuous monitoring of A/B tests. <em>Operations Research</em>, 70(3), 1806–1821.</p>
+<p>Ramdas, A., Yang, F., Wainwright, M. J., and Jordan, M. I. (2017). Online control of the false discovery rate with decaying memory. <em>Advances in Neural Information Processing Systems</em>, 30.</p>
+<p>Ramdas, A., Zrnic, T., Wainwright, M., and Jordan, M. (2018). SAFFRON: an adaptive algorithm for online control of the false discovery rate. <em>Proceedings of the 35th International Conference on Machine Learning</em>, 4286–4294.</p>
+<p>Robertson, D. S., Wason, J. M. S., and Ramdas, A. (2023). Online multiple hypothesis testing. <em>Statistical Science</em>, 38(4), 557–575.</p>
+<p>Tian, J., and Ramdas, A. (2019). ADDIS: an adaptive discarding algorithm for online FDR control with conservative nulls. <em>Advances in Neural Information Processing Systems</em>, 32.</p>
 
 
 </section>

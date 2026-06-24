@@ -398,7 +398,6 @@ window.Quarto = {
   <li><a href="#prediction-error" id="toc-prediction-error" class="nav-link" data-scroll-target="#prediction-error">Prediction Error</a></li>
   <li><a href="#estimation-error" id="toc-estimation-error" class="nav-link" data-scroll-target="#estimation-error">Estimation Error</a></li>
   <li><a href="#support-recovery" id="toc-support-recovery" class="nav-link" data-scroll-target="#support-recovery">Support Recovery</a></li>
-  <li><a href="#beyond-the-basics" id="toc-beyond-the-basics" class="nav-link" data-scroll-target="#beyond-the-basics">Beyond the Basics</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -440,7 +439,7 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">9 min read</div>
+<div class="reading-time">7 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -448,7 +447,7 @@ window.Quarto = {
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
 <p>Every data scientist has heard of the Lasso, and I have written plenty about it here as well — its <a href="https://vyasenov.github.io/blog/flavors-lasso.html">many flavors</a>, its <a href="https://vyasenov.github.io/blog/oracle-property.html">oracle property</a>, and its <a href="https://vyasenov.github.io/blog/lasso-heterogeneous-effects.html">use in estimating heterogeneous treatment effects</a>, among other things. It is appealing for several reasons: simplicity, cheap and fast computation, interpretability, and a solid theoretical foundation.</p>
-<p>In this note I focus on that last item — what makes the Lasso attractive from a theoretical standpoint. The goal is to give a high-level overview of the kinds of guarantees the Lasso promises. The literature here is heavy and, frankly, daunting, so I keep the mathematical rigor to a minimum. I am after intuition: what can the Lasso deliver in ideal settings, and what does “ideal” actually require?</p>
+<p>In this note I focus on that last item — what makes the Lasso attractive from a theoretical standpoint. The goal is to give a high-level overview of the kinds of guarantees the Lasso promises. The literature here is heavy and daunting, so I keep the mathematical rigor to a minimum. I am after intuition: what can the Lasso deliver and under what conditions?</p>
 <p>The punchline, which I will return to repeatedly, is that these guarantees are not free. Each one rests on assumptions about the design matrix, the noise, and the true signal — and those assumptions get stronger as the promises get bolder.</p>
 </section>
 <section id="notation" class="level2">
@@ -467,30 +466,34 @@ window.Quarto = {
 </section>
 <section id="a-closer-look" class="level2">
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<p>I will examine four broad groups of theoretical results. Each comes with its own assumptions and works only under specific conditions — sparse true support, a particular growth rate for <span class="math inline">\(n\)</span> relative to <span class="math inline">\(p\)</span>, a well-behaved design matrix, and so on. I have ordered the sections in roughly ascending order of how demanding those assumptions are. This ordering is the most important takeaway of the post: prediction is cheap, estimation costs more, and exact support recovery is expensive.</p>
+<p>I will examine three broad groups of theoretical results. Each comes with its own assumptions and works only under specific conditions — sparse true support, a particular growth rate for <span class="math inline">\(n\)</span> relative to <span class="math inline">\(p\)</span>, a well-behaved design matrix, and so on. I have ordered the sections in roughly ascending order of how demanding those assumptions are. This ordering is the most important takeaway of the post: prediction is cheap, estimation costs more, and exact support recovery is expensive.</p>
 <hr>
 <section id="prediction-error" class="level3">
 <h3 class="anchored" data-anchor-id="prediction-error">Prediction Error</h3>
-<p>This is the most basic guarantee, and the cheapest to buy. It says the Lasso will predict “well enough” — the in-sample prediction error will not exceed a certain bound. Formally, with the penalty chosen at the canonical rate <span class="math inline">\(\lambda \asymp \sigma\sqrt{\tfrac{\log p}{n}}\)</span>, one can show that with high probability</p>
+<p>This is the most basic guarantee. It says the Lasso will predict “well enough” — the in-sample prediction error will not exceed a certain bound.</p>
+<p>Formally, with the penalty chosen at the canonical rate <span class="math inline">\(\lambda \asymp \sigma\sqrt{\tfrac{\log p}{n}}\)</span>, one can show that with high probability</p>
 <p><span class="math display">\[\frac{1}{n} \| X(\hat\beta - \beta^*) \|_2^2 \;\lesssim\; \lambda \, \|\beta^*\|_1 \;\asymp\; \sigma \, \|\beta^*\|_1 \sqrt{\frac{\log p}{n}}.\]</span></p>
-<p>This is the so-called <em>slow rate</em>. What is remarkable is how little it requires: essentially no conditions on the design matrix <span class="math inline">\(X\)</span> beyond standardizing the columns. All you need is for <span class="math inline">\(\lambda\)</span> to be large enough to dominate the noise — which is exactly what the <span class="math inline">\(\sqrt{\log p / n}\)</span> scaling ensures. The <span class="math inline">\(\log p\)</span> term is the price of searching over <span class="math inline">\(p\)</span> candidate predictors, and it enters only logarithmically, which is why the Lasso tolerates enormous <span class="math inline">\(p\)</span>.</p>
+<p>This is the so-called <em>slow rate</em>.</p>
+<p>What is remarkable is how little it requires: essentially no conditions on the design matrix <span class="math inline">\(X\)</span> beyond standardizing the columns. All you need is for <span class="math inline">\(\lambda\)</span> to be large enough to dominate the noise — which is exactly what the <span class="math inline">\(\sqrt{\log p / n}\)</span> scaling ensures. The <span class="math inline">\(\log p\)</span> term is the price of searching over <span class="math inline">\(p\)</span> candidate predictors, and it enters only logarithmically, which is why the Lasso tolerates enormous <span class="math inline">\(p\)</span>.</p>
 <p>If you are willing to assume more about the design (see the next section), the bound sharpens to the <em>fast rate</em>,</p>
 <p><span class="math display">\[\frac{1}{n} \| X(\hat\beta - \beta^*) \|_2^2 \;\lesssim\; \frac{s\, \sigma^2 \log p}{n},\]</span></p>
-<p>which scales with the number of true signals <span class="math inline">\(s\)</span> rather than with <span class="math inline">\(\|\beta^*\|_1\)</span>. The practical reading: good predictive behavior is the Lasso’s most robust property. If all you care about is forecasting, you can lean on the Lasso with relatively little hand-wringing about the design.</p>
+<p>which scales with the number of true signals <span class="math inline">\(s\)</span> rather than with <span class="math inline">\(\|\beta^*\|_1\)</span>.</p>
 <hr>
 </section>
 <section id="estimation-error" class="level3">
 <h3 class="anchored" data-anchor-id="estimation-error">Estimation Error</h3>
-<p>Here the question shifts from predictions <span class="math inline">\(X\hat\beta\)</span> to the coefficients <span class="math inline">\(\hat\beta\)</span> themselves — how close is <span class="math inline">\(\hat\beta\)</span> to <span class="math inline">\(\beta^*\)</span>? This is a genuinely harder problem, and it requires a genuine condition on the design matrix.</p>
-<p>The standard assumption is the <em>restricted eigenvalue</em> (RE) condition (or the closely related compatibility condition). Loosely, it requires that <span class="math inline">\(\tfrac{1}{n} X^\top X\)</span> behave like a well-conditioned matrix — bounded away from singularity — but only over the directions that matter, namely vectors that are approximately sparse. We cannot ask <span class="math inline">\(X^\top X\)</span> to be invertible outright, since <span class="math inline">\(p &gt; n\)</span> makes that impossible; the restriction to a sparse cone is what rescues the argument. Under the RE condition with constant <span class="math inline">\(\kappa &gt; 0\)</span>, and again <span class="math inline">\(\lambda \asymp \sigma\sqrt{\tfrac{\log p}{n}}\)</span>,</p>
+<p>Here the question shifts from predictions <span class="math inline">\(X\hat\beta\)</span> to the coefficients <span class="math inline">\(\hat\beta\)</span> themselves — how close is <span class="math inline">\(\hat\beta\)</span> to <span class="math inline">\(\beta^*\)</span>? This is a harder problem, and it requires a condition on the design matrix.</p>
+<p>The standard assumption is the <em>restricted eigenvalue</em> (RE) condition. Loosely, it requires that <span class="math inline">\(\tfrac{1}{n} X^\top X\)</span> behave like a well-conditioned matrix — bounded away from singularity — but only over the directions that matter, namely vectors that are approximately sparse. We cannot ask <span class="math inline">\(X^\top X\)</span> to be invertible outright, since <span class="math inline">\(p &gt; n\)</span> makes that impossible; the restriction to a sparse cone is what rescues the argument.</p>
+<p>Under the RE condition with constant <span class="math inline">\(\kappa &gt; 0\)</span>, and again <span class="math inline">\(\lambda \asymp \sigma\sqrt{\tfrac{\log p}{n}}\)</span>,</p>
 <p><span class="math display">\[\|\hat\beta - \beta^*\|_2 \;\lesssim\; \frac{\sigma}{\kappa} \sqrt{\frac{s \log p}{n}}, \qquad \|\hat\beta - \beta^*\|_1 \;\lesssim\; \frac{\sigma s}{\kappa} \sqrt{\frac{\log p}{n}}.\]</span></p>
 <p>The intuition is that strong correlations among predictors flatten the objective function in certain directions, making the coefficients poorly identified even when predictions are fine. The RE condition rules out the worst of this. When it holds, the <span class="math inline">\(\ell_2\)</span> error decays at essentially the rate an oracle who knew <span class="math inline">\(S\)</span> would achieve, up to the <span class="math inline">\(\log p\)</span> factor.</p>
-<p>A reminder is in order here: never take the coefficients — or the implied <span class="math inline">\(p\)</span>-values — from a Lasso fit too seriously without an extreme degree of caution. The shrinkage that makes the Lasso work also biases every non-zero coefficient toward zero, and standard inference ignores the selection step entirely. I have written about <a href="https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html">hypothesis testing in linear ML models</a> elsewhere on the blog; the estimation bounds above are about <em>rates</em>, not about valid confidence intervals.</p>
+<p>You know to never take the coefficients — or the implied <span class="math inline">\(p\)</span>-values — from a Lasso fit too seriously without an extreme degree of caution. The shrinkage that makes the Lasso work also biases every non-zero coefficient toward zero, and standard inference ignores the selection step entirely. I have written about <a href="https://vyasenov.github.io/blog/hypothesis-testing-linear-ml.html">hypothesis testing in linear ML models</a> elsewhere on the blog; the estimation bounds above are about <em>rates</em>, not about valid confidence intervals.</p>
 <hr>
 </section>
 <section id="support-recovery" class="level3">
 <h3 class="anchored" data-anchor-id="support-recovery">Support Recovery</h3>
-<p>This is the most intriguing guarantee and, fittingly, the most expensive. It is relevant for model selection rather than prediction: it asks whether the Lasso picks out exactly the right set of variables, <span class="math inline">\(\hat S = S\)</span>, where <span class="math inline">\(\hat S = \{j : \hat\beta_j \neq 0\}\)</span>. The goal is <em>selection consistency</em>,</p>
+<p>This is the most intriguing guarantee and, fittingly, the most expensive. It is relevant for model selection rather than prediction: it asks whether the Lasso picks out exactly the right set of variables, <span class="math inline">\(\hat S = S\)</span>, where <span class="math inline">\(\hat S = \{j : \hat\beta_j \neq 0\}\)</span>.</p>
+<p>The goal is <em>selection consistency</em>,</p>
 <p><span class="math display">\[\mathbb{P}(\hat S = S) \to 1.\]</span></p>
 <p>Two strong conditions are typically needed. The first is the <em>irrepresentable condition</em>, which limits how strongly the irrelevant predictors (<span class="math inline">\(X_{S^c}\)</span>) can be correlated with the relevant ones (<span class="math inline">\(X_S\)</span>):</p>
 <p><span class="math display">\[\big\| X_{S^c}^\top X_S (X_S^\top X_S)^{-1} \operatorname{sign}(\beta^*_S) \big\|_\infty \leq 1 - \eta\]</span></p>
@@ -498,25 +501,19 @@ window.Quarto = {
 <p>The practical implication is sobering. Exact support recovery is fragile: it demands that the truly important variables be only mildly correlated with the unimportant ones, and that no real signal be too small. Both are easy to violate with observational data. This is also why I treated this topic separately in my post on the <a href="https://vyasenov.github.io/blog/oracle-property.html">oracle property</a> — standard Lasso generally does <em>not</em> achieve oracle-style selection, and the fixes (adaptive Lasso, nonconvex penalties like SCAD and MCP) exist precisely to relax the irrepresentable condition.</p>
 <hr>
 </section>
-<section id="beyond-the-basics" class="level3">
-<h3 class="anchored" data-anchor-id="beyond-the-basics">Beyond the Basics</h3>
-<p>The three results above are the backbone, but the theory has grown well past them. A few directions worth knowing about:</p>
-<p><em>Debiased (desparsified) Lasso</em> removes the shrinkage bias by adding a correction term, yielding estimators that are asymptotically normal and support honest confidence intervals and <span class="math inline">\(p\)</span>-values — the very thing the raw Lasso cannot provide. <em>Square-root (scaled) Lasso</em> modifies the loss so that the optimal <span class="math inline">\(\lambda\)</span> no longer depends on the unknown noise level <span class="math inline">\(\sigma\)</span>, which makes tuning pivotal and robust to heteroskedasticity. On the lower-bound side, <em>minimax</em> analyses show that the rates above are not artifacts of the Lasso but are essentially optimal: no estimator can do uniformly better over sparse classes, so the <span class="math inline">\(s \log p / n\)</span> rate is the best one can hope for. There is also a large literature on <em>post-selection inference</em>, which tackles the problem of doing valid hypothesis tests after the selection step.</p>
-<p>These all share a theme: the basic Lasso is excellent at prediction and decent at estimation, but turning it into a tool for <em>inference</em> requires extra machinery layered on top.</p>
-</section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
 <li>The Lasso is among the most popular machine learning methods, and a good part of its appeal comes from a strong theoretical foundation.</li>
-<li>Under suitable conditions, one can show that the Lasso performs well across three distinct tasks — prediction, coefficient estimation, and exact support recovery — but these come at increasing assumption costs, in that order.</li>
+<li>Under suitable conditions, one can show that the Lasso performs well across three distinct tasks — prediction, coefficient estimation, and exact support recovery..</li>
 <li>Prediction error is nearly free; estimation error needs a restricted-eigenvalue-type condition on the design; support recovery additionally needs an irrepresentable condition and a minimum-signal-strength condition.</li>
-<li>Not all of these guarantees will hold on any given dataset. The researcher must evaluate the regularity conditions carefully for each claim she makes — and treat raw Lasso coefficients and <span class="math inline">\(p\)</span>-values with skepticism unless a debiasing step has been applied.</li>
+<li>Not all of these guarantees will hold on any given dataset. The researcher must evaluate the regularity conditions carefully for each claim she makes.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>For a focused, modern treatment, “Statistical Learning with Sparsity” by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with “The Elements of Statistical Learning” (2009) as gentler background. For the theory proper, Bühlmann and van de Geer’s “Statistics for High-Dimensional Data” (2011) and Wainwright’s “High-Dimensional Statistics” (2019) are the standard references, though both are dense. On the original results, Bickel, Ritov, and Tsybakov (2009) established the prediction and estimation bounds under the restricted eigenvalue condition, while Zhao and Yu (2006) and Wainwright (2009) characterized support recovery via the irrepresentable condition.</p>
+<p>For a focused, modern treatment, “Statistical Learning with Sparsity” by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with “The Elements of Statistical Learning” (2009) as gentler background. For the theory nerds, Bühlmann and van de Geer’s “Statistics for High-Dimensional Data” (2011) and Wainwright’s “High-Dimensional Statistics” (2019) are the standard references, though both are too dense for most mortals`.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>

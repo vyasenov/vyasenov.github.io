@@ -10,7 +10,7 @@ Hardly a data science interview goes by without the person in power bringing up 
 
 The downsides of $p$-values have been well understood and widely publicized for decades. They conflate effect size and precision, they are routinely misinterpreted, and they say nothing about scientific relevance or practical importance. Famously, the American Statistical Association issued a formal statement on their use and misuse (Wasserstein and Lazar, 2016). Predictably, there has been no shortage of proposed alternatives — $e$-values, Bayes factors, posterior probabilities, and more.
 
-In this note I describe one such alternative: the second-generation $p$-value (SGPV) of Blume et al. (2019). The point is to broaden how we think about using data to test scientific claims, and to get acquainted with a genuinely different approach. As usual, I keep the mathematical rigor to a minimum and focus on the intellectual idea behind the proposal — including, in the end, why I think a good idea like this one never quite caught on.
+In this note I describe one such alternative: the second-generation $p$-value (SGPV) of Blume et al. (2019). The point is to broaden how we think about using data to test scientific claims, and to get acquainted with a genuinely different approach. I keep the mathematical rigor to a minimum and focus on the intellectual idea behind the proposal.
 
 ## Notation
 
@@ -20,8 +20,9 @@ $$H_0: \theta = \theta_0 \quad \text{versus} \quad H_1: \theta \neq \theta_0.$$
 
 A simple hypothesis pins $\theta$ to a single value; a *composite* hypothesis allows a whole set of values. The key move in what follows is to replace the point null with a composite one.
 
-Let $I = [\theta_\ell, \theta_u]$ denote an interval estimate of $\theta$ — for concreteness, a 95% confidence interval — with length $|I| = \theta_u - \theta_\ell$. Let
+Let $I = [\theta_\ell, \theta_u]$ denote an interval estimate of $\theta$ — for concreteness, a 95% confidence interval — with length $|I| = \theta_u - \theta_\ell$. 
 
+Also, let
 $$H_0 = [\theta_\ell^0, \theta_u^0]$$
 
 denote an *interval null hypothesis*: the range of effect sizes that are too small to matter scientifically, with length $|H_0|$. This interval includes the exact null $\theta_0$ but widens it to absorb effects that are technically non-zero yet practically trivial. Choosing its width is a scientific judgment, made *before* seeing the data.
@@ -30,9 +31,13 @@ denote an *interval null hypothesis*: the range of effect sizes that are too sma
 
 ### The First-Generation P-Value
 
-Start with the object everyone already knows. We observe a dataset, and the $p$-value is the probability of seeing data at least as extreme — weirder, loosely speaking — than what we actually observed, *if the null hypothesis were true*. A large $p$-value means the data are unsurprising under the null and therefore offer no evidence against it. Famously, this is *not* the probability that the null is true; getting at that requires a Bayesian apparatus and a prior.
+Start with the object everyone already knows. We observe a dataset, and the $p$-value is the probability of seeing data at least as extreme — weirder, loosely speaking — than what we actually observed, *if the null hypothesis were true*. 
 
-This single number has carried an enormous load for nearly a century, and that is precisely the source of trouble.
+$$
+p = P(\text{data at least as extreme as } \text{observed} | H_0)
+$$
+
+A large $p$-value means the data are unsurprising under the null and therefore offer no evidence against it. Famously, this is *not* the probability that the null is true; getting at that requires a Bayesian apparatus and a prior. This single number has carried an enormous load for nearly a century, and that is precisely the source of trouble.
 
 ---
 
@@ -54,32 +59,34 @@ $$
 
 where $|I \cap H_0|$ is the length of the overlap between the two intervals. When the interval estimate is reasonably precise (specifically, $|I| \leq 2|H_0|$), the correction term is $1$ and the formula reduces to the clean fraction $p_\delta = |I \cap H_0| / |I|$ — the share of the interval estimate that falls inside the null zone. The correction factor only kicks in when $I$ is very wide relative to the null, capping the statistic to reflect that the data are simply too imprecise to say much.
 
-The interpretation is refreshingly direct:
+The interpretation is direct:
 
 - $p_\delta = 0$: the interval estimate does not overlap the null at all. The data are incompatible with a trivial effect and support a scientifically meaningful one.
 - $p_\delta = 1$: the interval estimate lies entirely inside the null. The data support *only* the null premise — something a classical $p$-value can never tell you.
 - $0 < p_\delta < 1$: the data are inconclusive, with $p_\delta \approx 1/2$ being the maximally inconclusive case.
 
+### Quick Example
+
 A quick worked example from the paper makes it concrete. In a study of 100 smokers and 100 non-smokers, suppose 65 smokers and 50 non-smokers develop lung cancer. The odds ratio is $1.86$ with a 95% confidence interval of $[1.03, 3.36]$. Take the interval null to be odds ratios between $0.9$ and $1.1$ — associations too weak to care about. The interval estimate overlaps the null only slightly, and the SGPV works out to $p_\delta = 0.175$: suggestive, but not conclusive. Bump the smokers' cancer count from 65 to 70 and the odds ratio rises to $2.33$ with interval $[1.27, 4.27]$, which no longer touches the null. Now $p_\delta = 0$, and we would report a scientifically meaningful association.
 
 ---
 
-### Why It Helps, and Where It Falls Short
+### Pros and Cons
 
 The appeal is that the SGPV bakes scientific relevance into the inference itself, rather than leaving it as an afterthought to be eyeballed from a confidence interval. By construction it can support the null, it indicates when the data are inconclusive instead of forcing a verdict, and — a genuinely attractive frequency property — its Type I error rate shrinks toward zero as the sample grows, instead of hovering at $\alpha$ forever. That directly attacks the big-data significance problem and tends to yield lower false discovery rates.
 
-So why did it not catch on? A few reasons. The interval null must be specified in advance, and pinning down the width of "scientifically trivial" is a real judgment call that invites disagreement and can feel arbitrary. The statistic is a proportion rather than a probability, which makes it unfamiliar and harder to slot into existing reporting conventions. And it competes in a crowded field: practitioners who care about false discoveries already reach for [false discovery rate (FDR)](https://vyasenov.github.io/blog/recent-dev-fdr.html) or [family-wise error rate (FWER)](https://vyasenov.github.io/blog/flavors-multiple-testing.html) procedures, while those who specifically want to test for negligible effects often use equivalence testing (the two one-sided tests, or TOST), which predates the SGPV and is closely related in spirit. The SGPV is, in my view, a cleaner idea than its adoption suggests — but a cleaner idea is not always the one the field converges on.
+The interval null must be specified in advance, and pinning down the width of "scientifically trivial" is a real judgment call that invites disagreement and can feel arbitrary. The statistic is a proportion rather than a probability, which makes it unfamiliar and harder to slot into existing reporting conventions. And it competes in a crowded field: practitioners who care about false discoveries already reach for [false discovery rate (FDR)](https://vyasenov.github.io/blog/recent-dev-fdr.html) or [family-wise error rate (FWER)](https://vyasenov.github.io/blog/flavors-multiple-testing.html) procedures. 
 
 ## Bottom Line
 
 - $P$-values are among the most widely used and most widely misused tools in applied statistics; their core flaw is conflating effect size with precision.
-- The second-generation $p$-value is an alternative worth knowing when false discovery is a concern — which, frankly, is most of the time.
+- The second-generation $p$-value is an alternative worth knowing when false discovery is a concern.
 - Its main idea is simple: measure the overlap between an interval estimate and an interval null that absorbs both the exact null and all scientifically trivial effects.
 - Despite its elegance, the SGPV never gained traction. FDR/FWER control and equivalence testing remain the dominant ways practitioners guard against spurious findings.
 
 ## Where to Learn More
 
-The original proposal is Blume et al. (2018) in *PLOS ONE*, with the gentler, non-technical treatment I have leaned on here appearing as Blume et al. (2019) in *The American Statistician*. For the broader context — why the profession soured on bright-line significance in the first place — the ASA statement (Wasserstein and Lazar, 2016) and the follow-up special issue editorial (Wasserstein, Schirm, and Lazar, 2019) are essential reading. On the competing approaches mentioned above, see Benjamini and Hochberg (1995) for the foundational FDR procedure.
+See the papers referenced below and look around my blog for more details on multiple testing and false discovery rate control.
 
 ## References
 

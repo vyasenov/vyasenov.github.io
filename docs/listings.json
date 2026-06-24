@@ -2,10 +2,11 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/weak-instruments.html",
+      "/blog/online-multiple-testing.html",
       "/blog/double-descent.html",
       "/blog/linear-models-p-over-n.html",
       "/blog/tmle-estimation-recipe.html",
-      "/blog/double-ml-causal-inference.html",
       "/blog/iv-randomized-experiments.html",
       "/blog/lasso-theory-guarantees.html",
       "/blog/second-gen-pvalues.html",

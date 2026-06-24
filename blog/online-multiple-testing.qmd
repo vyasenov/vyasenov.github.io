@@ -1,0 +1,143 @@
+---
+title: "Always-Valid p-Values and Online Multiple Testing"
+date: "2026-06-24"
+categories: [multiple testing, hypothesis testing, statistical inference]
+---
+
+## Background
+
+Here is a confession. Early in my career, I would open the dashboard for a running A/B test every morning, and the moment the p-value dipped below $0.05$ I would call it: ship the variant, move on. It felt rigorous—I was, after all, looking at a real significance test. It was not rigorous. It was a near-perfect machine for manufacturing false positives, and I was the operator.
+
+The problem is that the classical p-value is built for a world that modern data science has largely abandoned. That world has two defining features. First, you collect a *fixed* sample, compute *one* test statistic, and decide *once*. Second, when you do test many hypotheses, you have all of them—and all their p-values—sitting in front of you at the same time, so a procedure like Benjamini–Hochberg can sort them and pick a threshold. Neither feature survives contact with how experiments actually run today. A major tech company runs tens of thousands of A/B tests a year, each one monitored continuously as data trickle in. A genomics platform tests new gene knockouts as they are discovered, with no idea how many tests there will eventually be. A platform trial adds and drops treatment arms over months. Hypotheses arrive in a *stream*, and decisions have to be made *now*.
+
+This breaks classical inference in two distinct places, and the single biggest source of confusion in this area is that people use the word "sequential" for both. I have written before about [false discovery rate control](https://vyasenov.github.io/blog/recent-dev-fdr.html) and the [many flavors of multiple testing adjustments](https://vyasenov.github.io/blog/flavors-multiple-testing.html); this post is about what happens to all of that machinery when time enters the picture. My goal is to draw a clean map of the terminology—sequential testing, always-valid p-values, online multiple testing—and then walk through the algorithms that make the streaming world tractable, following the exposition of Robertson, Wason and Ramdas (2023).
+
+## Notation
+
+Hypotheses arrive at times $t = 1, 2, \dots$. At each time $t$ we observe a p-value $P_t$ for a null hypothesis $H_t$ and must decide whether to reject $H_t$ *before* moving on to $t+1$. We assume each $P_t$ is a valid p-value, meaning that whenever $H_t$ is true,
+$$
+\Pr(P_t \le x) \le x \quad \text{for all } x \in [0,1].
+$$
+
+A testing procedure supplies a sequence of test levels $\alpha_t$ and rejects via the rule
+$$
+R_t = \mathbb{1}\{P_t \le \alpha_t\}.
+$$
+Crucially, $\alpha_t$ may depend only on the past decisions $R_1, \dots, R_{t-1}$—not on the future, and not on the total number of tests, which may be unknown or infinite.
+
+Let $R(T) = \sum_{t=1}^{T} R_t$ be the number of rejections (discoveries) by time $T$, and let $V(T)$ be the number of those that are false. Write $a \vee b = \max(a,b)$.
+
+For the *inner* process—repeated monitoring within a single experiment—a richer object is needed. An **anytime-valid** (or **always-valid**) p-value is a *sequence* $(P_{t,n})_{n \ge 1}$ indexed by the within-experiment sample size $n$, such that
+$$
+\Pr(P_{t,N} \le x) \le x \quad \text{for all } x \in [0,1] \text{ and any data-dependent stopping time } N.
+$$
+The phrase "any stopping time" is the whole point: the guarantee holds no matter when—or why—you decide to stop looking.
+
+## A Closer Look
+
+### Three things people call "sequential"
+
+Untangling the vocabulary is half the battle, so let me be explicit about three ideas that are routinely conflated.
+
+**Classical sequential testing** concerns a *single* hypothesis whose data accumulate over time, with the sample size *not* fixed in advance. Wald's sequential probability ratio test is the canonical example: keep sampling until the evidence is decisive, then stop. The hard part is that naive optional stopping destroys the type I error guarantee—if you re-test after every new observation and stop the first time you see $p \le 0.05$, you will eventually cross that line even when the null is true.
+
+**Always-valid p-values** are the modern device that *fixes* optional stopping. They are the inner process: a single experiment, monitored continuously, with a validity guarantee that survives stopping at any time for any reason.
+
+**Online multiple testing** is a different problem entirely. Here a *stream of distinct hypotheses* $H_1, H_2, \dots$ arrives over time, each tested once, and the goal is to control a false discovery criterion across the whole stream while deciding each case in real time. This is the outer process.
+
+The clean way to hold these together, due to Robertson, Wason and Ramdas, is the **inner/outer** framing. Each experiment in the stream is itself an inner sequential process—possibly monitored continuously—that ultimately emits a single valid p-value $P_t$. The outer online-testing procedure then strings those $P_t$ together and controls error rates across experiments. The two layers compose cleanly: you can run an always-valid test inside each experiment and an online-FDR algorithm across them, and the guarantees stack. (A fourth cousin, the multi-armed bandit, also allocates effort across arms over time, but it is a *single* adaptive experiment, not a stream of hypotheses—so it sits outside this taxonomy.)
+
+---
+
+### Always-valid p-values: the inner process
+
+Why does peeking break a fixed-$n$ p-value? Because validity is a statement about a *single* pre-committed test. The event "$P_n \le \alpha$ for *some* $n$ along the way" is a union over many looks, and its probability under the null can climb toward $1$ as you keep looking. A fixed-sample p-value makes no promise about that union.
+
+An always-valid p-value is constructed precisely so that the union is controlled: $\Pr(P_{t,N} \le x) \le x$ simultaneously over all stopping times $N$. The modern route to such objects runs through martingales and **e-values**—nonnegative statistics with expectation at most $1$ under the null, whose running products form a test supermartingale. Ville's inequality then bounds the probability that the process *ever* exceeds a threshold, which is exactly the optional-stopping guarantee. The confidence-interval analog is the **confidence sequence**: a sequence of intervals that covers the true parameter simultaneously at all sample sizes with probability $1 - \alpha$.
+
+The practical payoff is enormous and is why this matters for industry. If an A/B testing platform reports always-valid p-values or confidence sequences, the experimenter can watch the dashboard continuously, stop whenever the result is decisive (or whenever business pressure demands), and still retain a valid inference. My morning-dashboard habit becomes legitimate—provided the platform does the math correctly. This is the rigorous foundation under continuous monitoring, and it complements the [Bayesian approach to A/B tests](https://vyasenov.github.io/blog/bayesian-ab-tests.html) that achieves a related flexibility from a different direction.
+
+The catch is conservatism. Buying validity at every stopping time means always-valid p-values are, by construction, *conservative*: under the null they are stochastically larger than uniform. Hold onto that fact—it resurfaces below as an opportunity rather than a cost.
+
+---
+
+### Error rates for the outer process
+
+Now zoom out to the stream. Which error rate should an online procedure control? The **false discovery proportion** up to time $T$ is
+$$
+\mathrm{FDP}(T) = \frac{V(T)}{R(T) \vee 1},
+$$
+and the headline quantity, the **false discovery rate**, is its expectation, $\mathrm{FDR}(T) = \mathbb{E}[\mathrm{FDP}(T)]$. The FDR is the right default for most applied work: it has a long track record in genetics, an intuitive reading as the expected share of discoveries that are wrong, and it scales gracefully to large streams.
+
+Two variants show up constantly. The **marginal FDR**, $\mathrm{mFDR}(T) = \mathbb{E}[V(T)] / \mathbb{E}[R(T) \vee 1]$, replaces the expectation of a ratio with a ratio of expectations. It is not identical to the FDR, but it is far more tractable, and many online algorithms can only be *proven* to control the mFDR. Treat it as a pragmatic stand-in when an FDR proof is unavailable for your setting. The **false discovery exceedance** goes the other way and controls a tail: $\mathrm{FDX}_\epsilon(T) = \Pr(\sup_{t \le T} \mathrm{FDP}(t) \ge \epsilon)$. This is the right tool when the FDP can swing far from its mean—few hypotheses, or heavy dependence—and you want a guarantee about the realized proportion, not just its average. Finally, the **familywise error rate**, $\mathrm{FWER}(T) = \Pr(V(T) \ge 1)$, the probability of *any* false rejection, remains the standard in confirmatory clinical trials where regulators demand it.
+
+The defining constraint of the online setting is informational: when deciding on $H_t$, you know only the past rejections, not the future and not even the eventual number of tests. The crudest response is **alpha-spending**—a Bonferroni-type split with $\sum_{t=1}^{\infty} \alpha_t = \alpha$. It controls the FWER, and hence the FDR, but at a ruinous price: the levels $\alpha_t$ must shrink toward zero, so the power to reject $H_t$ collapses as $t$ grows. A procedure that becomes blind to discoveries simply because they arrive late is not viable. This is what motivates everything that follows.
+
+---
+
+### Alpha-investing: testing on a budget
+
+The breakthrough idea, originating with Foster and Stine (2008) and generalized by Aharoni and Rosset (2014), reframes testing as the management of an error budget called **alpha-wealth**. You start with wealth $W(0) = w_0 \le \alpha$. Testing a hypothesis *costs* you some wealth $\phi_t$—an investment. Making a discovery *pays you back* a reward $\varphi_t$. The wealth evolves as
+$$
+W(t) = W(t-1) - \phi_t + R_t \varphi_t,
+$$
+and must stay nonnegative, which constrains how aggressively you can test ($\phi_t \le W(t-1)$).
+
+The intuition for why a *reward* on rejection is legitimate—rather than a cheat—is worth internalizing. Look back at $\mathrm{FDP}(T) = V(T) / (R(T) \vee 1)$. Each genuine rejection increases the denominator, which means the procedure can now *afford* a few more false rejections in the numerator without breaching the target FDR. Discoveries literally buy you room to keep testing. As long as rejections keep coming, the wealth need not decay to zero, and the procedure can run indefinitely without the power collapse that sinks alpha-spending. This family is known as **generalized alpha-investing** (GAI), and a refined version, GAI++ (Ramdas et al., 2017), caps the per-rejection payout precisely enough to guarantee FDR control—a strict improvement over the original rules, which only controlled the mFDR.
+
+---
+
+### LORD, SAFFRON, ADDIS
+
+The wealth metaphor is intuitive but it was a "statistical" reframing by Ramdas et al. (2017) that produced the algorithms practitioners actually use. The idea is to maintain a running *overestimate* of the FDP and spend wealth to keep that estimate below $\alpha$—exactly the logic that powers Benjamini–Hochberg offline.
+
+**LORD** (Javanmard and Montanari, 2018), and its uniform improvement **LORD++**, set each test level $\alpha_t$ from a fixed, non-increasing sequence $\{\gamma_i\}$ that sums to one, allocating a slice of the initial wealth plus a slice of the reward earned at each past rejection $\tau_j$:
+$$
+\alpha_t = w_0 \gamma_t + (\alpha - w_0)\,\gamma_{t-\tau_1}\mathbb{1}\{\tau_1 < t\} + \alpha \!\!\sum_{j:\,\tau_j < t,\, \tau_j \ne \tau_1}\!\! \gamma_{t - \tau_j}.
+$$
+Daunting at a glance, but readable: the first term spends a fraction of the starting budget, and every prior rejection injects fresh budget that is then doled out over future tests on the same schedule $\{\gamma_i\}$. LORD++ never spends more than it has earned, which is exactly why it keeps the FDP estimate below $\alpha$. It is best understood as the **online analog of Benjamini–Hochberg**, and under independence (more precisely, when the null p-values are *conditionally super-uniform*) it controls the FDR; Chen and Arias-Castro (2021) further show it is asymptotically as powerful as BH in a Gaussian model.
+
+**SAFFRON** (Ramdas et al., 2018) makes LORD++ *adaptive*. It picks a threshold $\lambda$ and refuses to spend wealth on "candidate" p-values larger than $\lambda$—since a large p-value was never going to be rejected anyway, why pay to test it? By estimating the proportion of true nulls and conserving wealth accordingly, SAFFRON delivers more power than LORD++ whenever a meaningful fraction of hypotheses are non-null with strong signals.
+
+**ADDIS** (Tian and Ramdas, 2019) adds *discarding* on top of adaptivity. It explicitly throws away the most conservative nulls—the largest p-values—before testing. Here is where the earlier observation pays off: always-valid p-values are *conservative under the null*. A procedure that exploits conservative nulls is therefore a natural partner for an inner process built on continuous monitoring. The two layers of the inner/outer framing don't just compose—they reinforce each other.
+
+---
+
+### Where dependence bites
+
+Which guarantee you actually get depends on how the p-values in the stream relate to one another, and the motivating examples span a clean spectrum. In **A/B testing**, separate experiments on different user populations yield roughly *independent* p-values—the friendly regime where full FDR control is provable. In **platform trials**, arms share a common control group, inducing *known positive dependence* among the p-values; the theory bends but does not break. In shared **data repositories**—public genomics databases queried by many researchers over time—the dependence is *arbitrary and unknown*, and only the most conservative guarantees survive. The practical lesson is to match the algorithm and the target error rate to the dependence structure you actually face, rather than reaching reflexively for FDR control that your setting cannot support.
+
+## Bottom Line
+
+- "Sequential" hides three distinct ideas. **Classical sequential testing** monitors one hypothesis with a growing sample; **always-valid p-values** make that monitoring rigorous under arbitrary stopping; **online multiple testing** controls error across a *stream* of distinct hypotheses. Keep them straight.
+- The inner/outer framing composes them: run an always-valid test *inside* each experiment, run an online-FDR algorithm *across* experiments, and the guarantees stack.
+- Always-valid p-values and confidence sequences are what make continuous monitoring of an A/B test legitimate. The price is conservatism under the null.
+- For the outer stream, prefer **FDR** as the default error rate, fall back to **mFDR** when an FDR proof is unavailable, and reach for **FDX** when the FDP can swing far from its mean. Avoid naive alpha-spending—its power decays to zero.
+- Among algorithms: **LORD++** is the online BH and a safe default; **SAFFRON** adds adaptivity for power when signals are strong; **ADDIS** adds discarding, which pairs especially well with the conservative p-values that continuous monitoring produces.
+- Let dependence drive the choice: independence (A/B tests) permits full FDR control; positive dependence (platform trials) and arbitrary dependence (data repositories) demand more conservative guarantees.
+
+## Where to Learn More
+
+The natural entry point is Robertson, Wason and Ramdas (2023), a *Statistical Science* review that surveys this entire literature with applied examples and simulations; this post follows its first two sections. For the foundations of the wealth metaphor, Foster and Stine (2008) introduced alpha-investing and Ramdas et al. (2017) put it on rigorous statistical footing with GAI++. Javanmard and Montanari (2018) developed LORD, with SAFFRON and ADDIS following in Ramdas et al. (2018) and Tian and Ramdas (2019). On the inner process, Howard et al. (2021) is the modern reference for confidence sequences, and Johari et al. (2021) is the canonical treatment of always-valid inference for continuous A/B-test monitoring.
+
+## References
+
+Aharoni, E., and Rosset, S. (2014). Generalized $\alpha$-investing: definitions, optimality results and application to public databases. *Journal of the Royal Statistical Society: Series B*, 76(4), 771–794.
+
+Chen, S., and Arias-Castro, E. (2021). On the power of some sequential multiple testing procedures. *Annals of the Institute of Statistical Mathematics*, 73(2), 311–336.
+
+Foster, D. P., and Stine, R. A. (2008). $\alpha$-investing: a procedure for sequential control of expected false discoveries. *Journal of the Royal Statistical Society: Series B*, 70(2), 429–444.
+
+Howard, S. R., Ramdas, A., McAuliffe, J., and Sekhon, J. (2021). Time-uniform, nonparametric, nonasymptotic confidence sequences. *Annals of Statistics*, 49(2), 1055–1080.
+
+Javanmard, A., and Montanari, A. (2018). Online rules for control of false discovery rate and false discovery exceedance. *Annals of Statistics*, 46(2), 526–554.
+
+Johari, R., Koomen, P., Pekelis, L., and Walsh, D. (2021). Always valid inference: continuous monitoring of A/B tests. *Operations Research*, 70(3), 1806–1821.
+
+Ramdas, A., Yang, F., Wainwright, M. J., and Jordan, M. I. (2017). Online control of the false discovery rate with decaying memory. *Advances in Neural Information Processing Systems*, 30.
+
+Ramdas, A., Zrnic, T., Wainwright, M., and Jordan, M. (2018). SAFFRON: an adaptive algorithm for online control of the false discovery rate. *Proceedings of the 35th International Conference on Machine Learning*, 4286–4294.
+
+Robertson, D. S., Wason, J. M. S., and Ramdas, A. (2023). Online multiple hypothesis testing. *Statistical Science*, 38(4), 557–575.
+
+Tian, J., and Ramdas, A. (2019). ADDIS: an adaptive discarding algorithm for online FDR control with conservative nulls. *Advances in Neural Information Processing Systems*, 32.

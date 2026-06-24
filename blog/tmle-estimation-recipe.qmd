@@ -6,27 +6,35 @@ categories: [causal inference, machine learning]
 
 ## Background
 
-Targeted learning is extremely popular in public health and epidemiology, yet it has never really made its way into the economics and econometrics world. It was introduced and extended by Mark van der Laan and coauthors in a long series of papers and books. Among practitioners outside biostatistics, though, it remains something of a mystery.
+Targeted learning is extremely popular in public health and epidemiology, yet it has never really made its way into the economics and econometrics world. It was introduced and extended by Mark van der Laan and coauthors in a long series of papers and books.The targeted learning class of methods enjoys very attractive theoretical properties. It is doubly robust and, under the right conditions, semiparametrically efficient, and it is method-agnostic in that it can plug in a wide range of machine learning algorithms.
 
-One challenge standing in the way of translating these methods is the language. The terminology is different — epidemiologists talk about the *outcome mechanism* and the *exposure mechanism* where an economist would say outcome regression and propensity score. Barriers of vocabulary aside, the targeted learning class of methods enjoys very attractive theoretical properties. It is doubly robust and, under the right conditions, semiparametrically efficient, and it is method-agnostic in that it can plug in a wide range of machine learning algorithms.
+This note aims to demystify targeted learning for a broader audience. From a practical standpoint, I find the best way to do that is through the lens of *estimation*, since that is where practitioners actually spend their time with a method. It is also the easiest way to compare it against the causal inference tools you already know — be it [propensity score methods](https://vyasenov.github.io/blog/flavors-prop-score-methods.html), double machine learning, or [regression adjustment](https://vyasenov.github.io/blog/ml-based-adjustments.html). 
 
-This note aims to demystify targeted learning for a broader audience. From a practical standpoint, I find the best way to do that is through the lens of *estimation*, since that is where practitioners actually spend their time with a method. It is also the easiest way to compare it against the causal inference tools you already know — be it [propensity score methods](https://vyasenov.github.io/blog/flavors-prop-score-methods.html), double machine learning, or [regression adjustment](https://vyasenov.github.io/blog/ml-based-adjustments.html). My focus is on the how-to and less on theoretical derivations or guarantees, and the overview borrows heavily from Schuler and Rose (2017). I deliberately stay with the *basic* version of targeted learning — targeted maximum likelihood estimation (TMLE) for the average treatment effect in a cross-sectional observational study. The framework extends to many other estimands, longitudinal data, and beyond, but those are out of scope here.
+My focus is on the how-to and less on theoretical derivations or guarantees, and the overview borrows heavily from Schuler and Rose (2017). I deliberately stay with the *basic* version of targeted learning — targeted maximum likelihood estimation (TMLE) for the average treatment effect in a cross-sectional observational study. The framework extends to many other estimands, longitudinal data, and beyond, but those are out of scope here.
 
 ## Notation
 
-Suppose we observe $n$ i.i.d. draws of $O = (X, A, Y)$, where $A \in \{0, 1\}$ is a binary treatment (the "exposure"), $X$ is a vector of confounders, and $Y$ is a continuous outcome. Each unit has a pair of potential outcomes $Y(1)$ and $Y(0)$, and the target is the average treatment effect (ATE),
+Suppose we observe $n$ i.i.d. draws of $O = (X, A, Y)$, where:
+
+ - $A \in \{0, 1\}$ is a binary treatment (the "exposure"), 
+ - $X$ is a vector of confounders, and 
+ - $Y$ is a continuous outcome. 
+
+Each unit has a pair of potential outcomes $Y(1)$ and $Y(0)$, and the target is the average treatment effect (ATE),
 
 $$\psi = \mathbb{E}\big[Y(1) - Y(0)\big].$$
 
-Two nuisance functions do all the work. The **outcome regression** (outcome mechanism) is the conditional mean of the outcome,
+Two nuisance functions do all the work. The *outcome regression* is the conditional mean of the outcome,
 
 $$\bar{Q}(A, X) = \mathbb{E}[Y \mid A, X],$$
 
-and the **propensity score** (exposure mechanism) is the conditional probability of treatment,
+and the *propensity score* is the conditional probability of treatment,
 
 $$g(X) = \mathbb{P}(A = 1 \mid X).$$
 
-For $\psi$ to carry a causal interpretation we need the usual trio of assumptions — no unmeasured confounding, positivity ($0 < g(X) < 1$), and SUTVA — which I will take as given since the focus here is estimation, not identification. A concrete example to fix ideas, taken from the paper: $A$ is whether a person exercises regularly, $Y$ is a depression score, and $X$ collects sex, use of psychosocial therapy, and antidepressant use.
+For $\psi$ to carry a causal interpretation we need the usual trio of assumptions — no unmeasured confounding, positivity ($0 < g(X) < 1$), and SUTVA — which I will take as given since the focus here is estimation, not identification. 
+
+A concrete example to fix ideas, taken from the paper: $A$ is whether a person exercises regularly, $Y$ is a depression score, and $X$ collects sex, use of psychosocial therapy, and antidepressant use.
 
 ## A Closer Look
 
@@ -34,7 +42,7 @@ For $\psi$ to carry a causal interpretation we need the usual trio of assumption
 
 The reason TMLE is easy to place on a mental map is that it shares its ingredients with methods you already use. [G-computation](https://vyasenov.github.io/blog/ml-based-adjustments.html) (regression adjustment) models only the outcome regression $\bar{Q}$ and then averages the predicted difference. Inverse probability weighting (IPW) models only the propensity score $g$ and reweights the observed outcomes. Each leans entirely on getting *one* of the two nuisances right.
 
-TMLE uses *both*. It starts from an outcome-regression prediction and then nudges it using the propensity score, in a way designed specifically for the ATE. That extra step is what buys **double robustness**: the final estimate is consistent if *either* $\bar{Q}$ or $g$ is correctly estimated, not necessarily both. If both are consistent, the estimator is also efficient. This is the practical payoff, and it is why the method is worth the extra bookkeeping.
+TMLE uses *both*. It starts from an outcome-regression prediction and then nudges it using the propensity score, in a way designed specifically for the ATE. That extra step is what buys *double robustness*: the final estimate is consistent if *either* $\bar{Q}$ or $g$ is correctly estimated, not necessarily both. If both are consistent, the estimator is also efficient. This is the practical payoff, and it is why the method is worth the extra bookkeeping.
 
 ---
 
@@ -51,121 +59,11 @@ Here is the whole procedure for the ATE, stripped to its essentials. One technic
 
 The only genuinely new object is the clever covariate $H$. Note that it looks a lot like an inverse-probability weight — and that is no accident — but here it enters as a *regressor* in the fluctuation rather than as a weight. Step 3 is the "targeting": it tilts the initial fit just enough to remove first-order bias in the direction that matters for the ATE, while leaving the rest of the outcome model alone.
 
-The code below implements all four steps from scratch on simulated data, so each line maps onto a step above.
-
-::::{.panel-tabset}
-
-### R
-```r
-set.seed(1988)
-
-# ---- Simulate data (Schuler & Rose-style) ----
-n  <- 1000
-X1 <- rbinom(n, 1, 0.55)   # sex
-X2 <- rbinom(n, 1, 0.30)   # psychosocial therapy
-X3 <- rbinom(n, 1, 0.25)   # antidepressant use
-
-# Exposure: regular physical exercise
-pA <- plogis(-0.5 + 0.75 * X1 + 1.0 * X2 + 1.5 * X3)
-A  <- rbinom(n, 1, pA)
-
-# Continuous outcome: a depression score
-muY <- 24 - 3 * A + 3 * X1 - 4 * X2 - 6 * X3 - 1.5 * A * X3
-Y   <- rnorm(n, muY, 4.5)
-# True marginal ATE = 0.25 * (-4.5) + 0.75 * (-3) = -3.375
-
-# ---- Bound the continuous outcome to (0, 1) ----
-a <- min(Y); b <- max(Y)
-Ystar <- (Y - a) / (b - a)
-
-# ---- Step 1: initial outcome model Qbar(A, X) ----
-qfit <- glm(Ystar ~ A + X1 + X2 + X3, family = quasibinomial())
-Q_A  <- predict(qfit, type = "response")                                       # Qbar(A_i, X_i)
-Q_1  <- predict(qfit, newdata = data.frame(A = 1, X1, X2, X3), type = "response")
-Q_0  <- predict(qfit, newdata = data.frame(A = 0, X1, X2, X3), type = "response")
-
-# ---- Step 2: propensity score g(X) = P(A = 1 | X) ----
-gfit <- glm(A ~ X1 + X2 + X3, family = binomial())
-g1   <- predict(gfit, type = "response")   # pi_1
-g0   <- 1 - g1                             # pi_0
-
-# ---- Step 3: targeting step ----
-H_A <- A / g1 - (1 - A) / g0               # clever covariate at observed A
-eps <- coef(glm(Ystar ~ -1 + H_A + offset(qlogis(Q_A)), family = quasibinomial()))
-H_1 <-  1 / g1
-H_0 <- -1 / g0
-Q_1_star <- plogis(qlogis(Q_1) + eps * H_1)   # updated potential outcomes
-Q_0_star <- plogis(qlogis(Q_0) + eps * H_0)
-
-# ---- Step 4: plug-in ATE (back on the original scale) ----
-ate <- (b - a) * mean(Q_1_star - Q_0_star)
-cat(sprintf("TMLE ATE estimate: %.3f\n", ate))   # ~ -3.4, close to the true -3.38
-
-# In practice, reach for the package rather than hand-rolling:
-# install.packages("tmle")
-# library(tmle)
-# tmle(Y = Y, A = A, W = data.frame(X1, X2, X3))$estimates$ATE$psi
-```
-
-### Python
-```python
-import numpy as np
-import statsmodels.api as sm
-from scipy.special import logit, expit
-
-np.random.seed(1988)
-
-# ---- Simulate data (Schuler & Rose-style) ----
-n  = 1000
-X1 = np.random.binomial(1, 0.55, n)   # sex
-X2 = np.random.binomial(1, 0.30, n)   # psychosocial therapy
-X3 = np.random.binomial(1, 0.25, n)   # antidepressant use
-
-# Exposure: regular physical exercise
-pA = expit(-0.5 + 0.75 * X1 + 1.0 * X2 + 1.5 * X3)
-A  = np.random.binomial(1, pA)
-
-# Continuous outcome: a depression score
-muY = 24 - 3 * A + 3 * X1 - 4 * X2 - 6 * X3 - 1.5 * A * X3
-Y   = np.random.normal(muY, 4.5)
-# True marginal ATE = 0.25 * (-4.5) + 0.75 * (-3) = -3.375
-
-# ---- Bound the continuous outcome to (0, 1) ----
-a, b  = Y.min(), Y.max()
-Ystar = (Y - a) / (b - a)
-
-# ---- Step 1: initial outcome model Qbar(A, X) ----
-Xq   = np.column_stack([np.ones(n), A, X1, X2, X3])
-qfit = sm.GLM(Ystar, Xq, family=sm.families.Binomial()).fit()
-Q_A  = qfit.predict(Xq)
-Q_1  = qfit.predict(np.column_stack([np.ones(n), np.ones(n),  X1, X2, X3]))
-Q_0  = qfit.predict(np.column_stack([np.ones(n), np.zeros(n), X1, X2, X3]))
-
-# ---- Step 2: propensity score g(X) = P(A = 1 | X) ----
-W    = np.column_stack([np.ones(n), X1, X2, X3])
-gfit = sm.GLM(A, W, family=sm.families.Binomial()).fit()
-g1   = gfit.predict(W)   # pi_1
-g0   = 1 - g1            # pi_0
-
-# ---- Step 3: targeting step ----
-H_A = A / g1 - (1 - A) / g0                              # clever covariate at observed A
-eps = sm.GLM(Ystar, H_A, family=sm.families.Binomial(),
-             offset=logit(Q_A)).fit().params[0]
-H_1, H_0 = 1 / g1, -1 / g0
-Q_1_star = expit(logit(Q_1) + eps * H_1)                 # updated potential outcomes
-Q_0_star = expit(logit(Q_0) + eps * H_0)
-
-# ---- Step 4: plug-in ATE (back on the original scale) ----
-ate = (b - a) * np.mean(Q_1_star - Q_0_star)
-print(f"TMLE ATE estimate: {ate:.3f}")   # ~ -3.4, close to the true -3.38
-```
-::::
-
 ---
 
 ### Why Bother With the Targeting Step?
 
-A fair question is why we do not simply stop after step 1 and report the average difference in predicted outcomes — that is exactly G-computation. The answer is robustness. A plain outcome-model plug-in is only as good as that one model; if it is misspecified, the estimate is biased, full stop. The targeting step injects information from the propensity score so that a mistake in *one* of the two models can be absorbed by the other. In the paper's simulation, when either the outcome or the exposure model is deliberately misspecified, TMLE stays essentially unbiased (recovering the true ATE of $-3.38$), while G-computation and IPW pick up large bias from the same misspecification.
+A fair question is why we do not simply stop after step 1 and report the average difference in predicted outcomes — that is exactly G-computation. The answer is robustness. A plain outcome-model plug-in is only as good as that one model; if it is misspecified, the estimate is biased, full stop. The targeting step injects information from the propensity score so that a mistake in *one* of the two models can be absorbed by the other. In the paper's simulation, when either the outcome or the exposure model is deliberately misspecified, TMLE stays essentially unbiased, while G-computation and IPW pick up large bias from the same misspecification.
 
 Two practical notes follow from this. First, TMLE is a *substitution* (plug-in) estimator — the ATE is computed by plugging fitted values into the target functional — which makes it more stable than estimating-equation methods like IPW when propensity scores get close to $0$ or $1$. Second, because the recipe never cares *how* $\bar{Q}$ and $g$ are estimated, you should estimate them with flexible machine learning rather than hand-specified regressions. In practice this means an ensemble (the super learner), which lets the data choose among [a library of ML methods](https://vyasenov.github.io/blog/flavors-ml-methods-ci.html) instead of betting on one functional form.
 
@@ -175,10 +73,6 @@ Two practical notes follow from this. First, TMLE is a *substitution* (plug-in) 
 - It is doubly robust — consistent if *either* the outcome regression or the propensity score is right — and semiparametrically efficient when both are.
 - It is flexible: the recipe is agnostic to how the two nuisance functions are estimated, so it accommodates a wide range of machine learning algorithms (ideally an ensemble).
 - In essence, TMLE is outcome-regression plus propensity-score modeling, with one extra step that removes bias from the outcome model through a clever use of the estimated propensity score.
-
-## Where to Learn More
-
-The most accessible entry point, and the basis for this note, is Schuler and Rose (2017), a step-by-step tutorial aimed squarely at applied researchers. For the full framework — double robustness, efficiency theory, and the many extensions I skipped — the canonical reference is van der Laan and Rose's book *Targeted Learning* (2011), with the original method introduced in van der Laan and Rubin (2006). In R, the `tmle` package implements everything above, including the super-learner option, so there is rarely a need to hand-roll the steps in production.
 
 ## References
 
