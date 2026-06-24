@@ -105,7 +105,7 @@ The practical implication is sobering. Exact support recovery is fragile: it dem
 
 ## Where to Learn More
 
-For a focused, modern treatment, "Statistical Learning with Sparsity" by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with "The Elements of Statistical Learning" (2009) as gentler background. For the theory nerds, Bühlmann and van de Geer's "Statistics for High-Dimensional Data" (2011) and Wainwright's "High-Dimensional Statistics" (2019) are the standard references, though both are too dense for most mortals`.
+For a focused, modern treatment, "Statistical Learning with Sparsity" by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with "The Elements of Statistical Learning" (2009) as gentler background. For the theory nerds, Bühlmann and van de Geer's "Statistics for High-Dimensional Data" (2011) and Wainwright's "High-Dimensional Statistics" (2019) are the standard references, though both are too dense for most mortals.
 
 ## References
 

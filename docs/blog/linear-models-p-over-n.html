@@ -398,10 +398,8 @@ window.Quarto = {
   <li><a href="#why-beta-cannot-be-identified" id="toc-why-beta-cannot-be-identified" class="nav-link" data-scroll-target="#why-beta-cannot-be-identified">Why <span class="math inline">\(\beta\)</span> cannot be identified</a></li>
   <li><a href="#non-unique-coefficients-unique-predictions" id="toc-non-unique-coefficients-unique-predictions" class="nav-link" data-scroll-target="#non-unique-coefficients-unique-predictions">Non-unique coefficients, unique predictions</a></li>
   <li><a href="#four-ways-to-pick-a-beta" id="toc-four-ways-to-pick-a-beta" class="nav-link" data-scroll-target="#four-ways-to-pick-a-beta">Four ways to pick a <span class="math inline">\(\beta\)</span></a></li>
-  <li><a href="#what-you-can-actually-predict" id="toc-what-you-can-actually-predict" class="nav-link" data-scroll-target="#what-you-can-actually-predict">What you can actually predict</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
-  <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -440,23 +438,34 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">9 min read</div>
+<div class="reading-time">6 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>There is a tidy bit of folk wisdom that says you cannot fit a regression with more predictors than observations. With <span class="math inline">\(p\)</span> parameters and only <span class="math inline">\(n &lt; p\)</span> data points, the reasoning goes, you have more unknowns than equations, the system is underdetermined, and the whole enterprise collapses. Anyone who has stared at a genomics design matrix with twenty thousand genes and two hundred patients has felt the force of this worry.</p>
-<p>The folk wisdom is half right, and the half it gets wrong is the interesting half. It is true that when <span class="math inline">\(p &gt; n\)</span> you cannot recover the coefficient vector <span class="math inline">\(\beta\)</span> — not even in principle, not with infinite computing power, not with a perfect prior. But it does not follow that the model is useless. The thing you usually <em>care</em> about — the prediction <span class="math inline">\(X\beta\)</span> — can be perfectly well-defined even when <span class="math inline">\(\beta\)</span> itself is hopelessly ambiguous. Coefficients that are individually unknowable can combine into a quantity that is pinned down exactly. I find this one of the more beautiful facts in linear-model theory, and it sits at the heart of a recent expository paper by Ronald Christensen that I want to walk through here.</p>
-<p>The plan: I will spend most of the post on <em>why</em> <span class="math inline">\(\beta\)</span> is non-identifiable and what survives anyway, then sketch — briefly — the menu of estimators people actually reach for in this regime, and what “prediction” even means when half the parameter space is invisible to the data.</p>
+<p>It seems intuitive that you cannot fit a regression with more predictors than observations. With <span class="math inline">\(p\)</span> parameters and only <span class="math inline">\(n &lt; p\)</span> data points, the reasoning goes, you have more unknowns than equations, the system is underdetermined, and the whole enterprise collapses. Geneticists know this well.</p>
+<p>This intuition is half right. It is true that when <span class="math inline">\(p &gt; n\)</span> you cannot recover the coefficient vector <span class="math inline">\(\beta\)</span> — not even in principle, not with infinite sample or computing power. But it does not follow that the model is useless. The thing you usually <em>care</em> about — the prediction <span class="math inline">\(X\beta\)</span> — can be perfectly well-defined even when <span class="math inline">\(\beta\)</span> itself is hopelessly ambiguous. Coefficients that are individually unknowable can combine into a quantity that is pinned down exactly. I find this one of the more beautiful facts in linear-model theory, and it sits at the heart of a recent expository paper by Ronald Christensen (2026).</p>
+<p>I will spend most of the post on <em>why</em> <span class="math inline">\(\beta\)</span> is non-identifiable and what survives anyway, then briefly sketch the menu of estimators people actually reach for in this regime, and what “prediction” even means when half the parameter space is invisible to the data.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
 <p>Start with the standard linear model</p>
 <p><span class="math display">\[Y = X\beta + e, \qquad \mathbb{E}(e) = 0, \qquad \text{cov}(e) = \sigma^2 I_n,\]</span></p>
-<p>where <span class="math inline">\(Y\)</span> is an <span class="math inline">\(n\)</span>-vector of outcomes, <span class="math inline">\(X\)</span> is a known <span class="math inline">\(n \times p\)</span> design matrix, <span class="math inline">\(\beta\)</span> is the <span class="math inline">\(p\)</span>-vector of unknown coefficients, and <span class="math inline">\(e\)</span> is mean-zero noise. The case of interest is <span class="math inline">\(p &gt; n\)</span>, which forces the rank of <span class="math inline">\(X\)</span> to satisfy <span class="math inline">\(r(X) \le n &lt; p\)</span>.</p>
-<p>Two subspaces do all the work. The <strong>column space</strong> <span class="math inline">\(C(X) \subseteq \mathbb{R}^n\)</span> is the set of all fitted-value vectors <span class="math inline">\(X\beta\)</span> the model can produce. The <strong>row space</strong> <span class="math inline">\(C(X') \subseteq \mathbb{R}^p\)</span> is the span of the rows of <span class="math inline">\(X\)</span> — the directions in coefficient space that the data actually “see.” Let <span class="math inline">\(N\)</span> denote the (orthogonal) projection onto the row space <span class="math inline">\(C(X')\)</span>, so that any coefficient vector splits cleanly into</p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(Y\)</span> is an <span class="math inline">\(n\)</span>-vector of outcomes,</li>
+<li><span class="math inline">\(X\)</span> is a known <span class="math inline">\(n \times p\)</span> design matrix,</li>
+<li><span class="math inline">\(\beta\)</span> is the <span class="math inline">\(p\)</span>-vector of unknown coefficients, and</li>
+<li><span class="math inline">\(e\)</span> is mean-zero noise.</li>
+</ul>
+<p>The case of interest is <span class="math inline">\(p &gt; n\)</span>, which forces the rank of <span class="math inline">\(X\)</span> to satisfy <span class="math inline">\(r(X) \le n &lt; p\)</span>. Two subspaces do all the work.</p>
+<ul>
+<li>The <em>column space</em> <span class="math inline">\(C(X) \subseteq \mathbb{R}^n\)</span> is the set of all fitted-value vectors <span class="math inline">\(X\beta\)</span> the model can produce.</li>
+<li>The <em>row space</em> <span class="math inline">\(C(X') \subseteq \mathbb{R}^p\)</span> is the span of the rows of <span class="math inline">\(X\)</span> — the directions in coefficient space that the data actually “see.”</li>
+</ul>
+<p>Let <span class="math inline">\(N\)</span> denote the (orthogonal) projection onto the row space <span class="math inline">\(C(X')\)</span>, so that any coefficient vector splits cleanly into</p>
 <p><span class="math display">\[\beta = \underbrace{N\beta}_{\text{in the row space}} + \underbrace{(I - N)\beta}_{\text{orthogonal to it}}.\]</span></p>
 <p>That decomposition is the whole story, so it is worth keeping in view.</p>
 </section>
@@ -468,7 +477,6 @@ window.Quarto = {
 <p><span class="math display">\[X\beta = X\big(N\beta + (I-N)\beta\big) = X N\beta.\]</span></p>
 <p>The component <span class="math inline">\((I - N)\beta\)</span> contributes <em>nothing</em> to <span class="math inline">\(X\beta\)</span>, and therefore nothing to <span class="math inline">\(\mathbb{E}(Y)\)</span>. The data are generated by <span class="math inline">\(N\beta\)</span> alone. Whatever value <span class="math inline">\((I-N)\beta\)</span> takes — zero, enormous, anything — the distribution of <span class="math inline">\(Y\)</span> is exactly the same. No estimator can distinguish between two coefficient vectors that agree on their row-space part and differ off it, because they produce statistically identical data.</p>
 <p>When <span class="math inline">\(p \le n\)</span> and <span class="math inline">\(X\)</span> has full column rank, the row space is all of <span class="math inline">\(\mathbb{R}^p\)</span>, the projection <span class="math inline">\(N\)</span> is the identity, <span class="math inline">\((I-N)\beta\)</span> vanishes, and this issue never arises — which is why we rarely think about it. But the moment <span class="math inline">\(p &gt; n\)</span>, the row space is a <em>proper</em> subspace of <span class="math inline">\(\mathbb{R}^p\)</span>, the orthogonal complement is non-trivial, and a whole <span class="math inline">\((p - r)\)</span>-dimensional flat of coefficient vectors fits the data equally well. That is non-identifiability, stated geometrically: <span class="math inline">\(\beta\)</span> is unknowable precisely along the directions the design never probes.</p>
-<p>The Bayesian version sharpens the point to something almost startling. Put any prior on <span class="math inline">\(\beta\)</span>. Because the likelihood depends on <span class="math inline">\(\beta\)</span> only through <span class="math inline">\(N\beta\)</span>, the data update your beliefs about <span class="math inline">\(N\beta\)</span> but leave the conditional distribution of <span class="math inline">\((I-N)\beta\)</span> <em>given</em> <span class="math inline">\(N\beta\)</span> untouched. The posterior for the orthogonal component equals the prior. You learn exactly nothing about it — not approximately nothing, nothing. More data will not help; the information was never in the design to begin with.</p>
 <hr>
 </section>
 <section id="non-unique-coefficients-unique-predictions" class="level3">
@@ -491,32 +499,19 @@ window.Quarto = {
 <p>The differences among them are real but secondary to the shared structure: each one estimates the identifiable part <span class="math inline">\(N\beta\)</span> from the data and then imposes some discipline on the unidentifiable part. For the theory behind when these choices recover the truth, see my post on <a href="https://vyasenov.github.io/blog/lasso-theory-guarantees.html">the LASSO’s theoretical guarantees</a>.</p>
 <hr>
 </section>
-<section id="what-you-can-actually-predict" class="level3">
-<h3 class="anchored" data-anchor-id="what-you-can-actually-predict">What you can actually predict</h3>
-<p>If <span class="math inline">\(\beta\)</span> is half-hidden, what does it mean to predict a new observation <span class="math inline">\(Y_f = x_f'\beta + e_f\)</span>? The best possible prediction is <span class="math inline">\(x_f'\beta\)</span>, and by the same row-space logic, this is recoverable only if <span class="math inline">\(x_f\)</span> lies in the row space <span class="math inline">\(C(X')\)</span> — i.e., if the new case is a linear combination of the directions the training data already spanned. When <span class="math inline">\(p \le n\)</span> this holds automatically for every conceivable <span class="math inline">\(x_f\)</span>. When <span class="math inline">\(p &gt; n\)</span> it does not: for a future point whose covariates point partly <em>outside</em> the training row space, the prediction depends on the unknowable <span class="math inline">\((I-N)\beta\)</span>, and there is simply no theoretical basis for trusting it.</p>
-<p>The practical reading is reassuring rather than gloomy. Predictions are on solid ground for new cases that resemble the training data — that live in, or close to, the subspace the design explored — and on no ground at all for cases far outside it. That is a familiar lesson about extrapolation, but the <span class="math inline">\(p &gt; n\)</span> setting makes it exact: there is a specific subspace inside which prediction is well-posed, and you can check whether a new case falls in it.</p>
-</section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li>With <span class="math inline">\(p &gt; n\)</span>, the coefficient vector <span class="math inline">\(\beta\)</span> is <strong>not identifiable</strong> — the design only sees its projection <span class="math inline">\(N\beta\)</span> onto the row space, and the orthogonal part <span class="math inline">\((I-N)\beta\)</span> is invisible to the data and to any prior.</li>
-<li>Yet the fitted values <span class="math inline">\(X\hat\beta\)</span> and the row-space part <span class="math inline">\(N\beta\)</span> are <strong>unique and estimable</strong>. Non-unique coefficients, unique predictions: that is the central fact, and it is what keeps high-dimensional regression alive.</li>
-<li>Do not over-interpret individual coefficients in this regime. Only their row-space projection carries information; the rest is your estimator’s tie-breaking convention talking.</li>
-<li>Every estimator — minimum-norm, penalized, spectral shrinkage, principal components — is a rule for choosing among the infinitely many fits, agreeing on <span class="math inline">\(N\beta\)</span> and differing only off the row space.</li>
-<li>Prediction is trustworthy only for new cases whose covariates lie in (or near) the training row space. The “can you extrapolate?” question has, here, a precise geometric answer.</li>
+<li>With <span class="math inline">\(p &gt; n\)</span>, the coefficient vector <span class="math inline">\(\beta\)</span> is <em>not identifiable</em> — the design only sees its projection <span class="math inline">\(N\beta\)</span> onto the row space, and the orthogonal part <span class="math inline">\((I-N)\beta\)</span> is invisible to the data and to any prior.</li>
+<li>Yet the fitted values <span class="math inline">\(X\hat\beta\)</span> and the row-space part <span class="math inline">\(N\beta\)</span> are <em>unique and estimable</em>. Non-unique coefficients, unique predictions: that is the central fact, and it is what keeps high-dimensional regression alive.</li>
+<li>Every estimator is a rule for choosing among the infinitely many fits, agreeing on <span class="math inline">\(N\beta\)</span> and differing only off the row space.</li>
 </ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The direct source for this post is Christensen (2026), a clear and unusually readable account of estimation and prediction when <span class="math inline">\(p &gt; n\)</span>; its companion arXiv note, Christensen (2024), develops the overfitting and double-descent material I have left aside — and which I take up from a different angle in my post on <a href="https://vyasenov.github.io/blog/double-descent.html">double descent</a>. For the broader theory of projections, estimability, and the geometry of linear models, Christensen’s textbook <em>Plane Answers to Complex Questions</em> (2020) is the standard reference and the place these ideas are worked out in full. And for the modern high-dimensional estimators — ridge, the LASSO, principal components — Hastie, Tibshirani, and Friedman’s <em>The Elements of Statistical Learning</em> remains the canonical practitioner’s guide.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <ul>
 <li><p>Christensen, R. (2026). Linear Model Estimation and Prediction for <span class="math inline">\(p &gt; n\)</span>. <em>The American Statistician</em>, 80(2), 232–240.</p></li>
-<li><p>Christensen, R. (2024). Double Descent: Understanding Linear Model Estimation of Nonidentifiable Parameters and a Model for Overfitting. arXiv:2408.13235.</p></li>
-<li><p>Christensen, R. (2020). <em>Plane Answers to Complex Questions: The Theory of Linear Models</em> (5th ed.). New York: Springer.</p></li>
 <li><p>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <em>The Elements of Statistical Learning</em> (2nd ed.). New York: Springer.</p></li>
 </ul>
 

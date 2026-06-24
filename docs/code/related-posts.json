@@ -485,7 +485,7 @@
   },
   {
     "slug": "online-multiple-testing",
-    "title": "Always-Valid p-Values and Online Multiple Testing",
+    "title": "Always-Valid $p$-Values and Online Multiple Testing",
     "date": "2026-06-24",
     "categories": [
       "multiple testing",
@@ -576,7 +576,7 @@
   },
   {
     "slug": "second-gen-pvalues",
-    "title": "Second-Generation P-Values: A Worthy Idea That Did Not Catch On",
+    "title": "Second-Generation $p$-Values: A Worthy Idea That Did Not Catch On",
     "date": "2026-06-11",
     "categories": [
       "hypothesis testing",

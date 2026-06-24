@@ -1,5 +1,5 @@
 ---
-title: "Second-Generation P-Values: A Worthy Idea That Did Not Catch On"
+title: "Second-Generation $p$-Values: A Worthy Idea That Did Not Catch On"
 date: "2026-06-11"
 categories: [hypothesis testing, statistical inference]
 ---

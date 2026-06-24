@@ -32,78 +32,7 @@ the least-squares fit of smallest Euclidean norm, and equivalently the limit of 
 
 ### The curve
 
-Here is the whole phenomenon in one picture. Fix $n$, let $p$ sweep from small to large, fit ridgeless least squares at each step, and plot the out-of-sample risk against $\gamma$. The code below does exactly that in the isotropic case $\Sigma = I$, holding the signal norm $\|\beta\|^2$ fixed so the comparison across $\gamma$ is fair.
-
-::::{.panel-tabset}
-
-### R
-```r
-set.seed(1988)
-library(MASS)   # for ginv(); install.packages("MASS")
-
-n      <- 100              # training sample size
-sigma2 <- 1                # noise variance
-r2     <- 5 * sigma2       # squared signal norm => SNR = 5
-reps   <- 50
-
-gammas <- c(seq(0.10, 0.95, by = 0.05), seq(1.05, 6, by = 0.25))
-risk   <- numeric(length(gammas))
-
-for (g in seq_along(gammas)) {
-  p  <- round(gammas[g] * n)
-  rr <- numeric(reps)
-  for (b in 1:reps) {
-    beta <- rnorm(p); beta <- beta / sqrt(sum(beta^2)) * sqrt(r2)  # ||beta||^2 = r2
-    X    <- matrix(rnorm(n * p), n, p)
-    y    <- X %*% beta + rnorm(n, sd = sqrt(sigma2))
-    bhat <- ginv(X) %*% y                  # min-norm (ridgeless) solution: X^+ y
-    rr[b] <- sum((bhat - beta)^2)          # isotropic risk = ||bhat - beta||^2
-  }
-  risk[g] <- mean(rr)
-}
-
-plot(gammas, risk, type = "b", pch = 19, log = "y",
-     xlab = expression(gamma == p/n), ylab = "out-of-sample risk",
-     main = "Double descent in ridgeless least squares")
-abline(v = 1, lty = 2)                     # interpolation boundary
-```
-
-### Python
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-
-np.random.seed(1988)
-
-n      = 100              # training sample size
-sigma2 = 1.0              # noise variance
-r2     = 5 * sigma2       # squared signal norm => SNR = 5
-reps   = 50
-
-gammas = np.r_[np.arange(0.10, 1.0, 0.05), np.arange(1.05, 6.01, 0.25)]
-risk   = np.zeros(len(gammas))
-
-for g, gam in enumerate(gammas):
-    p  = max(1, round(gam * n))
-    rr = np.zeros(reps)
-    for b in range(reps):
-        beta = np.random.normal(size=p)
-        beta = beta / np.linalg.norm(beta) * np.sqrt(r2)   # ||beta||^2 = r2
-        X    = np.random.normal(size=(n, p))
-        y    = X @ beta + np.random.normal(scale=np.sqrt(sigma2), size=n)
-        bhat = np.linalg.pinv(X) @ y                       # min-norm solution: X^+ y
-        rr[b] = np.sum((bhat - beta)**2)                   # isotropic risk
-    risk[g] = rr.mean()
-
-plt.semilogy(gammas, risk, "o-")
-plt.axvline(1.0, ls="--", color="gray")                    # interpolation boundary
-plt.xlabel(r"$\gamma = p/n$"); plt.ylabel("out-of-sample risk")
-plt.title("Double descent in ridgeless least squares")
-plt.tight_layout(); plt.show()
-```
-::::
-
-The curve climbs as $\gamma \to 1$ from below, blows up at the interpolation boundary, then *descends a second time* for $\gamma > 1$ before flattening out. In the isotropic limit Hastie et al. (2022) make this exact: as $n, p \to \infty$ with $p/n \to \gamma$,
+Here is the whole phenomenon in one curve. Fix $n$, let $p$ sweep from small to large, fit ridgeless least squares at each step, and trace the out-of-sample risk against $\gamma$ — in the isotropic case $\Sigma = I$, holding the signal norm $\|\beta\|^2$ fixed so the comparison across $\gamma$ is fair. The curve climbs as $\gamma \to 1$ from below, blows up at the interpolation boundary, then *descends a second time* for $\gamma > 1$ before flattening out. In the isotropic limit Hastie et al. (2022) make this exact: as $n, p \to \infty$ with $p/n \to \gamma$,
 
 $$
 R \to
@@ -119,11 +48,11 @@ Below the boundary the risk is pure variance — no bias at all — and it diver
 
 ### Bias up, variance down
 
-Why does the risk fall again past $\gamma = 1$? The two components move in opposite directions, and understanding why is the heart of the matter.
+Why does the risk fall again past $\gamma = 1$? The two components move in opposite directions.
 
 The **bias rises** with $\gamma$ for a reason that should be familiar if you have read about the [$p>n$ regime](https://vyasenov.github.io/blog/linear-models-p-over-n.html): the minimum-norm solution is confined to the row space of $X$, an $n$-dimensional subspace sitting inside $\mathbb{R}^p$. As $p$ grows, that row space accounts for an ever-smaller slice of the ambient coefficient space, so the part of $\beta$ the data can never see — and which the min-norm rule simply zeroes out — grows with it. More parameters, more of $\beta$ left on the table, more bias.
 
-The **variance falls** with $\gamma$, which feels backwards: surely more parameters means *more* variance? Not for the minimum-norm interpolator. The intuition is in the name. Adding columns to $X$ gives the solver more directions over which to spread the fit, so the minimum-norm solution to $Xb = y$ generally has *smaller* norm as $p$ grows. A lower-norm interpolator is a smoother, more stable one — effectively more regularized. So overparametrization, counterintuitively, calms the variance down. The minimum-norm criterion is doing the regularizing implicitly, for free.
+The **variance falls** with $\gamma$, which feels backwards: surely more parameters means *more* variance? Not for the minimum-norm interpolator, and the intuition is in the name. Adding columns to $X$ gives the solver more directions over which to spread the fit, so the minimum-norm solution to $Xb = y$ generally has *smaller* norm as $p$ grows. A lower-norm interpolator is smoother and more stable — effectively more regularized. The minimum-norm criterion is doing the regularizing implicitly, for free.
 
 The spike at $\gamma = 1$ is where these forces are both at their worst. With $p \approx n$, the model has *just barely* enough capacity to interpolate and no slack to do it gracefully: $X^\top X$ is nearly singular, the fit threads every noisy point through a single contortion, and the variance term $\sigma^2/(\gamma-1)$ explodes. The interpolation threshold is not a sweet spot — it is the worst possible place to be.
 
@@ -135,7 +64,7 @@ Here is where I will be opinionated. The dramatic part of the double-descent cur
 
 Hastie et al. (2022) make the point rigorously: optimally-tuned ridge regression *dominates* minimum-norm least squares at every value of $\gamma$ and every SNR, in both well-specified and misspecified settings. The optimal ridge risk has no spike — tuning $\lambda$ properly smooths the entire curve into a single well-behaved descent, and for misspecified models its global minimum sits right around $\gamma = 1$, exactly where ridgeless regression is at its worst. The good news for practice is that this optimal penalty is estimable: leave-one-out cross-validation recovers it asymptotically.
 
-So my reading is this. Double descent is real and the mathematics is genuinely beautiful, but the headline — *more parameters fix overfitting* — gets the moral backwards. What the second descent really shows is that the minimum-norm interpolator carries a hidden, increasingly strong dose of regularization as $\gamma$ grows. A statistician does not need to climb out to $\gamma = 4$ to enjoy that regularization; she can dial it in directly with a ridge penalty and a cross-validation loop, and never visit the peak at all. The phenomenon is less "interpolation is secretly fine" and more "under-regularization is bad, and overparametrization happens to re-regularize you on the way out."
+So my reading is this. Double descent is real and the mathematics is beautiful, but the headline — *more parameters fix overfitting* — gets the moral backwards. The second descent shows that the minimum-norm interpolator carries a hidden, increasingly strong dose of regularization as $\gamma$ grows. A statistician need not climb out to $\gamma = 4$ to enjoy it; she can dial it in directly with a ridge penalty and a cross-validation loop, and never visit the peak at all. The phenomenon is less "interpolation is secretly fine" than "under-regularization is bad, and overparametrization happens to re-regularize you on the way out."
 
 ---
 

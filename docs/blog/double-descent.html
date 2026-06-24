@@ -24,41 +24,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -500,75 +465,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="the-curve" class="level3">
 <h3 class="anchored" data-anchor-id="the-curve">The curve</h3>
-<p>Here is the whole phenomenon in one picture. Fix <span class="math inline">\(n\)</span>, let <span class="math inline">\(p\)</span> sweep from small to large, fit ridgeless least squares at each step, and plot the out-of-sample risk against <span class="math inline">\(\gamma\)</span>. The code below does exactly that in the isotropic case <span class="math inline">\(\Sigma = I\)</span>, holding the signal norm <span class="math inline">\(\|\beta\|^2\)</span> fixed so the comparison across <span class="math inline">\(\gamma\)</span> is fair.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)   <span class="co"># for ginv(); install.packages("MASS")</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>n      <span class="ot">&lt;-</span> <span class="dv">100</span>              <span class="co"># training sample size</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sigma2 <span class="ot">&lt;-</span> <span class="dv">1</span>                <span class="co"># noise variance</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>r2     <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">*</span> sigma2       <span class="co"># squared signal norm =&gt; SNR = 5</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>reps   <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>gammas <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">seq</span>(<span class="fl">0.10</span>, <span class="fl">0.95</span>, <span class="at">by =</span> <span class="fl">0.05</span>), <span class="fu">seq</span>(<span class="fl">1.05</span>, <span class="dv">6</span>, <span class="at">by =</span> <span class="fl">0.25</span>))</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>risk   <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(gammas))</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (g <span class="cf">in</span> <span class="fu">seq_along</span>(gammas)) {</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  p  <span class="ot">&lt;-</span> <span class="fu">round</span>(gammas[g] <span class="sc">*</span> n)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  rr <span class="ot">&lt;-</span> <span class="fu">numeric</span>(reps)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (b <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>reps) {</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    beta <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(p); beta <span class="ot">&lt;-</span> beta <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(beta<span class="sc">^</span><span class="dv">2</span>)) <span class="sc">*</span> <span class="fu">sqrt</span>(r2)  <span class="co"># ||beta||^2 = r2</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    X    <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> p), n, p)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    y    <span class="ot">&lt;-</span> X <span class="sc">%*%</span> beta <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="fu">sqrt</span>(sigma2))</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    bhat <span class="ot">&lt;-</span> <span class="fu">ginv</span>(X) <span class="sc">%*%</span> y                  <span class="co"># min-norm (ridgeless) solution: X^+ y</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    rr[b] <span class="ot">&lt;-</span> <span class="fu">sum</span>((bhat <span class="sc">-</span> beta)<span class="sc">^</span><span class="dv">2</span>)          <span class="co"># isotropic risk = ||bhat - beta||^2</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  risk[g] <span class="ot">&lt;-</span> <span class="fu">mean</span>(rr)</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gammas, risk, <span class="at">type =</span> <span class="st">"b"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">log =</span> <span class="st">"y"</span>,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="fu">expression</span>(gamma <span class="sc">==</span> p<span class="sc">/</span>n), <span class="at">ylab =</span> <span class="st">"out-of-sample risk"</span>,</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Double descent in ridgeless least squares"</span>)</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">1</span>, <span class="at">lty =</span> <span class="dv">2</span>)                     <span class="co"># interpolation boundary</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>n      <span class="op">=</span> <span class="dv">100</span>              <span class="co"># training sample size</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>sigma2 <span class="op">=</span> <span class="fl">1.0</span>              <span class="co"># noise variance</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>r2     <span class="op">=</span> <span class="dv">5</span> <span class="op">*</span> sigma2       <span class="co"># squared signal norm =&gt; SNR = 5</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>reps   <span class="op">=</span> <span class="dv">50</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>gammas <span class="op">=</span> np.r_[np.arange(<span class="fl">0.10</span>, <span class="fl">1.0</span>, <span class="fl">0.05</span>), np.arange(<span class="fl">1.05</span>, <span class="fl">6.01</span>, <span class="fl">0.25</span>)]</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>risk   <span class="op">=</span> np.zeros(<span class="bu">len</span>(gammas))</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> g, gam <span class="kw">in</span> <span class="bu">enumerate</span>(gammas):</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    p  <span class="op">=</span> <span class="bu">max</span>(<span class="dv">1</span>, <span class="bu">round</span>(gam <span class="op">*</span> n))</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    rr <span class="op">=</span> np.zeros(reps)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> b <span class="kw">in</span> <span class="bu">range</span>(reps):</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        beta <span class="op">=</span> np.random.normal(size<span class="op">=</span>p)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        beta <span class="op">=</span> beta <span class="op">/</span> np.linalg.norm(beta) <span class="op">*</span> np.sqrt(r2)   <span class="co"># ||beta||^2 = r2</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        X    <span class="op">=</span> np.random.normal(size<span class="op">=</span>(n, p))</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        y    <span class="op">=</span> X <span class="op">@</span> beta <span class="op">+</span> np.random.normal(scale<span class="op">=</span>np.sqrt(sigma2), size<span class="op">=</span>n)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        bhat <span class="op">=</span> np.linalg.pinv(X) <span class="op">@</span> y                       <span class="co"># min-norm solution: X^+ y</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        rr[b] <span class="op">=</span> np.<span class="bu">sum</span>((bhat <span class="op">-</span> beta)<span class="op">**</span><span class="dv">2</span>)                   <span class="co"># isotropic risk</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    risk[g] <span class="op">=</span> rr.mean()</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>plt.semilogy(gammas, risk, <span class="st">"o-"</span>)</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>plt.axvline(<span class="fl">1.0</span>, ls<span class="op">=</span><span class="st">"--"</span>, color<span class="op">=</span><span class="st">"gray"</span>)                    <span class="co"># interpolation boundary</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r"</span><span class="dv">$</span><span class="er">\</span><span class="vs">gamma = p/n</span><span class="dv">$</span><span class="vs">"</span>)<span class="op">;</span> plt.ylabel(<span class="st">"out-of-sample risk"</span>)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Double descent in ridgeless least squares"</span>)</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()<span class="op">;</span> plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-<p>The curve climbs as <span class="math inline">\(\gamma \to 1\)</span> from below, blows up at the interpolation boundary, then <em>descends a second time</em> for <span class="math inline">\(\gamma &gt; 1\)</span> before flattening out. In the isotropic limit Hastie et al.&nbsp;(2022) make this exact: as <span class="math inline">\(n, p \to \infty\)</span> with <span class="math inline">\(p/n \to \gamma\)</span>,</p>
+<p>Here is the whole phenomenon in one curve. Fix <span class="math inline">\(n\)</span>, let <span class="math inline">\(p\)</span> sweep from small to large, fit ridgeless least squares at each step, and trace the out-of-sample risk against <span class="math inline">\(\gamma\)</span> — in the isotropic case <span class="math inline">\(\Sigma = I\)</span>, holding the signal norm <span class="math inline">\(\|\beta\|^2\)</span> fixed so the comparison across <span class="math inline">\(\gamma\)</span> is fair. The curve climbs as <span class="math inline">\(\gamma \to 1\)</span> from below, blows up at the interpolation boundary, then <em>descends a second time</em> for <span class="math inline">\(\gamma &gt; 1\)</span> before flattening out. In the isotropic limit Hastie et al.&nbsp;(2022) make this exact: as <span class="math inline">\(n, p \to \infty\)</span> with <span class="math inline">\(p/n \to \gamma\)</span>,</p>
 <p><span class="math display">\[
 R \to
 \begin{cases}
@@ -581,9 +478,9 @@ R \to
 </section>
 <section id="bias-up-variance-down" class="level3">
 <h3 class="anchored" data-anchor-id="bias-up-variance-down">Bias up, variance down</h3>
-<p>Why does the risk fall again past <span class="math inline">\(\gamma = 1\)</span>? The two components move in opposite directions, and understanding why is the heart of the matter.</p>
+<p>Why does the risk fall again past <span class="math inline">\(\gamma = 1\)</span>? The two components move in opposite directions.</p>
 <p>The <strong>bias rises</strong> with <span class="math inline">\(\gamma\)</span> for a reason that should be familiar if you have read about the <a href="https://vyasenov.github.io/blog/linear-models-p-over-n.html"><span class="math inline">\(p&gt;n\)</span> regime</a>: the minimum-norm solution is confined to the row space of <span class="math inline">\(X\)</span>, an <span class="math inline">\(n\)</span>-dimensional subspace sitting inside <span class="math inline">\(\mathbb{R}^p\)</span>. As <span class="math inline">\(p\)</span> grows, that row space accounts for an ever-smaller slice of the ambient coefficient space, so the part of <span class="math inline">\(\beta\)</span> the data can never see — and which the min-norm rule simply zeroes out — grows with it. More parameters, more of <span class="math inline">\(\beta\)</span> left on the table, more bias.</p>
-<p>The <strong>variance falls</strong> with <span class="math inline">\(\gamma\)</span>, which feels backwards: surely more parameters means <em>more</em> variance? Not for the minimum-norm interpolator. The intuition is in the name. Adding columns to <span class="math inline">\(X\)</span> gives the solver more directions over which to spread the fit, so the minimum-norm solution to <span class="math inline">\(Xb = y\)</span> generally has <em>smaller</em> norm as <span class="math inline">\(p\)</span> grows. A lower-norm interpolator is a smoother, more stable one — effectively more regularized. So overparametrization, counterintuitively, calms the variance down. The minimum-norm criterion is doing the regularizing implicitly, for free.</p>
+<p>The <strong>variance falls</strong> with <span class="math inline">\(\gamma\)</span>, which feels backwards: surely more parameters means <em>more</em> variance? Not for the minimum-norm interpolator, and the intuition is in the name. Adding columns to <span class="math inline">\(X\)</span> gives the solver more directions over which to spread the fit, so the minimum-norm solution to <span class="math inline">\(Xb = y\)</span> generally has <em>smaller</em> norm as <span class="math inline">\(p\)</span> grows. A lower-norm interpolator is smoother and more stable — effectively more regularized. The minimum-norm criterion is doing the regularizing implicitly, for free.</p>
 <p>The spike at <span class="math inline">\(\gamma = 1\)</span> is where these forces are both at their worst. With <span class="math inline">\(p \approx n\)</span>, the model has <em>just barely</em> enough capacity to interpolate and no slack to do it gracefully: <span class="math inline">\(X^\top X\)</span> is nearly singular, the fit threads every noisy point through a single contortion, and the variance term <span class="math inline">\(\sigma^2/(\gamma-1)\)</span> explodes. The interpolation threshold is not a sweet spot — it is the worst possible place to be.</p>
 <hr>
 </section>
@@ -591,7 +488,7 @@ R \to
 <h3 class="anchored" data-anchor-id="its-mostly-a-regularization-story">It’s mostly a regularization story</h3>
 <p>Here is where I will be opinionated. The dramatic part of the double-descent curve — the divergence at <span class="math inline">\(\gamma = 1\)</span> — is an artifact of insisting on interpolation. And interpolation is a <em>choice</em>, not a law. Ridgeless least squares is just ridge regression with the penalty turned all the way down to zero, which is precisely the setting a statistician would never choose on purpose.</p>
 <p>Hastie et al.&nbsp;(2022) make the point rigorously: optimally-tuned ridge regression <em>dominates</em> minimum-norm least squares at every value of <span class="math inline">\(\gamma\)</span> and every SNR, in both well-specified and misspecified settings. The optimal ridge risk has no spike — tuning <span class="math inline">\(\lambda\)</span> properly smooths the entire curve into a single well-behaved descent, and for misspecified models its global minimum sits right around <span class="math inline">\(\gamma = 1\)</span>, exactly where ridgeless regression is at its worst. The good news for practice is that this optimal penalty is estimable: leave-one-out cross-validation recovers it asymptotically.</p>
-<p>So my reading is this. Double descent is real and the mathematics is genuinely beautiful, but the headline — <em>more parameters fix overfitting</em> — gets the moral backwards. What the second descent really shows is that the minimum-norm interpolator carries a hidden, increasingly strong dose of regularization as <span class="math inline">\(\gamma\)</span> grows. A statistician does not need to climb out to <span class="math inline">\(\gamma = 4\)</span> to enjoy that regularization; she can dial it in directly with a ridge penalty and a cross-validation loop, and never visit the peak at all. The phenomenon is less “interpolation is secretly fine” and more “under-regularization is bad, and overparametrization happens to re-regularize you on the way out.”</p>
+<p>So my reading is this. Double descent is real and the mathematics is beautiful, but the headline — <em>more parameters fix overfitting</em> — gets the moral backwards. The second descent shows that the minimum-norm interpolator carries a hidden, increasingly strong dose of regularization as <span class="math inline">\(\gamma\)</span> grows. A statistician need not climb out to <span class="math inline">\(\gamma = 4\)</span> to enjoy it; she can dial it in directly with a ridge penalty and a cross-validation loop, and never visit the peak at all. The phenomenon is less “interpolation is secretly fine” than “under-regularization is bad, and overparametrization happens to re-regularize you on the way out.”</p>
 <hr>
 </section>
 <section id="when-overparametrization-genuinely-helps" class="level3">

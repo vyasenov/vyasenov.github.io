@@ -15,8 +15,9 @@ Before writing, make sure you have:
 2. **Topic-specific notes** (optional) — e.g. "flavors of" survey, "skip the code", "focus on asymptotics", "emphasize causal angle", target length, etc.
 3. **Paper(s) / references** (optional) — arXiv links, PDFs, or citations the user wants drawn on. Fetch them if given URLs.
 4. **Rough notes** (optional) — bullet points, outlines, or ideas the user already has.
+5. **Code or no code** (required) — always ask whether the article should include a worked R/Python example. Never assume; some posts are pure exposition and others benefit from code.
 
-If the user's initial prompt doesn't include some of these, ask once in a single short message. Do not pepper them with follow-ups.
+If the user's initial prompt doesn't include some of these, ask once in a single short message. Do not pepper them with follow-ups — but the code question (item 5) is not optional: always ask it unless the user has already said.
 
 ## About the author and blog (context for voice)
 
@@ -37,7 +38,7 @@ Advanced data scientists and applied statisticians who:
 1. **Background** — motivate the topic. Why does it matter? What problem does it solve? Hook the reader with an intuition or a common misconception. 1–3 paragraphs.
 2. **Notation** — define the mathematical setup clearly and concisely. LaTeX math (`$Y = X\beta + \varepsilon$`). Introduce all symbols before using them.
 3. **A Closer Look** — main body. 3–6 subsections depending on the topic. Cover key ideas, methods, variants. Include formal definitions where appropriate. Explain practical implications of theoretical results. Call out common pitfalls.
-4. **Bottom Line** — 3–5 bullet points summarizing takeaways for a practitioner. Concise and opinionated.
+4. **Bottom Line** — 3–5 short bullet points summarizing takeaways for a practitioner. Keep each to one crisp sentence (a clause or two), not a paragraph — opinionated and trimmed ruthlessly. If a bullet runs to two sentences, cut it down.
 5. **Where to Learn More** — 1 short paragraph pointing to 2–4 canonical references (textbooks, seminal papers). Mention by author/title with brief characterization.
 6. **References** — full citations in a consistent academic format (Author, Year, Title, Journal/Publisher).
 
@@ -48,6 +49,7 @@ Advanced data scientists and applied statisticians who:
 - Acknowledge limitations, edge cases, and where theoretical guarantees don't translate to practice.
 - Do not oversimplify or talk down. Do not pile on caveats or hedging.
 - Avoid bullet-heavy prose in the body — use paragraphs. Reserve bullets for the Bottom Line section.
+- **Bold sparingly** — aim for roughly one bolded phrase in the whole article, reserved for the single key term or punchline. Do not bold every method name, defined term, or "important" phrase; overusing bold flattens emphasis and reads like marketing copy. Let the prose carry the weight, and use italics for the occasional lighter stress.
 - Direct and grounded tone, not breathless or promotional.
 - **Hooks.** The Background usually opens with something human, not a definition. Recurring patterns in the author's posts: a personal confession ("This is a mistake I've made myself—more times than I'd like to admit"), a stated fascination ("Statistical correlation has long captivated me"), a vivid anecdote or joke (the statistician with her head in the oven and feet in ice, "fine on average"), or a myth/misconception to bust. Pick one; don't force all of them.
 - **Occasional direct address.** Opening with a reader-facing "you" and a light rhetorical question is in-voice ("You've likely encountered this scenario… Seems straightforward, doesn't it?"). Use sparingly, mostly in the hook; the body stays in "I"/pedagogical-"we".
@@ -55,7 +57,8 @@ Advanced data scientists and applied statisticians who:
 
 ## Code conventions
 
-- Include R and Python code blocks where relevant (especially for "flavors of" surveys and applied methods). Organize them in R/Python tabs using this pattern:
+- **Always ask the user whether to include code before drafting** (see Inputs item 5) — do not default to including it. Respect the answer: if they say no, write a pure-exposition post with no code blocks.
+- When code is included, use R and Python blocks where relevant (especially for "flavors of" surveys and applied methods). Organize them in R/Python tabs using this pattern:
 
 ```
 ::::{.panel-tabset}
@@ -119,7 +122,7 @@ The blog has a large back catalog, and internal links between related posts help
 
 ## Workflow
 
-1. **Gather inputs** — topic, notes, papers, rough notes. Ask once if missing.
+1. **Gather inputs** — topic, notes, papers, rough notes, and whether to include code (always ask the code question). Ask once if missing.
 2. **Check the metadata that drifts**, not the prose. Voice and formatting are fully specified above — don't read posts to absorb them. Instead, run a quick scan of `blog/*.qmd` to (a) list the `categories:` currently in use so you reuse existing tags, and (b) list existing slugs so the new filename avoids collisions and matches the naming style. A one-liner like `grep -h '^categories:' blog/*.qmd | sort | uniq -c` plus `ls blog/*.qmd` is enough.
 3. **If papers/URLs were provided**, fetch their content (WebFetch) so citations and claims are grounded.
 4. **Write the draft** at `blog/<slug>.qmd` with today's date (pull from environment, not a guess).

@@ -1440,7 +1440,7 @@ font-style: inherit;">]"</span>)</span></code></pre></div></div>
   <pubDate>Tue, 23 Jun 2026 21:00:00 GMT</pubDate>
 </item>
 <item>
-  <title>Always-Valid p-Values and Online Multiple Testing</title>
+  <title>Always-Valid \(p\)-Values and Online Multiple Testing</title>
   <link>https://vyasenov.github.io/blog/online-multiple-testing.html</link>
   <description><![CDATA[ 
 
@@ -1583,442 +1583,16 @@ font-style: inherit;">]"</span>)</span></code></pre></div></div>
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="the-curve" class="level3">
 <h3 class="anchored" data-anchor-id="the-curve">The curve</h3>
-<p>Here is the whole phenomenon in one picture. Fix <img src="https://latex.codecogs.com/png.latex?n">, let <img src="https://latex.codecogs.com/png.latex?p"> sweep from small to large, fit ridgeless least squares at each step, and plot the out-of-sample risk against <img src="https://latex.codecogs.com/png.latex?%5Cgamma">. The code below does exactly that in the isotropic case <img src="https://latex.codecogs.com/png.latex?%5CSigma%20=%20I">, holding the signal norm <img src="https://latex.codecogs.com/png.latex?%5C%7C%5Cbeta%5C%7C%5E2"> fixed so the comparison across <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> is fair.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(MASS)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># for ginv(); install.packages("MASS")</span></span>
-<span id="cb1-3"></span>
-<span id="cb1-4">n      <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># training sample size</span></span>
-<span id="cb1-5">sigma2 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>                <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># noise variance</span></span>
-<span id="cb1-6">r2     <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> sigma2       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># squared signal norm =&gt; SNR = 5</span></span>
-<span id="cb1-7">reps   <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span></span>
-<span id="cb1-8"></span>
-<span id="cb1-9">gammas <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.95</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.05</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">by =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.25</span>))</span>
-<span id="cb1-10">risk   <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">numeric</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(gammas))</span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> (g <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">seq_along</span>(gammas)) {</span>
-<span id="cb1-13">  p  <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(gammas[g] <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> n)</span>
-<span id="cb1-14">  rr <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">numeric</span>(reps)</span>
-<span id="cb1-15">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> (b <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>reps) {</span>
-<span id="cb1-16">    beta <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(p); beta <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> beta <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(beta<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(r2)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ||beta||^2 = r2</span></span>
-<span id="cb1-17">    X    <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matrix</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> p), n, p)</span>
-<span id="cb1-18">    y    <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> X <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%*%</span> beta <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(n, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sqrt</span>(sigma2))</span>
-<span id="cb1-19">    bhat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ginv</span>(X) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%*%</span> y                  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># min-norm (ridgeless) solution: X^+ y</span></span>
-<span id="cb1-20">    rr[b] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>((bhat <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> beta)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)          <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># isotropic risk = ||bhat - beta||^2</span></span>
-<span id="cb1-21">  }</span>
-<span id="cb1-22">  risk[g] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(rr)</span>
-<span id="cb1-23">}</span>
-<span id="cb1-24"></span>
-<span id="cb1-25"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(gammas, risk, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"b"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pch =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">19</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">log =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"y"</span>,</span>
-<span id="cb1-26">     <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xlab =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">expression</span>(gamma <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> p<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>n), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ylab =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"out-of-sample risk"</span>,</span>
-<span id="cb1-27">     <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">main =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Double descent in ridgeless least squares"</span>)</span>
-<span id="cb1-28"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abline</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">v =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">lty =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)                     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># interpolation boundary</span></span></code></pre></div></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb2-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> plt</span>
-<span id="cb2-3"></span>
-<span id="cb2-4">np.random.seed(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb2-5"></span>
-<span id="cb2-6">n      <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># training sample size</span></span>
-<span id="cb2-7">sigma2 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.0</span>              <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># noise variance</span></span>
-<span id="cb2-8">r2     <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> sigma2       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># squared signal norm =&gt; SNR = 5</span></span>
-<span id="cb2-9">reps   <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">50</span></span>
-<span id="cb2-10"></span>
-<span id="cb2-11">gammas <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.r_[np.arange(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.0</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>), np.arange(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.05</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6.01</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.25</span>)]</span>
-<span id="cb2-12">risk   <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.zeros(<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(gammas))</span>
-<span id="cb2-13"></span>
-<span id="cb2-14"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> g, gam <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">enumerate</span>(gammas):</span>
-<span id="cb2-15">    p  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">max</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">round</span>(gam <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> n))</span>
-<span id="cb2-16">    rr <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.zeros(reps)</span>
-<span id="cb2-17">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> b <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(reps):</span>
-<span id="cb2-18">        beta <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.normal(size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>p)</span>
-<span id="cb2-19">        beta <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> beta <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> np.linalg.norm(beta) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> np.sqrt(r2)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># ||beta||^2 = r2</span></span>
-<span id="cb2-20">        X    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.normal(size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>(n, p))</span>
-<span id="cb2-21">        y    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">@</span> beta <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> np.random.normal(scale<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>np.sqrt(sigma2), size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>n)</span>
-<span id="cb2-22">        bhat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.linalg.pinv(X) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">@</span> y                       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># min-norm solution: X^+ y</span></span>
-<span id="cb2-23">        rr[b] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">sum</span>((bhat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> beta)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">**</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)                   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># isotropic risk</span></span>
-<span id="cb2-24">    risk[g] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> rr.mean()</span>
-<span id="cb2-25"></span>
-<span id="cb2-26">plt.semilogy(gammas, risk, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"o-"</span>)</span>
-<span id="cb2-27">plt.axvline(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.0</span>, ls<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"--"</span>, color<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"gray"</span>)                    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># interpolation boundary</span></span>
-<span id="cb2-28">plt.xlabel(<span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">r"</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">$</span><span class="er" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">gamma = p/n</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">$</span><span class="vs" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> plt.ylabel(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"out-of-sample risk"</span>)</span>
-<span id="cb2-29">plt.title(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Double descent in ridgeless least squares"</span>)</span>
-<span id="cb2-30">plt.tight_layout()<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">;</span> plt.show()</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<p>The curve climbs as <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%5Cto%201"> from below, blows up at the interpolation boundary, then <em>descends a second time</em> for <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%3E%201"> before flattening out. In the isotropic limit Hastie et al.&nbsp;(2022) make this exact: as <img src="https://latex.codecogs.com/png.latex?n,%20p%20%5Cto%20%5Cinfty"> with <img src="https://latex.codecogs.com/png.latex?p/n%20%5Cto%20%5Cgamma">,</p>
+<p>Here is the whole phenomenon in one curve. Fix <img src="https://latex.codecogs.com/png.latex?n">, let <img src="https://latex.codecogs.com/png.latex?p"> sweep from small to large, fit ridgeless least squares at each step, and trace the out-of-sample risk against <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> — in the isotropic case <img src="https://latex.codecogs.com/png.latex?%5CSigma%20=%20I">, holding the signal norm <img src="https://latex.codecogs.com/png.latex?%5C%7C%5Cbeta%5C%7C%5E2"> fixed so the comparison across <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> is fair. The curve climbs as <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%5Cto%201"> from below, blows up at the interpolation boundary, then <em>descends a second time</em> for <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%3E%201"> before flattening out. In the isotropic limit Hastie et al.&nbsp;(2022) make this exact: as <img src="https://latex.codecogs.com/png.latex?n,%20p%20%5Cto%20%5Cinfty"> with <img src="https://latex.codecogs.com/png.latex?p/n%20%5Cto%20%5Cgamma">,</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0AR%20%5Cto%0A%5Cbegin%7Bcases%7D%0A%5Csigma%5E2%20%5Cdfrac%7B%5Cgamma%7D%7B1%20-%20%5Cgamma%7D,%20&amp;%20%5Cgamma%20%3C%201,%20%5C%5C%5B2ex%5D%0A%5Cunderbrace%7Br%5E2%5CBig(1%20-%20%5Ctfrac%7B1%7D%7B%5Cgamma%7D%5CBig)%7D_%7B%5Ctext%7Bbias%7D%7D%20+%20%5Cunderbrace%7B%5Csigma%5E2%20%5Cdfrac%7B1%7D%7B%5Cgamma%20-%201%7D%7D_%7B%5Ctext%7Bvariance%7D%7D,%20&amp;%20%5Cgamma%20%3E%201.%0A%5Cend%7Bcases%7D%0A"></p>
 <p>Below the boundary the risk is pure variance — no bias at all — and it diverges as <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%5Cto%201">. Above it, the risk is the sum of a bias term that grows with <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> and a variance term that shrinks with <img src="https://latex.codecogs.com/png.latex?%5Cgamma">. That tension is the engine of the second descent.</p>
 <hr>
 </section>
 <section id="bias-up-variance-down" class="level3">
 <h3 class="anchored" data-anchor-id="bias-up-variance-down">Bias up, variance down</h3>
-<p>Why does the risk fall again past <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">? The two components move in opposite directions, and understanding why is the heart of the matter.</p>
+<p>Why does the risk fall again past <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">? The two components move in opposite directions.</p>
 <p>The <strong>bias rises</strong> with <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> for a reason that should be familiar if you have read about the <a href="https://vyasenov.github.io/blog/linear-models-p-over-n.html"><img src="https://latex.codecogs.com/png.latex?p%3En"> regime</a>: the minimum-norm solution is confined to the row space of <img src="https://latex.codecogs.com/png.latex?X">, an <img src="https://latex.codecogs.com/png.latex?n">-dimensional subspace sitting inside <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BR%7D%5Ep">. As <img src="https://latex.codecogs.com/png.latex?p"> grows, that row space accounts for an ever-smaller slice of the ambient coefficient space, so the part of <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> the data can never see — and which the min-norm rule simply zeroes out — grows with it. More parameters, more of <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> left on the table, more bias.</p>
-<p>The <strong>variance falls</strong> with <img src="https://latex.codecogs.com/png.latex?%5Cgamma">, which feels backwards: surely more parameters means <em>more</em> variance? Not for the minimum-norm interpolator. The intuition is in the name. Adding columns to <img src="https://latex.codecogs.com/png.latex?X"> gives the solver more directions over which to spread the fit, so the minimum-norm solution to <img src="https://latex.codecogs.com/png.latex?Xb%20=%20y"> generally has <em>smaller</em> norm as <img src="https://latex.codecogs.com/png.latex?p"> grows. A lower-norm interpolator is a smoother, more stable one — effectively more regularized. So overparametrization, counterintuitively, calms the variance down. The minimum-norm criterion is doing the regularizing implicitly, for free.</p>
+<p>The <strong>variance falls</strong> with <img src="https://latex.codecogs.com/png.latex?%5Cgamma">, which feels backwards: surely more parameters means <em>more</em> variance? Not for the minimum-norm interpolator, and the intuition is in the name. Adding columns to <img src="https://latex.codecogs.com/png.latex?X"> gives the solver more directions over which to spread the fit, so the minimum-norm solution to <img src="https://latex.codecogs.com/png.latex?Xb%20=%20y"> generally has <em>smaller</em> norm as <img src="https://latex.codecogs.com/png.latex?p"> grows. A lower-norm interpolator is smoother and more stable — effectively more regularized. The minimum-norm criterion is doing the regularizing implicitly, for free.</p>
 <p>The spike at <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201"> is where these forces are both at their worst. With <img src="https://latex.codecogs.com/png.latex?p%20%5Capprox%20n">, the model has <em>just barely</em> enough capacity to interpolate and no slack to do it gracefully: <img src="https://latex.codecogs.com/png.latex?X%5E%5Ctop%20X"> is nearly singular, the fit threads every noisy point through a single contortion, and the variance term <img src="https://latex.codecogs.com/png.latex?%5Csigma%5E2/(%5Cgamma-1)"> explodes. The interpolation threshold is not a sweet spot — it is the worst possible place to be.</p>
 <hr>
 </section>
@@ -2026,7 +1600,7 @@ font-style: inherit;">;</span> plt.show()</span></code></pre></div></div>
 <h3 class="anchored" data-anchor-id="its-mostly-a-regularization-story">It’s mostly a regularization story</h3>
 <p>Here is where I will be opinionated. The dramatic part of the double-descent curve — the divergence at <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201"> — is an artifact of insisting on interpolation. And interpolation is a <em>choice</em>, not a law. Ridgeless least squares is just ridge regression with the penalty turned all the way down to zero, which is precisely the setting a statistician would never choose on purpose.</p>
 <p>Hastie et al.&nbsp;(2022) make the point rigorously: optimally-tuned ridge regression <em>dominates</em> minimum-norm least squares at every value of <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> and every SNR, in both well-specified and misspecified settings. The optimal ridge risk has no spike — tuning <img src="https://latex.codecogs.com/png.latex?%5Clambda"> properly smooths the entire curve into a single well-behaved descent, and for misspecified models its global minimum sits right around <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">, exactly where ridgeless regression is at its worst. The good news for practice is that this optimal penalty is estimable: leave-one-out cross-validation recovers it asymptotically.</p>
-<p>So my reading is this. Double descent is real and the mathematics is genuinely beautiful, but the headline — <em>more parameters fix overfitting</em> — gets the moral backwards. What the second descent really shows is that the minimum-norm interpolator carries a hidden, increasingly strong dose of regularization as <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> grows. A statistician does not need to climb out to <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%204"> to enjoy that regularization; she can dial it in directly with a ridge penalty and a cross-validation loop, and never visit the peak at all. The phenomenon is less “interpolation is secretly fine” and more “under-regularization is bad, and overparametrization happens to re-regularize you on the way out.”</p>
+<p>So my reading is this. Double descent is real and the mathematics is beautiful, but the headline — <em>more parameters fix overfitting</em> — gets the moral backwards. The second descent shows that the minimum-norm interpolator carries a hidden, increasingly strong dose of regularization as <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> grows. A statistician need not climb out to <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%204"> to enjoy it; she can dial it in directly with a ridge penalty and a cross-validation loop, and never visit the peak at all. The phenomenon is less “interpolation is secretly fine” than “under-regularization is bad, and overparametrization happens to re-regularize you on the way out.”</p>
 <hr>
 </section>
 <section id="when-overparametrization-genuinely-helps" class="level3">
@@ -2077,23 +1651,34 @@ font-style: inherit;">;</span> plt.show()</span></code></pre></div></div>
 
 
 
-<div class="reading-time">9 min read</div>
+<div class="reading-time">6 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>There is a tidy bit of folk wisdom that says you cannot fit a regression with more predictors than observations. With <img src="https://latex.codecogs.com/png.latex?p"> parameters and only <img src="https://latex.codecogs.com/png.latex?n%20%3C%20p"> data points, the reasoning goes, you have more unknowns than equations, the system is underdetermined, and the whole enterprise collapses. Anyone who has stared at a genomics design matrix with twenty thousand genes and two hundred patients has felt the force of this worry.</p>
-<p>The folk wisdom is half right, and the half it gets wrong is the interesting half. It is true that when <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n"> you cannot recover the coefficient vector <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> — not even in principle, not with infinite computing power, not with a perfect prior. But it does not follow that the model is useless. The thing you usually <em>care</em> about — the prediction <img src="https://latex.codecogs.com/png.latex?X%5Cbeta"> — can be perfectly well-defined even when <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> itself is hopelessly ambiguous. Coefficients that are individually unknowable can combine into a quantity that is pinned down exactly. I find this one of the more beautiful facts in linear-model theory, and it sits at the heart of a recent expository paper by Ronald Christensen that I want to walk through here.</p>
-<p>The plan: I will spend most of the post on <em>why</em> <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is non-identifiable and what survives anyway, then sketch — briefly — the menu of estimators people actually reach for in this regime, and what “prediction” even means when half the parameter space is invisible to the data.</p>
+<p>It seems intuitive that you cannot fit a regression with more predictors than observations. With <img src="https://latex.codecogs.com/png.latex?p"> parameters and only <img src="https://latex.codecogs.com/png.latex?n%20%3C%20p"> data points, the reasoning goes, you have more unknowns than equations, the system is underdetermined, and the whole enterprise collapses. Geneticists know this well.</p>
+<p>This intuition is half right. It is true that when <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n"> you cannot recover the coefficient vector <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> — not even in principle, not with infinite sample or computing power. But it does not follow that the model is useless. The thing you usually <em>care</em> about — the prediction <img src="https://latex.codecogs.com/png.latex?X%5Cbeta"> — can be perfectly well-defined even when <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> itself is hopelessly ambiguous. Coefficients that are individually unknowable can combine into a quantity that is pinned down exactly. I find this one of the more beautiful facts in linear-model theory, and it sits at the heart of a recent expository paper by Ronald Christensen (2026).</p>
+<p>I will spend most of the post on <em>why</em> <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is non-identifiable and what survives anyway, then briefly sketch the menu of estimators people actually reach for in this regime, and what “prediction” even means when half the parameter space is invisible to the data.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
 <p>Start with the standard linear model</p>
 <p><img src="https://latex.codecogs.com/png.latex?Y%20=%20X%5Cbeta%20+%20e,%20%5Cqquad%20%5Cmathbb%7BE%7D(e)%20=%200,%20%5Cqquad%20%5Ctext%7Bcov%7D(e)%20=%20%5Csigma%5E2%20I_n,"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?Y"> is an <img src="https://latex.codecogs.com/png.latex?n">-vector of outcomes, <img src="https://latex.codecogs.com/png.latex?X"> is a known <img src="https://latex.codecogs.com/png.latex?n%20%5Ctimes%20p"> design matrix, <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is the <img src="https://latex.codecogs.com/png.latex?p">-vector of unknown coefficients, and <img src="https://latex.codecogs.com/png.latex?e"> is mean-zero noise. The case of interest is <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n">, which forces the rank of <img src="https://latex.codecogs.com/png.latex?X"> to satisfy <img src="https://latex.codecogs.com/png.latex?r(X)%20%5Cle%20n%20%3C%20p">.</p>
-<p>Two subspaces do all the work. The <strong>column space</strong> <img src="https://latex.codecogs.com/png.latex?C(X)%20%5Csubseteq%20%5Cmathbb%7BR%7D%5En"> is the set of all fitted-value vectors <img src="https://latex.codecogs.com/png.latex?X%5Cbeta"> the model can produce. The <strong>row space</strong> <img src="https://latex.codecogs.com/png.latex?C(X')%20%5Csubseteq%20%5Cmathbb%7BR%7D%5Ep"> is the span of the rows of <img src="https://latex.codecogs.com/png.latex?X"> — the directions in coefficient space that the data actually “see.” Let <img src="https://latex.codecogs.com/png.latex?N"> denote the (orthogonal) projection onto the row space <img src="https://latex.codecogs.com/png.latex?C(X')">, so that any coefficient vector splits cleanly into</p>
+<p>where</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?Y"> is an <img src="https://latex.codecogs.com/png.latex?n">-vector of outcomes,</li>
+<li><img src="https://latex.codecogs.com/png.latex?X"> is a known <img src="https://latex.codecogs.com/png.latex?n%20%5Ctimes%20p"> design matrix,</li>
+<li><img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is the <img src="https://latex.codecogs.com/png.latex?p">-vector of unknown coefficients, and</li>
+<li><img src="https://latex.codecogs.com/png.latex?e"> is mean-zero noise.</li>
+</ul>
+<p>The case of interest is <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n">, which forces the rank of <img src="https://latex.codecogs.com/png.latex?X"> to satisfy <img src="https://latex.codecogs.com/png.latex?r(X)%20%5Cle%20n%20%3C%20p">. Two subspaces do all the work.</p>
+<ul>
+<li>The <em>column space</em> <img src="https://latex.codecogs.com/png.latex?C(X)%20%5Csubseteq%20%5Cmathbb%7BR%7D%5En"> is the set of all fitted-value vectors <img src="https://latex.codecogs.com/png.latex?X%5Cbeta"> the model can produce.</li>
+<li>The <em>row space</em> <img src="https://latex.codecogs.com/png.latex?C(X')%20%5Csubseteq%20%5Cmathbb%7BR%7D%5Ep"> is the span of the rows of <img src="https://latex.codecogs.com/png.latex?X"> — the directions in coefficient space that the data actually “see.”</li>
+</ul>
+<p>Let <img src="https://latex.codecogs.com/png.latex?N"> denote the (orthogonal) projection onto the row space <img src="https://latex.codecogs.com/png.latex?C(X')">, so that any coefficient vector splits cleanly into</p>
 <p><img src="https://latex.codecogs.com/png.latex?%5Cbeta%20=%20%5Cunderbrace%7BN%5Cbeta%7D_%7B%5Ctext%7Bin%20the%20row%20space%7D%7D%20+%20%5Cunderbrace%7B(I%20-%20N)%5Cbeta%7D_%7B%5Ctext%7Borthogonal%20to%20it%7D%7D."></p>
 <p>That decomposition is the whole story, so it is worth keeping in view.</p>
 </section>
@@ -2105,7 +1690,6 @@ font-style: inherit;">;</span> plt.show()</span></code></pre></div></div>
 <p><img src="https://latex.codecogs.com/png.latex?X%5Cbeta%20=%20X%5Cbig(N%5Cbeta%20+%20(I-N)%5Cbeta%5Cbig)%20=%20X%20N%5Cbeta."></p>
 <p>The component <img src="https://latex.codecogs.com/png.latex?(I%20-%20N)%5Cbeta"> contributes <em>nothing</em> to <img src="https://latex.codecogs.com/png.latex?X%5Cbeta">, and therefore nothing to <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D(Y)">. The data are generated by <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> alone. Whatever value <img src="https://latex.codecogs.com/png.latex?(I-N)%5Cbeta"> takes — zero, enormous, anything — the distribution of <img src="https://latex.codecogs.com/png.latex?Y"> is exactly the same. No estimator can distinguish between two coefficient vectors that agree on their row-space part and differ off it, because they produce statistically identical data.</p>
 <p>When <img src="https://latex.codecogs.com/png.latex?p%20%5Cle%20n"> and <img src="https://latex.codecogs.com/png.latex?X"> has full column rank, the row space is all of <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BR%7D%5Ep">, the projection <img src="https://latex.codecogs.com/png.latex?N"> is the identity, <img src="https://latex.codecogs.com/png.latex?(I-N)%5Cbeta"> vanishes, and this issue never arises — which is why we rarely think about it. But the moment <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n">, the row space is a <em>proper</em> subspace of <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BR%7D%5Ep">, the orthogonal complement is non-trivial, and a whole <img src="https://latex.codecogs.com/png.latex?(p%20-%20r)">-dimensional flat of coefficient vectors fits the data equally well. That is non-identifiability, stated geometrically: <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is unknowable precisely along the directions the design never probes.</p>
-<p>The Bayesian version sharpens the point to something almost startling. Put any prior on <img src="https://latex.codecogs.com/png.latex?%5Cbeta">. Because the likelihood depends on <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> only through <img src="https://latex.codecogs.com/png.latex?N%5Cbeta">, the data update your beliefs about <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> but leave the conditional distribution of <img src="https://latex.codecogs.com/png.latex?(I-N)%5Cbeta"> <em>given</em> <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> untouched. The posterior for the orthogonal component equals the prior. You learn exactly nothing about it — not approximately nothing, nothing. More data will not help; the information was never in the design to begin with.</p>
 <hr>
 </section>
 <section id="non-unique-coefficients-unique-predictions" class="level3">
@@ -2128,32 +1712,19 @@ font-style: inherit;">;</span> plt.show()</span></code></pre></div></div>
 <p>The differences among them are real but secondary to the shared structure: each one estimates the identifiable part <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> from the data and then imposes some discipline on the unidentifiable part. For the theory behind when these choices recover the truth, see my post on <a href="https://vyasenov.github.io/blog/lasso-theory-guarantees.html">the LASSO’s theoretical guarantees</a>.</p>
 <hr>
 </section>
-<section id="what-you-can-actually-predict" class="level3">
-<h3 class="anchored" data-anchor-id="what-you-can-actually-predict">What you can actually predict</h3>
-<p>If <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is half-hidden, what does it mean to predict a new observation <img src="https://latex.codecogs.com/png.latex?Y_f%20=%20x_f'%5Cbeta%20+%20e_f">? The best possible prediction is <img src="https://latex.codecogs.com/png.latex?x_f'%5Cbeta">, and by the same row-space logic, this is recoverable only if <img src="https://latex.codecogs.com/png.latex?x_f"> lies in the row space <img src="https://latex.codecogs.com/png.latex?C(X')"> — i.e., if the new case is a linear combination of the directions the training data already spanned. When <img src="https://latex.codecogs.com/png.latex?p%20%5Cle%20n"> this holds automatically for every conceivable <img src="https://latex.codecogs.com/png.latex?x_f">. When <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n"> it does not: for a future point whose covariates point partly <em>outside</em> the training row space, the prediction depends on the unknowable <img src="https://latex.codecogs.com/png.latex?(I-N)%5Cbeta">, and there is simply no theoretical basis for trusting it.</p>
-<p>The practical reading is reassuring rather than gloomy. Predictions are on solid ground for new cases that resemble the training data — that live in, or close to, the subspace the design explored — and on no ground at all for cases far outside it. That is a familiar lesson about extrapolation, but the <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n"> setting makes it exact: there is a specific subspace inside which prediction is well-posed, and you can check whether a new case falls in it.</p>
-</section>
 </section>
 <section id="bottom-line" class="level2">
 <h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
 <ul>
-<li>With <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n">, the coefficient vector <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is <strong>not identifiable</strong> — the design only sees its projection <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> onto the row space, and the orthogonal part <img src="https://latex.codecogs.com/png.latex?(I-N)%5Cbeta"> is invisible to the data and to any prior.</li>
-<li>Yet the fitted values <img src="https://latex.codecogs.com/png.latex?X%5Chat%5Cbeta"> and the row-space part <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> are <strong>unique and estimable</strong>. Non-unique coefficients, unique predictions: that is the central fact, and it is what keeps high-dimensional regression alive.</li>
-<li>Do not over-interpret individual coefficients in this regime. Only their row-space projection carries information; the rest is your estimator’s tie-breaking convention talking.</li>
-<li>Every estimator — minimum-norm, penalized, spectral shrinkage, principal components — is a rule for choosing among the infinitely many fits, agreeing on <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> and differing only off the row space.</li>
-<li>Prediction is trustworthy only for new cases whose covariates lie in (or near) the training row space. The “can you extrapolate?” question has, here, a precise geometric answer.</li>
+<li>With <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n">, the coefficient vector <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> is <em>not identifiable</em> — the design only sees its projection <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> onto the row space, and the orthogonal part <img src="https://latex.codecogs.com/png.latex?(I-N)%5Cbeta"> is invisible to the data and to any prior.</li>
+<li>Yet the fitted values <img src="https://latex.codecogs.com/png.latex?X%5Chat%5Cbeta"> and the row-space part <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> are <em>unique and estimable</em>. Non-unique coefficients, unique predictions: that is the central fact, and it is what keeps high-dimensional regression alive.</li>
+<li>Every estimator is a rule for choosing among the infinitely many fits, agreeing on <img src="https://latex.codecogs.com/png.latex?N%5Cbeta"> and differing only off the row space.</li>
 </ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The direct source for this post is Christensen (2026), a clear and unusually readable account of estimation and prediction when <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n">; its companion arXiv note, Christensen (2024), develops the overfitting and double-descent material I have left aside — and which I take up from a different angle in my post on <a href="https://vyasenov.github.io/blog/double-descent.html">double descent</a>. For the broader theory of projections, estimability, and the geometry of linear models, Christensen’s textbook <em>Plane Answers to Complex Questions</em> (2020) is the standard reference and the place these ideas are worked out in full. And for the modern high-dimensional estimators — ridge, the LASSO, principal components — Hastie, Tibshirani, and Friedman’s <em>The Elements of Statistical Learning</em> remains the canonical practitioner’s guide.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <ul>
 <li><p>Christensen, R. (2026). Linear Model Estimation and Prediction for <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n">. <em>The American Statistician</em>, 80(2), 232–240.</p></li>
-<li><p>Christensen, R. (2024). Double Descent: Understanding Linear Model Estimation of Nonidentifiable Parameters and a Model for Overfitting. arXiv:2408.13235.</p></li>
-<li><p>Christensen, R. (2020). <em>Plane Answers to Complex Questions: The Theory of Linear Models</em> (5th ed.). New York: Springer.</p></li>
 <li><p>Hastie, T., Tibshirani, R., &amp; Friedman, J. (2009). <em>The Elements of Statistical Learning</em> (2nd ed.). New York: Springer.</p></li>
 </ul>
 
@@ -2458,7 +2029,7 @@ font-style: inherit;">;</span> plt.show()</span></code></pre></div></div>
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>For a focused, modern treatment, “Statistical Learning with Sparsity” by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with “The Elements of Statistical Learning” (2009) as gentler background. For the theory nerds, Bühlmann and van de Geer’s “Statistics for High-Dimensional Data” (2011) and Wainwright’s “High-Dimensional Statistics” (2019) are the standard references, though both are too dense for most mortals`.</p>
+<p>For a focused, modern treatment, “Statistical Learning with Sparsity” by Hastie, Tibshirani, and Wainwright (2015) is the natural starting point, with “The Elements of Statistical Learning” (2009) as gentler background. For the theory nerds, Bühlmann and van de Geer’s “Statistics for High-Dimensional Data” (2011) and Wainwright’s “High-Dimensional Statistics” (2019) are the standard references, though both are too dense for most mortals.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
@@ -2487,7 +2058,7 @@ font-style: inherit;">;</span> plt.show()</span></code></pre></div></div>
   <pubDate>Wed, 10 Jun 2026 21:00:00 GMT</pubDate>
 </item>
 <item>
-  <title>Second-Generation P-Values: A Worthy Idea That Did Not Catch On</title>
+  <title>Second-Generation \(p\)-Values: A Worthy Idea That Did Not Catch On</title>
   <link>https://vyasenov.github.io/blog/second-gen-pvalues.html</link>
   <description><![CDATA[ 
 
