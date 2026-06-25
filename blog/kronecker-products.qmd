@@ -1,0 +1,77 @@
+---
+title: "Kronecker Products in Econometrics"
+date: "2026-06-25"
+categories: [parametric models, statistical inference]
+---
+
+## Background
+
+Open any econometrics text past the introductory chapters and you will eventually hit a $\otimes$ — the Kronecker product — usually bolted onto a covariance matrix and usually without much explanation. It is the notation econometricians reach for whenever a model has block structure: several equations stacked together, a panel of units tracked over time, a system whose errors are correlated across equations but independent across observations. The symbol looks forbidding, the idea behind it is not, and once you see it a handful of otherwise-dense formulas snap into place. This is a short tour of what the operation is and the three places you are most likely to meet it.
+
+## A Closer Look
+
+### The Kronecker Product
+
+Given an $m \times n$ matrix $A$ and a $p \times q$ matrix $B$, their **Kronecker product** $A \otimes B$ is the $mp \times nq$ block matrix you get by multiplying every entry of $A$ by the entire matrix $B$:
+
+$$
+A \otimes B =
+\begin{pmatrix}
+a_{11} B & \cdots & a_{1n} B \\
+\vdots   &        & \vdots   \\
+a_{m1} B & \cdots & a_{mn} B
+\end{pmatrix}.
+$$
+
+A small example makes the pattern obvious:
+
+$$
+\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix} \otimes I_2 =
+\begin{pmatrix}
+1 & 0 & 2 & 0 \\
+0 & 1 & 0 & 2 \\
+3 & 0 & 4 & 0 \\
+0 & 3 & 0 & 4
+\end{pmatrix}.
+$$
+
+---
+
+### Working with Kronecker products
+
+Two algebraic facts do almost all the work in applications. The first is the *mixed-product rule*, 
+$$(A \otimes B)(C \otimes D) = (AC) \otimes (BD),$$
+valid whenever the ordinary products are conformable. 
+
+The second is its corollary for inverses, 
+$$(A \otimes B)^{-1} = A^{-1} \otimes B^{-1}.$$
+That second identity is the reason the operation is so beloved: inverting a giant $mp \times mp$ matrix collapses into inverting its two small factors separately. Transposition behaves just as cleanly, 
+$$(A \otimes B)' = A' \otimes B'.$$
+
+---
+
+### Where They Show Up
+
+#### Seemingly unrelated regressions
+
+Zellner's (1962) SUR model stacks $M$ regression equations that may share nothing in their regressors but whose errors are contemporaneously correlated. Across the stacked system of $M$ equations and $n$ observations, the disturbance covariance is
+
+$$
+\operatorname{Var}(u) = \Sigma \otimes I_n,
+$$
+
+where $\Sigma$ is the $M \times M$ matrix of cross-equation error covariances and $I_n$ encodes independence across observations. Efficient (GLS) estimation needs $(\Sigma \otimes I_n)^{-1} = \Sigma^{-1} \otimes I_n$ — a tiny $M \times M$ inverse rather than an $Mn \times Mn$ one. The same structure underpins three-stage least squares for systems of simultaneous equations.
+
+#### Panel and random-effects models
+
+In the one-way error-component model $u_{it} = \mu_i + \varepsilon_{it}$, the $NT \times NT$ disturbance covariance for $N$ units observed over $T$ periods is
+
+$$
+\Omega = \sigma_\mu^2 \, (I_N \otimes J_T) + \sigma_\varepsilon^2 \, (I_N \otimes I_T),
+$$
+
+where $J_T$ is the $T \times T$ matrix of ones. The Kronecker form delivers $\Omega^{-1}$ and $\Omega^{-1/2}$ — the latter being the "quasi-demeaning" transform behind the random-effects estimator — in closed form, again by manipulating only the small $T \times T$ factors.
+
+#### Weak instruments
+
+The Kronecker product even lurks behind the [weak-instrument](https://vyasenov.github.io/blog/weak-instruments.html) critical values. Under homoskedasticity, the joint sampling covariance of the reduced-form and first-stage coefficient estimators factors as $\Sigma \otimes Q_{ZZ}^{-1}$ — a cross-equation covariance times a design term. It is exactly this separable structure that Stock and Yogo (2005) exploit to tabulate their thresholds. Heteroskedasticity destroys the factorization, which is precisely why those tables stop applying and you have to fall back on the effective $F$-statistic.

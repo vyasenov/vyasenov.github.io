@@ -351,6 +351,16 @@
     "href": "jackknife-vs-bootstrap.html"
   },
   {
+    "slug": "kronecker-products",
+    "title": "Kronecker Products in Econometrics",
+    "date": "2026-06-25",
+    "categories": [
+      "parametric models",
+      "statistical inference"
+    ],
+    "href": "kronecker-products.html"
+  },
+  {
     "slug": "ks-test-one-sample",
     "title": "The Kolmogorov\u2013Smirnov Test as a Goodness-of-fit",
     "date": "2025-05-05",
@@ -471,6 +481,17 @@
       "statistical inference"
     ],
     "href": "ols-fixed-random-x.html"
+  },
+  {
+    "slug": "online-multiple-testing",
+    "title": "Always-Valid $p$-Values and Online Multiple Testing",
+    "date": "2026-06-24",
+    "categories": [
+      "multiple testing",
+      "hypothesis testing",
+      "statistical inference"
+    ],
+    "href": "online-multiple-testing.html"
   },
   {
     "slug": "oracle-property",
@@ -640,6 +661,17 @@
       "causal inference"
     ],
     "href": "variance-ps-matching.html"
+  },
+  {
+    "slug": "weak-instruments",
+    "title": "Working with Weak Instruments",
+    "date": "2026-06-24",
+    "categories": [
+      "causal inference",
+      "statistical inference",
+      "hypothesis testing"
+    ],
+    "href": "weak-instruments.html"
   },
   {
     "slug": "weights-statistics",

@@ -10,7 +10,332 @@
 <atom:link href="https://vyasenov.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Personal Site of Vasco Yasenov</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Sun, 21 Jun 2026 21:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 24 Jun 2026 21:00:00 GMT</lastBuildDate>
+<item>
+  <title>Kronecker Products in Econometrics</title>
+  <link>https://vyasenov.github.io/blog/kronecker-products.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">3 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Open any econometrics text past the introductory chapters and you will eventually hit a <img src="https://latex.codecogs.com/png.latex?%5Cotimes"> — the Kronecker product — usually bolted onto a covariance matrix and usually without much explanation. It is the notation econometricians reach for whenever a model has block structure: several equations stacked together, a panel of units tracked over time, a system whose errors are correlated across equations but independent across observations. The symbol looks forbidding, the idea behind it is not, and once you see it a handful of otherwise-dense formulas snap into place. This is a short tour of what the operation is and the three places you are most likely to meet it.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="the-kronecker-product" class="level3">
+<h3 class="anchored" data-anchor-id="the-kronecker-product">The Kronecker Product</h3>
+<p>Given an <img src="https://latex.codecogs.com/png.latex?m%20%5Ctimes%20n"> matrix <img src="https://latex.codecogs.com/png.latex?A"> and a <img src="https://latex.codecogs.com/png.latex?p%20%5Ctimes%20q"> matrix <img src="https://latex.codecogs.com/png.latex?B">, their <strong>Kronecker product</strong> <img src="https://latex.codecogs.com/png.latex?A%20%5Cotimes%20B"> is the <img src="https://latex.codecogs.com/png.latex?mp%20%5Ctimes%20nq"> block matrix you get by multiplying every entry of <img src="https://latex.codecogs.com/png.latex?A"> by the entire matrix <img src="https://latex.codecogs.com/png.latex?B">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AA%20%5Cotimes%20B%20=%0A%5Cbegin%7Bpmatrix%7D%0Aa_%7B11%7D%20B%20&amp;%20%5Ccdots%20&amp;%20a_%7B1n%7D%20B%20%5C%5C%0A%5Cvdots%20%20%20&amp;%20%20%20%20%20%20%20%20&amp;%20%5Cvdots%20%20%20%5C%5C%0Aa_%7Bm1%7D%20B%20&amp;%20%5Ccdots%20&amp;%20a_%7Bmn%7D%20B%0A%5Cend%7Bpmatrix%7D.%0A"></p>
+<p>A small example makes the pattern obvious:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Bpmatrix%7D%201%20&amp;%202%20%5C%5C%203%20&amp;%204%20%5Cend%7Bpmatrix%7D%20%5Cotimes%20I_2%20=%0A%5Cbegin%7Bpmatrix%7D%0A1%20&amp;%200%20&amp;%202%20&amp;%200%20%5C%5C%0A0%20&amp;%201%20&amp;%200%20&amp;%202%20%5C%5C%0A3%20&amp;%200%20&amp;%204%20&amp;%200%20%5C%5C%0A0%20&amp;%203%20&amp;%200%20&amp;%204%0A%5Cend%7Bpmatrix%7D.%0A"></p>
+<hr>
+</section>
+<section id="working-with-kronecker-products" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-kronecker-products">Working with Kronecker products</h3>
+<p>Two algebraic facts do almost all the work in applications. The first is the <em>mixed-product rule</em>, <img src="https://latex.codecogs.com/png.latex?(A%20%5Cotimes%20B)(C%20%5Cotimes%20D)%20=%20(AC)%20%5Cotimes%20(BD),"> valid whenever the ordinary products are conformable.</p>
+<p>The second is its corollary for inverses, <img src="https://latex.codecogs.com/png.latex?(A%20%5Cotimes%20B)%5E%7B-1%7D%20=%20A%5E%7B-1%7D%20%5Cotimes%20B%5E%7B-1%7D."> That second identity is the reason the operation is so beloved: inverting a giant <img src="https://latex.codecogs.com/png.latex?mp%20%5Ctimes%20mp"> matrix collapses into inverting its two small factors separately. Transposition behaves just as cleanly, <img src="https://latex.codecogs.com/png.latex?(A%20%5Cotimes%20B)'%20=%20A'%20%5Cotimes%20B'."></p>
+<hr>
+</section>
+<section id="where-they-show-up" class="level3">
+<h3 class="anchored" data-anchor-id="where-they-show-up">Where They Show Up</h3>
+<section id="seemingly-unrelated-regressions" class="level4">
+<h4 class="anchored" data-anchor-id="seemingly-unrelated-regressions">Seemingly unrelated regressions</h4>
+<p>Zellner’s (1962) SUR model stacks <img src="https://latex.codecogs.com/png.latex?M"> regression equations that may share nothing in their regressors but whose errors are contemporaneously correlated. Across the stacked system of <img src="https://latex.codecogs.com/png.latex?M"> equations and <img src="https://latex.codecogs.com/png.latex?n"> observations, the disturbance covariance is</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Coperatorname%7BVar%7D(u)%20=%20%5CSigma%20%5Cotimes%20I_n,%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?%5CSigma"> is the <img src="https://latex.codecogs.com/png.latex?M%20%5Ctimes%20M"> matrix of cross-equation error covariances and <img src="https://latex.codecogs.com/png.latex?I_n"> encodes independence across observations. Efficient (GLS) estimation needs <img src="https://latex.codecogs.com/png.latex?(%5CSigma%20%5Cotimes%20I_n)%5E%7B-1%7D%20=%20%5CSigma%5E%7B-1%7D%20%5Cotimes%20I_n"> — a tiny <img src="https://latex.codecogs.com/png.latex?M%20%5Ctimes%20M"> inverse rather than an <img src="https://latex.codecogs.com/png.latex?Mn%20%5Ctimes%20Mn"> one. The same structure underpins three-stage least squares for systems of simultaneous equations.</p>
+</section>
+<section id="panel-and-random-effects-models" class="level4">
+<h4 class="anchored" data-anchor-id="panel-and-random-effects-models">Panel and random-effects models</h4>
+<p>In the one-way error-component model <img src="https://latex.codecogs.com/png.latex?u_%7Bit%7D%20=%20%5Cmu_i%20+%20%5Cvarepsilon_%7Bit%7D">, the <img src="https://latex.codecogs.com/png.latex?NT%20%5Ctimes%20NT"> disturbance covariance for <img src="https://latex.codecogs.com/png.latex?N"> units observed over <img src="https://latex.codecogs.com/png.latex?T"> periods is</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5COmega%20=%20%5Csigma_%5Cmu%5E2%20%5C,%20(I_N%20%5Cotimes%20J_T)%20+%20%5Csigma_%5Cvarepsilon%5E2%20%5C,%20(I_N%20%5Cotimes%20I_T),%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?J_T"> is the <img src="https://latex.codecogs.com/png.latex?T%20%5Ctimes%20T"> matrix of ones. The Kronecker form delivers <img src="https://latex.codecogs.com/png.latex?%5COmega%5E%7B-1%7D"> and <img src="https://latex.codecogs.com/png.latex?%5COmega%5E%7B-1/2%7D"> — the latter being the “quasi-demeaning” transform behind the random-effects estimator — in closed form, again by manipulating only the small <img src="https://latex.codecogs.com/png.latex?T%20%5Ctimes%20T"> factors.</p>
+</section>
+<section id="weak-instruments" class="level4">
+<h4 class="anchored" data-anchor-id="weak-instruments">Weak instruments</h4>
+<p>The Kronecker product even lurks behind the <a href="https://vyasenov.github.io/blog/weak-instruments.html">weak-instrument</a> critical values. Under homoskedasticity, the joint sampling covariance of the reduced-form and first-stage coefficient estimators factors as <img src="https://latex.codecogs.com/png.latex?%5CSigma%20%5Cotimes%20Q_%7BZZ%7D%5E%7B-1%7D"> — a cross-equation covariance times a design term. It is exactly this separable structure that Stock and Yogo (2005) exploit to tabulate their thresholds. Heteroskedasticity destroys the factorization, which is precisely why those tables stop applying and you have to fall back on the effective <img src="https://latex.codecogs.com/png.latex?F">-statistic.</p>
+
+
+</section>
+</section>
+</section>
+
+ ]]></description>
+  <category>parametric models</category>
+  <category>statistical inference</category>
+  <guid>https://vyasenov.github.io/blog/kronecker-products.html</guid>
+  <pubDate>Wed, 24 Jun 2026 21:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Working with Weak Instruments</title>
+  <link>https://vyasenov.github.io/blog/weak-instruments.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">10 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Weak instruments are not merely unhelpful; they can waste your time <em>and</em> your nerves. With a weak IV in hand, you can spend months trying to “fix” it, only for your paper or analysis to be rejected on the simple grounds that the instrument is weak. For some time, the folk wisdom dictated that if your first-stage <img src="https://latex.codecogs.com/png.latex?F">-statistic cleared <img src="https://latex.codecogs.com/png.latex?10">, your instrument was “strong,” and you could proceed to report your two-stage least squares (2SLS) estimate. The econometrics literature has recently revisited both this rule and the practical recommendations for working with weak instruments.</p>
+<p>This post picks up where my earlier note on <a href="https://vyasenov.github.io/blog/iv-randomized-experiments.html">instrumental variables in randomized experiments</a> left off. There I treated the <em>identification</em> side of IV — the local average treatment effect, the Wald ratio, the four assumptions that make it all work. Here I take identification for granted and worry about <em>inference</em>: once you have a just-identified IV estimate in hand, how do you build an honest confidence interval when the instrument is only weakly correlated with the endogenous regressor? The literature has converged on a verdict — the <img src="https://latex.codecogs.com/png.latex?F%3E10"> rule is broken — and then split into two camps over the remedy. One camp says abandon the <img src="https://latex.codecogs.com/png.latex?t">-test and invert the Anderson–Rubin statistic instead. The other says keep the <img src="https://latex.codecogs.com/png.latex?t">-test but stop pretending the critical value is <img src="https://latex.codecogs.com/png.latex?1.96">. I will lay out both, with the mathematics, and let you decide which side is right.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>I stay in the simplest possible setting throughout: one outcome, one endogenous regressor, one instrument — the <em>just-identified</em> case. Index observations by <img src="https://latex.codecogs.com/png.latex?i"> and write the structural equation, first stage, and reduced form as</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0AY_i%20&amp;=%20%5Cbeta%20X_i%20+%20u_i,%20%5C%5C%0AX_i%20&amp;=%20%5Cpi%20Z_i%20+%20v_i,%20%5C%5C%0AY_i%20&amp;=%20%5Cdelta%20Z_i%20+%20%5Cvarepsilon_i,%0A%5Cend%7Baligned%7D%0A"> where</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?Z_i"> is the instrument,</li>
+<li><img src="https://latex.codecogs.com/png.latex?X_i"> the endogenous regressor, and</li>
+<li><img src="https://latex.codecogs.com/png.latex?u_i"> correlated with <img src="https://latex.codecogs.com/png.latex?v_i"> — the endogeneity that motivates IV in the first place.</li>
+</ul>
+<p>Any exogenous controls are partialled out of all three equations; nothing below changes.</p>
+<p>The exclusion restriction <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5BZ_i%20u_i%5D%20=%200"> ties the three equations together through the single restriction</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cdelta%20=%20%5Cpi%20%5Cbeta.%0A"></p>
+<p>The IV estimator is the ratio of the reduced-form to first-stage slopes,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%5Cbeta%20=%20%5Cfrac%7B%5Chat%5Cdelta%7D%7B%5Chat%5Cpi%7D%20=%20%5Cfrac%7B%5Cwidehat%7B%5Ctext%7BCov%7D%7D(Z,%20Y)%7D%7B%5Cwidehat%7B%5Ctext%7BCov%7D%7D(Z,%20X)%7D,%0A"></p>
+<p>the Wald estimator.</p>
+<p>The trouble lives entirely in that denominator. When <img src="https://latex.codecogs.com/png.latex?%5Cpi"> is small relative to the sampling noise in <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cpi">, we are dividing by something close to zero, and <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> — a ratio of two correlated normals — is badly non-normal. Its <img src="https://latex.codecogs.com/png.latex?t">-statistic does not behave like a standard normal, no matter how large the sample.</p>
+<p><em>Weak</em> means exactly this: <img src="https://latex.codecogs.com/png.latex?%5Cpi"> is small relative to <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BSE%7D(%5Chat%5Cpi)">. The standard gauge of instrument strength is the first-stage (partial) <img src="https://latex.codecogs.com/png.latex?F">-statistic, which in this single-instrument world is just the squared <img src="https://latex.codecogs.com/png.latex?t">-statistic on <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cpi">,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AF%20=%20%5Cleft(%20%5Cfrac%7B%5Chat%5Cpi%7D%7B%5Ctext%7BSE%7D(%5Chat%5Cpi)%7D%20%5Cright)%5E2%20.%0A"></p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="why-the-f-10-rule-broke" class="level3">
+<h3 class="anchored" data-anchor-id="why-the-f-10-rule-broke">Why the “F &gt; 10” rule broke</h3>
+<p>The rule of thumb traces to Staiger and Stock (1997), who suggested <img src="https://latex.codecogs.com/png.latex?F%3E10"> as a rough indicator that weak-instrument distortions were tolerable. Stock and Yogo (2005) made it rigorous by defining “weak” through worst-case performance and tabulating critical values under two distinct criteria. The <em>bias</em> criterion asks how large the worst-case 2SLS bias is relative to OLS; its critical values sit near <img src="https://latex.codecogs.com/png.latex?10"> across a range of instrument counts, which is where the folklore comes from. The <em>size</em> criterion asks how badly a nominal 5% <img src="https://latex.codecogs.com/png.latex?t">-test can over-reject; its critical values are a different animal, rising from about <img src="https://latex.codecogs.com/png.latex?9"> with one instrument to nearly <img src="https://latex.codecogs.com/png.latex?45"> with thirty. Already the single number “10” is doing two incompatible jobs.</p>
+<p>The deeper problem is that the entire Stock–Yogo apparatus was derived under <em>homoskedasticity</em>. The critical values depend on a Kronecker-product structure in the covariance matrix that simply does not hold once errors are heteroskedastic, clustered, or serially correlated — which is to say, in essentially every applied setting.</p>
+<hr>
+</section>
+<section id="the-effective-f-statistic" class="level3">
+<h3 class="anchored" data-anchor-id="the-effective-f-statistic">The effective F-statistic</h3>
+<p>The fix for <em>measuring</em> strength is due to Montiel Olea and Pflueger (2013), who introduced what they call the <em>effective <img src="https://latex.codecogs.com/png.latex?F">-statistic</em>. The conventional first-stage <img src="https://latex.codecogs.com/png.latex?F"> and even the naive robust Wald <img src="https://latex.codecogs.com/png.latex?F"> have, as Andrews, Stock, and Sun (2019) put it, “no theoretical justification” for gauging instrument strength under heteroskedasticity — they target the wrong population object or misstate its variance. The effective <img src="https://latex.codecogs.com/png.latex?F"> replaces the variance term with a heteroskedasticity-robust analogue:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AF_%7B%5Ctext%7Beff%7D%7D%20=%20%5Cfrac%7B%5Chat%5Cpi'%20%5Chat%7BQ%7D_%7BZZ%7D%20%5Chat%5Cpi%7D%7B%5Coperatorname%7Btr%7D%5C!%5Cbig(%5Chat%5CSigma_%7B%5Cpi%5Cpi%7D%5Chat%7BQ%7D_%7BZZ%7D%5Cbig)%7D,%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?%5Chat%7BQ%7D_%7BZZ%7D"> is the instrument second-moment matrix and <img src="https://latex.codecogs.com/png.latex?%5Chat%5CSigma_%7B%5Cpi%5Cpi%7D"> the robust variance of <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cpi">. It collapses to the usual <img src="https://latex.codecogs.com/png.latex?F"> under homoskedasticity and, crucially, “measures the right object and gets the standard errors right on average.” In the just-identified case it coincides with the robust first-stage <img src="https://latex.codecogs.com/png.latex?F">.</p>
+<p>The practical instruction is simple: whenever you report a first-stage <img src="https://latex.codecogs.com/png.latex?F"> as a strength diagnostic, it should be the effective one, compared against the appropriate Montiel Olea–Pflueger critical values rather than a remembered “10.”</p>
+<hr>
+</section>
+<section id="the-andersonrubin-test" class="level3">
+<h3 class="anchored" data-anchor-id="the-andersonrubin-test">The Anderson–Rubin test</h3>
+<p>Measuring strength is only half the battle; the harder question is what to report for <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> when strength is in doubt. The oldest and most robust answer is the <strong>Anderson–Rubin (AR) test</strong>, dating to 1949. Instead of forming <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta%20%5Cpm%201.96%5C,%5Ctext%7BSE%7D">, AR inverts a test. To test <img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cbeta%20=%20%5Cbeta_0">, construct the residual <img src="https://latex.codecogs.com/png.latex?Y_i%20-%20%5Cbeta_0%20X_i"> and ask whether it is correlated with the instrument. Under the null,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AY_i%20-%20%5Cbeta_0%20X_i%20=%20(%5Cdelta%20-%20%5Cbeta_0%20%5Cpi)%20Z_i%20+%20%5Ctext%7Bnoise%7D,%0A"></p>
+<p>and the coefficient on <img src="https://latex.codecogs.com/png.latex?Z_i"> is <img src="https://latex.codecogs.com/png.latex?%5Cdelta%20-%20%5Cbeta_0%20%5Cpi">, which equals zero precisely when <img src="https://latex.codecogs.com/png.latex?%5Cbeta_0"> is the true <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> (since <img src="https://latex.codecogs.com/png.latex?%5Cdelta%20=%20%5Cpi%5Cbeta">). So the AR statistic is just the squared <img src="https://latex.codecogs.com/png.latex?t">-statistic for <img src="https://latex.codecogs.com/png.latex?Z"> in the regression of <img src="https://latex.codecogs.com/png.latex?Y%20-%20%5Cbeta_0%20X"> on <img src="https://latex.codecogs.com/png.latex?Z">, and under <img src="https://latex.codecogs.com/png.latex?H_0"> it is distributed <img src="https://latex.codecogs.com/png.latex?%5Cchi%5E2_1"> <em>regardless of the value of <img src="https://latex.codecogs.com/png.latex?%5Cpi"></em> — even at <img src="https://latex.codecogs.com/png.latex?%5Cpi%20=%200">. That is the whole trick: testing whether a coefficient is zero in a clean regression does not care how strong the instrument is.</p>
+<p>The confidence set is the collection of nulls the test fails to reject,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0ACS_%7BAR%7D%20=%20%5C%7B%5Cbeta_0%20:%20AR(%5Cbeta_0)%20%5Cle%20%5Cchi%5E2_%7B1,%5C,0.95%7D%5C%7D%20=%20%5C%7B%5Cbeta_0%20:%20AR(%5Cbeta_0)%20%5Cle%203.841%5C%7D.%0A"></p>
+<p>The key point is that AR’s occasional unbounded intervals are not a defect: under very weak instruments, any honest procedure must sometimes admit that the data cannot pin <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> down, while AR still works well when identification is strong.</p>
+<hr>
+</section>
+<section id="the-mainstream-verdict-abandon-the-t-test" class="level3">
+<h3 class="anchored" data-anchor-id="the-mainstream-verdict-abandon-the-t-test">The mainstream verdict: abandon the <img src="https://latex.codecogs.com/png.latex?t">-test</h3>
+<p>The Annual Review tradition — Andrews, Stock, and Sun (2019) as the canonical statement — draws the natural conclusion: in the just-identified case, report AR intervals, and that’s it. Keane and Neal (2024) push this to its sharp edge and argue for abandoning the 2SLS <img src="https://latex.codecogs.com/png.latex?t">-test <em>even when instruments are strong</em>. Their argument is a power asymmetry that the older literature, fixated on bias and size, had missed.</p>
+<p>The mechanism is the 2SLS standard error itself. The estimated structural variance entering <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BSE%7D(%5Chat%5Cbeta)"> is a quadratic function of <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> that is <em>minimized at the OLS estimate</em>. So whenever a draw of <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> lands near OLS, its standard error is artificially small, and the <img src="https://latex.codecogs.com/png.latex?t">-test is correspondingly eager to declare significance. The upshot is a test with inflated power to detect false positives in the direction of the OLS bias and almost no power to detect true effects lying away from OLS. Keane and Neal show this distortion persists at first-stage <img src="https://latex.codecogs.com/png.latex?F"> values of <img src="https://latex.codecogs.com/png.latex?30">, <img src="https://latex.codecogs.com/png.latex?50">, even <img src="https://latex.codecogs.com/png.latex?70"> — far above any conventional threshold — and conclude that the bar for the <img src="https://latex.codecogs.com/png.latex?F"> should be raised to roughly <img src="https://latex.codecogs.com/png.latex?50">, and that one should simply use AR throughout. The AR standard error, by contrast, is built around a variance minimized at <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta_%7B2SLS%7D"> rather than at OLS, which is exactly what kills the asymmetry.</p>
+<hr>
+</section>
+<section id="the-counterpoint-fix-the-t-test-instead" class="level3">
+<h3 class="anchored" data-anchor-id="the-counterpoint-fix-the-t-test-instead">The counterpoint: fix the <img src="https://latex.codecogs.com/png.latex?t">-test instead</h3>
+<p>Lee, McCrary, Moreira, and Porter (2022) accept the diagnosis and reject the prescription. Their objection is practical: practitioners know and trust the <img src="https://latex.codecogs.com/png.latex?t">-ratio, the entire reporting apparatus is built around it, and throwing it out is a heavy ask. The <img src="https://latex.codecogs.com/png.latex?t">-statistic is not normal under weak instruments — true — but its non-normal distribution is <em>known</em>, and depends on the data only through the observed first-stage <img src="https://latex.codecogs.com/png.latex?F">. So rather than discard it, replace the constant <img src="https://latex.codecogs.com/png.latex?1.96"> with a critical value <img src="https://latex.codecogs.com/png.latex?c_%5Calpha(%5Chat%20F)"> that is a smooth, decreasing function of the first stage. They call this the <em>tF procedure</em>.</p>
+<p>The headline number is sobering. For the constant <img src="https://latex.codecogs.com/png.latex?1.96"> to deliver a genuine 5% test, you do not need <img src="https://latex.codecogs.com/png.latex?F%20%3E%2010">, or even Stock and Yogo’s <img src="https://latex.codecogs.com/png.latex?F%20%3E%2016.38"> — you need</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AF%20%5Capprox%20104.7.%0A"></p>
+<p>Below that, <img src="https://latex.codecogs.com/png.latex?1.96"> is too small and you must inflate.</p>
+<p>Operationally the procedure is a lookup: estimate your usual (robust, clustered) 2SLS standard error, read the adjustment factor off their Table 3 at your observed <img src="https://latex.codecogs.com/png.latex?%5Chat%20F">, and multiply. A few anchor points at the 5% level make the magnitude vivid:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">First-stage <img src="https://latex.codecogs.com/png.latex?%5Chat%20F"></th>
+<th style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?tF"> critical value</th>
+<th style="text-align: center;">SE multiplier</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?5"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?6.85"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%203.50"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?10"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?3.43"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%201.75"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?16.6"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?2.76"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%201.41"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?24.6"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?2.46"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%201.26"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?104.7"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?1.96"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%201.00"></td>
+</tr>
+</tbody>
+</table>
+<p>At the celebrated <img src="https://latex.codecogs.com/png.latex?F=10">, an honest 95% interval is about <img src="https://latex.codecogs.com/png.latex?75%5C%25"> wider than the one most papers report, and <img src="https://latex.codecogs.com/png.latex?tF"> can still be shorter than AR when both intervals are bounded because it reserves its “we cannot learn <img src="https://latex.codecogs.com/png.latex?%5Cbeta">” verdict for the rare cases where <img src="https://latex.codecogs.com/png.latex?%5Chat%20F%20%3C%203.84">.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>The “<img src="https://latex.codecogs.com/png.latex?F%20%3E%2010">” rule is broken: a genuine 5% <img src="https://latex.codecogs.com/png.latex?t">-test needs <img src="https://latex.codecogs.com/png.latex?F%20%5Capprox%20104.7">, not 10.</li>
+<li>Gauge instrument strength with the effective <img src="https://latex.codecogs.com/png.latex?F">-statistic (Montiel Olea–Pflueger), not the conventional first-stage <img src="https://latex.codecogs.com/png.latex?F">.</li>
+<li>For a robust default, report the Anderson–Rubin interval — valid at any instrument strength, and free of cost when instruments are strong.</li>
+<li>To keep the familiar <img src="https://latex.codecogs.com/png.latex?t">-ratio, use <img src="https://latex.codecogs.com/png.latex?tF">: inflate the SE by the Table 3 factor at your observed <img src="https://latex.codecogs.com/png.latex?F">; it even beats AR on interval length.</li>
+<li>Either way, heed Young (2022): under non-iid errors a few high-leverage clusters can drive both <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> and the <img src="https://latex.codecogs.com/png.latex?F"> — check leverage before trusting any interval.</li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>For the canonical survey, Andrews, Stock, and Sun (2019, <em>Annual Review of Economics</em>) is the place to start — comprehensive, careful, and explicit about the heteroskedastic case. Keane and Neal (2024, <em>Annual Review of Economics</em>) is the most accessible statement of the “abandon the <img src="https://latex.codecogs.com/png.latex?t">-test” position and worth reading for the power-asymmetry argument alone. Lee, McCrary, Moreira, and Porter (2022, <em>American Economic Review</em>) lay out the <img src="https://latex.codecogs.com/png.latex?tF"> procedure with its adjustment tables, and their follow-up working paper extends it to the sharper V<img src="https://latex.codecogs.com/png.latex?tF"> refinement. Young (2022, <em>European Economic Review</em>) is a bracing empirical reality check on how fragile published IV results actually are.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Anderson, T. W., &amp; Rubin, H. (1949). Estimation of the parameters of a single equation in a complete system of stochastic equations. <em>Annals of Mathematical Statistics</em>, 20(1), 46–63.</p></li>
+<li><p>Andrews, I., Stock, J. H., &amp; Sun, L. (2019). Weak instruments in instrumental variables regression: Theory and practice. <em>Annual Review of Economics</em>, 11, 727–753.</p></li>
+<li><p>Dufour, J.-M. (1997). Some impossibility theorems in econometrics with applications to structural and dynamic models. <em>Econometrica</em>, 65(6), 1365–1387.</p></li>
+<li><p>Gleser, L. J., &amp; Hwang, J. T. (1987). The nonexistence of <img src="https://latex.codecogs.com/png.latex?100(1-%5Calpha)%5C%25"> confidence sets of finite expected diameter in errors-in-variables and related models. <em>Annals of Statistics</em>, 15(4), 1351–1362.</p></li>
+<li><p>Keane, M. P., &amp; Neal, T. (2024). A practical guide to weak instruments. <em>Annual Review of Economics</em>, 16, 185–212.</p></li>
+<li><p>Lee, D. S., McCrary, J., Moreira, M. J., &amp; Porter, J. (2022). Valid <img src="https://latex.codecogs.com/png.latex?t">-ratio inference for IV. <em>American Economic Review</em>, 112(10), 3260–3290.</p></li>
+<li><p>Lee, D. S., McCrary, J., Moreira, M. J., Porter, J., &amp; Yap, L. (2023). What to do when you can’t use ‘1.96’ confidence intervals for IV. <em>NBER Working Paper No.&nbsp;31893</em>.</p></li>
+<li><p>Montiel Olea, J. L., &amp; Pflueger, C. (2013). A robust test for weak instruments. <em>Journal of Business &amp; Economic Statistics</em>, 31(3), 358–369.</p></li>
+<li><p>Moreira, M. J. (2009). Tests with correct size when instruments can be arbitrarily weak. <em>Journal of Econometrics</em>, 152(2), 131–140.</p></li>
+<li><p>Staiger, D., &amp; Stock, J. H. (1997). Instrumental variables regression with weak instruments. <em>Econometrica</em>, 65(3), 557–586.</p></li>
+<li><p>Stock, J. H., &amp; Yogo, M. (2005). Testing for weak instruments in linear IV regression. In D. W. K. Andrews &amp; J. H. Stock (Eds.), <em>Identification and Inference for Econometric Models</em> (pp.&nbsp;80–108). Cambridge University Press.</p></li>
+<li><p>Young, A. (2022). Consistency without inference: Instrumental variables in practical application. <em>European Economic Review</em>, 147, 104112.</p></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>causal inference</category>
+  <category>statistical inference</category>
+  <category>hypothesis testing</category>
+  <guid>https://vyasenov.github.io/blog/weak-instruments.html</guid>
+  <pubDate>Tue, 23 Jun 2026 21:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Always-Valid \(p\)-Values and Online Multiple Testing</title>
+  <link>https://vyasenov.github.io/blog/online-multiple-testing.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">10 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>The classical <img src="https://latex.codecogs.com/png.latex?p">-value is built for a world that modern data science has largely abandoned. That world has two defining features. First, you collect a <em>fixed</em> sample, compute <em>one</em> test statistic, and decide <em>once</em>. Second, when you do test many hypotheses, you have all of them—and all their <img src="https://latex.codecogs.com/png.latex?p">-values—sitting in front of you at the same time, so a procedure like Benjamini–Hochberg can sort them and pick a threshold.</p>
+<p>Neither feature survives contact with how experiments actually run today. A major tech company runs tens of thousands of A/B tests a year, each one monitored continuously as data trickle in. A genomics platform tests new gene knockouts as they are discovered, with no idea how many tests there will eventually be. Hypotheses arrive in a <em>stream</em>, and decisions have to be made <em>dynamically</em>.</p>
+<p>This breaks classical inference in two distinct places, and the single biggest source of confusion in this area is that people use the word “sequential” for both. I have written before about <a href="https://vyasenov.github.io/blog/recent-dev-fdr.html">false discovery rate control</a> and the <a href="https://vyasenov.github.io/blog/flavors-multiple-testing.html">many flavors of multiple testing adjustments</a>; this post is about what happens to all of that machinery when time enters the picture. My goal is to draw a clean map of the terminology—sequential testing, always-valid <img src="https://latex.codecogs.com/png.latex?p">-values, online multiple testing—and then walk through the algorithms that make the streaming world tractable, following the exposition of Robertson, Wason and Ramdas (2023).</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Hypotheses arrive at times <img src="https://latex.codecogs.com/png.latex?t%20=%201,%202,%20%5Cdots">. At each time <img src="https://latex.codecogs.com/png.latex?t"> we observe a <img src="https://latex.codecogs.com/png.latex?p">-value <img src="https://latex.codecogs.com/png.latex?P_t"> for a null hypothesis <img src="https://latex.codecogs.com/png.latex?H_t"> and must decide whether to reject <img src="https://latex.codecogs.com/png.latex?H_t"> <em>before</em> moving on to <img src="https://latex.codecogs.com/png.latex?t+1">. We assume each <img src="https://latex.codecogs.com/png.latex?P_t"> is a valid <img src="https://latex.codecogs.com/png.latex?p">-value, meaning that whenever <img src="https://latex.codecogs.com/png.latex?H_t"> is true, <img src="https://latex.codecogs.com/png.latex?%0A%5CPr(P_t%20%5Cle%20x)%20%5Cle%20x%20%5Cquad%20%5Ctext%7Bfor%20all%20%7D%20x%20%5Cin%20%5B0,1%5D.%0A"></p>
+<p>A testing procedure supplies a sequence of test levels <img src="https://latex.codecogs.com/png.latex?%5Calpha_t"> and rejects via the rule <img src="https://latex.codecogs.com/png.latex?%0AR_t%20=%20%5Cmathbb%7B1%7D%5C%7BP_t%20%5Cle%20%5Calpha_t%5C%7D.%0A"> Crucially, <img src="https://latex.codecogs.com/png.latex?%5Calpha_t"> may depend only on the past decisions <img src="https://latex.codecogs.com/png.latex?R_1,%20%5Cdots,%20R_%7Bt-1%7D"> (or <img src="https://latex.codecogs.com/png.latex?p">-values)—not on the future, and not on the total number of tests, which may be unknown or infinite.</p>
+<p>Let <img src="https://latex.codecogs.com/png.latex?%0AR(T)%20=%20%5Csum_%7Bt=1%7D%5E%7BT%7D%20R_t%0A"> be the number of rejections (discoveries) by time <img src="https://latex.codecogs.com/png.latex?T">, and let <img src="https://latex.codecogs.com/png.latex?%0AV(T)%20=%20%5Csum_%7Bt=1%7D%5E%7BT%7D%20R_t%20%5Cmathbb%7B1%7D%5C%7BR_t%20=%201%5C%7D%0A"> be the number of those that are false. Write <img src="https://latex.codecogs.com/png.latex?a%20%5Cvee%20b%20=%20%5Cmax(a,b)">.</p>
+<p>For the <em>inner</em> process (repeated monitoring within a single experiment) a richer object is needed. An <em>anytime-valid</em> (or <em>always-valid</em>) <img src="https://latex.codecogs.com/png.latex?p">-value is a <em>sequence</em> <img src="https://latex.codecogs.com/png.latex?(P_%7Bt,n%7D)_%7Bn%20%5Cge%201%7D"> indexed by the within-experiment sample size <img src="https://latex.codecogs.com/png.latex?n">, such that <img src="https://latex.codecogs.com/png.latex?%0A%5CPr(P_%7Bt,N%7D%20%5Cle%20x)%20%5Cle%20x%20%5Cquad%20%5Ctext%7Bfor%20all%20%7D%20x%20%5Cin%20%5B0,1%5D%20%5Ctext%7B%20and%20any%20data-dependent%20stopping%20time%20%7D%20N.%0A"> The phrase “any stopping time” is the whole point: the guarantee holds no matter when (or why) you decide to stop looking.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="three-things-people-call-sequential" class="level3">
+<h3 class="anchored" data-anchor-id="three-things-people-call-sequential">Three things people call “sequential”</h3>
+<p>Untangling the vocabulary is half the battle, so let me be explicit about three ideas that are routinely conflated.</p>
+<p><em>Classical sequential testing</em> concerns a <em>single</em> hypothesis whose data accumulate over time, with the sample size <em>not</em> fixed in advance. Wald’s sequential probability ratio test is the canonical example: keep sampling until the evidence is decisive, then stop. The hard part is that naive optional stopping destroys the type I error guarantee—if you re-test after every new observation and stop the first time you see <img src="https://latex.codecogs.com/png.latex?p%20%5Cle%200.05">, you will eventually cross that line even when the null is true.</p>
+<p><em>Always-valid p-values</em> are the modern device that <em>fixes</em> optional stopping. They are the inner process: a single experiment, monitored continuously, with a validity guarantee that survives stopping at any time for any reason.</p>
+<p><em>Online multiple testing</em> is a different problem entirely. Here a <em>stream of distinct hypotheses</em> <img src="https://latex.codecogs.com/png.latex?H_1,%20H_2,%20%5Cdots"> arrives over time, each tested once, and the goal is to control a false discovery criterion across the whole stream while deciding each case in real time. This is the outer process.</p>
+<p>Robertson, Wason and Ramdas call this the <strong>inner/outer</strong> framing: each monitored experiment emits one valid <img src="https://latex.codecogs.com/png.latex?p">-value, and the outer online-testing procedure controls error rates across the resulting stream.</p>
+<hr>
+</section>
+<section id="always-valid-p-values-the-inner-process" class="level3">
+<h3 class="anchored" data-anchor-id="always-valid-p-values-the-inner-process">Always-valid <img src="https://latex.codecogs.com/png.latex?p">-values: the inner process</h3>
+<p>Peeking breaks a fixed-<img src="https://latex.codecogs.com/png.latex?n"> <img src="https://latex.codecogs.com/png.latex?p">-value because validity applies to one pre-committed look, not to the event “<img src="https://latex.codecogs.com/png.latex?P_n%20%5Cle%20%5Calpha"> at <em>some</em> point along the way.” Repeated looks turn that into a union of events, whose null probability can be much larger than <img src="https://latex.codecogs.com/png.latex?%5Calpha">.</p>
+<p>An always-valid <img src="https://latex.codecogs.com/png.latex?p">-value is constructed precisely so that the union is controlled:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5CPr(P_%7Bt,N%7D%20%5Cle%20x)%20%5Cle%20x%20%5Cquad%20%5Ctext%7Bfor%20all%20%7D%20x%20%5Cin%20%5B0,1%5D%20%5Ctext%7B%20and%20any%20data-dependent%20stopping%20time%20%7D%20N.%0A"></p>
+<p>The usual construction runs through martingales and e-values. Ville’s inequality bounds the probability that the evidence process ever crosses a threshold, which gives the optional-stopping guarantee. The confidence-interval analog is a <em>confidence sequence</em>: intervals that cover the true parameter simultaneously at all sample sizes with probability <img src="https://latex.codecogs.com/png.latex?1-%5Calpha">.</p>
+<p>The payoff is continuous monitoring with valid inference: you can stop when the evidence is decisive and still control type I error. The cost is conservatism. Under the null, always-valid <img src="https://latex.codecogs.com/png.latex?p">-values are typically stochastically larger than uniform, a fact ADDIS later turns into an advantage.</p>
+<hr>
+</section>
+<section id="error-rates-for-the-outer-process" class="level3">
+<h3 class="anchored" data-anchor-id="error-rates-for-the-outer-process">Error rates for the outer process</h3>
+<p>Now zoom out to the stream. Which error rate should an online procedure control? The false discovery proportion up to time <img src="https://latex.codecogs.com/png.latex?T"> is <img src="https://latex.codecogs.com/png.latex?%0A%5Cmathrm%7BFDP%7D(T)%20=%20%5Cfrac%7BV(T)%7D%7BR(T)%20%5Cvee%201%7D,%0A"></p>
+<p>and the headline quantity, the false discovery rate, is its expectation, <img src="https://latex.codecogs.com/png.latex?%0A%5Cmathrm%7BFDR%7D(T)%20=%20%5Cmathbb%7BE%7D%5B%5Cmathrm%7BFDP%7D(T)%5D.%0A"></p>
+<p>The FDR is the right default for most applied work: it has a long track record in genetics, an intuitive reading as the expected share of discoveries that are wrong, and it scales gracefully to large streams.</p>
+<p>Two variants show up constantly. The marginal FDR, <img src="https://latex.codecogs.com/png.latex?%0A%5Cmathrm%7BmFDR%7D(T)%20=%20%5Cmathbb%7BE%7D%5BV(T)%5D%20/%20%5Cmathbb%7BE%7D%5BR(T)%20%5Cvee%201%5D,%0A"> replaces the expectation of a ratio with a ratio of expectations. It is not identical to the FDR, but it is far more tractable, and many online algorithms can only be <em>proven</em> to control the mFDR. Treat it as a pragmatic stand-in when an FDR proof is unavailable for your setting. The false discovery exceedance goes the other way and controls a tail: <img src="https://latex.codecogs.com/png.latex?%0A%5Cmathrm%7BFDX%7D_%5Cepsilon(T)%20=%20%5CPr(%5Csup_%7Bt%20%5Cle%20T%7D%20%5Cmathrm%7BFDP%7D(t)%20%5Cge%20%5Cepsilon).%0A"> This is the right tool when the FDP can swing far from its mean—few hypotheses, or heavy dependence—and you want a guarantee about the realized proportion, not just its average. Finally, the familywise error rate, <img src="https://latex.codecogs.com/png.latex?%0A%5Cmathrm%7BFWER%7D(T)%20=%20%5CPr(V(T)%20%5Cge%201),%0A"> the probability of <em>any</em> false rejection, remains the standard in confirmatory clinical trials where regulators demand it.</p>
+<p>The defining constraint of the online setting is informational: when deciding on <img src="https://latex.codecogs.com/png.latex?H_t">, you know only the past rejections, not the future and not even the eventual number of tests. The crudest response is alpha-spending—a Bonferroni-type split with <img src="https://latex.codecogs.com/png.latex?%5Csum_%7Bt=1%7D%5E%7B%5Cinfty%7D%20%5Calpha_t%20=%20%5Calpha">. It controls the FWER, and hence the FDR, but at a ruinous price: the levels <img src="https://latex.codecogs.com/png.latex?%5Calpha_t"> must shrink toward zero, so the power to reject <img src="https://latex.codecogs.com/png.latex?H_t"> collapses as <img src="https://latex.codecogs.com/png.latex?t"> grows. A procedure that becomes blind to discoveries simply because they arrive late is not viable. This is what motivates everything that follows.</p>
+<hr>
+</section>
+<section id="alpha-investing" class="level3">
+<h3 class="anchored" data-anchor-id="alpha-investing">Alpha-investing</h3>
+<p>The breakthrough idea, originating with Foster and Stine (2008) and generalized by Aharoni and Rosset (2014), reframes testing as the management of an error budget called alpha-wealth. You start with wealth <img src="https://latex.codecogs.com/png.latex?W(0)%20=%20w_0%20%5Cle%20%5Calpha">. Testing a hypothesis <em>costs</em> you some wealth <img src="https://latex.codecogs.com/png.latex?%5Cphi_t">—an investment. Making a discovery <em>pays you back</em> a reward <img src="https://latex.codecogs.com/png.latex?%5Cvarphi_t">. The wealth evolves as <img src="https://latex.codecogs.com/png.latex?%0AW(t)%20=%20W(t-1)%20-%20%5Cphi_t%20+%20R_t%20%5Cvarphi_t,%0A"> and must stay nonnegative, which constrains how aggressively you can test (<img src="https://latex.codecogs.com/png.latex?%5Cphi_t%20%5Cle%20W(t-1)">).</p>
+<p>The intuition for why a <em>reward</em> on rejection is legitimate—rather than a cheat—is worth internalizing. Look back at <img src="https://latex.codecogs.com/png.latex?%0A%5Cmathrm%7BFDP%7D(T)%20=%20V(T)%20/%20(R(T)%20%5Cvee%201).%0A"></p>
+<p>Each genuine rejection enlarges the denominator of the FDP, buying room for continued testing without the power collapse of alpha-spending. This family is known as generalized alpha-investing (GAI); GAI++ (Ramdas et al., 2017) refines the rewards to guarantee FDR control, whereas earlier rules controlled only the mFDR.</p>
+<hr>
+</section>
+<section id="lord-saffron-addis" class="level3">
+<h3 class="anchored" data-anchor-id="lord-saffron-addis">LORD, SAFFRON, ADDIS</h3>
+<p>The wealth metaphor is intuitive but it was a “statistical” reframing by Ramdas et al.&nbsp;(2017) that produced the algorithms practitioners actually use. The idea is to maintain a running <em>overestimate</em> of the FDP and spend wealth to keep that estimate below <img src="https://latex.codecogs.com/png.latex?%5Calpha">—exactly the logic that powers Benjamini–Hochberg offline.</p>
+<p>LORD (Javanmard and Montanari, 2018), and its uniform improvement LORD++, set each test level <img src="https://latex.codecogs.com/png.latex?%5Calpha_t"> from a fixed, non-increasing sequence <img src="https://latex.codecogs.com/png.latex?%5C%7B%5Cgamma_i%5C%7D"> that sums to one, allocating a slice of the initial wealth plus a slice of the reward earned at each past rejection <img src="https://latex.codecogs.com/png.latex?%5Ctau_j">: <img src="https://latex.codecogs.com/png.latex?%0A%5Calpha_t%20=%20w_0%20%5Cgamma_t%20+%20(%5Calpha%20-%20w_0)%5C,%5Cgamma_%7Bt-%5Ctau_1%7D%5Cmathbb%7B1%7D%5C%7B%5Ctau_1%20%3C%20t%5C%7D%20+%20%5Calpha%20%5C!%5C!%5Csum_%7Bj:%5C,%5Ctau_j%20%3C%20t,%5C,%20%5Ctau_j%20%5Cne%20%5Ctau_1%7D%5C!%5C!%20%5Cgamma_%7Bt%20-%20%5Ctau_j%7D.%0A"> Daunting at a glance, but readable: the first term spends a fraction of the starting budget, and every prior rejection injects fresh budget that is then doled out over future tests on the same schedule <img src="https://latex.codecogs.com/png.latex?%5C%7B%5Cgamma_i%5C%7D">. LORD++ never spends more than it has earned, which is exactly why it keeps the FDP estimate below <img src="https://latex.codecogs.com/png.latex?%5Calpha">. It is best understood as the online analog of Benjamini–Hochberg, and under independence (more precisely, when the null <img src="https://latex.codecogs.com/png.latex?p">-values are <em>conditionally super-uniform</em>) it controls the FDR; Chen and Arias-Castro (2021) further show it is asymptotically as powerful as BH in a Gaussian model.</p>
+<p>SAFFRON (Ramdas et al., 2018) makes LORD++ <em>adaptive</em>. It picks a threshold <img src="https://latex.codecogs.com/png.latex?%5Clambda"> and refuses to spend wealth on “candidate” <img src="https://latex.codecogs.com/png.latex?p">-values larger than <img src="https://latex.codecogs.com/png.latex?%5Clambda">—since a large <img src="https://latex.codecogs.com/png.latex?p">-value was never going to be rejected anyway, why pay to test it? By estimating the proportion of true nulls and conserving wealth accordingly, SAFFRON delivers more power than LORD++ whenever a meaningful fraction of hypotheses are non-null with strong signals.</p>
+<p>ADDIS (Tian and Ramdas, 2019) adds <em>discarding</em> on top of adaptivity. It explicitly throws away the most conservative nulls—the largest <img src="https://latex.codecogs.com/png.latex?p">-values—before testing. Here is where the earlier observation pays off: always-valid <img src="https://latex.codecogs.com/png.latex?p">-values are <em>conservative under the null</em>. A procedure that exploits conservative nulls is therefore a natural partner for an inner process built on continuous monitoring. The two layers of the inner/outer framing don’t just compose—they reinforce each other.</p>
+<hr>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>“Sequential” hides three ideas: classical sequential testing (one hypothesis, growing sample), always-valid <img src="https://latex.codecogs.com/png.latex?p">-values (rigorous optional stopping), and online multiple testing (error control across a stream).</li>
+<li>The inner/outer framing composes them: an always-valid test <em>inside</em> each experiment, an online-FDR algorithm <em>across</em> them, and the guarantees stack.</li>
+<li>Always-valid <img src="https://latex.codecogs.com/png.latex?p">-values and confidence sequences make continuous A/B-test monitoring legitimate — at the price of conservatism under the null.</li>
+<li>For the stream, default to FDR, fall back to mFDR when no FDR proof exists, and use FDX when the FDP can swing far from its mean; avoid alpha-spending, whose power decays to zero.</li>
+<li>Among algorithms: LORD++ is the safe default (online BH), SAFFRON adds adaptivity for power, and ADDIS adds discarding that pairs well with conservative <img src="https://latex.codecogs.com/png.latex?p">-values.</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Aharoni, E., and Rosset, S. (2014). Generalized <img src="https://latex.codecogs.com/png.latex?%5Calpha">-investing: definitions, optimality results and application to public databases. <em>Journal of the Royal Statistical Society: Series B</em>, 76(4), 771–794.</p>
+<p>Chen, S., and Arias-Castro, E. (2021). On the power of some sequential multiple testing procedures. <em>Annals of the Institute of Statistical Mathematics</em>, 73(2), 311–336.</p>
+<p>Foster, D. P., and Stine, R. A. (2008). <img src="https://latex.codecogs.com/png.latex?%5Calpha">-investing: a procedure for sequential control of expected false discoveries. <em>Journal of the Royal Statistical Society: Series B</em>, 70(2), 429–444.</p>
+<p>Howard, S. R., Ramdas, A., McAuliffe, J., and Sekhon, J. (2021). Time-uniform, nonparametric, nonasymptotic confidence sequences. <em>Annals of Statistics</em>, 49(2), 1055–1080.</p>
+<p>Javanmard, A., and Montanari, A. (2018). Online rules for control of false discovery rate and false discovery exceedance. <em>Annals of Statistics</em>, 46(2), 526–554.</p>
+<p>Johari, R., Koomen, P., Pekelis, L., and Walsh, D. (2021). Always valid inference: continuous monitoring of A/B tests. <em>Operations Research</em>, 70(3), 1806–1821.</p>
+<p>Ramdas, A., Yang, F., Wainwright, M. J., and Jordan, M. I. (2017). Online control of the false discovery rate with decaying memory. <em>Advances in Neural Information Processing Systems</em>, 30.</p>
+<p>Ramdas, A., Zrnic, T., Wainwright, M., and Jordan, M. (2018). SAFFRON: an adaptive algorithm for online control of the false discovery rate. <em>Proceedings of the 35th International Conference on Machine Learning</em>, 4286–4294.</p>
+<p>Robertson, D. S., Wason, J. M. S., and Ramdas, A. (2023). Online multiple hypothesis testing. <em>Statistical Science</em>, 38(4), 557–575.</p>
+<p>Tian, J., and Ramdas, A. (2019). ADDIS: an adaptive discarding algorithm for online FDR control with conservative nulls. <em>Advances in Neural Information Processing Systems</em>, 32.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>multiple testing</category>
+  <category>hypothesis testing</category>
+  <category>statistical inference</category>
+  <guid>https://vyasenov.github.io/blog/online-multiple-testing.html</guid>
+  <pubDate>Tue, 23 Jun 2026 21:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Linear Models and \(p &gt; n\): What Can You Do?</title>
   <link>https://vyasenov.github.io/blog/linear-models-p-over-n.html</link>
@@ -7871,2044 +8196,6 @@ font-style: inherit;">print</span>(model_cre.summary())</span></code></pre></div
   <category>causal inference</category>
   <guid>https://vyasenov.github.io/blog/correlated-random-effects.html</guid>
   <pubDate>Tue, 10 Feb 2026 22:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>The Many Flavors of Propensity Score Methods In Causal Inference</title>
-  <link>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">10 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Introduced by Rosenbaum and Rubin in 1983, the propensity score, the probability of receiving treatment given observed covariates, has become the workhorse for handling confounding in observational studies.</p>
-<p>But here’s the thing: the propensity score itself is just the starting point. It designates an entire class of statistical methods for treatment effect estimation. In practice, there are tons of ways to use propensity scores. You can <a href="https://vyasenov.github.io/blog/flavors-matching-methods.html">match on them</a>, stratify your sample, weight your observations, or plug them into doubly robust estimators that combine modeling of both the treatment and the outcome. You can tweak how you weight the units—downweighting those with extreme scores or focusing on the region where treated and control groups overlap.</p>
-<p>In this post, I’ll explore the many flavors of propensity score methods. As always, the focus is on the intuition, the basic math, and practical considerations. Oh, there is also some <code>R</code> and <code>python</code> code.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>We’re operating in the familiar causal inference setup:</p>
-<ul>
-<li><img src="https://latex.codecogs.com/png.latex?D_i%20%5Cin%20%5C%7B0,%201%5C%7D">: treatment indicator.</li>
-<li><img src="https://latex.codecogs.com/png.latex?X_i">: observed covariates.</li>
-<li><img src="https://latex.codecogs.com/png.latex?Y_i(1),%20Y_i(0)">: potential outcomes.</li>
-</ul>
-<p>We conveniently invoke the traditional identification assumptions – conditional ignorability, overlap and SUTVA. As a refresher, the propensity score is simply: <img src="https://latex.codecogs.com/png.latex?%0Ae(X_i)%20=%20%5Cmathbb%7BP%7D(D_i%20=%201%20%5Cmid%20X_i).%0A"></p>
-<p>The key seminal result from Rosenbaum and Rubin (1983) states: <img src="https://latex.codecogs.com/png.latex?%0A(Y(1),%20Y(0))%20%5Cperp%20D%20%5Cmid%20e(X),%0A"></p>
-<p>meaning that, conditional on the propensity score, treatment assignment is as good as random. The main implication of this theorem is dimensionality reduction – the propensity score alone is “enough” to adjust for bias between the treatment and control groups.</p>
-<p>A crucial but often overlooked point is that different propensity score–based estimators target different causal estimands (e.g., the Average Treatment Effect (ATE), the Average Treatment Effect on the Treated (ATT), or effects defined on overlap populations) so choosing a method implicitly means choosing which population’s effect you want to estimate.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="propensity-score-estimation" class="level3">
-<h3 class="anchored" data-anchor-id="propensity-score-estimation">Propensity Score Estimation</h3>
-<p>First things first. Before we even begin to discuss propensity score methods, we need to estimate the propensity score itself. This is commonly done via logistic regression (probit has really gone out of fashion). In very, very rare cases the propensity score is known and this step can be skipped. Occasionally, machine learning methods can be employed as well, but one has to be careful there. The subtlety is that, contrary to a traditional machine learning setup, our goal here is not finding the best fit. This is where machine learning methods can mislead us. Instead, we are after controlling for in-sample bias between the treatment and control groups.</p>
-<p>The following examples apply several popular propensity score methods to the <code>Iris</code> dataset using both <code>R</code> and <code>Python</code>. For demonstration, we define an artificial binary treatment (<code>D</code>) based on <code>Petal.Length</code>. The outcome variable is <code>Sepal.Length</code>, and the predictors are the remaining covariates.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load necessary libraries</span></span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(MatchIt)</span>
-<span id="cb1-3"></span>
-<span id="cb1-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load iris dataset and create treatment variable</span></span>
-<span id="cb1-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(iris)</span>
-<span id="cb1-6">iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ifelse</span>(iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Petal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span>
-<span id="cb1-7"></span>
-<span id="cb1-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fit propensity score model using logistic regression</span></span>
-<span id="cb1-9">ps_model <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">glm</span>(D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, </span>
-<span id="cb1-10">                <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris, </span>
-<span id="cb1-11">                <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">family =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">binomial</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">link =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"logit"</span>))</span>
-<span id="cb1-12"></span>
-<span id="cb1-13"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(ps_model)</span></code></pre></div></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Import necessary libraries</span></span>
-<span id="cb2-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> LogisticRegression</span>
-<span id="cb2-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.datasets <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> load_iris</span>
-<span id="cb2-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> pd</span>
-<span id="cb2-5"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb2-6"></span>
-<span id="cb2-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load iris dataset and create treatment variable</span></span>
-<span id="cb2-8">iris <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> load_iris(as_frame<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>).frame</span>
-<span id="cb2-9">iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> (iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal length (cm)'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>).astype(<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">int</span>)</span>
-<span id="cb2-10"></span>
-<span id="cb2-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Prepare features and fit propensity score model</span></span>
-<span id="cb2-12">X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal width (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal width (cm)'</span>]]</span>
-<span id="cb2-13">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>]</span>
-<span id="cb2-14">model <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> LogisticRegression(max_iter<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>)</span>
-<span id="cb2-15">model.fit(X, y)</span>
-<span id="cb2-16"></span>
-<span id="cb2-17"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Intercept: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>model<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>intercept_[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>]<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:.3f}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">, Coef: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>model<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>coef_<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>flatten()<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="nearest-neighbor-matching" class="level3">
-<h3 class="anchored" data-anchor-id="nearest-neighbor-matching">Nearest Neighbor Matching</h3>
-<p><em>Target Estimand</em>: Typically ATT.</p>
-<p>This is often the first method people try after estimating the propensity score. Once <img src="https://latex.codecogs.com/png.latex?e(X)"> is estimated, treated units are matched to control units with the closest propensity scores (nearest neighbor). You can match one-to-one, one-to-many, with or without replacement.</p>
-<p>This class of methods tends to work well when the number of controls is large enough to find good matches for treated units. The approach is simple and intuitive, reducing high-dimensional matching to a single dimension. However, it’s worth noting that balance on the propensity score doesn’t guarantee balance on covariates, and the method can be sensitive to poor matches when suitable controls are scarce.</p>
-<p>Lastly, <a href="https://vyasenov.github.io/blog/variance-ps-matching.html">inference after matching</a> is subtle; standard errors must account for the matching procedure, and naïve bootstrap methods are generally invalid. Matching with replacement introduces some additional complexity since some data points are used more than once.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" aria-controls="tabset-2-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" aria-controls="tabset-2-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" aria-labelledby="tabset-2-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">matchit_nn <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matchit</span>(D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">method =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"nearest"</span>)</span>
-<span id="cb3-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(matchit_nn)</span></code></pre></div></div>
-</div>
-<div id="tabset-2-2" class="tab-pane" aria-labelledby="tabset-2-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> causalinference <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> CausalModel</span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Prepare data for CausalModel</span></span>
-<span id="cb4-4">Y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal length (cm)'</span>].values</span>
-<span id="cb4-5">T <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>].values</span>
-<span id="cb4-6">X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal width (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal width (cm)'</span>]].values</span>
-<span id="cb4-7"></span>
-<span id="cb4-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fit causal model with nearest neighbor matching</span></span>
-<span id="cb4-9">cm <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> CausalModel(Y<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>Y, D<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>T, X<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>X)</span>
-<span id="cb4-10">cm.est_propensity_s()</span>
-<span id="cb4-11">cm.est_via_matching(bias_adj<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb4-12"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(cm.estimates)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="caliper-matching" class="level3">
-<h3 class="anchored" data-anchor-id="caliper-matching">Caliper Matching</h3>
-<p><em>Target Estimand</em>: Typically ATT.</p>
-<p>Caliper matching adds a threshold: only match treated and control units if their propensity scores are within a specified distance (the caliper). Often the caliper is set to <img src="https://latex.codecogs.com/png.latex?0.2"> times the standard deviation of the logit of the propensity score (Austin 2010).</p>
-<p>This approach is particularly useful when you want to avoid bad matches that can arise in standard nearest neighbor matching. By imposing a maximum allowable distance, caliper matching prevents extreme mismatches and generally improves balance between treatment and control groups. The main tradeoff is that it may discard treated units if no control unit falls within the caliper distance, potentially reducing sample size and raising questions about external validity for the excluded observations.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" aria-controls="tabset-3-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" aria-controls="tabset-3-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" aria-labelledby="tabset-3-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Estimate propensity scores for caliper calculation</span></span>
-<span id="cb5-2">ps_for_caliper <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">glm</span>(D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">family =</span> binomial)</span>
-<span id="cb5-3">ps_vals <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict</span>(ps_for_caliper, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"response"</span>)</span>
-<span id="cb5-4">logit_ps <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">log</span>(ps_vals <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> ps_vals))</span>
-<span id="cb5-5"></span>
-<span id="cb5-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate caliper (0.2 * SD of logit PS, as recommended by Rosenbaum &amp; Rubin)</span></span>
-<span id="cb5-7">caliper_width <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.2</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sd</span>(logit_ps)</span>
-<span id="cb5-8"></span>
-<span id="cb5-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Perform caliper matching</span></span>
-<span id="cb5-10">matchit_caliper <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matchit</span>(D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, </span>
-<span id="cb5-11">                           <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris, </span>
-<span id="cb5-12">                           <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">method =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"nearest"</span>, </span>
-<span id="cb5-13">                           <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">distance =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"glm"</span>,</span>
-<span id="cb5-14">                           <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">caliper =</span> caliper_width,</span>
-<span id="cb5-15">                           <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">std.caliper =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span>
-<span id="cb5-16"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(matchit_caliper)</span></code></pre></div></div>
-</div>
-<div id="tabset-3-2" class="tab-pane" aria-labelledby="tabset-3-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate propensity scores</span></span>
-<span id="cb6-2">ps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> model.predict_proba(X)[:, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb6-3"></span>
-<span id="cb6-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate caliper (0.2 * SD of logit of propensity score)</span></span>
-<span id="cb6-5">logit_ps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.log(ps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> ps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1e-10</span>))  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Small constant to avoid division by zero</span></span>
-<span id="cb6-6">caliper <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.2</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> np.std(logit_ps)</span>
-<span id="cb6-7"></span>
-<span id="cb6-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Simplified 1:1 caliper matching (with replacement)</span></span>
-<span id="cb6-9">matched_pairs <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> []</span>
-<span id="cb6-10">treated_idx <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>].index</span>
-<span id="cb6-11">control_idx <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].index</span>
-<span id="cb6-12"></span>
-<span id="cb6-13"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> t_idx <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> treated_idx:</span>
-<span id="cb6-14">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate distances in logit space</span></span>
-<span id="cb6-15">    t_logit <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> logit_ps[t_idx]</span>
-<span id="cb6-16">    c_logits <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> logit_ps[control_idx]</span>
-<span id="cb6-17">    distances <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">abs</span>(t_logit <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> c_logits)</span>
-<span id="cb6-18">    </span>
-<span id="cb6-19">    min_dist <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> distances.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">min</span>()</span>
-<span id="cb6-20">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> min_dist <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> caliper:</span>
-<span id="cb6-21">        min_dist_idx <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> control_idx[np.argmin(distances)]</span>
-<span id="cb6-22">        matched_pairs.append((t_idx, min_dist_idx))</span>
-<span id="cb6-23"></span>
-<span id="cb6-24"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Matched </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(matched_pairs)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> out of </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(treated_idx)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> treated units within caliper"</span>)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="stratification-blocking" class="level3">
-<h3 class="anchored" data-anchor-id="stratification-blocking">Stratification / Blocking</h3>
-<p><em>Target Estimand</em>: Typically ATE.</p>
-<p>Here, the range of propensity scores is divided into <img src="https://latex.codecogs.com/png.latex?K"> strata (often quintiles), and treatment effects are estimated within each stratum, then averaged across strata.</p>
-<p>Stratification is particularly appealing when matching isn’t feasible or when you prefer a more aggregate approach to adjustment. The method is straightforward to implement and achieves balance on average within each stratum. However, because it discretizes the propensity score into bins, the adjustment can be somewhat coarse, and bias may not be fully eliminated within each stratum, especially if there’s substantial heterogeneity in propensity scores within a given stratum.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" aria-controls="tabset-4-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" aria-controls="tabset-4-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1" class="tab-pane active" aria-labelledby="tabset-4-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">matchit_strat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matchit</span>(D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">method =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"subclass"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">subclass =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>)</span>
-<span id="cb7-2">md <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">match.data</span>(matchit_strat)</span>
-<span id="cb7-3">stratum_effects <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sapply</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">max</span>(md<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>subclass, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>), <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(s) {</span>
-<span id="cb7-4">  sub <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> md[md<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>subclass <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> s, ]</span>
-<span id="cb7-5">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(sub<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;&amp;</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> sub<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span>
-<span id="cb7-6">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(sub<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Sepal.Length[sub<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(sub<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Sepal.Length[sub<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>]) <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span></span>
-<span id="cb7-7">})</span>
-<span id="cb7-8">ate_stratified <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(stratum_effects, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb7-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Stratified ATE:"</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(ate_stratified, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)))</span></code></pre></div></div>
-</div>
-<div id="tabset-4-2" class="tab-pane" aria-labelledby="tabset-4-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate propensity scores</span></span>
-<span id="cb8-2"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> iris.columns:</span>
-<span id="cb8-3">    iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> model.predict_proba(X)[:, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb8-4"></span>
-<span id="cb8-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Stratification by propensity score quintiles</span></span>
-<span id="cb8-6">iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps_stratum'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pd.qcut(iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span>], q<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>, labels<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">False</span>, duplicates<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'drop'</span>)</span>
-<span id="cb8-7"></span>
-<span id="cb8-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Estimate treatment effect within each stratum</span></span>
-<span id="cb8-9">stratum_effects <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> []</span>
-<span id="cb8-10"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> stratum <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps_stratum'</span>].unique():</span>
-<span id="cb8-11">    stratum_data <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps_stratum'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> stratum]</span>
-<span id="cb8-12">    treated <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> stratum_data[stratum_data[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>][<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal length (cm)'</span>]</span>
-<span id="cb8-13">    control <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> stratum_data[stratum_data[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>][<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal length (cm)'</span>]</span>
-<span id="cb8-14">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(treated) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">and</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">len</span>(control) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>:</span>
-<span id="cb8-15">        effect <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> treated.mean() <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> control.mean()</span>
-<span id="cb8-16">        stratum_effects.append(effect)</span>
-<span id="cb8-17"></span>
-<span id="cb8-18"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Overall effect (simple average across strata)</span></span>
-<span id="cb8-19">ate_stratified <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.mean(stratum_effects)</span>
-<span id="cb8-20"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Stratified ATE: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>ate_stratified<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:.3f}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="inverse-probability-weighting-ipw" class="level3">
-<h3 class="anchored" data-anchor-id="inverse-probability-weighting-ipw">Inverse Probability Weighting (IPW)</h3>
-<p><em>Target Estimand</em>: ATT/ATE.</p>
-<p>IPW turns the propensity score into <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">weights</a>: <img src="https://latex.codecogs.com/png.latex?%0Aw_i%20=%20%5Cfrac%7BD_i%7D%7Be(X_i)%7D%20+%20%5Cfrac%7B1%20-%20D_i%7D%7B1%20-%20e(X_i)%7D.%0A"> This reweights the sample so that treated and control groups resemble each other on observed covariates.</p>
-<p>This method is ideal when you want to utilize the entire dataset without discarding any units. IPW is conceptually simple and makes full use of all available observations. The main challenge, however, is its sensitivity to extreme propensity scores near 0 or 1. When units have very low or very high probabilities of treatment, the inverse weighting can produce extremely large weights, leading to unstable estimates with high variance. This is why trimming or other stabilization techniques are often employed alongside IPW.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" aria-controls="tabset-5-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" aria-controls="tabset-5-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-5-1" class="tab-pane active" aria-labelledby="tabset-5-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ps <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict</span>(ps_model, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"response"</span>)</span>
-<span id="cb9-2">iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>weights <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ifelse</span>(iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ps, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ps))</span>
-<span id="cb9-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>weights)</span></code></pre></div></div>
-</div>
-<div id="tabset-5-2" class="tab-pane" aria-labelledby="tabset-5-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> model.predict_proba(X)[:,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb10-2">iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'weights'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.where(iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span>], <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span>]))</span>
-<span id="cb10-3">iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'weights'</span>].describe()</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="augmented-ipw-aipw-doubly-robust-estimators" class="level3">
-<h3 class="anchored" data-anchor-id="augmented-ipw-aipw-doubly-robust-estimators">Augmented IPW (AIPW) / Doubly Robust Estimators</h3>
-<p><em>Target Estimand</em>: ATT/ATE.</p>
-<p>Many modern estimators can be viewed as combining propensity score weighting with outcome modeling, yielding doubly robust estimators that remain consistent if either component is correctly specified. The key appeal: if either the propensity score model or the outcome model is correct (but not necessarily both), the estimator is consistent. This is called the <em>doubly robust</em> property.</p>
-<p>The AIPW estimator for the ATE looks like: <img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Ctau%7D_%7B%5Ctext%7BAIPW%7D%7D%20=%20%5Cfrac%7B1%7D%7Bn%7D%20%5Csum_%7Bi=1%7D%5En%20%5Cleft%5B%20%5Cfrac%7BD_i%20(Y_i%20-%20%5Chat%7Bm%7D_1(X_i))%7D%7Be(X_i)%7D%20-%20%5Cfrac%7B(1%20-%20D_i)%20(Y_i%20-%20%5Chat%7Bm%7D_0(X_i))%7D%7B1%20-%20e(X_i)%7D%20+%20%5Chat%7Bm%7D_1(X_i)%20-%20%5Chat%7Bm%7D_0(X_i)%20%5Cright%5D,%0A"> where <img src="https://latex.codecogs.com/png.latex?%5Chat%7Bm%7D_d(X)"> is the predicted outcome for treatment group <img src="https://latex.codecogs.com/png.latex?d">.</p>
-<p>This approach is particularly valuable when you want robust estimation but are uncertain about whether your propensity score model or outcome model is correctly specified. The doubly robust property provides a safety net: you only need one of the two models to be correct. Additionally, AIPW makes efficient use of the available data. The cost is increased computational complexity, since both the treatment and outcome models must be estimated, and careful attention must be paid to how these models interact.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" aria-controls="tabset-6-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" aria-controls="tabset-6-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-6-1" class="tab-pane active" aria-labelledby="tabset-6-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Manual AIPW implementation</span></span>
-<span id="cb11-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 1: Estimate propensity scores</span></span>
-<span id="cb11-3">ps_fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">glm</span>(D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">family =</span> binomial)</span>
-<span id="cb11-4">iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ps <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict</span>(ps_fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"response"</span>)</span>
-<span id="cb11-5"></span>
-<span id="cb11-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 2: Estimate outcome models for each treatment group</span></span>
-<span id="cb11-7">outcome_treated <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lm</span>(Sepal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, </span>
-<span id="cb11-8">                      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris[iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, ])</span>
-<span id="cb11-9">outcome_control <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lm</span>(Sepal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, </span>
-<span id="cb11-10">                      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris[iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, ])</span>
-<span id="cb11-11"></span>
-<span id="cb11-12"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 3: Predict potential outcomes for all units</span></span>
-<span id="cb11-13">iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>mu1 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict</span>(outcome_treated, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">newdata =</span> iris)</span>
-<span id="cb11-14">iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>mu0 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict</span>(outcome_control, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">newdata =</span> iris)</span>
-<span id="cb11-15"></span>
-<span id="cb11-16"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 4: Calculate AIPW estimator</span></span>
-<span id="cb11-17">aipw_component <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">with</span>(iris, </span>
-<span id="cb11-18">  (D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> (Sepal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> mu1) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> ps) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> </span>
-<span id="cb11-19">  ((<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> D) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> (Sepal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> mu0) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> ps)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> </span>
-<span id="cb11-20">  (mu1 <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> mu0)</span>
-<span id="cb11-21">)</span>
-<span id="cb11-22">ate_aipw <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(aipw_component)</span>
-<span id="cb11-23"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"AIPW ATE:"</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(ate_aipw, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>)))</span></code></pre></div></div>
-</div>
-<div id="tabset-6-2" class="tab-pane" aria-labelledby="tabset-6-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Using EconML for Doubly Robust estimation</span></span>
-<span id="cb12-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> econml.dr <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> DRLearner</span>
-<span id="cb12-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> LinearRegression</span>
-<span id="cb12-4"></span>
-<span id="cb12-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Prepare data</span></span>
-<span id="cb12-6">Y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal length (cm)'</span>].values</span>
-<span id="cb12-7">T <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>].values</span>
-<span id="cb12-8">X <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'sepal width (cm)'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'petal width (cm)'</span>]].values</span>
-<span id="cb12-9">W <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> X  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Covariates for confounding</span></span>
-<span id="cb12-10"></span>
-<span id="cb12-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fit doubly robust learner</span></span>
-<span id="cb12-12">dr <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> DRLearner(</span>
-<span id="cb12-13">    model_propensity<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>LogisticRegression(max_iter<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1000</span>),</span>
-<span id="cb12-14">    model_regression<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>LinearRegression(),</span>
-<span id="cb12-15">    model_final<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>LinearRegression(),</span>
-<span id="cb12-16">    cv<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span></span>
-<span id="cb12-17">)</span>
-<span id="cb12-18">dr.fit(Y, T, X<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">None</span>, W<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>W)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># X=None for constant treatment effect</span></span>
-<span id="cb12-19"></span>
-<span id="cb12-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Estimate ATE (ate() may return array; take scalar for display)</span></span>
-<span id="cb12-21">ate_result <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> dr.ate(X<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">None</span>)</span>
-<span id="cb12-22">ate_est <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">float</span>(np.asarray(ate_result).flatten()[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>])</span>
-<span id="cb12-23"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Doubly Robust ATE: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>ate_est<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:.3f}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="covariate-balancing-propensity-score-cbps" class="level3">
-<h3 class="anchored" data-anchor-id="covariate-balancing-propensity-score-cbps">Covariate Balancing Propensity Score (CBPS)</h3>
-<p><em>Target Estimand</em>: Typically ATE.</p>
-<p>CBPS, introduced by Imai and Ratkovic (2014), directly estimates the propensity score while optimizing covariate balance. Instead of fitting a logistic regression and then checking balance, CBPS ensures balance is achieved <em>as part of the estimation process</em>. Example below in R (CBPS package); Python users can look to balance-focused weighting in other libraries.</p>
-<p>This method shines when standard propensity score estimation leads to poor covariate balance. Rather than the typical iterate-and-check workflow, CBPS achieves good balance without requiring manual tuning, working directly toward the ultimate goal of creating comparable groups. The main drawbacks are that it’s more complex to implement than standard logistic regression and less widely available in standard statistical packages, though dedicated <code>R</code> packages do exist.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" aria-controls="tabset-7-1" aria-selected="true" href="">R</a></li></ul>
-<div class="tab-content">
-<div id="tabset-7-1" class="tab-pane active" aria-labelledby="tabset-7-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(CBPS)</span>
-<span id="cb13-2">cbps_fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">CBPS</span>(D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Width <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> Petal.Width, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris)</span>
-<span id="cb13-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(cbps_fit)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="overlap-weights" class="level3">
-<h3 class="anchored" data-anchor-id="overlap-weights">Overlap Weights</h3>
-<p><em>Target Estimand</em>: Overlap-weighted ATE.</p>
-<p>Overlap weighting focuses on the region of common support—where treated and control units both exist—by assigning weights: <img src="https://latex.codecogs.com/png.latex?%0Aw_i%20=%20D_i%20(1%20-%20e(X_i))%20+%20(1%20-%20D_i)%20e(X_i).%0A"> This downweights units with extreme scores near 0 or 1 and emphasizes comparability.</p>
-<p>This weighting scheme is ideal when you want to avoid extrapolation and focus inference on the region where treated and control units truly overlap. The approach naturally sidesteps the instability that plagues standard IPW when propensity scores approach the boundaries, and it targets what’s sometimes called the “overlap population.” The key consideration is that the resulting estimate represents the treatment effect for this overlap population, which may differ from the overall ATE or the ATT, depending on how representative the overlap region is of the full sample.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" aria-controls="tabset-8-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" aria-controls="tabset-8-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-8-1" class="tab-pane active" aria-labelledby="tabset-8-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate overlap weights</span></span>
-<span id="cb14-2">iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>overlap_weights <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ifelse</span>(iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ps, iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ps)</span>
-<span id="cb14-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>overlap_weights)</span></code></pre></div></div>
-</div>
-<div id="tabset-8-2" class="tab-pane" aria-labelledby="tabset-8-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate propensity scores if not already done</span></span>
-<span id="cb15-2"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> iris.columns:</span>
-<span id="cb15-3">    iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> model.predict_proba(X)[:, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb15-4"></span>
-<span id="cb15-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate overlap weights</span></span>
-<span id="cb15-6">iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'overlap_weights'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.where(iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'D'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span>], iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'ps'</span>])</span>
-<span id="cb15-7">iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'overlap_weights'</span>].describe()</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="entropy-balancing" class="level3">
-<h3 class="anchored" data-anchor-id="entropy-balancing">Entropy Balancing</h3>
-<p><em>Target Estimand</em>: ATT/ATE.</p>
-<p>Entropy balancing directly reweights the control group so that the moments of the covariates (mean, variance, etc.) match exactly between treated and control groups. Instead of matching or stratifying, this solves a constrained optimization problem that minimizes the Kullback-Leibler divergence of weights subject to balance constraints. Example below in R (<code>ebal</code> package).</p>
-<p>This method is particularly useful when balance proves difficult to achieve with traditional weighting schemes. Entropy balancing guarantees exact balance on the chosen covariate moments and fully utilizes all available data without discarding observations. The analyst must specify which moments (typically means, and sometimes variances and skewness) should be balanced, and the results can be sensitive to these choices. Nevertheless, the method offers strong guarantees and has gained popularity for applications where precise balance is paramount.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" aria-controls="tabset-9-1" aria-selected="true" href="">R</a></li></ul>
-<div class="tab-content">
-<div id="tabset-9-1" class="tab-pane active" aria-labelledby="tabset-9-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ebal)</span>
-<span id="cb16-2"></span>
-<span id="cb16-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fit entropy balancing (balance covariates between treated and control)</span></span>
-<span id="cb16-4">eb_fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ebalance</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">Treatment =</span> iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>D, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">X =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.matrix</span>(iris[, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Sepal.Width"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Petal.Width"</span>)]))</span>
-<span id="cb16-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(eb_fit)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>Propensity score methods provide diverse approaches to estimate causal effects from observational data, each with unique strengths and trade-offs.</li>
-<li>Some methods prioritize simplicity (e.g., stratification) or data retention (e.g., IPW), while others focus on robustness or balance (AIPW, CBPS).</li>
-<li>Doubly robust methods like AIPW offer reliability even when one model is misspecified, while others (e.g., entropy balancing) guarantee perfect balance through optimization.</li>
-<li>No single method is universally best. The choice hinges on practical considerations: sample size, covariate overlap between groups, and whether exact balance or data efficiency is prioritized.</li>
-<li>All else equal, doubly robust estimators offer extra protection against biased results.</li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>For the original introduction to propensity scores, see Rosenbaum and Rubin’s (1983) landmark paper. Imai and Ratkovic’s (2014) work on CBPS is a must-read for understanding balance-focused estimation. The textbook <em>Causal Inference for Statistics, Social, and Biomedical Sciences</em> by Imbens and Rubin (2015) provides excellent coverage of these methods. There are also great tutorials and vignettes in R packages like <code>MatchIt</code>, <code>twang</code>, and <code>WeightIt</code>.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ul>
-<li><p>Rosenbaum, P. R., &amp; Rubin, D. B. (1983). The central role of the propensity score in observational studies for causal effects. <em>Biometrika</em>, 70(1), 41–55.</p></li>
-<li><p>Imai, K., &amp; Ratkovic, M. (2014). Covariate balancing propensity score. <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em>, 76(1), 243–263.</p></li>
-<li><p>Imbens, G. W., &amp; Rubin, D. B. (2015). <em>Causal Inference for Statistics, Social, and Biomedical Sciences: An Introduction</em>. Cambridge University Press.</p></li>
-<li><p>Hainmueller, J. (2012). Entropy balancing for causal effects. <em>Political Analysis</em>, 20(1), 25–46.</p></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>causal inference</category>
-  <category>flavors</category>
-  <guid>https://vyasenov.github.io/blog/flavors-prop-score-methods.html</guid>
-  <pubDate>Wed, 21 Jan 2026 22:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>The Wilcoxon-Mann-Whitney Test is Not a Test of Medians</title>
-  <link>https://vyasenov.github.io/blog/wmw-test-fails-medians.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">5 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Nonparametric tests like the Wilcoxon-Mann-Whitney (WMW) are among the most popular alternatives to the <img src="https://latex.codecogs.com/png.latex?t">- and <img src="https://latex.codecogs.com/png.latex?z">-tests in settings where normality assumptions break down. Often described as a “test of medians,” WMW is used when comparing two independent groups without making strong assumptions about the underlying distributions. It is also known as the Mann-Whitney-Wilcoxon (MWW) test or the Wilcoxon rank-sum test.</p>
-<p>Despite this common interpretation, the WMW test is <em>not</em> a test of medians—at least not in general. <a href="https://www.tandfonline.com/doi/full/10.1080/00031305.2017.1305291">Divine et al.&nbsp;(2018)</a> dive deep into this misconception and show convincingly how the WMW test can lead you astray if you’re specifically interested in comparing medians.</p>
-<p>This article explains why that happens, provides some intuition and math, and shows you how to think more clearly about what the WMW test actually does.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let <img src="https://latex.codecogs.com/png.latex?X_1,%20%5Cldots,%20X_m%20%5Csim%20F"> and <img src="https://latex.codecogs.com/png.latex?Y_1,%20%5Cldots,%20Y_n%20%5Csim%20G"> be two independent random samples from distributions <img src="https://latex.codecogs.com/png.latex?F"> and <img src="https://latex.codecogs.com/png.latex?G">, respectively. The Wilcoxon-Mann-Whitney statistic is based on the probability:</p>
-<p><img src="https://latex.codecogs.com/png.latex?P(X%20%3C%20Y)%20+%20%5Cfrac%7B1%7D%7B2%7DP(X%20=%20Y)"></p>
-<p>This quantity is sometimes referred to as the <em>probability of superiority</em>.</p>
-<p>Let <img src="https://latex.codecogs.com/png.latex?%5Ctheta_F"> and <img src="https://latex.codecogs.com/png.latex?%5Ctheta_G"> denote the medians of <img src="https://latex.codecogs.com/png.latex?F"> and <img src="https://latex.codecogs.com/png.latex?G">. We often want to test:</p>
-<p><img src="https://latex.codecogs.com/png.latex?H_0:%20%5Ctheta_F%20=%20%5Ctheta_G"></p>
-<p>But WMW does not directly test this hypothesis unless very specific conditions are met.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="what-does-wmw-actually-test" class="level3">
-<h3 class="anchored" data-anchor-id="what-does-wmw-actually-test">What Does WMW Actually Test?</h3>
-<p>The WMW test assesses whether one distribution tends to produce larger values than the other. More formally, it tests:</p>
-<p><img src="https://latex.codecogs.com/png.latex?H_0:%20P(X%20%3C%20Y)%20+%20%5Cfrac%7B1%7D%7B2%7DP(X%20=%20Y)%20=%200.5"></p>
-<p>This is equivalent to testing whether the distributions are stochastically equal, not whether the medians are equal.</p>
-<p>The WMW test can be performed via rank sums. After combining both samples, we rank all observations from smallest to largest. The test statistic <img src="https://latex.codecogs.com/png.latex?W"> is the sum of ranks assigned to the first sample:</p>
-<p><img src="https://latex.codecogs.com/png.latex?W%20=%20%5Csum_%7Bi=1%7D%5Em%20R(X_i)"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?R(X_i)"> is the rank of <img src="https://latex.codecogs.com/png.latex?X_i"> in the combined sample.</p>
-<p>This rank-based formulation is mathematically equivalent to counting how many pairs <img src="https://latex.codecogs.com/png.latex?(X_i,%20Y_j)"> have <img src="https://latex.codecogs.com/png.latex?X_i%20%3C%20Y_j">, which relates to the probability interpretation above. Under the null hypothesis, the expected rank sum is approximately <img src="https://latex.codecogs.com/png.latex?m(m+n+1)/2">.</p>
-</section>
-<section id="understanding-stochastic-dominance" class="level3">
-<h3 class="anchored" data-anchor-id="understanding-stochastic-dominance">Understanding Stochastic Dominance</h3>
-<p>When we say the WMW test examines “stochastic dominance,” we mean it tests whether values from one distribution tend to exceed values from the other. Specifically, distribution <img src="https://latex.codecogs.com/png.latex?G"> stochastically dominates distribution <img src="https://latex.codecogs.com/png.latex?F"> if:</p>
-<p><img src="https://latex.codecogs.com/png.latex?G(x)%20%5Cleq%20F(x)%20%5Ctext%7B%20for%20all%20%7D%20x"></p>
-<p>with strict inequality for at least some values of <img src="https://latex.codecogs.com/png.latex?x">. Intuitively, this means a randomly selected value from <img src="https://latex.codecogs.com/png.latex?G"> is more likely to be larger than a randomly selected value from <img src="https://latex.codecogs.com/png.latex?F">.</p>
-<p>This is quite different from comparing medians. Two distributions can have identical medians but exhibit stochastic dominance, or they can have different medians but neither stochastically dominates the other.</p>
-</section>
-<section id="when-does-it-coincide-with-a-median-test" class="level3">
-<h3 class="anchored" data-anchor-id="when-does-it-coincide-with-a-median-test">When Does It Coincide with a Median Test?</h3>
-<p>The WMW test only functions as a test of medians under symmetric distributions with equal shape and spread. If the shapes differ—say, one is skewed left and the other right—then even if the medians are the same, WMW can reject the null. Worse, it might <em>fail</em> to reject when the medians are different but the distributions have similar overall ranks.</p>
-</section>
-<section id="alternative-tests" class="level3">
-<h3 class="anchored" data-anchor-id="alternative-tests">Alternative Tests</h3>
-<p>If your research question specifically concerns differences in medians, more appropriate tests include:</p>
-<ul>
-<li><strong>Mood’s median test</strong>: A true test of median equality that uses contingency tables based on counts above and below the combined median.</li>
-<li><strong>Quantile regression</strong>: For more complex designs, quantile regression directly models the median (or other quantiles) and tests differences between groups.</li>
-<li><strong>Bootstrap confidence intervals</strong>: Calculating confidence intervals for the difference in medians via bootstrapping provides both a test and measure of uncertainty.</li>
-</ul>
-<p>These approaches directly address median differences rather than the stochastic ordering tested by WMW.</p>
-</section>
-</section>
-<section id="an-example" class="level2">
-<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<p>Let’s see this in action with a small simulation.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">123</span>)</span>
-<span id="cb1-2">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rexp</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">rate =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)         <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Right-skewed</span></span>
-<span id="cb1-3">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rexp</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">rate =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.5</span>)       <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Also right-skewed, different rate</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">median</span>(x)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Median of x</span></span>
-<span id="cb1-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">median</span>(y)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Median of y</span></span>
-<span id="cb1-7"></span>
-<span id="cb1-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">wilcox.test</span>(x, y)</span></code></pre></div></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb2-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> scipy.stats <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> mannwhitneyu</span>
-<span id="cb2-3"></span>
-<span id="cb2-4">np.random.seed(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">123</span>)</span>
-<span id="cb2-5">x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.exponential(scale<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.0</span>, size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb2-6">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.exponential(scale<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, size<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Higher scale = lower rate</span></span>
-<span id="cb2-7"></span>
-<span id="cb2-8"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Median x:"</span>, np.median(x))</span>
-<span id="cb2-9"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Median y:"</span>, np.median(y))</span>
-<span id="cb2-10"></span>
-<span id="cb2-11">res <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> mannwhitneyu(x, y, alternative<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'two-sided'</span>)</span>
-<span id="cb2-12"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(res)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<p>This example demonstrates our point perfectly: The medians are clearly different (0.6334 vs.&nbsp;0.4865), and the WMW test correctly rejects the null hypothesis (p = 0.004). However, this rejection occurs because the exponential distributions with different rates create a consistent stochastic ordering, not because it’s specifically testing the medians.</p>
-<p>Despite different medians, the WMW test might not reject the null. Or it might reject it <em>because</em> of shape differences, not the medians.</p>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>The Wilcoxon-Mann-Whitney test is not a general test of medians.</li>
-<li>It tests for stochastic dominance or shift in distribution, not specifically median difference.</li>
-<li>It behaves like a median test only under certain conditions (e.g., identical shape).</li>
-<li>Be cautious interpreting WMW results as saying something about medians unless distributional assumptions are met.</li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>For a deeper dive, read the original Divine et al.&nbsp;(2018) paper. You might also want to look at literature on robust location tests or permutation-based alternatives that better target the median.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Divine, G. W., Norton, H. J., Barón, A. E., &amp; Juarez-Colunga, E. (2018). The Wilcoxon–Mann–Whitney procedure fails as a test of medians. <em>The American Statistician</em>, 72(3), 278–286.</p>
-<p>Hollander, M., Wolfe, D. A., &amp; Chicken, E. (2013). <em>Nonparametric Statistical Methods</em> (3rd ed.). Wiley.</p>
-
-
-</section>
-
- ]]></description>
-  <category>statistical inference</category>
-  <category>hypothesis testing</category>
-  <guid>https://vyasenov.github.io/blog/wmw-test-fails-medians.html</guid>
-  <pubDate>Mon, 19 Jan 2026 22:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Unconditional Quantile Regression and Treatment Effects</title>
-  <link>https://vyasenov.github.io/blog/unconditional-qreg.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">9 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Quantile regression has become a widely used tool in econometrics and statistics, thanks to its ability to model the entire distribution of an outcome variable rather than just its mean. Traditional quantile regression (Koenker and Bassett, 1978), however, is <em>conditional</em> as it models quantiles of the outcome given a set of covariates. But in many policy and causal inference applications, we are interested in changes to the <em>unconditional</em> distribution of the outcome variable.</p>
-<p>For example, suppose we want to understand the effect of a job training program on wage inequality. A standard quantile regression would tell us how the program shifts quantiles <em>given</em> certain characteristics like education or experience. In other words, focus is on the quantile of the residual term in the linear model. But we might instead want to estimate how the program shifts quantiles <em>in the population as a whole</em>. This is where <em>Unconditional Quantile Regression (UQR)</em> comes in.</p>
-<p>The key breakthrough in this space was provided by Firpo, Fortin, and Lemieux (2009), who introduced a method based on the Recentered Influence Function (RIF). This allows us to estimate the effect of covariates on unconditional quantiles using simple linear regressions. Later, Frölich and Melly (2013) extended this framework to account for endogeneity, providing a way to estimate Unconditional Quantile Treatment Effects (UQTEs) in settings where treatment is not randomly assigned.</p>
-<p>In this article, I’ll unpack the key ideas behind UQR, discuss how to estimate unconditional quantile treatment effects, and illustrate these concepts with an example in <code>R</code> and <code>python</code>.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>As a refresher, the <img src="https://latex.codecogs.com/png.latex?%5Ctau">-th quantile of an outcome variable <img src="https://latex.codecogs.com/png.latex?Y"> is defined as: <img src="https://latex.codecogs.com/png.latex?%0AQ_%5Ctau(Y)%20=%20%5Cinf%20%5C%7B%20q%20:%20P(Y%20%5Cleq%20q)%20%5Cgeq%20%5Ctau%20%5C%7D.%0A"></p>
-<p>UQR allows us to estimate how covariates influence these unconditional quantiles.</p>
-<p>Now consider adding a set of covariates <img src="https://latex.codecogs.com/png.latex?X">. In traditional quantile regression, we estimate the conditional quantile function:</p>
-<p><img src="https://latex.codecogs.com/png.latex?Q_%5Ctau(Y%20%7C%20X)%20=%20%5Cinf%20%5C%7B%20q%20:%20P(Y%20%5Cleq%20q%20%7C%20X)%20%5Cgeq%20%5Ctau%20%5C%7D."></p>
-<p>This tells us how the <img src="https://latex.codecogs.com/png.latex?%5Ctau">-th quantile of <img src="https://latex.codecogs.com/png.latex?Y"> changes with <img src="https://latex.codecogs.com/png.latex?X">. Traditional quantile regression models the impact on this conditional quantile.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="unconditional-quantile-regression" class="level3">
-<h3 class="anchored" data-anchor-id="unconditional-quantile-regression">Unconditional Quantile Regression</h3>
-<section id="definition" class="level4">
-<h4 class="anchored" data-anchor-id="definition">Definition</h4>
-<p>Firpo et al.&nbsp;(2009) introduced an elegant way to estimate UQR using influence functions. The influence function of a statistic measures how much that statistic changes when an observation is perturbed. The recentered influence function (RIF) for a quantile <img src="https://latex.codecogs.com/png.latex?Q_%5Ctau"> is given by:</p>
-<p><img src="https://latex.codecogs.com/png.latex?RIF(Y;%20Q_%5Ctau)%20=%20Q_%5Ctau%20+%20%5Cfrac%7B%5Ctau%20-%201%5C%7BY%20%5Cleq%20Q_%5Ctau%5C%7D%7D%7Bf_Y(Q_%5Ctau)%7D."></p>
-<p>Here, <img src="https://latex.codecogs.com/png.latex?f_Y(Q_%5Ctau)"> is the density of <img src="https://latex.codecogs.com/png.latex?Y"> at <img src="https://latex.codecogs.com/png.latex?Q_%5Ctau">, which can be estimated nonparametrically. This nonparametric density estimation is often done via kernel density estimation but may be imprecise in the tails.</p>
-<p>Firpo et al.&nbsp;showed that regressing <img src="https://latex.codecogs.com/png.latex?RIF(Y;%20Q_%5Ctau)"> on covariates <img src="https://latex.codecogs.com/png.latex?X"> via OLS provides a valid estimate of how <img src="https://latex.codecogs.com/png.latex?X"> affects the <img src="https://latex.codecogs.com/png.latex?%5Ctau">-th quantile of <img src="https://latex.codecogs.com/png.latex?Y">. This method is remarkably simple but powerful—it transforms a quantile regression problem into a standard linear regression problem.</p>
-<p>This idea also generalizes to other distributional statistics (Gini, variance) by using the corresponding influence functions.</p>
-</section>
-<section id="estimation" class="level4">
-<h4 class="anchored" data-anchor-id="estimation">Estimation</h4>
-<p>The estimation proceeds in three steps:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Estimate the sample quantile <img src="https://latex.codecogs.com/png.latex?q_%7B%5Ctau%7D">.</li>
-<li>Estimate the density <img src="https://latex.codecogs.com/png.latex?f_Y(q_%7B%5Ctau%7D)">, typically via kernel density estimation.</li>
-<li>Construct the RIF for each observation and regress it on the covariates.</li>
-</ol>
-</div>
-</div>
-<p>The basic regression is: <img src="https://latex.codecogs.com/png.latex?%0ARIF(Y;%20q_%7B%5Ctau%7D)%20=%20X'%20%5Cbeta%20+%20%5Cvarepsilon,%0A"></p>
-<p>where <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> now captures the effect of <img src="https://latex.codecogs.com/png.latex?X"> on the <img src="https://latex.codecogs.com/png.latex?%5Ctau">-th unconditional quantile.</p>
-<p>The most common implementation is RIF-OLS, though alternatives include RIF-Logit and nonparametric first stages (RIF-NP).</p>
-</section>
-<section id="inference" class="level4">
-<h4 class="anchored" data-anchor-id="inference">Inference</h4>
-<p>Density estimation is a critical step that affects the quality of inference as poor estimates at the quantile point can lead to noisy estimates. Because of the multi-step estimation (quantile, density, RIF), standard error computation is more complex. Bootstrapping is commonly used and has been shown to perform well in practice.</p>
-</section>
-<section id="challenges" class="level4">
-<h4 class="anchored" data-anchor-id="challenges">Challenges</h4>
-<p>RIF-OLS is a linear model and as such it assumes a linear relationship between the RIF and covariates. If the true relationship is nonlinear, flexible methods (logit, nonparametric) are preferred. UQR is especially appealing for estimating treatment effects on the distribution of outcomes in quasi-experimental settings. When treatment is exogenous (conditional on the covariates), including treatment indicators in the RIF regression yields estimates of the treatment effect at various unconditional quantiles. This is a perfect segue for the next section.</p>
-</section>
-</section>
-<section id="unconditional-quantile-treatment-effects" class="level3">
-<h3 class="anchored" data-anchor-id="unconditional-quantile-treatment-effects">Unconditional Quantile Treatment Effects</h3>
-<p>One limitation of UQR as formulated by Firpo et al.&nbsp;is that it assumes covariates are exogenous. But in many causal inference settings, treatment assignment is endogenous (e.g., workers self-select into training programs). Frölich and Melly (2013) extended the UQR framework to handle endogeneity using instrumental variables (IV). The authors built on earlier work by Chernozhukov and Hansen (2005) which pioneered the estimation of (conditional) quantile treatment effects in the presence of endogeneity.</p>
-<p>Frölich and Melly showed that under standard IV assumptions—relevance and exclusion—the unconditional quantile treatment effect (UQTE) can be estimated using a two-step approach:</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm:">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm:
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Estimate a propensity score model (or an instrumented version of <img src="https://latex.codecogs.com/png.latex?D">) to account for selection bias.</li>
-<li>Use IV-based weighting to recover the counterfactual unconditional outcome distributions for compliers, and apply RIF methods to estimate UQTEs.</li>
-</ol>
-</div>
-</div>
-<p>This approach provides a way to estimate distributional treatment effects while addressing selection bias—a crucial tool in policy evaluation and applied econometrics.</p>
-</section>
-<section id="rank-invariance-in-qtes" class="level3">
-<h3 class="anchored" data-anchor-id="rank-invariance-in-qtes">Rank Invariance in QTEs</h3>
-<p>A crucial assumption often invoked in the estimation of quantile treatment effects (QTEs) is rank invariance. This assumption states that units maintain their rank in the outcome distribution after receiving the treatment. In other words, if a treated unit was at the 30th percentile of the untreated outcome distribution, it would remain at the 30th percentile of the treated distribution.</p>
-<p>While this assumption simplifies identification and interpretation of QTEs, it can be highly restrictive. It rules out the possibility that treatment reshuffles individuals across the distribution—a scenario that might be not only plausible but central in many applications.</p>
-<p>Consider a school voucher program that offers private school access to low-income students. The effect of such a program may be heterogeneous: for high-performing students, access might enhance performance due to better environments. But for low-performing students, the same access could lead to worse outcomes due to higher academic pressure or poor fit. As a result, the program could re-rank students in the outcome distribution, violating rank invariance.</p>
-<p>In such settings, assuming rank invariance could lead to misleading conclusions about who benefits and who loses from treatment. Alternative approaches, like those based on quantile treatment effect bounds (e.g., Melly, 2005; Chernozhukov &amp; Hansen, 2005), are more robust to such violations.</p>
-</section>
-</section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<section id="bitler-et-al.-2006" class="level3">
-<h3 class="anchored" data-anchor-id="bitler-et-al.-2006">Bitler et al.&nbsp;(2006)</h3>
-<p>When evaluating the effects of welfare reform, traditional analyses often focus on mean impacts, which can obscure critical insights into the distributional effects of policy changes. ​ Quantile Treatment Effects (QTE) provide a powerful tool for understanding how reforms impact different segments of the population, revealing heterogeneity that mean impacts fail to capture. ​ For example, the study “<em>What Mean Impacts Miss: Distributional Effects of Welfare Reform Experiments</em>” by Bitler, Gelbach, and Hoynes uses QTE to analyze Connecticut’s Jobs First program, a welfare reform initiative.</p>
-<p>The authors find that while mean impacts suggest modest income gains, QTE reveal substantial variation: earnings effects are zero at the bottom, positive in the middle, and negative at the top of the distribution before time limits take effect. ​ After time limits, income effects are mixed, with gains concentrated in higher quantiles and losses at the lower end. ​ This nuanced approach highlights the importance of QTE in uncovering the true breadth of policy impacts, enabling data scientists to better inform decision-making and address equity concerns in policy design.</p>
-</section>
-<section id="code" class="level3">
-<h3 class="anchored" data-anchor-id="code">Code</h3>
-<p>Let’s illustrate these ideas with an example in <code>R</code> and <code>python</code>. We’ll use the <code>iris</code> dataset to estimate the effect of <code>Sepal.Length</code> on different quantiles of <code>Petal.Length</code> using UQR.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rm</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">list=</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span>())</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(quantreg)</span>
-<span id="cb1-3"></span>
-<span id="cb1-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load dataset</span></span>
-<span id="cb1-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data</span>(iris)</span>
-<span id="cb1-6"></span>
-<span id="cb1-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Estimate unconditional quantiles</span></span>
-<span id="cb1-8">taus <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.25</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.50</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.75</span>)</span>
-<span id="cb1-9">q_vals <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">quantile</span>(iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Petal.Length, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">probs =</span> taus)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Estimate quantiles</span></span>
-<span id="cb1-10">f_hat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">density</span>(iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Petal.Length)</span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Compute RIF values</span></span>
-<span id="cb1-13">rif_values <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lapply</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>, <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(i) {</span>
-<span id="cb1-14">  q <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> q_vals[i]</span>
-<span id="cb1-15">  f <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> f_hat<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>y[<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">which.min</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(f_hat<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> q))]</span>
-<span id="cb1-16">  q <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> ((taus[i] <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> (iris<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>Petal.Length <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> q)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> f)</span>
-<span id="cb1-17">})</span>
-<span id="cb1-18"></span>
-<span id="cb1-19"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Run RIF regression</span></span>
-<span id="cb1-20">models <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lapply</span>(rif_values, <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">function</span>(rif) <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lm</span>(rif <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> Sepal.Length, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data =</span> iris))</span>
-<span id="cb1-21"></span>
-<span id="cb1-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Print results</span></span>
-<span id="cb1-23"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lapply</span>(models, summary)</span></code></pre></div></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb2-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> pd</span>
-<span id="cb2-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> scipy.stats <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> gaussian_kde</span>
-<span id="cb2-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> LinearRegression</span>
-<span id="cb2-5"></span>
-<span id="cb2-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load dataset</span></span>
-<span id="cb2-7"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.datasets <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> load_iris</span>
-<span id="cb2-8">iris_data <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> load_iris(as_frame<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb2-9">iris <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> iris_data[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'data'</span>]</span>
-<span id="cb2-10">iris.columns <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Sepal.Length'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Sepal.Width'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Petal.Length'</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Petal.Width'</span>]</span>
-<span id="cb2-11"></span>
-<span id="cb2-12"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Estimate unconditional quantiles</span></span>
-<span id="cb2-13">taus <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> [<span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.25</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.50</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.75</span>]</span>
-<span id="cb2-14">q_vals <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.quantile(iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Petal.Length'</span>], taus)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Estimate quantiles</span></span>
-<span id="cb2-15">f_hat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> gaussian_kde(iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Petal.Length'</span>])</span>
-<span id="cb2-16"></span>
-<span id="cb2-17"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Compute RIF values</span></span>
-<span id="cb2-18">rif_values <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> []</span>
-<span id="cb2-19"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> i, tau <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">enumerate</span>(taus):</span>
-<span id="cb2-20">    q <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> q_vals[i]</span>
-<span id="cb2-21">    f <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> f_hat(q)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Density at the quantile</span></span>
-<span id="cb2-22">    rif <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> q <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> ((tau <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> (iris[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Petal.Length'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> q).astype(<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">int</span>)) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> f)</span>
-<span id="cb2-23">    rif_values.append(rif)</span>
-<span id="cb2-24"></span>
-<span id="cb2-25"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Run RIF regression</span></span>
-<span id="cb2-26">models <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> []</span>
-<span id="cb2-27"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> rif <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> rif_values:</span>
-<span id="cb2-28">    model <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> LinearRegression(fit_intercept<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">True</span>)</span>
-<span id="cb2-29">    model.fit(iris[[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Sepal.Length'</span>]], rif)</span>
-<span id="cb2-30">    models.append(model)</span>
-<span id="cb2-31"></span>
-<span id="cb2-32"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Print results</span></span>
-<span id="cb2-33"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> i, model <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">enumerate</span>(models):</span>
-<span id="cb2-34">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Model </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>i <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">:"</span>)</span>
-<span id="cb2-35">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Coefficient for Sepal.Length: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>model<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>coef_[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>]<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb2-36">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Intercept: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>model<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>intercept_<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-<p>This simple example demonstrates how to estimate the effect of a covariate on unconditional quantiles using the RIF regression approach.</p>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>UQR allows us to estimate the effect of covariates on unconditional quantiles, capturing total effects.</li>
-<li>The RIF regression method transforms a quantile regression problem into a simple linear regression.</li>
-<li>Frölich and Melly (2013) extend UQR to address endogeneity using instrumental variables.</li>
-<li>These tools are invaluable for policy evaluation and causal inference.</li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>For a deeper dive into these methods, the foundational paper by Firpo, Fortin, and Lemieux (2009) provides a detailed introduction to UQR, while Frölich and Melly (2013) extend the framework to address endogeneity concerns. For a broader perspective on quantile regression, Koenker’s book <em>Quantile Regression</em> (2005) is a must-read.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Alejo, J., Favata, F., Montes-Rojas, G., &amp; Trombetta, M. (2021). Conditional vs unconditional quantile regression models: A guide to practitioners. Economía, 44(88), 76-93.</p>
-<p>Bitler, M. P., Gelbach, J. B., &amp; Hoynes, H. W. (2006). What mean impacts miss: Distributional effects of welfare reform experiments. American Economic Review, 96(4), 988-1012.</p>
-<p>Borah, B. J., &amp; Basu, A. (2013). Highlighting differences between conditional and unconditional quantile regression approaches through an application to assess medication adherence. Health economics, 22(9), 1052-1070.</p>
-<p>Borgen, N. T. (2016). Fixed effects in unconditional quantile regression. The Stata Journal, 16(2), 403-415.</p>
-<p>Chernozhukov, V., &amp; Hansen, C. (2005). An IV model of quantile treatment effects. Econometrica, 73(1), 245-261.</p>
-<p>Firpo, S., Fortin, N. M., &amp; Lemieux, T. (2009). Unconditional quantile regressions. Econometrica, 77(3), 953-973.</p>
-<p>Frölich, M., &amp; Melly, B. (2013). Unconditional quantile treatment effects under endogeneity. Journal of Business &amp; Economic Statistics, 31(3), 346-357.</p>
-<p>Koenker, R. (2017). Quantile regression: 40 years on. Annual review of economics, 9(1), 155-176.</p>
-<p>Koenker, R., &amp; Hallock, K. F. (2001). Quantile regression. Journal of economic perspectives, 15(4), 143-156.</p>
-<p>Koenker, R., &amp; Bassett Jr, G. (1978). Regression quantiles. Econometrica: journal of the Econometric Society, 33-50.</p>
-<p>Sasaki, Y., Ura, T., &amp; Zhang, Y. (2022). Unconditional quantile regression with high‐dimensional data. Quantitative Economics, 13(3), 955-978.</p>
-
-
-</section>
-
- ]]></description>
-  <category>causal inference</category>
-  <guid>https://vyasenov.github.io/blog/unconditional-qreg.html</guid>
-  <pubDate>Sat, 20 Dec 2025 22:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

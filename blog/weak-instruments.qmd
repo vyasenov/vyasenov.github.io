@@ -1,0 +1,166 @@
+---
+title: "Working with Weak Instruments"
+date: "2026-06-24"
+categories: [causal inference, statistical inference, hypothesis testing]
+---
+
+## Background
+
+Weak instruments are not merely unhelpful; they can waste your time *and* your nerves. With a weak IV in hand, you can spend months trying to "fix" it, only for your paper or analysis to be rejected on the simple grounds that the instrument is weak. For some time, the folk wisdom dictated that if your first-stage $F$-statistic cleared $10$, your instrument was "strong," and you could proceed to report your two-stage least squares (2SLS) estimate. The econometrics literature has recently revisited both this rule and the practical recommendations for working with weak instruments.
+
+This post picks up where my earlier note on [instrumental variables in randomized experiments](https://vyasenov.github.io/blog/iv-randomized-experiments.html) left off. There I treated the *identification* side of IV — the local average treatment effect, the Wald ratio, the four assumptions that make it all work. Here I take identification for granted and worry about *inference*: once you have a just-identified IV estimate in hand, how do you build an honest confidence interval when the instrument is only weakly correlated with the endogenous regressor? The literature has converged on a verdict — the $F>10$ rule is broken — and then split into two camps over the remedy. One camp says abandon the $t$-test and invert the Anderson–Rubin statistic instead. The other says keep the $t$-test but stop pretending the critical value is $1.96$. I will lay out both, with the mathematics, and let you decide which side is right.
+
+## Notation
+
+I stay in the simplest possible setting throughout: one outcome, one endogenous regressor, one instrument — the *just-identified* case. Index observations by $i$ and write the structural equation, first stage, and reduced form as
+
+$$
+\begin{aligned}
+Y_i &= \beta X_i + u_i, \\
+X_i &= \pi Z_i + v_i, \\
+Y_i &= \delta Z_i + \varepsilon_i,
+\end{aligned}
+$$
+where 
+
+- $Z_i$ is the instrument, 
+- $X_i$ the endogenous regressor, and 
+- $u_i$ correlated with $v_i$ — the endogeneity that motivates IV in the first place. 
+
+Any exogenous controls are partialled out of all three equations; nothing below changes.
+
+The exclusion restriction $\mathbb{E}[Z_i u_i] = 0$ ties the three equations together through the single restriction
+
+$$
+\delta = \pi \beta.
+$$
+
+The IV estimator is the ratio of the reduced-form to first-stage slopes,
+
+$$
+\hat\beta = \frac{\hat\delta}{\hat\pi} = \frac{\widehat{\text{Cov}}(Z, Y)}{\widehat{\text{Cov}}(Z, X)},
+$$
+
+the Wald estimator. 
+
+The trouble lives entirely in that denominator. When $\pi$ is small relative to the sampling noise in $\hat\pi$, we are dividing by something close to zero, and $\hat\beta$ — a ratio of two correlated normals — is badly non-normal. Its $t$-statistic does not behave like a standard normal, no matter how large the sample. 
+
+*Weak* means exactly this: $\pi$ is small relative to $\text{SE}(\hat\pi)$. The standard gauge of instrument strength is the first-stage (partial) $F$-statistic, which in this single-instrument world is just the squared $t$-statistic on $\hat\pi$,
+
+$$
+F = \left( \frac{\hat\pi}{\text{SE}(\hat\pi)} \right)^2 .
+$$
+
+## A Closer Look
+
+### Why the "F > 10" rule broke
+
+The rule of thumb traces to Staiger and Stock (1997), who suggested $F>10$ as a rough indicator that weak-instrument distortions were tolerable. Stock and Yogo (2005) made it rigorous by defining "weak" through worst-case performance and tabulating critical values under two distinct criteria. The *bias* criterion asks how large the worst-case 2SLS bias is relative to OLS; its critical values sit near $10$ across a range of instrument counts, which is where the folklore comes from. The *size* criterion asks how badly a nominal 5% $t$-test can over-reject; its critical values are a different animal, rising from about $9$ with one instrument to nearly $45$ with thirty. Already the single number "10" is doing two incompatible jobs.
+
+The deeper problem is that the entire Stock–Yogo apparatus was derived under *homoskedasticity*. The critical values depend on a Kronecker-product structure in the covariance matrix that simply does not hold once errors are heteroskedastic, clustered, or serially correlated — which is to say, in essentially every applied setting.
+
+---
+
+### The effective F-statistic
+
+The fix for *measuring* strength is due to Montiel Olea and Pflueger (2013), who introduced what they call the *effective $F$-statistic*. The conventional first-stage $F$ and even the naive robust Wald $F$ have, as Andrews, Stock, and Sun (2019) put it, "no theoretical justification" for gauging instrument strength under heteroskedasticity — they target the wrong population object or misstate its variance. The effective $F$ replaces the variance term with a heteroskedasticity-robust analogue:
+
+$$
+F_{\text{eff}} = \frac{\hat\pi' \hat{Q}_{ZZ} \hat\pi}{\operatorname{tr}\!\big(\hat\Sigma_{\pi\pi}\hat{Q}_{ZZ}\big)},
+$$
+
+where $\hat{Q}_{ZZ}$ is the instrument second-moment matrix and $\hat\Sigma_{\pi\pi}$ the robust variance of $\hat\pi$. It collapses to the usual $F$ under homoskedasticity and, crucially, "measures the right object and gets the standard errors right on average." In the just-identified case it coincides with the robust first-stage $F$. 
+
+The practical instruction is simple: whenever you report a first-stage $F$ as a strength diagnostic, it should be the effective one, compared against the appropriate Montiel Olea–Pflueger critical values rather than a remembered "10."
+
+---
+
+### The Anderson–Rubin test
+
+Measuring strength is only half the battle; the harder question is what to report for $\beta$ when strength is in doubt. The oldest and most robust answer is the **Anderson–Rubin (AR) test**, dating to 1949. Instead of forming $\hat\beta \pm 1.96\,\text{SE}$, AR inverts a test. To test $H_0: \beta = \beta_0$, construct the residual $Y_i - \beta_0 X_i$ and ask whether it is correlated with the instrument. Under the null,
+
+$$
+Y_i - \beta_0 X_i = (\delta - \beta_0 \pi) Z_i + \text{noise},
+$$
+
+and the coefficient on $Z_i$ is $\delta - \beta_0 \pi$, which equals zero precisely when $\beta_0$ is the true $\beta$ (since $\delta = \pi\beta$). So the AR statistic is just the squared $t$-statistic for $Z$ in the regression of $Y - \beta_0 X$ on $Z$, and under $H_0$ it is distributed $\chi^2_1$ *regardless of the value of $\pi$* — even at $\pi = 0$. That is the whole trick: testing whether a coefficient is zero in a clean regression does not care how strong the instrument is.
+
+The confidence set is the collection of nulls the test fails to reject,
+
+$$
+CS_{AR} = \{\beta_0 : AR(\beta_0) \le \chi^2_{1,\,0.95}\} = \{\beta_0 : AR(\beta_0) \le 3.841\}.
+$$
+
+The key point is that AR's occasional unbounded intervals are not a defect: under very weak instruments, any honest procedure must sometimes admit that the data cannot pin $\beta$ down, while AR still works well when identification is strong.
+
+---
+
+### The mainstream verdict: abandon the $t$-test
+
+The Annual Review tradition — Andrews, Stock, and Sun (2019) as the canonical statement — draws the natural conclusion: in the just-identified case, report AR intervals, and that's it. Keane and Neal (2024) push this to its sharp edge and argue for abandoning the 2SLS $t$-test *even when instruments are strong*. Their argument is a power asymmetry that the older literature, fixated on bias and size, had missed.
+
+The mechanism is the 2SLS standard error itself. The estimated structural variance entering $\text{SE}(\hat\beta)$ is a quadratic function of $\hat\beta$ that is *minimized at the OLS estimate*. So whenever a draw of $\hat\beta$ lands near OLS, its standard error is artificially small, and the $t$-test is correspondingly eager to declare significance. The upshot is a test with inflated power to detect false positives in the direction of the OLS bias and almost no power to detect true effects lying away from OLS. Keane and Neal show this distortion persists at first-stage $F$ values of $30$, $50$, even $70$ — far above any conventional threshold — and conclude that the bar for the $F$ should be raised to roughly $50$, and that one should simply use AR throughout. The AR standard error, by contrast, is built around a variance minimized at $\hat\beta_{2SLS}$ rather than at OLS, which is exactly what kills the asymmetry.
+
+---
+
+### The counterpoint: fix the $t$-test instead
+
+Lee, McCrary, Moreira, and Porter (2022) accept the diagnosis and reject the prescription. Their objection is practical: practitioners know and trust the $t$-ratio, the entire reporting apparatus is built around it, and throwing it out is a heavy ask. The $t$-statistic is not normal under weak instruments — true — but its non-normal distribution is *known*, and depends on the data only through the observed first-stage $F$. So rather than discard it, replace the constant $1.96$ with a critical value $c_\alpha(\hat F)$ that is a smooth, decreasing function of the first stage. They call this the *tF procedure*.
+
+The headline number is sobering. For the constant $1.96$ to deliver a genuine 5% test, you do not need $F > 10$, or even Stock and Yogo's $F > 16.38$ — you need
+
+$$
+F \approx 104.7.
+$$
+
+Below that, $1.96$ is too small and you must inflate. 
+
+Operationally the procedure is a lookup: estimate your usual (robust, clustered) 2SLS standard error, read the adjustment factor off their Table 3 at your observed $\hat F$, and multiply. A few anchor points at the 5% level make the magnitude vivid:
+
+| First-stage $\hat F$ | $tF$ critical value | SE multiplier |
+|:---:|:---:|:---:|
+| $5$  | $6.85$ | $\times 3.50$ |
+| $10$ | $3.43$ | $\times 1.75$ |
+| $16.6$ | $2.76$ | $\times 1.41$ |
+| $24.6$ | $2.46$ | $\times 1.26$ |
+| $104.7$ | $1.96$ | $\times 1.00$ |
+
+At the celebrated $F=10$, an honest 95% interval is about $75\%$ wider than the one most papers report, and $tF$ can still be shorter than AR when both intervals are bounded because it reserves its "we cannot learn $\beta$" verdict for the rare cases where $\hat F < 3.84$.
+
+## Bottom Line
+
+- The "$F > 10$" rule is broken: a genuine 5% $t$-test needs $F \approx 104.7$, not 10.
+- Gauge instrument strength with the effective $F$-statistic (Montiel Olea–Pflueger), not the conventional first-stage $F$.
+- For a robust default, report the Anderson–Rubin interval — valid at any instrument strength, and free of cost when instruments are strong.
+- To keep the familiar $t$-ratio, use $tF$: inflate the SE by the Table 3 factor at your observed $F$; it even beats AR on interval length.
+- Either way, heed Young (2022): under non-iid errors a few high-leverage clusters can drive both $\hat\beta$ and the $F$ — check leverage before trusting any interval.
+
+## Where to Learn More
+
+For the canonical survey, Andrews, Stock, and Sun (2019, *Annual Review of Economics*) is the place to start — comprehensive, careful, and explicit about the heteroskedastic case. Keane and Neal (2024, *Annual Review of Economics*) is the most accessible statement of the "abandon the $t$-test" position and worth reading for the power-asymmetry argument alone. Lee, McCrary, Moreira, and Porter (2022, *American Economic Review*) lay out the $tF$ procedure with its adjustment tables, and their follow-up working paper extends it to the sharper V$tF$ refinement. Young (2022, *European Economic Review*) is a bracing empirical reality check on how fragile published IV results actually are.
+
+## References
+
+- Anderson, T. W., & Rubin, H. (1949). Estimation of the parameters of a single equation in a complete system of stochastic equations. *Annals of Mathematical Statistics*, 20(1), 46–63.
+
+- Andrews, I., Stock, J. H., & Sun, L. (2019). Weak instruments in instrumental variables regression: Theory and practice. *Annual Review of Economics*, 11, 727–753.
+
+- Dufour, J.-M. (1997). Some impossibility theorems in econometrics with applications to structural and dynamic models. *Econometrica*, 65(6), 1365–1387.
+
+- Gleser, L. J., & Hwang, J. T. (1987). The nonexistence of $100(1-\alpha)\%$ confidence sets of finite expected diameter in errors-in-variables and related models. *Annals of Statistics*, 15(4), 1351–1362.
+
+- Keane, M. P., & Neal, T. (2024). A practical guide to weak instruments. *Annual Review of Economics*, 16, 185–212.
+
+- Lee, D. S., McCrary, J., Moreira, M. J., & Porter, J. (2022). Valid $t$-ratio inference for IV. *American Economic Review*, 112(10), 3260–3290.
+
+- Lee, D. S., McCrary, J., Moreira, M. J., Porter, J., & Yap, L. (2023). What to do when you can't use '1.96' confidence intervals for IV. *NBER Working Paper No. 31893*.
+
+- Montiel Olea, J. L., & Pflueger, C. (2013). A robust test for weak instruments. *Journal of Business & Economic Statistics*, 31(3), 358–369.
+
+- Moreira, M. J. (2009). Tests with correct size when instruments can be arbitrarily weak. *Journal of Econometrics*, 152(2), 131–140.
+
+- Staiger, D., & Stock, J. H. (1997). Instrumental variables regression with weak instruments. *Econometrica*, 65(3), 557–586.
+
+- Stock, J. H., & Yogo, M. (2005). Testing for weak instruments in linear IV regression. In D. W. K. Andrews & J. H. Stock (Eds.), *Identification and Inference for Econometric Models* (pp. 80–108). Cambridge University Press.
+
+- Young, A. (2022). Consistency without inference: Instrumental variables in practical application. *European Economic Review*, 147, 104112.

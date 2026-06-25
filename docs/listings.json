@@ -2,6 +2,9 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/kronecker-products.html",
+      "/blog/weak-instruments.html",
+      "/blog/online-multiple-testing.html",
       "/blog/linear-models-p-over-n.html",
       "/blog/tmle-estimation-recipe.html",
       "/blog/iv-randomized-experiments.html",
