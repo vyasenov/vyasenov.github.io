@@ -146,6 +146,17 @@
     "href": "diff-causal-predictive-models.html"
   },
   {
+    "slug": "double-descent",
+    "title": "Double Descent for Statisticians",
+    "date": "2026-06-25",
+    "categories": [
+      "parametric models",
+      "statistical inference",
+      "machine learning"
+    ],
+    "href": "double-descent.html"
+  },
+  {
     "slug": "filling-missing-data-mcmc",
     "title": "Filling in Missing Data with MCMC",
     "date": "2025-01-31",
@@ -300,6 +311,16 @@
     "href": "generalized-additive-models.html"
   },
   {
+    "slug": "generalized-propensity-score",
+    "title": "Propensity Scores When Treatment Isn't Binary",
+    "date": "2026-07-01",
+    "categories": [
+      "causal inference",
+      "statistical inference"
+    ],
+    "href": "generalized-propensity-score.html"
+  },
+  {
     "slug": "hypothesis-testing-all-data",
     "title": "Hypothesis Testing with Population Data",
     "date": "2022-09-23",
@@ -434,6 +455,16 @@
     "href": "linear-models-p-over-n.html"
   },
   {
+    "slug": "local-projections",
+    "title": "Local Projections for Causal Inference",
+    "date": "2026-07-01",
+    "categories": [
+      "causal inference",
+      "parametric models"
+    ],
+    "href": "local-projections.html"
+  },
+  {
     "slug": "logit-randomized-experiments",
     "title": "Logistic Regression in Randomized Trials?",
     "date": "2026-02-17",
@@ -542,6 +573,16 @@
       "paradox"
     ],
     "href": "paradox-stein.html"
+  },
+  {
+    "slug": "probability-calibration",
+    "title": "Trusting the Number: Probability Calibration in ML",
+    "date": "2026-07-01",
+    "categories": [
+      "machine learning",
+      "statistical inference"
+    ],
+    "href": "probability-calibration.html"
   },
   {
     "slug": "randomization-inference",

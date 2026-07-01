@@ -2,6 +2,10 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/local-projections.html",
+      "/blog/generalized-propensity-score.html",
+      "/blog/probability-calibration.html",
+      "/blog/double-descent.html",
       "/blog/kronecker-products.html",
       "/blog/weak-instruments.html",
       "/blog/online-multiple-testing.html",

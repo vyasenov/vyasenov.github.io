@@ -113,6 +113,10 @@
     <lastmod>2026-06-11T17:27:14.004Z</lastmod>
   </url>
   <url>
+    <loc>https://vyasenov.github.io/blog/probability-calibration.html</loc>
+    <lastmod>2026-07-01T14:34:53.742Z</lastmod>
+  </url>
+  <url>
     <loc>https://vyasenov.github.io/blog/treatment-effects-bounds.html</loc>
     <lastmod>2026-06-11T17:27:38.101Z</lastmod>
   </url>
@@ -121,12 +125,16 @@
     <lastmod>2026-04-27T22:00:36.419Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/diff-causal-predictive-models.html</loc>
-    <lastmod>2026-04-27T22:00:36.410Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/iv-randomized-experiments.html</loc>
+    <lastmod>2026-06-24T14:06:05.455Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/conformal-inference.html</loc>
-    <lastmod>2026-06-11T17:27:32.596Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/paradox-lord.html</loc>
+    <lastmod>2026-06-11T17:28:24.805Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/local-projections.html</loc>
+    <lastmod>2026-07-01T14:42:34.299Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/limits-semiparam-models.html</loc>
@@ -185,16 +193,24 @@
     <lastmod>2026-06-11T17:28:57.371Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/paradox-lord.html</loc>
-    <lastmod>2026-06-11T17:28:24.805Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/conformal-inference.html</loc>
+    <lastmod>2026-06-11T17:27:32.596Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/iv-randomized-experiments.html</loc>
-    <lastmod>2026-06-24T14:06:05.455Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/diff-causal-predictive-models.html</loc>
+    <lastmod>2026-04-27T22:00:36.410Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/generalized-propensity-score.html</loc>
+    <lastmod>2026-07-01T14:29:51.741Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/tmle-estimation-recipe.html</loc>
     <lastmod>2026-06-24T14:33:28.858Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/double-descent.html</loc>
+    <lastmod>2026-06-25T18:37:22.292Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/gen-vars-predefined-corr.html</loc>
