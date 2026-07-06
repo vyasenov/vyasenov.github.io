@@ -6,11 +6,11 @@ categories: [causal inference, statistical inference]
 
 ## Background
 
-You know the binary propensity score cold. Treatment is on or off, you model the probability of being treated given covariates, and then you match, weight, or stratify on that single number to recover a treated-versus-control contrast. I have written about the [zoo of methods that build on it](https://vyasenov.github.io/blog/flavors-prop-score-methods.html), and it is one of the most reliable workhorses in the applied causal toolkit.
+You know how to work with propensity scores when treatment is binary. Treatment is on or off, you model the probability of being treated given covariates, and then you match, weight, or stratify on that single number to recover a treated-versus-control contrast. I have written about the [zoo of methods that build on it](https://vyasenov.github.io/blog/flavors-prop-score-methods.html), and it is one of the most reliable workhorses in the applied causal toolkit.
 
-But a lot of the treatments we actually care about are not switches — they are dials. Hours of job training, milligrams of a drug, dollars of ad spend, days of hospital stay. The reflex is to dichotomize: call the top half "high dose," the bottom half "low dose," and run the familiar binary machinery. This is a mistake I have made myself, and it quietly throws away the most interesting part of the problem. The question with a dial is not "does treatment help?" but *what does the whole response curve look like?* — does it rise and then plateau, is there a sweet spot, are there diminishing returns? Collapsing the dose into two buckets answers none of that.
+But many of the treatments we actually care about are not switches, but dials. Hours of job training, milligrams of a drug, dollars of ad spend, days of hospital stay. The reflex is to dichotomize: call the top half "high dose," the bottom half "low dose," and run the familiar binary machinery. This is a mistake I have made myself, and it quietly throws away the most interesting part of the problem. The question with a dial is not "does treatment help?" but *what does the whole response curve look like?* — does it rise and then plateau, is there a sweet spot, are there diminishing returns? Collapsing the dose into two buckets answers none of that.
 
-So the real question is: what survives when treatment goes from a switch to a dial? The reassuring answer is that the *logic* of the propensity score survives almost entirely intact. One thing changes — but it changes everything about how you compute and reason with the score.
+So how do we think about propensity scores when treatment goes from a switch to a dial? The reassuring answer is that the *logic* of the propensity score survives almost entirely intact. Let's take a closer look.
 
 ## Notation
 
@@ -34,7 +34,7 @@ The word "weak" matters. We do not require the whole family $\{Y(t)\}_{t \in [t_
 
 ### The scalar score becomes a density
 
-With binary treatment, the propensity score $e(X) = P(T = 1 \mid X)$ is a single number in $[0,1]$. Its magic is dimension reduction: Rosenbaum and Rubin showed that conditioning on that one scalar is enough to remove covariate bias, no matter how many covariates went into it.
+With binary treatment, the propensity score $$e(X) = P(T = 1 \mid X)$$ is a single number in $[0,1]$. Its magic is dimension reduction: Rosenbaum and Rubin showed that conditioning on that one scalar is enough to remove covariate bias, no matter how many covariates went into it.
 
 When $T$ is continuous, "the probability of receiving treatment" is no longer a probability — it is a density. The natural object is the conditional density of the treatment given covariates,
 
@@ -60,16 +60,16 @@ $$
 X \perp \mathbf{1}\{T = t\} \mid r(t, X).
 $$
 
-Read carefully: balance holds *at each dose level $t$ separately*, conditioning on the score evaluated at that same $t$. Hirano and Imbens put it memorably — you use as many propensity scores as there are levels of the treatment, yet you never use more than one at a time. This is the mental model shift. There is no single number that balances covariates across all doses simultaneously; there is a family of scores, one per dose, each balancing locally. Notably, this balancing property is mechanical — it falls out of the definition and does not itself require unconfoundedness. Combine it with weak unconfoundedness and you get the payoff: assignment is unconfounded given the GPS.
+Read carefully: balance holds *at each dose level $t$ separately*, conditioning on the score evaluated at that same $t$.You use as many propensity scores as there are levels of the treatment, yet you never use more than one at a time. This is the mental model shift. There is no single number that balances covariates across all doses simultaneously; there is a family of scores, one per dose, each balancing locally. Notably, this balancing property is mechanical — it falls out of the definition and does not itself require unconfoundedness. Combine it with weak unconfoundedness and you get the payoff: assignment is unconfounded given the GPS.
 
 ---
 
-### Recovering the curve: a two-step recipe
+### Recovering the curve
 
 The estimation strategy is where the GPS earns its keep, and it is pleasingly concrete.
 
 ::: {.callout-note title="Algorithm: GPS dose–response estimation"}
-1. **Model the treatment.** Estimate the conditional density $r(t, x)$ — e.g. assume $T \mid X$ is normal with mean $X'\beta$ and variance $\sigma^2$, fit by regression, and form the fitted score $\hat R_i = \hat r(T_i, X_i)$ for each unit.
+1. **Model the treatment.** Estimate the conditional density $r(t, x)$ — e.g. fit by regression, and form the fitted score $\hat R_i = \hat r(T_i, X_i)$ for each unit.
 2. **Regress outcome on dose and score.** Estimate $\beta(t, r) = \mathbb{E}[Y \mid T = t, R = r]$, treating the two *scalars* $T$ and $\hat R$ as the only regressors (say, a flexible polynomial in both).
 3. **Average at each dose.** For a target dose $t$, average the fitted surface over the score evaluated at that dose: $\hat\mu(t) = \frac{1}{N}\sum_i \hat\beta\big(t, \hat r(t, X_i)\big)$. Sweep $t$ across its range to trace out the whole curve.
 :::
@@ -78,9 +78,9 @@ The step that trips people up is the third one. You do *not* average over $R = r
 
 ---
 
-### One idea, several implementations
+### Multiple implementations
 
-The GPS defined above is Hirano and Imbens' route, and it is the cleanest place to build intuition. But the same core idea — reduce the covariates to a low-dimensional score summarizing treatment assignment — shows up in a few guises, and it is worth knowing the map.
+The GPS defined above is Hirano and Imbens' route, and it is the cleanest place to build intuition. But the same core idea (reducing the covariates to a low-dimensional score summarizing treatment assignment) shows up in a few different shapes.
 
 Imai and van Dyk arrive at the general case from a different angle. Rather than a density, they work with the *propensity function*: the entire conditional distribution of $T \mid X$. When that distribution belongs to a parametric family, the propensity function collapses to its parameter (e.g. the mean of a normal), and you subclassify or adjust on that parameter. This unifies the ordinal, categorical, and continuous cases under one theory and connects back to Imbens' original multi-valued treatment argument.
 

@@ -146,17 +146,6 @@
     "href": "diff-causal-predictive-models.html"
   },
   {
-    "slug": "double-descent",
-    "title": "Double Descent for Statisticians",
-    "date": "2026-06-25",
-    "categories": [
-      "parametric models",
-      "statistical inference",
-      "machine learning"
-    ],
-    "href": "double-descent.html"
-  },
-  {
     "slug": "filling-missing-data-mcmc",
     "title": "Filling in Missing Data with MCMC",
     "date": "2025-01-31",
@@ -576,7 +565,7 @@
   },
   {
     "slug": "probability-calibration",
-    "title": "Trusting the Number: Probability Calibration in ML",
+    "title": "Probability Calibration in ML",
     "date": "2026-07-01",
     "categories": [
       "machine learning",
@@ -702,17 +691,6 @@
       "causal inference"
     ],
     "href": "variance-ps-matching.html"
-  },
-  {
-    "slug": "weak-instruments",
-    "title": "Working with Weak Instruments",
-    "date": "2026-06-24",
-    "categories": [
-      "causal inference",
-      "statistical inference",
-      "hypothesis testing"
-    ],
-    "href": "weak-instruments.html"
   },
   {
     "slug": "weights-statistics",

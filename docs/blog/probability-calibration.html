@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2026-07-01">
 
-<title>Trusting the Number: Probability Calibration in ML – Vasco Yasenov</title>
+<title>Probability Calibration in ML – Vasco Yasenov</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,41 +23,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -83,6 +48,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/bootstrap/bootstrap-6388ad00bb6ecaefa25b9a98db1edf18.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/bootstrap/bootstrap-dark-cb168b1d3fd9d67ce14b64e8ae8a6f7f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="../site_libs/bootstrap/bootstrap-6388ad00bb6ecaefa25b9a98db1edf18.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -158,12 +126,20 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="../code/styles.css">
-<meta property="og:title" content="Trusting the Number: Probability Calibration in ML – Vasco Yasenov">
+<meta property="og:title" content="Probability Calibration in ML – Vasco Yasenov">
 <meta property="og:description" content="Personal Site of Vasco Yasenov">
+<meta property="og:image" content="https://vyasenov.github.io/files/calibration-reliability.png">
 <meta property="og:site_name" content="Vasco Yasenov">
-<meta name="twitter:title" content="Trusting the Number: Probability Calibration in ML – Vasco Yasenov">
+<meta property="og:image:alt" content="Two reliability diagrams side by side. The left panel shows a well-calibrated model whose curve lies on the 45-degree diagonal. The right panel shows an over-confident model whose curve lies above the diagonal for low predicted probabilities and below it for high predicted probabilities.">
+<meta property="og:image:height" content="1279">
+<meta property="og:image:width" content="2722">
+<meta name="twitter:title" content="Probability Calibration in ML – Vasco Yasenov">
 <meta name="twitter:description" content="Personal Site of Vasco Yasenov">
+<meta name="twitter:image" content="https://vyasenov.github.io/files/calibration-reliability.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image:alt" content="Two reliability diagrams side by side. The left panel shows a well-calibrated model whose curve lies on the 45-degree diagonal. The right panel shows an over-confident model whose curve lies above the diagonal for low predicted probabilities and below it for high predicted probabilities.">
+<meta name="twitter:image-height" content="1279">
+<meta name="twitter:image-width" content="2722">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -432,8 +408,8 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#when-you-actually-need-it" id="toc-when-you-actually-need-it" class="nav-link" data-scroll-target="#when-you-actually-need-it">When you actually need it</a></li>
   <li><a href="#diagnosing-miscalibration" id="toc-diagnosing-miscalibration" class="nav-link" data-scroll-target="#diagnosing-miscalibration">Diagnosing miscalibration</a></li>
-  <li><a href="#which-models-and-why" id="toc-which-models-and-why" class="nav-link" data-scroll-target="#which-models-and-why">Which models, and why</a></li>
-  <li><a href="#fixing-it" id="toc-fixing-it" class="nav-link" data-scroll-target="#fixing-it">Fixing it</a></li>
+  <li><a href="#miscalibration-varies-by-model" id="toc-miscalibration-varies-by-model" class="nav-link" data-scroll-target="#miscalibration-varies-by-model">Miscalibration varies by model</a></li>
+  <li><a href="#fixes" id="toc-fixes" class="nav-link" data-scroll-target="#fixes">Fixes</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -447,7 +423,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Trusting the Number: Probability Calibration in ML</h1>
+<h1 class="title">Probability Calibration in ML</h1>
   <div class="quarto-categories">
     <div class="quarto-category">machine learning</div>
     <div class="quarto-category">statistical inference</div>
@@ -481,13 +457,14 @@ window.Quarto = {
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Here is a confession: for years I treated the output of <code>predict_proba</code> as if it were an actual probability. The model said <span class="math inline">\(0.9\)</span>, so I assumed that among all the cases it scored <span class="math inline">\(0.9\)</span>, roughly <span class="math inline">\(90\%\)</span> were positive. For a logistic regression that reflex is mostly harmless. For a random forest, a boosted tree, or an SVM, it can be badly wrong — and the failure is silent, because the model’s accuracy and AUC look perfectly fine while the numbers themselves lie.</p>
-<p>That is what calibration is about: whether a predicted probability <em>means</em> what it says. A model can rank cases beautifully — every positive scored above every negative — and still be hopelessly miscalibrated, systematically over- or under-stating its confidence. Ranking and calibration are different virtues, and most of machine learning optimizes for the first while quietly assuming the second.</p>
-<p>The reflex I want to bust is the opposite one, though: <em>always calibrate</em>. Calibration is not free, it is not always necessary, and applying it blindly can cost you. So I will walk through when the number actually needs to mean something, how to tell whether it does, and how to fix it when it doesn’t.</p>
+<p>When are the outputs of <code>predict_proba</code> actual probabilities? If the model says <span class="math inline">\(0.9\)</span>, should I assume that among all the cases it scored <span class="math inline">\(0.9\)</span>, roughly <span class="math inline">\(90\%\)</span> were positive. <em>Not always</em>!</p>
+<p>For a logistic regression that reflex is mostly harmless. For a random forest, it can be badly wrong. The failure is silent, because the model’s accuracy and AUC look perfectly fine while the numbers themselves lie.</p>
+<p>That is what calibration is about: whether a predicted probability <em>means</em> what it says. A model can rank cases beautifully (every positive scored above every negative) and still be dangerously miscalibrated, systematically over- or under-stating its confidence. Ranking and calibration are different, and most of machine learning optimizes for the first while quietly assuming the second.</p>
+<p>This blog post is a deep dive on calibration in ML models. Calibration is not free, it is not always necessary, and applying it blindly can cost you. So I will walk through when the number actually needs to mean something, how to tell whether it does, and how to fix it when it doesn’t.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Consider binary classification with label <span class="math inline">\(Y \in \{0, 1\}\)</span> and a model that outputs a score <span class="math inline">\(\hat{p}(X) \in [0, 1]\)</span> meant to estimate <span class="math inline">\(P(Y = 1 \mid X)\)</span>. The model is <strong>perfectly calibrated</strong> if</p>
+<p>Consider binary classification with label <span class="math inline">\(Y \in \{0, 1\}\)</span> and a model that outputs a score <span class="math inline">\(\hat{p}(X) \in [0, 1]\)</span> meant to estimate <span class="math inline">\(P(Y = 1 \mid X)\)</span>. The model is <em>perfectly calibrated</em> if</p>
 <p><span class="math display">\[
 P\big(Y = 1 \mid \hat{p}(X) = p\big) = p \quad \text{for all } p \in [0, 1].
 \]</span></p>
@@ -498,117 +475,56 @@ P\big(Y = 1 \mid \hat{p}(X) = p\big) = p \quad \text{for all } p \in [0, 1].
 <section id="when-you-actually-need-it" class="level3">
 <h3 class="anchored" data-anchor-id="when-you-actually-need-it">When you actually need it</h3>
 <p>The single most useful question is: <em>does a downstream decision depend on the magnitude of the probability, or only on its order?</em></p>
-<p>If you only need to <strong>rank</strong> — show the top-<span class="math inline">\(k\)</span> most likely churners, sort leads by score, compute AUC — calibration is irrelevant. Any monotonic transform of the score leaves the ranking, and hence AUC, unchanged. Recalibrating buys you nothing here and, with isotonic regression, can even <em>hurt</em> by introducing ties.</p>
+<p>If you only need to <em>rank</em> — show the top-<span class="math inline">\(k\)</span> most likely churners, sort leads by score, compute AUC — calibration is irrelevant. Any monotonic transform of the score leaves the ranking, and hence AUC, unchanged. Recalibrating buys you nothing here and, with isotonic regression, can even <em>hurt</em> by introducing ties.</p>
 <p>Calibration starts to matter the moment a probability feeds arithmetic. Expected-value decisions (<span class="math inline">\(\text{value} = p \cdot \text{gain} - (1-p) \cdot \text{cost}\)</span>) need the <span class="math inline">\(p\)</span> to be right, not just ordered. Thresholding at a fixed operating point (act when <span class="math inline">\(p &gt; 0.7\)</span>) assumes <span class="math inline">\(0.7\)</span> means something. Combining model outputs with other probabilities, feeding them to a Bayesian update, or reporting them to a human who will treat <span class="math inline">\(0.9\)</span> as “nearly certain” — all of these break under miscalibration. This is closely related to the distinction I drew between <a href="https://vyasenov.github.io/blog/diff-causal-predictive-models.html">causal and predictive models</a>: the use case dictates which properties of the output you are allowed to trust.</p>
 <hr>
 </section>
 <section id="diagnosing-miscalibration" class="level3">
 <h3 class="anchored" data-anchor-id="diagnosing-miscalibration">Diagnosing miscalibration</h3>
-<p>The workhorse diagnostic is the <strong>reliability diagram</strong>: bin predictions by score, and for each bin plot the mean predicted probability (x-axis) against the observed fraction of positives (y-axis). Perfect calibration lies on the <span class="math inline">\(45^\circ\)</span> line. Curves below the diagonal signal over-confidence; curves above it, under-confidence. It is one of the plots I think everyone should have in their back pocket, alongside the <a href="https://vyasenov.github.io/blog/six-plots-you-should-know.html">others worth knowing</a>.</p>
-<p>For a single number, use a <em>proper scoring rule</em> — one minimized in expectation by the true probabilities. The Brier score is the mean squared error of the probabilities,</p>
+<p>The workhorse diagnostic is the <em>reliability diagram</em>: bin predictions by score, and for each bin plot the mean predicted probability (<span class="math inline">\(x\)</span>-axis) against the observed fraction of positives (<span class="math inline">\(y\)</span>-axis). Perfect calibration lies on the <span class="math inline">\(45^\circ\)</span> line. Curves below the diagonal signal over-confidence; curves above it, under-confidence. It is one of the plots I think everyone should have <a href="https://vyasenov.github.io/blog/six-plots-you-should-know.html">in their back pocket</a>.</p>
+<p>The two panels below show the contrast. On the left, a well-calibrated model hugs the diagonal — its stated probabilities match observed frequencies. On the right, an over-confident model: it sits above the diagonal for low scores and below it for high ones, the telltale crossing pattern of a classifier whose probabilities are pushed too hard toward the extremes.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../files/calibration-reliability.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="../files/calibration-reliability.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="Two reliability diagrams side by side. The left panel shows a well-calibrated model whose curve lies on the 45-degree diagonal. The right panel shows an over-confident model whose curve lies above the diagonal for low predicted probabilities and below it for high predicted probabilities."></a></p>
+</figure>
+</div>
+<p>For a single number, use a proper scoring rule—a loss function that is minimized if and only if the predicted probability equals the true probability. The Brier score is the most intuitive: it is simply the mean squared error of the probabilities,</p>
 <p><span class="math display">\[
 \text{Brier} = \frac{1}{n} \sum_{i=1}^{n} \big(\hat{p}_i - y_i\big)^2,
 \]</span></p>
-<p>and log loss is its logarithmic cousin. But mind the trap: by Murphy’s decomposition, the Brier score splits into <span class="math inline">\(\text{uncertainty} - \text{resolution} + \text{reliability}\)</span>. Only the reliability term is calibration. A model with better discrimination can post a lower Brier score <em>despite</em> being worse calibrated. So a proper scoring rule alone cannot tell you calibration is the problem — pair it with the reliability diagram, always.</p>
+<p>and log loss is its logarithmic cousin. But mind the trap: a low Brier score does not guarantee good calibration. According to Murphy’s decomposition, the Brier score is a sum of reliability (calibration), resolution (how much the predictions differ from the base rate), and an inherent uncertainty term.</p>
+<p>A model that is “sharp” but miscalibrated—one that confidently predicts <span class="math inline">\(0.9\)</span> for a group that is actually <span class="math inline">\(70%\)</span> positive—can still achieve a lower Brier score than a perfectly calibrated model that conservatively predicts <span class="math inline">\(0.7\)</span> for everyone. In other words, better discrimination can mask poor calibration in a single aggregate metric. To know if your probabilities are actually trustworthy, you cannot rely on the Brier score alone; pair it with a reliability diagram.</p>
 <hr>
 </section>
-<section id="which-models-and-why" class="level3">
-<h3 class="anchored" data-anchor-id="which-models-and-why">Which models, and why</h3>
-<p>Not all classifiers misbehave the same way. Logistic regression is typically well-calibrated out of the box: minimizing log loss with the canonical logit link enforces a balance property that ties predicted probabilities to observed frequencies. That is a real, if underappreciated, argument for the humble logit.</p>
-<p>The common offenders fail in characteristic directions. Naive Bayes is <em>over-confident</em> — its independence assumption compounds evidence it should not, pushing scores toward <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>. Random forests and bagged ensembles are <em>under-confident</em>: averaging many trees pulls probabilities toward the middle, since it is rare for all trees to agree at the extremes, producing a telltale sigmoid reliability curve. Max-margin methods like SVMs distort further still, because they optimize the decision boundary and never really estimate probabilities at all. Knowing the direction of a model’s bias tells you which fix will suit it.</p>
+<section id="miscalibration-varies-by-model" class="level3">
+<h3 class="anchored" data-anchor-id="miscalibration-varies-by-model">Miscalibration varies by model</h3>
+<p>Not all classifiers misbehave the same way. Logistic regression is typically well-calibrated out of the box: minimizing log loss with the canonical logit link enforces a balance property that ties predicted probabilities to observed frequencies.</p>
+<p>Naive Bayes, on the other hand, is <em>over-confident</em> — its independence assumption compounds evidence it should not, pushing scores toward <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
+<p>Random forests and bagged ensembles, while extremely popular, are <em>under-confident</em>: averaging many trees pulls probabilities toward the middle, since it is rare for all trees to agree at the extremes, producing a telltale sigmoid reliability curve.</p>
+<p>Max-margin methods like SVMs distort further still, because they optimize the decision boundary and never really estimate probabilities at all. Knowing the direction of a model’s bias tells you which fix will suit it.</p>
 <hr>
 </section>
-<section id="fixing-it" class="level3">
-<h3 class="anchored" data-anchor-id="fixing-it">Fixing it</h3>
-<p>Calibration is a post-processing step: fit a monotonic map from raw scores to calibrated probabilities on <strong>held-out data</strong>. The two classic choices trade flexibility against data hunger.</p>
-<p><em>Platt (sigmoid) scaling</em> fits a one-parameter logistic curve, <span class="math inline">\(\hat{p} = 1 / (1 + \exp(A f + B))\)</span>, mapping the raw score <span class="math inline">\(f\)</span> to a probability via just two fitted numbers <span class="math inline">\(A, B\)</span>. It is stable on small samples and ideal for the sigmoid-shaped distortion of under-confident models like random forests — but its rigid parametric shape cannot fix non-sigmoid errors.</p>
-<p><em>Isotonic regression</em> fits an arbitrary non-decreasing step function by least squares subject to monotonicity. It corrects <em>any</em> monotonic distortion and is more powerful, but it overfits on small datasets and needs a few thousand calibration points to behave. For multiclass neural networks, <em>temperature scaling</em> — dividing the logits by a single learned scalar <span class="math inline">\(T\)</span> before the softmax — is the standard lightweight fix; it sharpens or softens all probabilities at once without changing the predicted class, so accuracy is untouched.</p>
+<section id="fixes" class="level3">
+<h3 class="anchored" data-anchor-id="fixes">Fixes</h3>
+<p>Calibration is a post-processing step: fit a monotonic map from raw scores to calibrated probabilities on <em>held-out data</em>. The two classic choices trade flexibility against data hunger.</p>
+<section id="platt-scaling" class="level4">
+<h4 class="anchored" data-anchor-id="platt-scaling">Platt scaling</h4>
+<p><em>Platt (sigmoid) scaling</em> fits a one-parameter logistic curve, <span class="math display">\[\hat{p} = 1 / (1 + \exp(A f + B)),\]</span> mapping the raw score <span class="math inline">\(f\)</span> to a probability via just two fitted numbers <span class="math inline">\(A, B\)</span>. In practice, take the model’s held-out scores <span class="math inline">\(f_i\)</span> and labels <span class="math inline">\(y_i\)</span>, then choose <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> by minimizing binary log loss for the calibrated probabilities. Once fitted, the same sigmoid map is applied to future raw scores; <span class="math inline">\(A\)</span> controls the curve’s slope and <span class="math inline">\(B\)</span> shifts it left or right. It is stable on small samples and ideal for the sigmoid-shaped distortion of under-confident models like random forests — but its rigid parametric shape cannot fix non-sigmoid errors.</p>
+</section>
+<section id="isotonic-regression" class="level4">
+<h4 class="anchored" data-anchor-id="isotonic-regression">Isotonic regression</h4>
+<p><em>Isotonic regression</em> fits an arbitrary non-decreasing step function by least squares subject to monotonicity. In practice, take the model’s held-out scores <span class="math inline">\(f_i\)</span> and labels <span class="math inline">\(y_i\)</span>, then estimate a monotone function <span class="math inline">\(g\)</span> by solving <span class="math display">\[
+\hat g = \arg\min_{g \ \mathrm{nondecreasing}} \sum_i \big(y_i - g(f_i)\big)^2.
+\]</span> The calibrated probability is then <span class="math inline">\(\hat p_i = \hat g(f_i)\)</span>. It corrects <em>any</em> monotonic distortion and is more powerful, but it overfits on small datasets and needs a few thousand calibration points to behave.</p>
+</section>
+<section id="temperature-scaling" class="level4">
+<h4 class="anchored" data-anchor-id="temperature-scaling">Temperature scaling</h4>
+<p>For multiclass neural networks, <em>temperature scaling</em> (dividing the logits by a single learned scalar <span class="math inline">\(T\)</span> before the softmax) is the standard lightweight fix; it sharpens or softens all probabilities at once without changing the predicted class, so accuracy is untouched.</p>
+</section>
+<section id="what-not-to-do" class="level4">
+<h4 class="anchored" data-anchor-id="what-not-to-do">What Not to Do</h4>
 <p>The one thing you must not do is calibrate on the data the model trained on. An overfit classifier looks perfectly calibrated on its own training set, so the calibrator learns nothing and you ship overconfidence. Scikit-learn’s <code>CalibratedClassifierCV</code> handles this with cross-validation: it fits the calibrator on out-of-fold predictions, keeping calibration data disjoint from training data.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm: calibrate and evaluate">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm: calibrate and evaluate
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Split off calibration data the base model never saw (or use cross-validated out-of-fold scores).</li>
-<li>Fit the base classifier; obtain its raw scores on the held-out set.</li>
-<li>Fit a calibrator — sigmoid, isotonic, or temperature — mapping raw scores to probabilities.</li>
-<li>Evaluate on a <em>test</em> set with a reliability diagram plus Brier score, before and after.</li>
-</ol>
-</div>
-</div>
-<p>Here is the whole loop on a random forest, which tends to be under-confident:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Python</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">R</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> make_classification</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.calibration <span class="im">import</span> CalibratedClassifierCV, calibration_curve</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> brier_score_loss</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1988</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate a binary classification problem</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> make_classification(n_samples<span class="op">=</span><span class="dv">20000</span>, n_features<span class="op">=</span><span class="dv">20</span>, n_informative<span class="op">=</span><span class="dv">6</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                           n_redundant<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">1988</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>X_tr, X_te, y_tr, y_te <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.5</span>, random_state<span class="op">=</span><span class="dv">1988</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Random forests are typically under-confident (probabilities shrink toward 0.5)</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>rf <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">300</span>, random_state<span class="op">=</span><span class="dv">1988</span>).fit(X_tr, y_tr)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>p_raw <span class="op">=</span> rf.predict_proba(X_te)[:, <span class="dv">1</span>]</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Recalibrate on out-of-fold predictions: sigmoid (Platt) and isotonic</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>p_sig <span class="op">=</span> CalibratedClassifierCV(rf, method<span class="op">=</span><span class="st">"sigmoid"</span>,  cv<span class="op">=</span><span class="dv">5</span>).fit(X_tr, y_tr).predict_proba(X_te)[:, <span class="dv">1</span>]</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>p_iso <span class="op">=</span> CalibratedClassifierCV(rf, method<span class="op">=</span><span class="st">"isotonic"</span>, cv<span class="op">=</span><span class="dv">5</span>).fit(X_tr, y_tr).predict_proba(X_te)[:, <span class="dv">1</span>]</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Brier score: lower is better (0 = perfect)</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, p <span class="kw">in</span> [(<span class="st">"raw RF"</span>, p_raw), (<span class="st">"sigmoid"</span>, p_sig), (<span class="st">"isotonic"</span>, p_iso)]:</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:9s}</span><span class="ss"> Brier = </span><span class="sc">{</span>brier_score_loss(y_te, p)<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Reliability-diagram coordinates (observed frequency vs. mean predicted prob)</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>frac_pos, mean_pred <span class="op">=</span> calibration_curve(y_te, p_raw, n_bins<span class="op">=</span><span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1988</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20000</span>; p <span class="ot">&lt;-</span> <span class="dv">6</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(n <span class="sc">*</span> p), n, p)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>eta  <span class="ot">&lt;-</span> X <span class="sc">%*%</span> <span class="fu">c</span>(<span class="fl">1.5</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="fl">0.8</span>, <span class="sc">-</span><span class="fl">0.6</span>, <span class="fl">0.5</span>, <span class="sc">-</span><span class="fl">0.4</span>)   <span class="co"># latent linear index</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>y    <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fu">plogis</span>(eta))                <span class="co"># true probabilities -&gt; labels</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>idx  <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_len</span>(n), n <span class="sc">/</span> <span class="dv">2</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> <span class="fu">factor</span>(y[idx]),  X[idx, ])</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>test  <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> <span class="fu">factor</span>(y[<span class="sc">-</span>idx]), X[<span class="sc">-</span>idx, ])</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Random forest scores (typically under-confident)</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>rf         <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train, <span class="at">ntree =</span> <span class="dv">300</span>)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>score_te   <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf, test, <span class="at">type =</span> <span class="st">"prob"</span>)[, <span class="dv">2</span>]</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>score_oob  <span class="ot">&lt;-</span> <span class="fu">predict</span>(rf, <span class="at">type =</span> <span class="st">"prob"</span>)[, <span class="dv">2</span>]      <span class="co"># out-of-bag scores on training data</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>ytr        <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">as.character</span>(train<span class="sc">$</span>y))</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Platt (sigmoid) scaling: logistic fit of labels on the score</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>platt <span class="ot">&lt;-</span> <span class="fu">glm</span>(ytr <span class="sc">~</span> score_oob, <span class="at">family =</span> binomial)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>p_sig <span class="ot">&lt;-</span> <span class="fu">predict</span>(platt, <span class="fu">data.frame</span>(<span class="at">score_oob =</span> score_te), <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Isotonic regression: monotone step-function fit</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>iso   <span class="ot">&lt;-</span> <span class="fu">as.stepfun</span>(<span class="fu">isoreg</span>(score_oob, ytr))</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>p_iso <span class="ot">&lt;-</span> <span class="fu">iso</span>(score_te)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Brier score: lower is better</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>yte   <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">as.character</span>(test<span class="sc">$</span>y))</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>brier <span class="ot">&lt;-</span> <span class="cf">function</span>(p, y) <span class="fu">mean</span>((p <span class="sc">-</span> y)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">raw =</span> <span class="fu">brier</span>(score_te, yte), <span class="at">sigmoid =</span> <span class="fu">brier</span>(p_sig, yte), <span class="at">isotonic =</span> <span class="fu">brier</span>(p_iso, yte))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
+</section>
 </section>
 </section>
 <section id="bottom-line" class="level2">
@@ -623,7 +539,7 @@ P\big(Y = 1 \mid \hat{p}(X) = p\big) = p \quad \text{for all } p \in [0, 1].
 </section>
 <section id="where-to-learn-more" class="level2">
 <h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Platt (1999) introduced sigmoid scaling for SVM outputs, and Zadrozny and Elkan (2002) brought isotonic regression to calibration; both are short and foundational. Niculescu-Mizil and Caruana (2005) is the classic empirical comparison across classifiers and the source of the “which models misbehave and how” intuition. Guo et al.&nbsp;(2017) revived the topic for deep learning and popularized temperature scaling. For a hands-on tour, the <a href="https://scikit-learn.org/stable/modules/calibration.html">scikit-learn calibration guide</a> is excellent. Calibration also pairs naturally with <a href="https://vyasenov.github.io/blog/conformal-inference.html">conformal prediction</a>, a complementary route to trustworthy uncertainty.</p>
+<p>For a hands-on tour, the <a href="https://scikit-learn.org/stable/modules/calibration.html">scikit-learn calibration guide</a> is excellent. For a deeper dive, see the references below.</p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
@@ -1108,6 +1024,38 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
   </div>
 </footer>
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 

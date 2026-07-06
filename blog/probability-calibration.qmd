@@ -1,20 +1,22 @@
 ---
-title: "Trusting the Number: Probability Calibration in ML"
+title: "Probability Calibration in ML"
 date: "2026-07-01"
 categories: [machine learning, statistical inference]
 ---
 
 ## Background
 
-Here is a confession: for years I treated the output of `predict_proba` as if it were an actual probability. The model said $0.9$, so I assumed that among all the cases it scored $0.9$, roughly $90\%$ were positive. For a logistic regression that reflex is mostly harmless. For a random forest, a boosted tree, or an SVM, it can be badly wrong — and the failure is silent, because the model's accuracy and AUC look perfectly fine while the numbers themselves lie.
+When are the outputs of `predict_proba` actual probabilities? If the model says $0.9$, should I assume that among all the cases it scored $0.9$, roughly $90\%$ were positive. *Not always*! 
 
-That is what calibration is about: whether a predicted probability *means* what it says. A model can rank cases beautifully — every positive scored above every negative — and still be hopelessly miscalibrated, systematically over- or under-stating its confidence. Ranking and calibration are different virtues, and most of machine learning optimizes for the first while quietly assuming the second.
+For a logistic regression that reflex is mostly harmless. For a random forest, it can be badly wrong. The failure is silent, because the model's accuracy and AUC look perfectly fine while the numbers themselves lie.
 
-The reflex I want to bust is the opposite one, though: *always calibrate*. Calibration is not free, it is not always necessary, and applying it blindly can cost you. So I will walk through when the number actually needs to mean something, how to tell whether it does, and how to fix it when it doesn't.
+That is what calibration is about: whether a predicted probability *means* what it says. A model can rank cases beautifully  (every positive scored above every negative) and still be dangerously miscalibrated, systematically over- or under-stating its confidence. Ranking and calibration are different, and most of machine learning optimizes for the first while quietly assuming the second.
+
+This blog post is a deep dive on calibration in ML models. Calibration is not free, it is not always necessary, and applying it blindly can cost you. So I will walk through when the number actually needs to mean something, how to tell whether it does, and how to fix it when it doesn't.
 
 ## Notation
 
-Consider binary classification with label $Y \in \{0, 1\}$ and a model that outputs a score $\hat{p}(X) \in [0, 1]$ meant to estimate $P(Y = 1 \mid X)$. The model is **perfectly calibrated** if
+Consider binary classification with label $Y \in \{0, 1\}$ and a model that outputs a score $\hat{p}(X) \in [0, 1]$ meant to estimate $P(Y = 1 \mid X)$. The model is *perfectly calibrated* if
 
 $$
 P\big(Y = 1 \mid \hat{p}(X) = p\big) = p \quad \text{for all } p \in [0, 1].
@@ -28,7 +30,7 @@ In words: of all the cases assigned score $p$, a fraction $p$ are truly positive
 
 The single most useful question is: *does a downstream decision depend on the magnitude of the probability, or only on its order?*
 
-If you only need to **rank** — show the top-$k$ most likely churners, sort leads by score, compute AUC — calibration is irrelevant. Any monotonic transform of the score leaves the ranking, and hence AUC, unchanged. Recalibrating buys you nothing here and, with isotonic regression, can even *hurt* by introducing ties.
+If you only need to *rank* — show the top-$k$ most likely churners, sort leads by score, compute AUC — calibration is irrelevant. Any monotonic transform of the score leaves the ranking, and hence AUC, unchanged. Recalibrating buys you nothing here and, with isotonic regression, can even *hurt* by introducing ties.
 
 Calibration starts to matter the moment a probability feeds arithmetic. Expected-value decisions ($\text{value} = p \cdot \text{gain} - (1-p) \cdot \text{cost}$) need the $p$ to be right, not just ordered. Thresholding at a fixed operating point (act when $p > 0.7$) assumes $0.7$ means something. Combining model outputs with other probabilities, feeding them to a Bayesian update, or reporting them to a human who will treat $0.9$ as "nearly certain" — all of these break under miscalibration. This is closely related to the distinction I drew between [causal and predictive models](https://vyasenov.github.io/blog/diff-causal-predictive-models.html): the use case dictates which properties of the output you are allowed to trust.
 
@@ -36,114 +38,61 @@ Calibration starts to matter the moment a probability feeds arithmetic. Expected
 
 ### Diagnosing miscalibration
 
-The workhorse diagnostic is the **reliability diagram**: bin predictions by score, and for each bin plot the mean predicted probability (x-axis) against the observed fraction of positives (y-axis). Perfect calibration lies on the $45^\circ$ line. Curves below the diagonal signal over-confidence; curves above it, under-confidence. It is one of the plots I think everyone should have in their back pocket, alongside the [others worth knowing](https://vyasenov.github.io/blog/six-plots-you-should-know.html).
+The workhorse diagnostic is the *reliability diagram*: bin predictions by score, and for each bin plot the mean predicted probability ($x$-axis) against the observed fraction of positives ($y$-axis). Perfect calibration lies on the $45^\circ$ line. Curves below the diagonal signal over-confidence; curves above it, under-confidence. It is one of the plots I think everyone should have [in their back pocket](https://vyasenov.github.io/blog/six-plots-you-should-know.html).
 
-For a single number, use a *proper scoring rule* — one minimized in expectation by the true probabilities. The Brier score is the mean squared error of the probabilities,
+The two panels below show the contrast. On the left, a well-calibrated model hugs the diagonal — its stated probabilities match observed frequencies. On the right, an over-confident model: it sits above the diagonal for low scores and below it for high ones, the telltale crossing pattern of a classifier whose probabilities are pushed too hard toward the extremes.
+
+![](/files/calibration-reliability.png){fig-alt="Two reliability diagrams side by side. The left panel shows a well-calibrated model whose curve lies on the 45-degree diagonal. The right panel shows an over-confident model whose curve lies above the diagonal for low predicted probabilities and below it for high predicted probabilities." fig-align="center" width="100%"}
+
+For a single number, use a proper scoring rule—a loss function that is minimized if and only if the predicted probability equals the true probability. The Brier score is the most intuitive: it is simply the mean squared error of the probabilities,
 
 $$
 \text{Brier} = \frac{1}{n} \sum_{i=1}^{n} \big(\hat{p}_i - y_i\big)^2,
 $$
 
-and log loss is its logarithmic cousin. But mind the trap: by Murphy's decomposition, the Brier score splits into $\text{uncertainty} - \text{resolution} + \text{reliability}$. Only the reliability term is calibration. A model with better discrimination can post a lower Brier score *despite* being worse calibrated. So a proper scoring rule alone cannot tell you calibration is the problem — pair it with the reliability diagram, always.
+and log loss is its logarithmic cousin. But mind the trap: a low Brier score does not guarantee good calibration. According to Murphy’s decomposition, the Brier score is a sum of reliability (calibration), resolution (how much the predictions differ from the base rate), and an inherent uncertainty term.
+
+A model that is "sharp" but miscalibrated—one that confidently predicts $0.9$ for a group that is actually $70%$ positive—can still achieve a lower Brier score than a perfectly calibrated model that conservatively predicts $0.7$ for everyone. In other words, better discrimination can mask poor calibration in a single aggregate metric. To know if your probabilities are actually trustworthy, you cannot rely on the Brier score alone; pair it with a reliability diagram.
 
 ---
 
-### Which models, and why
+### Miscalibration varies by model
 
-Not all classifiers misbehave the same way. Logistic regression is typically well-calibrated out of the box: minimizing log loss with the canonical logit link enforces a balance property that ties predicted probabilities to observed frequencies. That is a real, if underappreciated, argument for the humble logit.
+Not all classifiers misbehave the same way. Logistic regression is typically well-calibrated out of the box: minimizing log loss with the canonical logit link enforces a balance property that ties predicted probabilities to observed frequencies. 
 
-The common offenders fail in characteristic directions. Naive Bayes is *over-confident* — its independence assumption compounds evidence it should not, pushing scores toward $0$ and $1$. Random forests and bagged ensembles are *under-confident*: averaging many trees pulls probabilities toward the middle, since it is rare for all trees to agree at the extremes, producing a telltale sigmoid reliability curve. Max-margin methods like SVMs distort further still, because they optimize the decision boundary and never really estimate probabilities at all. Knowing the direction of a model's bias tells you which fix will suit it.
+Naive Bayes, on the other hand, is *over-confident* — its independence assumption compounds evidence it should not, pushing scores toward $0$ and $1$.
+
+Random forests and bagged ensembles, while extremely popular, are *under-confident*: averaging many trees pulls probabilities toward the middle, since it is rare for all trees to agree at the extremes, producing a telltale sigmoid reliability curve. 
+
+Max-margin methods like SVMs distort further still, because they optimize the decision boundary and never really estimate probabilities at all. Knowing the direction of a model's bias tells you which fix will suit it.
 
 ---
 
-### Fixing it
+### Fixes
 
-Calibration is a post-processing step: fit a monotonic map from raw scores to calibrated probabilities on **held-out data**. The two classic choices trade flexibility against data hunger.
+Calibration is a post-processing step: fit a monotonic map from raw scores to calibrated probabilities on *held-out data*. The two classic choices trade flexibility against data hunger.
 
-*Platt (sigmoid) scaling* fits a one-parameter logistic curve, $\hat{p} = 1 / (1 + \exp(A f + B))$, mapping the raw score $f$ to a probability via just two fitted numbers $A, B$. It is stable on small samples and ideal for the sigmoid-shaped distortion of under-confident models like random forests — but its rigid parametric shape cannot fix non-sigmoid errors.
+#### Platt scaling
 
-*Isotonic regression* fits an arbitrary non-decreasing step function by least squares subject to monotonicity. It corrects *any* monotonic distortion and is more powerful, but it overfits on small datasets and needs a few thousand calibration points to behave. For multiclass neural networks, *temperature scaling* — dividing the logits by a single learned scalar $T$ before the softmax — is the standard lightweight fix; it sharpens or softens all probabilities at once without changing the predicted class, so accuracy is untouched.
+*Platt (sigmoid) scaling* fits a one-parameter logistic curve, 
+$$\hat{p} = 1 / (1 + \exp(A f + B)),$$
+mapping the raw score $f$ to a probability via just two fitted numbers $A, B$. In practice, take the model's held-out scores $f_i$ and labels $y_i$, then choose $A$ and $B$ by minimizing binary log loss for the calibrated probabilities. Once fitted, the same sigmoid map is applied to future raw scores; $A$ controls the curve's slope and $B$ shifts it left or right. It is stable on small samples and ideal for the sigmoid-shaped distortion of under-confident models like random forests — but its rigid parametric shape cannot fix non-sigmoid errors.
+
+#### Isotonic regression
+
+*Isotonic regression* fits an arbitrary non-decreasing step function by least squares subject to monotonicity. In practice, take the model's held-out scores $f_i$ and labels $y_i$, then estimate a monotone function $g$ by solving
+$$
+\hat g = \arg\min_{g \ \mathrm{nondecreasing}} \sum_i \big(y_i - g(f_i)\big)^2.
+$$
+The calibrated probability is then $\hat p_i = \hat g(f_i)$. It corrects *any* monotonic distortion and is more powerful, but it overfits on small datasets and needs a few thousand calibration points to behave. 
+
+#### Temperature scaling
+
+For multiclass neural networks, *temperature scaling* (dividing the logits by a single learned scalar $T$ before the softmax) is the standard lightweight fix; it sharpens or softens all probabilities at once without changing the predicted class, so accuracy is untouched.
+
+#### What Not to Do
 
 The one thing you must not do is calibrate on the data the model trained on. An overfit classifier looks perfectly calibrated on its own training set, so the calibrator learns nothing and you ship overconfidence. Scikit-learn's `CalibratedClassifierCV` handles this with cross-validation: it fits the calibrator on out-of-fold predictions, keeping calibration data disjoint from training data.
-
-::: {.callout-note title="Algorithm: calibrate and evaluate"}
-1. Split off calibration data the base model never saw (or use cross-validated out-of-fold scores).
-2. Fit the base classifier; obtain its raw scores on the held-out set.
-3. Fit a calibrator — sigmoid, isotonic, or temperature — mapping raw scores to probabilities.
-4. Evaluate on a *test* set with a reliability diagram plus Brier score, before and after.
-:::
-
-Here is the whole loop on a random forest, which tends to be under-confident:
-
-::::{.panel-tabset}
-
-### Python
-
-```python
-import numpy as np
-from sklearn.datasets import make_classification
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.calibration import CalibratedClassifierCV, calibration_curve
-from sklearn.metrics import brier_score_loss
-from sklearn.model_selection import train_test_split
-
-np.random.seed(1988)
-
-# Simulate a binary classification problem
-X, y = make_classification(n_samples=20000, n_features=20, n_informative=6,
-                           n_redundant=2, random_state=1988)
-X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.5, random_state=1988)
-
-# Random forests are typically under-confident (probabilities shrink toward 0.5)
-rf = RandomForestClassifier(n_estimators=300, random_state=1988).fit(X_tr, y_tr)
-p_raw = rf.predict_proba(X_te)[:, 1]
-
-# Recalibrate on out-of-fold predictions: sigmoid (Platt) and isotonic
-p_sig = CalibratedClassifierCV(rf, method="sigmoid",  cv=5).fit(X_tr, y_tr).predict_proba(X_te)[:, 1]
-p_iso = CalibratedClassifierCV(rf, method="isotonic", cv=5).fit(X_tr, y_tr).predict_proba(X_te)[:, 1]
-
-# Brier score: lower is better (0 = perfect)
-for name, p in [("raw RF", p_raw), ("sigmoid", p_sig), ("isotonic", p_iso)]:
-    print(f"{name:9s} Brier = {brier_score_loss(y_te, p):.4f}")
-
-# Reliability-diagram coordinates (observed frequency vs. mean predicted prob)
-frac_pos, mean_pred = calibration_curve(y_te, p_raw, n_bins=10)
-```
-
-### R
-
-```r
-library(randomForest)
-
-set.seed(1988)
-n <- 20000; p <- 6
-X <- matrix(rnorm(n * p), n, p)
-eta  <- X %*% c(1.5, -1, 0.8, -0.6, 0.5, -0.4)   # latent linear index
-y    <- rbinom(n, 1, plogis(eta))                # true probabilities -> labels
-idx  <- sample(seq_len(n), n / 2)
-train <- data.frame(y = factor(y[idx]),  X[idx, ])
-test  <- data.frame(y = factor(y[-idx]), X[-idx, ])
-
-# Random forest scores (typically under-confident)
-rf         <- randomForest(y ~ ., data = train, ntree = 300)
-score_te   <- predict(rf, test, type = "prob")[, 2]
-score_oob  <- predict(rf, type = "prob")[, 2]      # out-of-bag scores on training data
-ytr        <- as.integer(as.character(train$y))
-
-# Platt (sigmoid) scaling: logistic fit of labels on the score
-platt <- glm(ytr ~ score_oob, family = binomial)
-p_sig <- predict(platt, data.frame(score_oob = score_te), type = "response")
-
-# Isotonic regression: monotone step-function fit
-iso   <- as.stepfun(isoreg(score_oob, ytr))
-p_iso <- iso(score_te)
-
-# Brier score: lower is better
-yte   <- as.integer(as.character(test$y))
-brier <- function(p, y) mean((p - y)^2)
-c(raw = brier(score_te, yte), sigmoid = brier(p_sig, yte), isotonic = brier(p_iso, yte))
-```
-::::
 
 ## Bottom Line
 
@@ -155,7 +104,7 @@ c(raw = brier(score_te, yte), sigmoid = brier(p_sig, yte), isotonic = brier(p_is
 
 ## Where to Learn More
 
-Platt (1999) introduced sigmoid scaling for SVM outputs, and Zadrozny and Elkan (2002) brought isotonic regression to calibration; both are short and foundational. Niculescu-Mizil and Caruana (2005) is the classic empirical comparison across classifiers and the source of the "which models misbehave and how" intuition. Guo et al. (2017) revived the topic for deep learning and popularized temperature scaling. For a hands-on tour, the [scikit-learn calibration guide](https://scikit-learn.org/stable/modules/calibration.html) is excellent. Calibration also pairs naturally with [conformal prediction](https://vyasenov.github.io/blog/conformal-inference.html), a complementary route to trustworthy uncertainty.
+For a hands-on tour, the [scikit-learn calibration guide](https://scikit-learn.org/stable/modules/calibration.html) is excellent. For a deeper dive, see the references below.
 
 ## References
 

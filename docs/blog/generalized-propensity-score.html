@@ -397,8 +397,8 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#the-scalar-score-becomes-a-density" id="toc-the-scalar-score-becomes-a-density" class="nav-link" data-scroll-target="#the-scalar-score-becomes-a-density">The scalar score becomes a density</a></li>
   <li><a href="#what-the-gps-balances" id="toc-what-the-gps-balances" class="nav-link" data-scroll-target="#what-the-gps-balances">What the GPS balances</a></li>
-  <li><a href="#recovering-the-curve-a-two-step-recipe" id="toc-recovering-the-curve-a-two-step-recipe" class="nav-link" data-scroll-target="#recovering-the-curve-a-two-step-recipe">Recovering the curve: a two-step recipe</a></li>
-  <li><a href="#one-idea-several-implementations" id="toc-one-idea-several-implementations" class="nav-link" data-scroll-target="#one-idea-several-implementations">One idea, several implementations</a></li>
+  <li><a href="#recovering-the-curve" id="toc-recovering-the-curve" class="nav-link" data-scroll-target="#recovering-the-curve">Recovering the curve</a></li>
+  <li><a href="#multiple-implementations" id="toc-multiple-implementations" class="nav-link" data-scroll-target="#multiple-implementations">Multiple implementations</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -439,16 +439,16 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">9 min read</div>
+<div class="reading-time">8 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
 </div>
 <section id="background" class="level2">
 <h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>You know the binary propensity score cold. Treatment is on or off, you model the probability of being treated given covariates, and then you match, weight, or stratify on that single number to recover a treated-versus-control contrast. I have written about the <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">zoo of methods that build on it</a>, and it is one of the most reliable workhorses in the applied causal toolkit.</p>
-<p>But a lot of the treatments we actually care about are not switches — they are dials. Hours of job training, milligrams of a drug, dollars of ad spend, days of hospital stay. The reflex is to dichotomize: call the top half “high dose,” the bottom half “low dose,” and run the familiar binary machinery. This is a mistake I have made myself, and it quietly throws away the most interesting part of the problem. The question with a dial is not “does treatment help?” but <em>what does the whole response curve look like?</em> — does it rise and then plateau, is there a sweet spot, are there diminishing returns? Collapsing the dose into two buckets answers none of that.</p>
-<p>So the real question is: what survives when treatment goes from a switch to a dial? The reassuring answer is that the <em>logic</em> of the propensity score survives almost entirely intact. One thing changes — but it changes everything about how you compute and reason with the score.</p>
+<p>You know how to work with propensity scores when treatment is binary. Treatment is on or off, you model the probability of being treated given covariates, and then you match, weight, or stratify on that single number to recover a treated-versus-control contrast. I have written about the <a href="https://vyasenov.github.io/blog/flavors-prop-score-methods.html">zoo of methods that build on it</a>, and it is one of the most reliable workhorses in the applied causal toolkit.</p>
+<p>But many of the treatments we actually care about are not switches, but dials. Hours of job training, milligrams of a drug, dollars of ad spend, days of hospital stay. The reflex is to dichotomize: call the top half “high dose,” the bottom half “low dose,” and run the familiar binary machinery. This is a mistake I have made myself, and it quietly throws away the most interesting part of the problem. The question with a dial is not “does treatment help?” but <em>what does the whole response curve look like?</em> — does it rise and then plateau, is there a sweet spot, are there diminishing returns? Collapsing the dose into two buckets answers none of that.</p>
+<p>So how do we think about propensity scores when treatment goes from a switch to a dial? The reassuring answer is that the <em>logic</em> of the propensity score survives almost entirely intact. Let’s take a closer look.</p>
 </section>
 <section id="notation" class="level2">
 <h2 class="anchored" data-anchor-id="notation">Notation</h2>
@@ -467,7 +467,7 @@ Y(t) \perp T \mid X \quad \text{for all } t \in \mathcal{T}.
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="the-scalar-score-becomes-a-density" class="level3">
 <h3 class="anchored" data-anchor-id="the-scalar-score-becomes-a-density">The scalar score becomes a density</h3>
-<p>With binary treatment, the propensity score <span class="math inline">\(e(X) = P(T = 1 \mid X)\)</span> is a single number in <span class="math inline">\([0,1]\)</span>. Its magic is dimension reduction: Rosenbaum and Rubin showed that conditioning on that one scalar is enough to remove covariate bias, no matter how many covariates went into it.</p>
+<p>With binary treatment, the propensity score <span class="math display">\[e(X) = P(T = 1 \mid X)\]</span> is a single number in <span class="math inline">\([0,1]\)</span>. Its magic is dimension reduction: Rosenbaum and Rubin showed that conditioning on that one scalar is enough to remove covariate bias, no matter how many covariates went into it.</p>
 <p>When <span class="math inline">\(T\)</span> is continuous, “the probability of receiving treatment” is no longer a probability — it is a density. The natural object is the conditional density of the treatment given covariates,</p>
 <p><span class="math display">\[
 r(t, x) = f_{T \mid X}(t \mid x),
@@ -485,11 +485,11 @@ R = r(T, X).
 <p><span class="math display">\[
 X \perp \mathbf{1}\{T = t\} \mid r(t, X).
 \]</span></p>
-<p>Read carefully: balance holds <em>at each dose level <span class="math inline">\(t\)</span> separately</em>, conditioning on the score evaluated at that same <span class="math inline">\(t\)</span>. Hirano and Imbens put it memorably — you use as many propensity scores as there are levels of the treatment, yet you never use more than one at a time. This is the mental model shift. There is no single number that balances covariates across all doses simultaneously; there is a family of scores, one per dose, each balancing locally. Notably, this balancing property is mechanical — it falls out of the definition and does not itself require unconfoundedness. Combine it with weak unconfoundedness and you get the payoff: assignment is unconfounded given the GPS.</p>
+<p>Read carefully: balance holds <em>at each dose level <span class="math inline">\(t\)</span> separately</em>, conditioning on the score evaluated at that same <span class="math inline">\(t\)</span>.You use as many propensity scores as there are levels of the treatment, yet you never use more than one at a time. This is the mental model shift. There is no single number that balances covariates across all doses simultaneously; there is a family of scores, one per dose, each balancing locally. Notably, this balancing property is mechanical — it falls out of the definition and does not itself require unconfoundedness. Combine it with weak unconfoundedness and you get the payoff: assignment is unconfounded given the GPS.</p>
 <hr>
 </section>
-<section id="recovering-the-curve-a-two-step-recipe" class="level3">
-<h3 class="anchored" data-anchor-id="recovering-the-curve-a-two-step-recipe">Recovering the curve: a two-step recipe</h3>
+<section id="recovering-the-curve" class="level3">
+<h3 class="anchored" data-anchor-id="recovering-the-curve">Recovering the curve</h3>
 <p>The estimation strategy is where the GPS earns its keep, and it is pleasingly concrete.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="Algorithm: GPS dose–response estimation">
 <div class="callout-header d-flex align-content-center">
@@ -502,7 +502,7 @@ X \perp \mathbf{1}\{T = t\} \mid r(t, X).
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><strong>Model the treatment.</strong> Estimate the conditional density <span class="math inline">\(r(t, x)\)</span> — e.g.&nbsp;assume <span class="math inline">\(T \mid X\)</span> is normal with mean <span class="math inline">\(X'\beta\)</span> and variance <span class="math inline">\(\sigma^2\)</span>, fit by regression, and form the fitted score <span class="math inline">\(\hat R_i = \hat r(T_i, X_i)\)</span> for each unit.</li>
+<li><strong>Model the treatment.</strong> Estimate the conditional density <span class="math inline">\(r(t, x)\)</span> — e.g.&nbsp;fit by regression, and form the fitted score <span class="math inline">\(\hat R_i = \hat r(T_i, X_i)\)</span> for each unit.</li>
 <li><strong>Regress outcome on dose and score.</strong> Estimate <span class="math inline">\(\beta(t, r) = \mathbb{E}[Y \mid T = t, R = r]\)</span>, treating the two <em>scalars</em> <span class="math inline">\(T\)</span> and <span class="math inline">\(\hat R\)</span> as the only regressors (say, a flexible polynomial in both).</li>
 <li><strong>Average at each dose.</strong> For a target dose <span class="math inline">\(t\)</span>, average the fitted surface over the score evaluated at that dose: <span class="math inline">\(\hat\mu(t) = \frac{1}{N}\sum_i \hat\beta\big(t, \hat r(t, X_i)\big)\)</span>. Sweep <span class="math inline">\(t\)</span> across its range to trace out the whole curve.</li>
 </ol>
@@ -511,9 +511,9 @@ X \perp \mathbf{1}\{T = t\} \mid r(t, X).
 <p>The step that trips people up is the third one. You do <em>not</em> average over <span class="math inline">\(R = r(T, X)\)</span>, the score at each unit’s own realized dose. You average over <span class="math inline">\(r(t, X)\)</span>, the score evaluated at the target dose <span class="math inline">\(t\)</span> for everyone. Getting this wrong silently biases the curve. Note also that <span class="math inline">\(\beta(t, r)\)</span> has no causal meaning on its own — the regression coefficients are not effects. Only after the averaging step does <span class="math inline">\(\hat\mu(t)\)</span> become interpretable, which is a familiar theme from <a href="https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html">interpreting regression adjustments causally</a>.</p>
 <hr>
 </section>
-<section id="one-idea-several-implementations" class="level3">
-<h3 class="anchored" data-anchor-id="one-idea-several-implementations">One idea, several implementations</h3>
-<p>The GPS defined above is Hirano and Imbens’ route, and it is the cleanest place to build intuition. But the same core idea — reduce the covariates to a low-dimensional score summarizing treatment assignment — shows up in a few guises, and it is worth knowing the map.</p>
+<section id="multiple-implementations" class="level3">
+<h3 class="anchored" data-anchor-id="multiple-implementations">Multiple implementations</h3>
+<p>The GPS defined above is Hirano and Imbens’ route, and it is the cleanest place to build intuition. But the same core idea (reducing the covariates to a low-dimensional score summarizing treatment assignment) shows up in a few different shapes.</p>
 <p>Imai and van Dyk arrive at the general case from a different angle. Rather than a density, they work with the <em>propensity function</em>: the entire conditional distribution of <span class="math inline">\(T \mid X\)</span>. When that distribution belongs to a parametric family, the propensity function collapses to its parameter (e.g.&nbsp;the mean of a normal), and you subclassify or adjust on that parameter. This unifies the ordinal, categorical, and continuous cases under one theory and connects back to Imbens’ original multi-valued treatment argument.</p>
 <p>Then there is the weighting route. Instead of adjusting for the score in a regression, you can weight each observation by the inverse of its GPS — the continuous analog of inverse-probability weighting, which underpins marginal structural models. This is tempting because it mirrors <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">the weighting logic so central to causal inference</a>, but I would sound a caution: with a continuous treatment the weights are ratios of densities, and they blow up wherever the estimated density is small. Extreme weights are already the <a href="https://vyasenov.github.io/blog/weights-statistics.html">Achilles’ heel of ordinary IPW</a>; with a continuum they can be worse, and stabilized weights become close to mandatory. A third route, stratification on the GPS, has been developed more recently as a way to sidestep the instability of weighting while keeping the nonparametric spirit.</p>
 <p>The deeper pitfall cuts across all three implementations: overlap. In the binary world, positivity means every unit has some chance of being treated and untreated. With a dial, you need positive density at <em>every</em> dose for <em>every</em> covariate profile — a far more demanding requirement, and one that is easy to violate without noticing. And because the score rides on a fitted density model, misspecifying <span class="math inline">\(T \mid X\)</span> contaminates everything downstream. Check balance dose-by-dose; do not trust a single global diagnostic.</p>
