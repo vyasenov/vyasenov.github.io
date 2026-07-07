@@ -444,16 +444,6 @@
     "href": "linear-models-p-over-n.html"
   },
   {
-    "slug": "local-projections",
-    "title": "Local Projections for Causal Inference",
-    "date": "2026-07-01",
-    "categories": [
-      "causal inference",
-      "parametric models"
-    ],
-    "href": "local-projections.html"
-  },
-  {
     "slug": "logit-randomized-experiments",
     "title": "Logistic Regression in Randomized Trials?",
     "date": "2026-02-17",
@@ -691,6 +681,17 @@
       "causal inference"
     ],
     "href": "variance-ps-matching.html"
+  },
+  {
+    "slug": "weak-instruments",
+    "title": "Working with Weak Instruments",
+    "date": "2026-06-24",
+    "categories": [
+      "causal inference",
+      "statistical inference",
+      "hypothesis testing"
+    ],
+    "href": "weak-instruments.html"
   },
   {
     "slug": "weights-statistics",

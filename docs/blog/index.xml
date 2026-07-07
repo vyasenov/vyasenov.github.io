@@ -12,100 +12,6 @@
 <generator>quarto-1.9.37</generator>
 <lastBuildDate>Wed, 01 Jul 2026 07:00:00 GMT</lastBuildDate>
 <item>
-  <title>Local Projections for Causal Inference</title>
-  <link>https://vyasenov.github.io/blog/local-projections.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">9 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Suppose you want to know how an outcome evolves in the periods <em>after</em> some intervention — how output responds over the two years following a surprise interest-rate hike, or how employment moves in the quarters after a minimum-wage increase. This dynamic response, traced out horizon by horizon, is what macroeconomists call an <em>impulse response function</em>, and for decades the default way to estimate it was the vector autoregression (VAR): fit a full dynamic system, then iterate it forward to see how a shock propagates.</p>
-<p>In 2005, Òscar Jordà proposed something almost embarrassingly simple in comparison. Instead of estimating one model and projecting it forward, why not just run a <em>separate regression for each horizon</em>? Regress the outcome <img src="https://latex.codecogs.com/png.latex?h"> periods ahead on the shock today, do it for <img src="https://latex.codecogs.com/png.latex?h%20=%200,%201,%202,%20%5Cdots">, and collect the coefficients. That sequence of coefficients <em>is</em> the impulse response. No system, no iteration, no compounding — a collection of single-equation regressions you already know how to run. This is the local projection (LP), and in the twenty years since it has gone from a clever alternative to the workhorse of applied macroeconomics.</p>
-<p>What I find more interesting is the shift in how we read it. An LP was originally sold as a time-series tool for impulse responses. But strip away the macro vocabulary and an LP is a sequence of regressions of a future outcome on a present treatment — which is to say, an estimator of <em>dynamic causal effects</em>. That reframing, which Jordà and Taylor push in their recent surveys, is what connects local projections to the rest of the causal-inference toolkit, and it is where I will spend most of the post.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let <img src="https://latex.codecogs.com/png.latex?y_t"> be an outcome and <img src="https://latex.codecogs.com/png.latex?s_t"> an intervention observed over time — a shock, a policy change, a treatment; I will use the terms interchangeably. Let <img src="https://latex.codecogs.com/png.latex?x_t"> collect controls (typically lags of <img src="https://latex.codecogs.com/png.latex?y_t">, <img src="https://latex.codecogs.com/png.latex?s_t">, and other covariates). We are after the <em>impulse response</em> <img src="https://latex.codecogs.com/png.latex?R_%7Bs%20%5Cto%20y%7D(h)">: the effect on <img src="https://latex.codecogs.com/png.latex?y_%7Bt+h%7D"> of a perturbation to <img src="https://latex.codecogs.com/png.latex?s_t"> of size <img src="https://latex.codecogs.com/png.latex?%5Cdelta"> (the <em>dose</em>), for each horizon <img src="https://latex.codecogs.com/png.latex?h%20=%200,%201,%20%5Cdots,%20H">.</p>
-<p>In potential-outcomes terms, write <img src="https://latex.codecogs.com/png.latex?Y_%7Bt+h%7D(s)"> for the outcome <img src="https://latex.codecogs.com/png.latex?h"> periods ahead had the intervention taken value <img src="https://latex.codecogs.com/png.latex?s">. The impulse response is then a difference in potential outcomes propagated through time,</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AR_%7Bs%20%5Cto%20y%7D(h)%20=%20%5Cmathbb%7BE%7D%5Cbig%5BY_%7Bt+h%7D(s%20+%20%5Cdelta)%20-%20Y_%7Bt+h%7D(s)%5Cbig%5D,%0A"></p>
-<p>which is exactly a dynamic treatment effect. As <img src="https://latex.codecogs.com/png.latex?%5Cdelta%20%5Cto%200"> this becomes a derivative — a marginal response — which is how VAR impulse responses are usually read, and it is the same object an LP targets.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="the-estimator-one-regression-per-horizon" class="level3">
-<h3 class="anchored" data-anchor-id="the-estimator-one-regression-per-horizon">The estimator: one regression per horizon</h3>
-<p>The local projection of <img src="https://latex.codecogs.com/png.latex?y_%7Bt+h%7D"> on <img src="https://latex.codecogs.com/png.latex?s_t"> is the set of regressions</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0Ay_%7Bt+h%7D%20=%20%5Calpha_h%20+%20%5Cbeta_h%5C,%20s_t%20+%20%5Cgamma_h'%5C,%20x_t%20+%20v_%7Bt+h%7D,%20%5Cqquad%20h%20=%200,%201,%20%5Cdots,%20H,%0A"></p>
-<p>estimated separately at each horizon. The impulse response is read straight off the treatment coefficient: <img src="https://latex.codecogs.com/png.latex?%5Chat%20R_%7Bs%20%5Cto%20y%7D(h)%20=%20%5Chat%5Cbeta_h">. Plot <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta_0,%20%5Chat%5Cbeta_1,%20%5Cdots,%20%5Chat%5Cbeta_H"> against <img src="https://latex.codecogs.com/png.latex?h">, add confidence bands, and you have the impulse response function.</p>
-<p>Two things make this more subtle than it looks. First, running a <em>different</em> regression at each horizon is what gives the LP its flexibility: rather than committing to one dynamic model and extrapolating, each <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta_h"> approximates the horizon-<img src="https://latex.codecogs.com/png.latex?h"> conditional mean on its own terms. It is best thought of as a semiparametric estimate of the response function — one local approximation per horizon — which is precisely why local misspecification at one horizon does not contaminate the others. Second, because overlapping windows share shocks, the error <img src="https://latex.codecogs.com/png.latex?v_%7Bt+h%7D"> is serially correlated up to roughly <img src="https://latex.codecogs.com/png.latex?h"> lags. This does not bias <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta_h">, but it wrecks naive standard errors: you need HAC (Newey–West) or otherwise autocorrelation-robust inference, with the lag window growing in <img src="https://latex.codecogs.com/png.latex?h">.</p>
-<hr>
-</section>
-<section id="local-projections-versus-vars" class="level3">
-<h3 class="anchored" data-anchor-id="local-projections-versus-vars">Local projections versus VARs</h3>
-<p>Since LPs and VARs both estimate impulse responses, the natural question is which to use — and the honest answer is a bias–variance trade-off. A VAR fits a parsimonious one-step-ahead model and iterates it forward; the LP estimates each horizon directly. Iterating is efficient when the model is right, so VARs tend to have <em>lower variance</em>, especially at long horizons where the LP is running a regression on a shrinking effective sample. But iterating compounds errors: if the one-step model is even slightly misspecified, that error is raised to the power <img src="https://latex.codecogs.com/png.latex?h"> as you project forward, so VARs tend to have <em>higher bias</em> at long horizons. The LP, estimating each horizon on its own, is far more robust to misspecification but pays for it with noisier long-horizon estimates.</p>
-<p>The reassuring result — due to Plagborg-Møller and Wolf (2021) — is that this is a finite-sample choice, not a specification disagreement: <em>in population, LPs and VARs estimate the same impulse response</em>. They are two estimators of one object. So the decision is pragmatic: reach for LPs when you worry about misspecification, want flexibility (nonlinearities, state dependence, panels), or care most about short-to-medium horizons; lean on VARs when the model is credible and you need efficiency at long horizons.</p>
-<hr>
-</section>
-<section id="the-causal-reframing" class="level3">
-<h3 class="anchored" data-anchor-id="the-causal-reframing">The causal reframing</h3>
-<p>Here is the reframing that ties LPs to everything else. Once you write the target as <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5BY_%7Bt+h%7D(s+%5Cdelta)%20-%20Y_%7Bt+h%7D(s)%5D">, the LP is a <a href="https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html">regression estimator of a causal effect</a> — and the usual identification questions apply. The coefficient <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta_h"> recovers the dynamic causal effect only if the shock <img src="https://latex.codecogs.com/png.latex?s_t"> is as-good-as-randomly assigned conditional on the controls <img src="https://latex.codecogs.com/png.latex?x_t">. Rambachan and Shephard (2019) made this precise, giving potential-outcomes conditions under which the LP coefficients are exactly average causal effects at each horizon. The dose language <img src="https://latex.codecogs.com/png.latex?%5Cdelta"> is not incidental, either: a continuous-valued shock is a continuous treatment, and the impulse response is a dose–response function over time — the same object I discussed for the <a href="https://vyasenov.github.io/blog/generalized-propensity-score.html">generalized propensity score</a>, now indexed by horizon.</p>
-<p>When the shock is <em>not</em> conditionally exogenous — the usual macro predicament, since policy reacts to the economy — you instrument it. LP-IV (Jordà, Schularick, and Taylor 2015) replaces OLS at each horizon with two-stage least squares, using an external instrument <img src="https://latex.codecogs.com/png.latex?z_t"> (a narrative or high-frequency shock measure) for <img src="https://latex.codecogs.com/png.latex?s_t">. The logic is exactly the <a href="https://vyasenov.github.io/blog/iv-randomized-experiments.html">instrumental-variables logic</a> from cross-sectional causal inference, applied horizon by horizon; the instrument must be relevant and satisfy a lead-lag exogeneity condition. This is now the dominant identification strategy in empirical macro.</p>
-<hr>
-</section>
-<section id="the-bridge-to-panels-and-difference-in-differences" class="level3">
-<h3 class="anchored" data-anchor-id="the-bridge-to-panels-and-difference-in-differences">The bridge to panels and difference-in-differences</h3>
-<p>The causal reading also reveals that applied microeconomists have been running local projections for years without the name. Consider a dynamic difference-in-differences or event study: you regress the outcome at event-time <img src="https://latex.codecogs.com/png.latex?h"> on treatment status, one coefficient per lead and lag, and plot them. That <em>is</em> an LP — a sequence of horizon-specific treatment-effect regressions, just with the time index measured relative to an event rather than to a shock.</p>
-<p>This equivalence has become explicit and productive. The LP-DiD approach (Dube, Girardi, Jordà, and Taylor 2023) recasts the modern staggered-adoption difference-in-differences problem as a local projection, which sidesteps the negative-weighting pathologies that plague the two-way fixed-effects estimator under heterogeneous, dynamic treatment effects. It is a clean example of the two literatures — time-series macro and panel micro — turning out to be the same estimator viewed from different rooms.</p>
-<hr>
-</section>
-<section id="practical-cautions" class="level3">
-<h3 class="anchored" data-anchor-id="practical-cautions">Practical cautions</h3>
-<p>A few things reliably trip people up. Standard errors must be autocorrelation-robust with a lag length that grows with the horizon; the default OLS errors are meaningless here. Confidence <em>bands</em> drawn horizon-by-horizon are pointwise — if you want to make a joint statement about the whole response path, you need simultaneous bands. Long-horizon estimates are genuinely imprecise because the effective sample shrinks, so wide error bands far out are honest, not a bug. And the linear specification quietly imposes symmetry — a positive and negative shock are assumed to have mirror-image effects — which is often exactly what you want to relax, and one of the settings where the LP’s single-equation structure makes nonlinear extensions easy.</p>
-</section>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>A local projection estimates an impulse response by running a separate regression of the outcome at each future horizon on the shock today; the coefficients <em>are</em> the response function.</li>
-<li>Read causally, an LP is a sequence of dynamic treatment-effect regressions, identified when the shock is conditionally as-good-as-random — and by LP-IV when it isn’t.</li>
-<li>Versus VARs it is a bias–variance trade-off: LPs are robust to misspecification but noisier at long horizons; in population both target the same object.</li>
-<li>Dynamic difference-in-differences and event studies are local projections in disguise, and the LP-DiD framing fixes known two-way fixed-effects pathologies.</li>
-<li>Use autocorrelation-robust standard errors with a horizon-dependent lag window, and remember that horizon-by-horizon bands are pointwise, not simultaneous.</li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>Jordà (2005) is the original and remains highly readable. For modern, comprehensive treatments, the two surveys by Jordà (2023) in the <em>Annual Review of Economics</em> and Jordà and Taylor (2024) are the best entry points — the latter leans explicitly into the causal-inference framing. Plagborg-Møller and Wolf (2021) is the definitive statement of the LP–VAR equivalence, and Ramey (2016) surveys shock identification in macro. For the panel bridge, see Dube, Girardi, Jordà, and Taylor (2023).</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>Dube, A., Girardi, D., Jordà, Ò., &amp; Taylor, A. M. (2023). A Local Projections Approach to Difference-in-Differences Event Studies. <em>NBER Working Paper 31184</em>.</p>
-<p>Jordà, Ò. (2005). Estimation and Inference of Impulse Responses by Local Projections. <em>American Economic Review</em>, 95(1), 161–182.</p>
-<p>Jordà, Ò. (2023). Local Projections for Applied Economics. <em>Annual Review of Economics</em>, 15, 607–631.</p>
-<p>Jordà, Ò., Schularick, M., &amp; Taylor, A. M. (2015). Betting the House. <em>Journal of International Economics</em>, 96(S1), S2–S18.</p>
-<p>Jordà, Ò., &amp; Taylor, A. M. (2024). Local Projections. <em>NBER Working Paper 32822</em>.</p>
-<p>Plagborg-Møller, M., &amp; Wolf, C. K. (2021). Local Projections and VARs Estimate the Same Impulse Responses. <em>Econometrica</em>, 89(2), 955–980.</p>
-<p>Rambachan, A., &amp; Shephard, N. (2019). Econometric Analysis of Potential Outcomes Time Series: Instruments, Shocks, Linearity and the Causal Response Function. <em>Working Paper</em>.</p>
-<p>Ramey, V. A. (2016). Macroeconomic Shocks and Their Propagation. In <em>Handbook of Macroeconomics</em>, Vol. 2A, 71–162.</p>
-
-
-</section>
-
- ]]></description>
-  <category>causal inference</category>
-  <category>parametric models</category>
-  <guid>https://vyasenov.github.io/blog/local-projections.html</guid>
-  <pubDate>Wed, 01 Jul 2026 07:00:00 GMT</pubDate>
-</item>
-<item>
   <title>Propensity Scores When Treatment Isn’t Binary</title>
   <link>https://vyasenov.github.io/blog/generalized-propensity-score.html</link>
   <description><![CDATA[ 
@@ -389,6 +295,163 @@
   <category>statistical inference</category>
   <guid>https://vyasenov.github.io/blog/kronecker-products.html</guid>
   <pubDate>Thu, 25 Jun 2026 07:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Working with Weak Instruments</title>
+  <link>https://vyasenov.github.io/blog/weak-instruments.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">10 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Weak instruments are not merely unhelpful; they can waste your time <em>and</em> your nerves. With a weak IV in hand, you can spend months trying to “fix” it, only for your paper or analysis to be rejected on the simple grounds that the instrument is weak. For some time, the folk wisdom dictated that if your first-stage <img src="https://latex.codecogs.com/png.latex?F">-statistic cleared <img src="https://latex.codecogs.com/png.latex?10">, your instrument was “strong,” and you could proceed to report your two-stage least squares (2SLS) estimate. The econometrics literature has recently revisited both this rule and the practical recommendations for working with weak instruments.</p>
+<p>This post picks up where my earlier note on <a href="https://vyasenov.github.io/blog/iv-randomized-experiments.html">instrumental variables in randomized experiments</a> left off. There I treated the <em>identification</em> side of IV — the local average treatment effect, the Wald ratio, the four assumptions that make it all work. Here I take identification for granted and worry about <em>inference</em>: once you have a just-identified IV estimate in hand, how do you build an honest confidence interval when the instrument is only weakly correlated with the endogenous regressor? The literature has converged on a verdict — the <img src="https://latex.codecogs.com/png.latex?F%3E10"> rule is broken — and then split into two camps over the remedy. One camp says abandon the <img src="https://latex.codecogs.com/png.latex?t">-test and invert the Anderson–Rubin statistic instead. The other says keep the <img src="https://latex.codecogs.com/png.latex?t">-test but stop pretending the critical value is <img src="https://latex.codecogs.com/png.latex?1.96">. I will lay out both, with the mathematics, and let you decide which side is right.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>I stay in the simplest possible setting throughout: one outcome, one endogenous regressor, one instrument — the <em>just-identified</em> case. Index observations by <img src="https://latex.codecogs.com/png.latex?i"> and write the structural equation, first stage, and reduced form as</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cbegin%7Baligned%7D%0AY_i%20&amp;=%20%5Cbeta%20X_i%20+%20u_i,%20%5C%5C%0AX_i%20&amp;=%20%5Cpi%20Z_i%20+%20v_i,%20%5C%5C%0AY_i%20&amp;=%20%5Cdelta%20Z_i%20+%20%5Cvarepsilon_i,%0A%5Cend%7Baligned%7D%0A"> where</p>
+<ul>
+<li><img src="https://latex.codecogs.com/png.latex?Z_i"> is the instrument,</li>
+<li><img src="https://latex.codecogs.com/png.latex?X_i"> the endogenous regressor, and</li>
+<li><img src="https://latex.codecogs.com/png.latex?u_i"> correlated with <img src="https://latex.codecogs.com/png.latex?v_i"> — the endogeneity that motivates IV in the first place.</li>
+</ul>
+<p>Any exogenous controls are partialled out of all three equations; nothing below changes.</p>
+<p>The exclusion restriction <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BE%7D%5BZ_i%20u_i%5D%20=%200"> ties the three equations together through the single restriction</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Cdelta%20=%20%5Cpi%20%5Cbeta.%0A"></p>
+<p>The IV estimator is the ratio of the reduced-form to first-stage slopes,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%5Cbeta%20=%20%5Cfrac%7B%5Chat%5Cdelta%7D%7B%5Chat%5Cpi%7D%20=%20%5Cfrac%7B%5Cwidehat%7B%5Ctext%7BCov%7D%7D(Z,%20Y)%7D%7B%5Cwidehat%7B%5Ctext%7BCov%7D%7D(Z,%20X)%7D,%0A"></p>
+<p>the Wald estimator.</p>
+<p>The trouble lives entirely in that denominator. When <img src="https://latex.codecogs.com/png.latex?%5Cpi"> is small relative to the sampling noise in <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cpi">, we are dividing by something close to zero, and <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> — a ratio of two correlated normals — is badly non-normal. Its <img src="https://latex.codecogs.com/png.latex?t">-statistic does not behave like a standard normal, no matter how large the sample.</p>
+<p><em>Weak</em> means exactly this: <img src="https://latex.codecogs.com/png.latex?%5Cpi"> is small relative to <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BSE%7D(%5Chat%5Cpi)">. The standard gauge of instrument strength is the first-stage (partial) <img src="https://latex.codecogs.com/png.latex?F">-statistic, which in this single-instrument world is just the squared <img src="https://latex.codecogs.com/png.latex?t">-statistic on <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cpi">,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AF%20=%20%5Cleft(%20%5Cfrac%7B%5Chat%5Cpi%7D%7B%5Ctext%7BSE%7D(%5Chat%5Cpi)%7D%20%5Cright)%5E2%20.%0A"></p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="why-the-f-10-rule-broke" class="level3">
+<h3 class="anchored" data-anchor-id="why-the-f-10-rule-broke">Why the “F &gt; 10” rule broke</h3>
+<p>The rule of thumb traces to Staiger and Stock (1997), who suggested <img src="https://latex.codecogs.com/png.latex?F%3E10"> as a rough indicator that weak-instrument distortions were tolerable. Stock and Yogo (2005) made it rigorous by defining “weak” through worst-case performance and tabulating critical values under two distinct criteria. The <em>bias</em> criterion asks how large the worst-case 2SLS bias is relative to OLS; its critical values sit near <img src="https://latex.codecogs.com/png.latex?10"> across a range of instrument counts, which is where the folklore comes from. The <em>size</em> criterion asks how badly a nominal 5% <img src="https://latex.codecogs.com/png.latex?t">-test can over-reject; its critical values are a different animal, rising from about <img src="https://latex.codecogs.com/png.latex?9"> with one instrument to nearly <img src="https://latex.codecogs.com/png.latex?45"> with thirty. Already the single number “10” is doing two incompatible jobs.</p>
+<p>The deeper problem is that the entire Stock–Yogo apparatus was derived under <em>homoskedasticity</em>. The critical values depend on a Kronecker-product structure in the covariance matrix that simply does not hold once errors are heteroskedastic, clustered, or serially correlated — which is to say, in essentially every applied setting.</p>
+<hr>
+</section>
+<section id="the-effective-f-statistic" class="level3">
+<h3 class="anchored" data-anchor-id="the-effective-f-statistic">The effective F-statistic</h3>
+<p>The fix for <em>measuring</em> strength is due to Montiel Olea and Pflueger (2013), who introduced what they call the <em>effective <img src="https://latex.codecogs.com/png.latex?F">-statistic</em>. The conventional first-stage <img src="https://latex.codecogs.com/png.latex?F"> and even the naive robust Wald <img src="https://latex.codecogs.com/png.latex?F"> have, as Andrews, Stock, and Sun (2019) put it, “no theoretical justification” for gauging instrument strength under heteroskedasticity — they target the wrong population object or misstate its variance. The effective <img src="https://latex.codecogs.com/png.latex?F"> replaces the variance term with a heteroskedasticity-robust analogue:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AF_%7B%5Ctext%7Beff%7D%7D%20=%20%5Cfrac%7B%5Chat%5Cpi'%20%5Chat%7BQ%7D_%7BZZ%7D%20%5Chat%5Cpi%7D%7B%5Coperatorname%7Btr%7D%5C!%5Cbig(%5Chat%5CSigma_%7B%5Cpi%5Cpi%7D%5Chat%7BQ%7D_%7BZZ%7D%5Cbig)%7D,%0A"></p>
+<p>where <img src="https://latex.codecogs.com/png.latex?%5Chat%7BQ%7D_%7BZZ%7D"> is the instrument second-moment matrix and <img src="https://latex.codecogs.com/png.latex?%5Chat%5CSigma_%7B%5Cpi%5Cpi%7D"> the robust variance of <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cpi">. It collapses to the usual <img src="https://latex.codecogs.com/png.latex?F"> under homoskedasticity and, crucially, “measures the right object and gets the standard errors right on average.” In the just-identified case it coincides with the robust first-stage <img src="https://latex.codecogs.com/png.latex?F">.</p>
+<p>The practical instruction is simple: whenever you report a first-stage <img src="https://latex.codecogs.com/png.latex?F"> as a strength diagnostic, it should be the effective one, compared against the appropriate Montiel Olea–Pflueger critical values rather than a remembered “10.”</p>
+<hr>
+</section>
+<section id="the-andersonrubin-test" class="level3">
+<h3 class="anchored" data-anchor-id="the-andersonrubin-test">The Anderson–Rubin test</h3>
+<p>Measuring strength is only half the battle; the harder question is what to report for <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> when strength is in doubt. The oldest and most robust answer is the <strong>Anderson–Rubin (AR) test</strong>, dating to 1949. Instead of forming <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta%20%5Cpm%201.96%5C,%5Ctext%7BSE%7D">, AR inverts a test. To test <img src="https://latex.codecogs.com/png.latex?H_0:%20%5Cbeta%20=%20%5Cbeta_0">, construct the residual <img src="https://latex.codecogs.com/png.latex?Y_i%20-%20%5Cbeta_0%20X_i"> and ask whether it is correlated with the instrument. Under the null,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AY_i%20-%20%5Cbeta_0%20X_i%20=%20(%5Cdelta%20-%20%5Cbeta_0%20%5Cpi)%20Z_i%20+%20%5Ctext%7Bnoise%7D,%0A"></p>
+<p>and the coefficient on <img src="https://latex.codecogs.com/png.latex?Z_i"> is <img src="https://latex.codecogs.com/png.latex?%5Cdelta%20-%20%5Cbeta_0%20%5Cpi">, which equals zero precisely when <img src="https://latex.codecogs.com/png.latex?%5Cbeta_0"> is the true <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> (since <img src="https://latex.codecogs.com/png.latex?%5Cdelta%20=%20%5Cpi%5Cbeta">). So the AR statistic is just the squared <img src="https://latex.codecogs.com/png.latex?t">-statistic for <img src="https://latex.codecogs.com/png.latex?Z"> in the regression of <img src="https://latex.codecogs.com/png.latex?Y%20-%20%5Cbeta_0%20X"> on <img src="https://latex.codecogs.com/png.latex?Z">, and under <img src="https://latex.codecogs.com/png.latex?H_0"> it is distributed <img src="https://latex.codecogs.com/png.latex?%5Cchi%5E2_1"> <em>regardless of the value of <img src="https://latex.codecogs.com/png.latex?%5Cpi"></em> — even at <img src="https://latex.codecogs.com/png.latex?%5Cpi%20=%200">. That is the whole trick: testing whether a coefficient is zero in a clean regression does not care how strong the instrument is.</p>
+<p>The confidence set is the collection of nulls the test fails to reject,</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0ACS_%7BAR%7D%20=%20%5C%7B%5Cbeta_0%20:%20AR(%5Cbeta_0)%20%5Cle%20%5Cchi%5E2_%7B1,%5C,0.95%7D%5C%7D%20=%20%5C%7B%5Cbeta_0%20:%20AR(%5Cbeta_0)%20%5Cle%203.841%5C%7D.%0A"></p>
+<p>The key point is that AR’s occasional unbounded intervals are not a defect: under very weak instruments, any honest procedure must sometimes admit that the data cannot pin <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> down, while AR still works well when identification is strong.</p>
+<hr>
+</section>
+<section id="fix-1-abandon-the-t-test" class="level3">
+<h3 class="anchored" data-anchor-id="fix-1-abandon-the-t-test">Fix 1: abandon the <img src="https://latex.codecogs.com/png.latex?t">-test</h3>
+<p>The Annual Review tradition — Andrews, Stock, and Sun (2019) as the canonical statement — draws the natural conclusion: in the just-identified case, report AR intervals, and that’s it. Keane and Neal (2024) push this to its sharp edge and argue for abandoning the 2SLS <img src="https://latex.codecogs.com/png.latex?t">-test <em>even when instruments are strong</em>. Their argument is a power asymmetry that the older literature, fixated on bias and size, had missed.</p>
+<p>The mechanism is the 2SLS standard error itself. The estimated structural variance entering <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BSE%7D(%5Chat%5Cbeta)"> is a quadratic function of <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> that is <em>minimized at the OLS estimate</em>. So whenever a draw of <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> lands near OLS, its standard error is artificially small, and the <img src="https://latex.codecogs.com/png.latex?t">-test is correspondingly eager to declare significance. The upshot is a test with inflated power to detect false positives in the direction of the OLS bias and almost no power to detect true effects lying away from OLS. Keane and Neal show this distortion persists at first-stage <img src="https://latex.codecogs.com/png.latex?F"> values of <img src="https://latex.codecogs.com/png.latex?30">, <img src="https://latex.codecogs.com/png.latex?50">, even <img src="https://latex.codecogs.com/png.latex?70"> — far above any conventional threshold — and conclude that the bar for the <img src="https://latex.codecogs.com/png.latex?F"> should be raised to roughly <img src="https://latex.codecogs.com/png.latex?50">, and that one should simply use AR throughout. The AR standard error, by contrast, is built around a variance minimized at <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta_%7B2SLS%7D"> rather than at OLS, which is exactly what kills the asymmetry.</p>
+<hr>
+</section>
+<section id="fix-2-fix-the-t-test-instead" class="level3">
+<h3 class="anchored" data-anchor-id="fix-2-fix-the-t-test-instead">Fix 2: fix the <img src="https://latex.codecogs.com/png.latex?t">-test instead</h3>
+<p>Lee, McCrary, Moreira, and Porter (2022) accept the diagnosis and reject the prescription. Their objection is practical: practitioners know and trust the <img src="https://latex.codecogs.com/png.latex?t">-ratio, the entire reporting apparatus is built around it, and throwing it out is a heavy ask. The <img src="https://latex.codecogs.com/png.latex?t">-statistic is not normal under weak instruments — true — but its non-normal distribution is <em>known</em>, and depends on the data only through the observed first-stage <img src="https://latex.codecogs.com/png.latex?F">. So rather than discard it, replace the constant <img src="https://latex.codecogs.com/png.latex?1.96"> with a critical value <img src="https://latex.codecogs.com/png.latex?c_%5Calpha(%5Chat%20F)"> that is a smooth, decreasing function of the first stage. They call this the <em>tF procedure</em>.</p>
+<p>The headline number is sobering. For the constant <img src="https://latex.codecogs.com/png.latex?1.96"> to deliver a genuine 5% test, you do not need <img src="https://latex.codecogs.com/png.latex?F%20%3E%2010">, or even Stock and Yogo’s <img src="https://latex.codecogs.com/png.latex?F%20%3E%2016.38"> — you need</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AF%20%5Capprox%20104.7.%0A"></p>
+<p>Below that, <img src="https://latex.codecogs.com/png.latex?1.96"> is too small and you must inflate.</p>
+<p>Operationally the procedure is a lookup: estimate your usual (robust, clustered) 2SLS standard error, read the adjustment factor off their Table 3 at your observed <img src="https://latex.codecogs.com/png.latex?%5Chat%20F">, and multiply. A few anchor points at the 5% level make the magnitude vivid:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">First-stage <img src="https://latex.codecogs.com/png.latex?%5Chat%20F"></th>
+<th style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?tF"> critical value</th>
+<th style="text-align: center;">SE multiplier</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?5"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?6.85"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%203.50"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?10"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?3.43"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%201.75"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?16.6"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?2.76"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%201.41"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?24.6"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?2.46"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%201.26"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?104.7"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?1.96"></td>
+<td style="text-align: center;"><img src="https://latex.codecogs.com/png.latex?%5Ctimes%201.00"></td>
+</tr>
+</tbody>
+</table>
+<p>At the celebrated <img src="https://latex.codecogs.com/png.latex?F=10">, an honest 95% interval is about <img src="https://latex.codecogs.com/png.latex?75%5C%25"> wider than the one most papers report, and <img src="https://latex.codecogs.com/png.latex?tF"> can still be shorter than AR when both intervals are bounded because it reserves its “we cannot learn <img src="https://latex.codecogs.com/png.latex?%5Cbeta">” verdict for the rare cases where <img src="https://latex.codecogs.com/png.latex?%5Chat%20F%20%3C%203.84">.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>The “<img src="https://latex.codecogs.com/png.latex?F%20%3E%2010">” rule is broken: a genuine 5% <img src="https://latex.codecogs.com/png.latex?t">-test needs <img src="https://latex.codecogs.com/png.latex?F%20%5Capprox%20104.7">, not 10.</li>
+<li>Gauge instrument strength with the effective <img src="https://latex.codecogs.com/png.latex?F">-statistic (Montiel Olea–Pflueger), not the conventional first-stage <img src="https://latex.codecogs.com/png.latex?F">.</li>
+<li>For a robust default, report the Anderson–Rubin interval — valid at any instrument strength, and free of cost when instruments are strong.</li>
+<li>To keep the familiar <img src="https://latex.codecogs.com/png.latex?t">-ratio, use <img src="https://latex.codecogs.com/png.latex?tF">: inflate the SE by the Table 3 factor at your observed <img src="https://latex.codecogs.com/png.latex?F">; it even beats AR on interval length.</li>
+<li>Either way, heed Young (2022): under non-iid errors a few high-leverage clusters can drive both <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> and the <img src="https://latex.codecogs.com/png.latex?F"> — check leverage before trusting any interval.</li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>For the canonical survey, Andrews, Stock, and Sun (2019, <em>Annual Review of Economics</em>) is the place to start — comprehensive, careful, and explicit about the heteroskedastic case. Keane and Neal (2024, <em>Annual Review of Economics</em>) is the most accessible statement of the “abandon the <img src="https://latex.codecogs.com/png.latex?t">-test” position and worth reading for the power-asymmetry argument alone. Lee, McCrary, Moreira, and Porter (2022, <em>American Economic Review</em>) lay out the <img src="https://latex.codecogs.com/png.latex?tF"> procedure with its adjustment tables, and their follow-up working paper extends it to the sharper V<img src="https://latex.codecogs.com/png.latex?tF"> refinement. Young (2022, <em>European Economic Review</em>) is a bracing empirical reality check on how fragile published IV results actually are.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Anderson, T. W., &amp; Rubin, H. (1949). Estimation of the parameters of a single equation in a complete system of stochastic equations. <em>Annals of Mathematical Statistics</em>, 20(1), 46–63.</p></li>
+<li><p>Andrews, I., Stock, J. H., &amp; Sun, L. (2019). Weak instruments in instrumental variables regression: Theory and practice. <em>Annual Review of Economics</em>, 11, 727–753.</p></li>
+<li><p>Dufour, J.-M. (1997). Some impossibility theorems in econometrics with applications to structural and dynamic models. <em>Econometrica</em>, 65(6), 1365–1387.</p></li>
+<li><p>Gleser, L. J., &amp; Hwang, J. T. (1987). The nonexistence of <img src="https://latex.codecogs.com/png.latex?100(1-%5Calpha)%5C%25"> confidence sets of finite expected diameter in errors-in-variables and related models. <em>Annals of Statistics</em>, 15(4), 1351–1362.</p></li>
+<li><p>Keane, M. P., &amp; Neal, T. (2024). A practical guide to weak instruments. <em>Annual Review of Economics</em>, 16, 185–212.</p></li>
+<li><p>Lee, D. S., McCrary, J., Moreira, M. J., &amp; Porter, J. (2022). Valid <img src="https://latex.codecogs.com/png.latex?t">-ratio inference for IV. <em>American Economic Review</em>, 112(10), 3260–3290.</p></li>
+<li><p>Lee, D. S., McCrary, J., Moreira, M. J., Porter, J., &amp; Yap, L. (2023). What to do when you can’t use ‘1.96’ confidence intervals for IV. <em>NBER Working Paper No.&nbsp;31893</em>.</p></li>
+<li><p>Montiel Olea, J. L., &amp; Pflueger, C. (2013). A robust test for weak instruments. <em>Journal of Business &amp; Economic Statistics</em>, 31(3), 358–369.</p></li>
+<li><p>Moreira, M. J. (2009). Tests with correct size when instruments can be arbitrarily weak. <em>Journal of Econometrics</em>, 152(2), 131–140.</p></li>
+<li><p>Staiger, D., &amp; Stock, J. H. (1997). Instrumental variables regression with weak instruments. <em>Econometrica</em>, 65(3), 557–586.</p></li>
+<li><p>Stock, J. H., &amp; Yogo, M. (2005). Testing for weak instruments in linear IV regression. In D. W. K. Andrews &amp; J. H. Stock (Eds.), <em>Identification and Inference for Econometric Models</em> (pp.&nbsp;80–108). Cambridge University Press.</p></li>
+<li><p>Young, A. (2022). Consistency without inference: Instrumental variables in practical application. <em>European Economic Review</em>, 147, 104112.</p></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>causal inference</category>
+  <category>statistical inference</category>
+  <category>hypothesis testing</category>
+  <guid>https://vyasenov.github.io/blog/weak-instruments.html</guid>
+  <pubDate>Wed, 24 Jun 2026 07:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Always-Valid \(p\)-Values and Online Multiple Testing</title>
