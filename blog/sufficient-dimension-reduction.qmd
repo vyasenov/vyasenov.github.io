@@ -1,0 +1,80 @@
+---
+title: "A Brief Introduction to Sufficient Dimension Reduction"
+date: "2026-07-09"
+categories: [machine learning, statistical inference]
+---
+
+## Background
+
+Principal component analysis is the reflex answer to "I have too many predictors." It is also, for regression, the wrong reflex more often than people admit. PCA finds the directions along which $X$ varies the most. The problem is that PCA never looks at $Y$. I have written about the [many flavors of PCA](https://vyasenov.github.io/blog/flavors-pca.html), and this blind spot is common to all of them.
+
+Sufficient dimension reduction (SDR) fixes the blind spot. The goal is the same as PCA's — replace a high-dimensional predictor $X$ with a handful of linear combinations — but with a sharper contract: the reduced predictors must retain *all* the information $X$ carries about $Y$. A sufficient statistic loses nothing about a parameter; a sufficient reduction loses nothing about the response. What makes SDR appealing to a practitioner is that it delivers this without you having to specify a model for how $Y$ depends on $X$ — it is largely model-free, which is precisely what you want early in an analysis, before you have committed to a functional form.
+
+## Notation
+
+Let $Y$ be a response and $X \in \mathbb{R}^p$ a predictor vector, jointly distributed. We seek a $p \times d$ matrix $\eta$ with $d \le p$ such that
+
+$$
+Y \perp\!\!\!\perp X \mid \eta^T X.
+$$
+
+Read this literally: once you know the $d$ reduced predictors $\eta^T X$, the original $X$ tells you nothing more about $Y$. The $d$ linear combinations are a *sufficient reduction*. 
+
+Since any nonsingular reparameterization $$\eta^T X \mapsto (A\eta)^T X$$ satisfies the same condition, what is identified is not $\eta$ itself but the subspace it spans. The smallest such subspace (the intersection of all of them, when it exists) is the *central subspace*, written $\mathcal{S}_{Y|X}$, and it is the estimand of the entire field. Its dimension $d$ is the number of directions in $X$ that genuinely matter for $Y$.
+
+## A Closer Look
+
+### The central subspace
+
+The central subspace turns a vague wish ("reduce $X$ without losing information") into a well-defined target. Under mild regularity conditions it exists, is unique, and satisfies the conditional-independence condition above. Estimating it, rather than any particular basis, is what frees SDR from needing a model: two regressions as different as 
+
+$$Y = \beta^T X + \varepsilon \text{    and    } \text{logit}(p) = \alpha + f(\beta_1^T X, \beta_2^T X)$$ 
+
+can share the same central subspace, and an SDR method estimates that common structure without knowing which regression generated the data. Once you have an estimated basis $\hat\eta$, plotting $Y$ against $\hat\eta^T X$, a *sufficient summary plot*, is often the single most informative diagnostic you can draw, because by construction it hides nothing relevant.
+
+---
+
+### Sliced inverse regression
+
+The foundational method, and still the first one to reach for, is sliced inverse regression (SIR), introduced by Li (1991). Its trick is to run the regression *backwards*. Modeling $Y \mid X$ in high dimensions is hard; modeling $X \mid Y$ is easy, because $Y$ is typically one-dimensional. SIR studies how the mean of $X$ shifts as $Y$ varies: it slices the range of $Y$ into bins, computes the mean of $X$ within each slice, and asks which directions those slice-means move along. 
+
+Under a mild *linearity condition* on the distribution of $X$, the centered inverse-regression curve 
+$$E[X \mid Y] - E[X]$$ 
+
+lies in the central subspace, up to a covariance rescaling. Estimating it reduces to a generalized eigenvalue problem: the leading eigenvectors of the between-slice covariance, relative to $\Sigma_X$, span (a subset of) $\mathcal{S}_{Y|X}$. The eigenvalues themselves suggest $d$ — a sharp drop tells you how many directions to keep.
+
+---
+
+### Where SIR fails, and what comes after
+
+SIR has one famous blind spot, and it is instructive. Because it only tracks how the *mean* of $X$ moves with $Y$, it is blind to dependence that shifts the *variance* while leaving the mean fixed. 
+
+The textbook example is $Y = X_1^2 + \varepsilon$ with symmetric $X_1$: the slice means of $X$ barely move, SIR sees nothing, and reports an empty direction. Sliced average variance estimation (SAVE, Cook and Weisberg 1991) was built for exactly this case — it examines the slice-wise *covariance* of $X$ and so detects symmetric, curved dependence that SIR misses. The tradeoff is that SAVE needs more data to work well and leans on a second regularity assumption, the constant-covariance condition.
+
+That tension (capture more structure versus require weaker assumptions) organizes the rest of the field. Later methods (directional regression, minimum discrepancy approaches, and the semiparametric formulations of Ma and Zhu) chip away at the linearity and constant-covariance conditions, extend SDR to the conditional mean alone (the *central mean subspace*), or push into the high-dimensional $p > n$ regime with sparsity. For most applied work, though, SIR is the right starting point and SAVE the right thing to try when SIR comes up empty despite an obvious relationship in the data.
+
+---
+
+## Bottom Line
+
+- SDR reduces $X$ to a few linear combinations that retain *all* the information about $Y$ — unlike PCA, which ignores $Y$ and can discard the directions that matter.
+- The estimand is the central subspace $\mathcal{S}_{Y|X}$, the smallest subspace such that $Y \perp\!\!\!\perp X \mid \eta^T X$; its dimension is the number of directions that truly drive the response.
+- Sliced inverse regression is the workhorse: regress $X$ on a sliced $Y$, then solve a generalized eigenvalue problem — model-free and computationally trivial.
+- SIR is blind to variance-only (symmetric, curved) dependence; reach for SAVE when there is obvious structure that SIR fails to detect.
+- All the classical methods lean on a linearity condition on $X$; it is mild but unverifiable, and it is where these methods can quietly break.
+
+## Where to Learn More
+
+Cook's (2018) *Annual Review of Statistics* article, "Principal Components, Sufficient Dimension Reduction, and Envelopes," is the ideal high-level entry point and the main source for this post — it places PCA, SDR, and envelopes on common footing through Fisher's sufficiency. Li (1991) is the original SIR paper and remains very readable. For a book-length, code-oriented treatment, Bing Li's *Sufficient Dimension Reduction: Methods and Applications with R* (2018) is the standard reference.
+
+## References
+
+Cook, R. D. (2018). Principal components, sufficient dimension reduction, and envelopes. *Annual Review of Statistics and Its Application*, 5, 533–559.
+
+Cook, R. D., and Weisberg, S. (1991). Discussion of "Sliced inverse regression for dimension reduction." *Journal of the American Statistical Association*, 86(414), 328–332.
+
+Li, B. (2018). *Sufficient Dimension Reduction: Methods and Applications with R*. Chapman and Hall/CRC.
+
+Li, K.-C. (1991). Sliced inverse regression for dimension reduction. *Journal of the American Statistical Association*, 86(414), 316–327.
+
+Ma, Y., and Zhu, L. (2012). A semiparametric approach to dimension reduction. *Journal of the American Statistical Association*, 107(497), 168–179.

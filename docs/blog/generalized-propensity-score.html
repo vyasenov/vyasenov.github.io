@@ -485,7 +485,21 @@ R = r(T, X).
 <p><span class="math display">\[
 X \perp \mathbf{1}\{T = t\} \mid r(t, X).
 \]</span></p>
-<p>Read carefully: balance holds <em>at each dose level <span class="math inline">\(t\)</span> separately</em>, conditioning on the score evaluated at that same <span class="math inline">\(t\)</span>.You use as many propensity scores as there are levels of the treatment, yet you never use more than one at a time. This is the mental model shift. There is no single number that balances covariates across all doses simultaneously; there is a family of scores, one per dose, each balancing locally. Notably, this balancing property is mechanical — it falls out of the definition and does not itself require unconfoundedness. Combine it with weak unconfoundedness and you get the payoff: assignment is unconfounded given the GPS.</p>
+<p>Read carefully: balance holds <em>at each dose level <span class="math inline">\(t\)</span> separately</em>, conditioning on the score evaluated at that same <span class="math inline">\(t\)</span>. You use as many propensity scores as there are levels of the treatment, yet you never use more than one at a time. This is the mental model shift.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There is no single number that balances covariates across all doses simultaneously; there is a family of scores, one per dose, each balancing locally.</p>
+</div>
+</div>
+<p>Notably, this balancing property is mechanical — it falls out of the definition and does not itself require unconfoundedness. Combine it with weak unconfoundedness and you get the payoff: assignment is unconfounded given the GPS.</p>
 <hr>
 </section>
 <section id="recovering-the-curve" class="level3">
@@ -514,9 +528,22 @@ X \perp \mathbf{1}\{T = t\} \mid r(t, X).
 <section id="multiple-implementations" class="level3">
 <h3 class="anchored" data-anchor-id="multiple-implementations">Multiple implementations</h3>
 <p>The GPS defined above is Hirano and Imbens’ route, and it is the cleanest place to build intuition. But the same core idea (reducing the covariates to a low-dimensional score summarizing treatment assignment) shows up in a few different shapes.</p>
+<section id="propensity-function" class="level4">
+<h4 class="anchored" data-anchor-id="propensity-function">Propensity function</h4>
 <p>Imai and van Dyk arrive at the general case from a different angle. Rather than a density, they work with the <em>propensity function</em>: the entire conditional distribution of <span class="math inline">\(T \mid X\)</span>. When that distribution belongs to a parametric family, the propensity function collapses to its parameter (e.g.&nbsp;the mean of a normal), and you subclassify or adjust on that parameter. This unifies the ordinal, categorical, and continuous cases under one theory and connects back to Imbens’ original multi-valued treatment argument.</p>
-<p>Then there is the weighting route. Instead of adjusting for the score in a regression, you can weight each observation by the inverse of its GPS — the continuous analog of inverse-probability weighting, which underpins marginal structural models. This is tempting because it mirrors <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">the weighting logic so central to causal inference</a>, but I would sound a caution: with a continuous treatment the weights are ratios of densities, and they blow up wherever the estimated density is small. Extreme weights are already the <a href="https://vyasenov.github.io/blog/weights-statistics.html">Achilles’ heel of ordinary IPW</a>; with a continuum they can be worse, and stabilized weights become close to mandatory. A third route, stratification on the GPS, has been developed more recently as a way to sidestep the instability of weighting while keeping the nonparametric spirit.</p>
+</section>
+<section id="weighting" class="level4">
+<h4 class="anchored" data-anchor-id="weighting">Weighting</h4>
+<p>Then there is the weighting route. Instead of adjusting for the score in a regression, you can weight each observation by the inverse of its GPS — the continuous analog of inverse-probability weighting, which underpins marginal structural models. This is tempting because it mirrors <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">the weighting logic so central to causal inference</a>, but I would sound a caution: with a continuous treatment the weights are ratios of densities, and they blow up wherever the estimated density is small. Extreme weights are already the <a href="https://vyasenov.github.io/blog/weights-statistics.html">Achilles’ heel of ordinary IPW</a>; with a continuum they can be worse, and stabilized weights become close to mandatory.</p>
+</section>
+<section id="stratification" class="level4">
+<h4 class="anchored" data-anchor-id="stratification">Stratification</h4>
+<p>A third route, stratification on the GPS, has been developed more recently as a way to sidestep the instability of weighting while keeping the nonparametric spirit.</p>
+</section>
+<section id="the-main-pitfall-overlap" class="level4">
+<h4 class="anchored" data-anchor-id="the-main-pitfall-overlap">The main pitfall: overlap</h4>
 <p>The deeper pitfall cuts across all three implementations: overlap. In the binary world, positivity means every unit has some chance of being treated and untreated. With a dial, you need positive density at <em>every</em> dose for <em>every</em> covariate profile — a far more demanding requirement, and one that is easy to violate without noticing. And because the score rides on a fitted density model, misspecifying <span class="math inline">\(T \mid X\)</span> contaminates everything downstream. Check balance dose-by-dose; do not trust a single global diagnostic.</p>
+</section>
 </section>
 </section>
 <section id="bottom-line" class="level2">

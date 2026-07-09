@@ -55,7 +55,10 @@ $$
 
 ### Why the "F > 10" rule broke
 
-The rule of thumb traces to Staiger and Stock (1997), who suggested $F>10$ as a rough indicator that weak-instrument distortions were tolerable. Stock and Yogo (2005) made it rigorous by defining "weak" through worst-case performance and tabulating critical values under two distinct criteria. The *bias* criterion asks how large the worst-case 2SLS bias is relative to OLS; its critical values sit near $10$ across a range of instrument counts, which is where the folklore comes from. The *size* criterion asks how badly a nominal 5% $t$-test can over-reject; its critical values are a different animal, rising from about $9$ with one instrument to nearly $45$ with thirty. Already the single number "10" is doing two incompatible jobs.
+The rule of thumb traces to Staiger and Stock (1997), who suggested $F>10$ as a rough indicator that weak-instrument distortions were tolerable. Stock and Yogo (2005) made it rigorous by defining "weak" through worst-case performance and tabulating critical values under two distinct criteria. 
+
+- The *bias* criterion asks how large the worst-case 2SLS bias is relative to OLS; its critical values sit near $10$ across a range of instrument counts, which is where the folklore comes from. 
+- The *size* criterion asks how badly a nominal 5% $t$-test can over-reject; its critical values are a different animal, rising from about $9$ with one instrument to nearly $45$ with thirty. Already the single number "10" is doing two incompatible jobs.
 
 The deeper problem is that the entire Stock–Yogo apparatus was derived under *homoskedasticity*. The critical values depend on a Kronecker-product structure in the covariance matrix that simply does not hold once errors are heteroskedastic, clustered, or serially correlated — which is to say, in essentially every applied setting.
 
@@ -63,7 +66,9 @@ The deeper problem is that the entire Stock–Yogo apparatus was derived under *
 
 ### The effective F-statistic
 
-The fix for *measuring* strength is due to Montiel Olea and Pflueger (2013), who introduced what they call the *effective $F$-statistic*. The conventional first-stage $F$ and even the naive robust Wald $F$ have, as Andrews, Stock, and Sun (2019) put it, "no theoretical justification" for gauging instrument strength under heteroskedasticity — they target the wrong population object or misstate its variance. The effective $F$ replaces the variance term with a heteroskedasticity-robust analogue:
+The fix for *measuring* strength is due to Montiel Olea and Pflueger (2013), who introduced what they call the *effective $F$-statistic*. The conventional first-stage $F$ and even the naive robust Wald $F$ have, as Andrews, Stock, and Sun (2019) put it, "no theoretical justification" for gauging instrument strength under heteroskedasticity — they target the wrong population object or misstate its variance. 
+
+The effective $F$ replaces the variance term with a heteroskedasticity-robust analogue:
 
 $$
 F_{\text{eff}} = \frac{\hat\pi' \hat{Q}_{ZZ} \hat\pi}{\operatorname{tr}\!\big(\hat\Sigma_{\pi\pi}\hat{Q}_{ZZ}\big)},

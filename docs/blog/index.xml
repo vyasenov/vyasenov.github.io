@@ -10,7 +10,201 @@
 <atom:link href="https://vyasenov.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
 <description>Personal Site of Vasco Yasenov</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Wed, 01 Jul 2026 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 09 Jul 2026 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Double Descent for Statisticians</title>
+  <link>https://vyasenov.github.io/blog/double-descent.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">7 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Perhaps the first reflex a data scientist learns states a model that fits the training data perfectly has almost certainly overfit and will predict badly out of sample. The bias–variance trade-off draws a tidy <img src="https://latex.codecogs.com/png.latex?U"> — too simple is biased, too flexible explodes the variance — and you aim for the sweet spot between. Interpolation is the cardinal sin.</p>
+<p>Modern machine learning violates this reflex daily and gets away with it: enormous neural networks interpolate their training data yet generalize beautifully. Belkin et al.&nbsp;(2019) named the phenomenon <em>double descent</em> — push complexity <em>past</em> the interpolation point and out-of-sample error, after spiking, falls again, sometimes below the classical sweet spot. The bias–variance <img src="https://latex.codecogs.com/png.latex?U"> is only the first half of the story.</p>
+<p>Hastie, Montanari, Rosset, and Tibshirani (2022) show the whole phenomenon in the most classical model we have — linear least squares, no networks or kernels. They paint a story about interpolation, the geometry of the <a href="https://vyasenov.github.io/blog/linear-models-p-over-n.html"><img src="https://latex.codecogs.com/png.latex?p%20%3E%20n"> regime</a>, and above all about forgetting to regularize. Let’s take a closer look.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Take the usual linear model with i.i.d. data,</p>
+<p><img src="https://latex.codecogs.com/png.latex?y_i%20=%20x_i%5E%5Ctop%20%5Cbeta%20+%20%5Cvarepsilon_i,%20%5Cqquad%20%5Cmathbb%7BE%7D(%5Cvarepsilon_i)%20=%200,%20%5Cquad%20%5Ctext%7BVar%7D(%5Cvarepsilon_i)%20=%20%5Csigma%5E2,"></p>
+<p>with <img src="https://latex.codecogs.com/png.latex?x_i%20%5Cin%20%5Cmathbb%7BR%7D%5Ep"> and a design matrix <img src="https://latex.codecogs.com/png.latex?X"> that is <img src="https://latex.codecogs.com/png.latex?n%20%5Ctimes%20p">. The single quantity that organizes everything is the <strong>overparametrization ratio</strong></p>
+<p><img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%20p%20/%20n."></p>
+<ul>
+<li>when <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%3C%201"> the problem is <em>underparametrized</em> (more rows than columns, ordinary least squares applies);</li>
+<li>when <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%3E%201"> it is <em>overparametrized</em> and least squares no longer has a unique solution. In that regime the natural estimator is the <em>minimum-norm</em>, or <em>ridgeless</em>, least squares solution <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta%20=%20(X%5E%5Ctop%20X)%5E+%20X%5E%5Ctop%20y%20=%20X%5E+%20y,"> the least-squares fit of smallest Euclidean norm, and equivalently the limit of ridge regression as the penalty vanishes, <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta%20=%20%5Clim_%7B%5Clambda%20%5Cto%200%7D%20%5Chat%5Cbeta_%5Clambda">.</li>
+</ul>
+<p>Write the <em>signal-to-noise ratio</em> as <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BSNR%7D%20=%20%5C%7C%5Cbeta%5C%7C_2%5E2%20/%20%5Csigma%5E2%20=%20r%5E2/%5Csigma%5E2,"> and measure performance by the out-of-sample prediction risk at a fresh test point, <img src="https://latex.codecogs.com/png.latex?R%20=%20%5Cmathbb%7BE%7D%5Cbig%5B(x_0%5E%5Ctop%20%5Chat%5Cbeta%20-%20x_0%5E%5Ctop%5Cbeta)%5E2%5Cbig%5D."></p>
+<p>Lastly, we need the covariance matrix of the test point, <img src="https://latex.codecogs.com/png.latex?%5CSigma%20=%20%5Ctext%7BCov%7D(x_0)">.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="the-curve" class="level3">
+<h3 class="anchored" data-anchor-id="the-curve">The curve</h3>
+<p>Here is the whole phenomenon in one curve. It traces the out-of-sample risk of plain ridgeless least squares as the number of parameters grows relative to the sample size: the risk climbs as the model approaches just enough capacity to interpolate, blows up at that interpolation threshold, and then — against every classical instinct — falls a second time, eventually dipping below the null risk.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="../files/double-descent-curve.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="https://vyasenov.github.io/files/double-descent-curve.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%" alt="Out-of-sample prediction risk of ridgeless least squares as a function of the overparametrization ratio gamma = p/n, showing the classical rise toward the interpolation threshold at gamma = 1, a spike, and a second descent for gamma > 1 that falls below the null risk."></a></p>
+</figure>
+</div>
+<p>In math notation, we fix <img src="https://latex.codecogs.com/png.latex?n">, sweep <img src="https://latex.codecogs.com/png.latex?p">, fit ridgeless least squares at each step, and trace the out-of-sample risk against <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> (isotropic case <img src="https://latex.codecogs.com/png.latex?%5CSigma%20=%20I">, signal norm <img src="https://latex.codecogs.com/png.latex?%5C%7C%5Cbeta%5C%7C%5E2"> held fixed for a fair comparison). The risk climbs toward <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">, blows up at the interpolation boundary, then <em>descends a second time</em> for <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%3E%201">.</p>
+<p>Hastie et al.&nbsp;(2022) make this exact in the limit <img src="https://latex.codecogs.com/png.latex?n,%20p%20%5Cto%20%5Cinfty"> with <img src="https://latex.codecogs.com/png.latex?p/n%20%5Cto%20%5Cgamma">:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AR%20%5Cto%0A%5Cbegin%7Bcases%7D%0A%5Csigma%5E2%20%5Cdfrac%7B%5Cgamma%7D%7B1%20-%20%5Cgamma%7D,%20&amp;%20%5Cgamma%20%3C%201,%20%5C%5C%5B2ex%5D%0A%5Cunderbrace%7Br%5E2%5CBig(1%20-%20%5Ctfrac%7B1%7D%7B%5Cgamma%7D%5CBig)%7D_%7B%5Ctext%7Bbias%7D%7D%20+%20%5Cunderbrace%7B%5Csigma%5E2%20%5Cdfrac%7B1%7D%7B%5Cgamma%20-%201%7D%7D_%7B%5Ctext%7Bvariance%7D%7D,%20&amp;%20%5Cgamma%20%3E%201.%0A%5Cend%7Bcases%7D%0A"></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Below the boundary the risk is pure variance, diverging as <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%5Cto%201">. Above it, a bias term grows with <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> while a variance term shrinks — and that tension is the engine of the second descent.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="bias-up-variance-down" class="level3">
+<h3 class="anchored" data-anchor-id="bias-up-variance-down">Bias up, variance down</h3>
+<p>Why does the risk fall again past <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">? The two components move in opposite directions.</p>
+<p>The bias <em>rises</em> with <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> for a reason familiar from the <a href="https://vyasenov.github.io/blog/linear-models-p-over-n.html"><img src="https://latex.codecogs.com/png.latex?p%3En"> regime</a>: the minimum-norm solution lives in the row space of <img src="https://latex.codecogs.com/png.latex?X">, an <img src="https://latex.codecogs.com/png.latex?n">-dimensional slice of <img src="https://latex.codecogs.com/png.latex?%5Cmathbb%7BR%7D%5Ep">. As <img src="https://latex.codecogs.com/png.latex?p"> grows that slice shrinks relative to the whole, so more of <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> falls in the directions the data never see and the min-norm rule zeroes out. More parameters, more of <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> left on the table, more bias.</p>
+<p>The variance <em>falls</em> with <img src="https://latex.codecogs.com/png.latex?%5Cgamma">, which feels backwards — surely more parameters means <em>more</em> variance? Not for the minimum-norm interpolator. Extra columns give the solver more directions to spread the fit across, so the minimum-norm solution to <img src="https://latex.codecogs.com/png.latex?Xb%20=%20y"> generally has <em>smaller</em> norm as <img src="https://latex.codecogs.com/png.latex?p"> grows, and a lower-norm interpolator is smoother and more stable — effectively more regularized, for free.</p>
+<p>The spike at <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201"> is where both forces peak. With <img src="https://latex.codecogs.com/png.latex?p%20%5Capprox%20n"> the model has <em>just barely</em> enough capacity to interpolate and no slack to do it gracefully: <img src="https://latex.codecogs.com/png.latex?X%5E%5Ctop%20X"> is nearly singular and the variance term <img src="https://latex.codecogs.com/png.latex?%5Csigma%5E2/(%5Cgamma-1)"> explodes. The interpolation threshold is not a sweet spot — it is the worst place to be.</p>
+<hr>
+</section>
+<section id="its-mostly-a-regularization-story" class="level3">
+<h3 class="anchored" data-anchor-id="its-mostly-a-regularization-story">It’s mostly a regularization story</h3>
+<p>The dramatic part of the curve (the divergence at <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">) is an artifact of insisting on interpolation, and interpolation is a <em>choice</em>, not a law. Ridgeless least squares is just ridge regression with the penalty dialed to zero, the one setting a statistician would never choose on purpose.</p>
+<p>Hastie et al.&nbsp;(2022) prove it: optimally-tuned ridge <em>dominates</em> minimum-norm least squares at every <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> and every SNR, well-specified or not. Its risk has no spike — proper <img src="https://latex.codecogs.com/png.latex?%5Clambda"> smooths the curve into a single well-behaved descent, with the global minimum (under misspecification) sitting right around <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">, exactly where ridgeless is worst. And the optimal penalty is estimable: leave-one-out cross-validation recovers it asymptotically.</p>
+<p>Double descent is real and the math is beautiful, but the headline (<em>more parameters fix overfitting</em>) gets it backwards. The second descent just shows the minimum-norm interpolator picking up a hidden, growing dose of regularization as <img src="https://latex.codecogs.com/png.latex?%5Cgamma"> rises. You need not climb out to <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%204"> to enjoy it; a ridge penalty and a cross-validation loop dial it in directly, skipping the peak entirely. Less “interpolation is secretly fine” than “under-regularization is bad, and overparametrization happens to re-regularize you on the way out.”</p>
+<hr>
+</section>
+<section id="when-overparametrization-genuinely-helps" class="level3">
+<h3 class="anchored" data-anchor-id="when-overparametrization-genuinely-helps">When overparametrization genuinely helps</h3>
+<p>That said, the strong claim — that the risk’s <em>global</em> minimum can live deep in the overparametrized regime — is true, but only under structure worth knowing.</p>
+<p>In the <em>isotropic, well-specified</em> case it essentially never pays: even when <img src="https://latex.codecogs.com/png.latex?%5Ctext%7BSNR%7D%20%3E%201"> creates a local minimum past <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">, the global minimum stays underparametrized, and the risk only approaches the null risk <img src="https://latex.codecogs.com/png.latex?r%5E2"> as <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%5Cto%20%5Cinfty">. Overparametrization buys nothing you couldn’t get more cheaply.</p>
+<p>Two things change the verdict.</p>
+<p><em>Misspecification</em>: if the truth has components your features cannot represent, adding features improves the approximation, and with enough signal the global minimum can cross the boundary.</p>
+<p><em>Structure in the covariance</em>: when <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> aligns with the leading <a href="https://vyasenov.github.io/blog/flavors-pca.html">eigenvectors of <img src="https://latex.codecogs.com/png.latex?%5CSigma"></a> — the “latent space” model, where each feature carries fresh information about a few latent drivers — the risk can fall monotonically across the whole overparametrized regime, bottoming out as <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%5Cto%20%5Cinfty">. This is what large networks actually look like, and no accident: a linear model with a learned feature map is exactly the lazy-training (“neural tangent kernel”) linearization of an overparametrized network. Not an analogy — the same story.</p>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>Double descent needs no neural networks — plain ridgeless least squares shows it: the classical <img src="https://latex.codecogs.com/png.latex?U"> for <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%3C%201">, a blow-up at the interpolation boundary <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201">, then a second descent for <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20%3E%201">.</li>
+<li>Past the boundary, bias rises (min-norm <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cbeta"> is trapped in the row space) while variance falls (the interpolant smooths as <img src="https://latex.codecogs.com/png.latex?p"> grows). The second descent is their tug-of-war.</li>
+<li>The peak at <img src="https://latex.codecogs.com/png.latex?%5Cgamma%20=%201"> is the worst place to be, not a sweet spot: <img src="https://latex.codecogs.com/png.latex?X%5E%5Ctop%20X"> is near-singular and variance explodes.</li>
+<li>It is largely a regularization story: optimally-tuned ridge dominates ridgeless least squares everywhere and erases the spike, so tuning <img src="https://latex.codecogs.com/png.latex?%5Clambda"> (e.g.&nbsp;by LOOCV) makes the drama disappear.</li>
+<li>Overparametrization wins <em>globally</em> only under structure — misspecification, high SNR, or <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> aligned with the top eigenvectors of <img src="https://latex.codecogs.com/png.latex?%5CSigma">.</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li><p>Bartlett, P. L., Long, P. M., Lugosi, G., &amp; Tsybakov, A. B. (2020). Benign overfitting in linear regression. <em>Proceedings of the National Academy of Sciences</em>, 117(48), 30063–30070.</p></li>
+<li><p>Belkin, M., Hsu, D., Ma, S., &amp; Mandal, S. (2019). Reconciling modern machine-learning practice and the classical bias–variance trade-off. <em>Proceedings of the National Academy of Sciences</em>, 116(32), 15849–15854.</p></li>
+<li><p>Hastie, T., Montanari, A., Rosset, S., &amp; Tibshirani, R. J. (2022). Surprises in high-dimensional ridgeless least squares interpolation. <em>The Annals of Statistics</em>, 50(2), 949–986.</p></li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>parametric models</category>
+  <category>statistical inference</category>
+  <category>machine learning</category>
+  <guid>https://vyasenov.github.io/blog/double-descent.html</guid>
+  <pubDate>Thu, 09 Jul 2026 07:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>A Brief Introduction to Sufficient Dimension Reduction</title>
+  <link>https://vyasenov.github.io/blog/sufficient-dimension-reduction.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<div class="reading-time">6 min read</div>
+<!-- this is for social media sharing buttons -->
+<div class="sharethis-inline-share-buttons pt-5">
+
+</div>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>Principal component analysis is the reflex answer to “I have too many predictors.” It is also, for regression, the wrong reflex more often than people admit. PCA finds the directions along which <img src="https://latex.codecogs.com/png.latex?X"> varies the most. The problem is that PCA never looks at <img src="https://latex.codecogs.com/png.latex?Y">. I have written about the <a href="https://vyasenov.github.io/blog/flavors-pca.html">many flavors of PCA</a>, and this blind spot is common to all of them.</p>
+<p>Sufficient dimension reduction (SDR) fixes the blind spot. The goal is the same as PCA’s — replace a high-dimensional predictor <img src="https://latex.codecogs.com/png.latex?X"> with a handful of linear combinations — but with a sharper contract: the reduced predictors must retain <em>all</em> the information <img src="https://latex.codecogs.com/png.latex?X"> carries about <img src="https://latex.codecogs.com/png.latex?Y">. A sufficient statistic loses nothing about a parameter; a sufficient reduction loses nothing about the response. What makes SDR appealing to a practitioner is that it delivers this without you having to specify a model for how <img src="https://latex.codecogs.com/png.latex?Y"> depends on <img src="https://latex.codecogs.com/png.latex?X"> — it is largely model-free, which is precisely what you want early in an analysis, before you have committed to a functional form.</p>
+</section>
+<section id="notation" class="level2">
+<h2 class="anchored" data-anchor-id="notation">Notation</h2>
+<p>Let <img src="https://latex.codecogs.com/png.latex?Y"> be a response and <img src="https://latex.codecogs.com/png.latex?X%20%5Cin%20%5Cmathbb%7BR%7D%5Ep"> a predictor vector, jointly distributed. We seek a <img src="https://latex.codecogs.com/png.latex?p%20%5Ctimes%20d"> matrix <img src="https://latex.codecogs.com/png.latex?%5Ceta"> with <img src="https://latex.codecogs.com/png.latex?d%20%5Cle%20p"> such that</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0AY%20%5Cperp%5C!%5C!%5C!%5Cperp%20X%20%5Cmid%20%5Ceta%5ET%20X.%0A"></p>
+<p>Read this literally: once you know the <img src="https://latex.codecogs.com/png.latex?d"> reduced predictors <img src="https://latex.codecogs.com/png.latex?%5Ceta%5ET%20X">, the original <img src="https://latex.codecogs.com/png.latex?X"> tells you nothing more about <img src="https://latex.codecogs.com/png.latex?Y">. The <img src="https://latex.codecogs.com/png.latex?d"> linear combinations are a <em>sufficient reduction</em>.</p>
+<p>Since any nonsingular reparameterization <img src="https://latex.codecogs.com/png.latex?%5Ceta%5ET%20X%20%5Cmapsto%20(A%5Ceta)%5ET%20X"> satisfies the same condition, what is identified is not <img src="https://latex.codecogs.com/png.latex?%5Ceta"> itself but the subspace it spans. The smallest such subspace (the intersection of all of them, when it exists) is the <em>central subspace</em>, written <img src="https://latex.codecogs.com/png.latex?%5Cmathcal%7BS%7D_%7BY%7CX%7D">, and it is the estimand of the entire field. Its dimension <img src="https://latex.codecogs.com/png.latex?d"> is the number of directions in <img src="https://latex.codecogs.com/png.latex?X"> that genuinely matter for <img src="https://latex.codecogs.com/png.latex?Y">.</p>
+</section>
+<section id="a-closer-look" class="level2">
+<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
+<section id="the-central-subspace" class="level3">
+<h3 class="anchored" data-anchor-id="the-central-subspace">The central subspace</h3>
+<p>The central subspace turns a vague wish (“reduce <img src="https://latex.codecogs.com/png.latex?X"> without losing information”) into a well-defined target. Under mild regularity conditions it exists, is unique, and satisfies the conditional-independence condition above. Estimating it, rather than any particular basis, is what frees SDR from needing a model: two regressions as different as</p>
+<p><img src="https://latex.codecogs.com/png.latex?Y%20=%20%5Cbeta%5ET%20X%20+%20%5Cvarepsilon%20%5Ctext%7B%20%20%20%20and%20%20%20%20%7D%20%5Ctext%7Blogit%7D(p)%20=%20%5Calpha%20+%20f(%5Cbeta_1%5ET%20X,%20%5Cbeta_2%5ET%20X)"></p>
+<p>can share the same central subspace, and an SDR method estimates that common structure without knowing which regression generated the data. Once you have an estimated basis <img src="https://latex.codecogs.com/png.latex?%5Chat%5Ceta">, plotting <img src="https://latex.codecogs.com/png.latex?Y"> against <img src="https://latex.codecogs.com/png.latex?%5Chat%5Ceta%5ET%20X">, a <em>sufficient summary plot</em>, is often the single most informative diagnostic you can draw, because by construction it hides nothing relevant.</p>
+<hr>
+</section>
+<section id="sliced-inverse-regression" class="level3">
+<h3 class="anchored" data-anchor-id="sliced-inverse-regression">Sliced inverse regression</h3>
+<p>The foundational method, and still the first one to reach for, is sliced inverse regression (SIR), introduced by Li (1991). Its trick is to run the regression <em>backwards</em>. Modeling <img src="https://latex.codecogs.com/png.latex?Y%20%5Cmid%20X"> in high dimensions is hard; modeling <img src="https://latex.codecogs.com/png.latex?X%20%5Cmid%20Y"> is easy, because <img src="https://latex.codecogs.com/png.latex?Y"> is typically one-dimensional. SIR studies how the mean of <img src="https://latex.codecogs.com/png.latex?X"> shifts as <img src="https://latex.codecogs.com/png.latex?Y"> varies: it slices the range of <img src="https://latex.codecogs.com/png.latex?Y"> into bins, computes the mean of <img src="https://latex.codecogs.com/png.latex?X"> within each slice, and asks which directions those slice-means move along.</p>
+<p>Under a mild <em>linearity condition</em> on the distribution of <img src="https://latex.codecogs.com/png.latex?X">, the centered inverse-regression curve <img src="https://latex.codecogs.com/png.latex?E%5BX%20%5Cmid%20Y%5D%20-%20E%5BX%5D"></p>
+<p>lies in the central subspace, up to a covariance rescaling. Estimating it reduces to a generalized eigenvalue problem: the leading eigenvectors of the between-slice covariance, relative to <img src="https://latex.codecogs.com/png.latex?%5CSigma_X">, span (a subset of) <img src="https://latex.codecogs.com/png.latex?%5Cmathcal%7BS%7D_%7BY%7CX%7D">. The eigenvalues themselves suggest <img src="https://latex.codecogs.com/png.latex?d"> — a sharp drop tells you how many directions to keep.</p>
+<hr>
+</section>
+<section id="where-sir-fails-and-what-comes-after" class="level3">
+<h3 class="anchored" data-anchor-id="where-sir-fails-and-what-comes-after">Where SIR fails, and what comes after</h3>
+<p>SIR has one famous blind spot, and it is instructive. Because it only tracks how the <em>mean</em> of <img src="https://latex.codecogs.com/png.latex?X"> moves with <img src="https://latex.codecogs.com/png.latex?Y">, it is blind to dependence that shifts the <em>variance</em> while leaving the mean fixed.</p>
+<p>The textbook example is <img src="https://latex.codecogs.com/png.latex?Y%20=%20X_1%5E2%20+%20%5Cvarepsilon"> with symmetric <img src="https://latex.codecogs.com/png.latex?X_1">: the slice means of <img src="https://latex.codecogs.com/png.latex?X"> barely move, SIR sees nothing, and reports an empty direction. Sliced average variance estimation (SAVE, Cook and Weisberg 1991) was built for exactly this case — it examines the slice-wise <em>covariance</em> of <img src="https://latex.codecogs.com/png.latex?X"> and so detects symmetric, curved dependence that SIR misses. The tradeoff is that SAVE needs more data to work well and leans on a second regularity assumption, the constant-covariance condition.</p>
+<p>That tension (capture more structure versus require weaker assumptions) organizes the rest of the field. Later methods (directional regression, minimum discrepancy approaches, and the semiparametric formulations of Ma and Zhu) chip away at the linearity and constant-covariance conditions, extend SDR to the conditional mean alone (the <em>central mean subspace</em>), or push into the high-dimensional <img src="https://latex.codecogs.com/png.latex?p%20%3E%20n"> regime with sparsity. For most applied work, though, SIR is the right starting point and SAVE the right thing to try when SIR comes up empty despite an obvious relationship in the data.</p>
+<hr>
+</section>
+</section>
+<section id="bottom-line" class="level2">
+<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
+<ul>
+<li>SDR reduces <img src="https://latex.codecogs.com/png.latex?X"> to a few linear combinations that retain <em>all</em> the information about <img src="https://latex.codecogs.com/png.latex?Y"> — unlike PCA, which ignores <img src="https://latex.codecogs.com/png.latex?Y"> and can discard the directions that matter.</li>
+<li>The estimand is the central subspace <img src="https://latex.codecogs.com/png.latex?%5Cmathcal%7BS%7D_%7BY%7CX%7D">, the smallest subspace such that <img src="https://latex.codecogs.com/png.latex?Y%20%5Cperp%5C!%5C!%5C!%5Cperp%20X%20%5Cmid%20%5Ceta%5ET%20X">; its dimension is the number of directions that truly drive the response.</li>
+<li>Sliced inverse regression is the workhorse: regress <img src="https://latex.codecogs.com/png.latex?X"> on a sliced <img src="https://latex.codecogs.com/png.latex?Y">, then solve a generalized eigenvalue problem — model-free and computationally trivial.</li>
+<li>SIR is blind to variance-only (symmetric, curved) dependence; reach for SAVE when there is obvious structure that SIR fails to detect.</li>
+<li>All the classical methods lean on a linearity condition on <img src="https://latex.codecogs.com/png.latex?X">; it is mild but unverifiable, and it is where these methods can quietly break.</li>
+</ul>
+</section>
+<section id="where-to-learn-more" class="level2">
+<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
+<p>Cook’s (2018) <em>Annual Review of Statistics</em> article, “Principal Components, Sufficient Dimension Reduction, and Envelopes,” is the ideal high-level entry point and the main source for this post — it places PCA, SDR, and envelopes on common footing through Fisher’s sufficiency. Li (1991) is the original SIR paper and remains very readable. For a book-length, code-oriented treatment, Bing Li’s <em>Sufficient Dimension Reduction: Methods and Applications with R</em> (2018) is the standard reference.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Cook, R. D. (2018). Principal components, sufficient dimension reduction, and envelopes. <em>Annual Review of Statistics and Its Application</em>, 5, 533–559.</p>
+<p>Cook, R. D., and Weisberg, S. (1991). Discussion of “Sliced inverse regression for dimension reduction.” <em>Journal of the American Statistical Association</em>, 86(414), 328–332.</p>
+<p>Li, B. (2018). <em>Sufficient Dimension Reduction: Methods and Applications with R</em>. Chapman and Hall/CRC.</p>
+<p>Li, K.-C. (1991). Sliced inverse regression for dimension reduction. <em>Journal of the American Statistical Association</em>, 86(414), 316–327.</p>
+<p>Ma, Y., and Zhu, L. (2012). A semiparametric approach to dimension reduction. <em>Journal of the American Statistical Association</em>, 107(497), 168–179.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>machine learning</category>
+  <category>statistical inference</category>
+  <guid>https://vyasenov.github.io/blog/sufficient-dimension-reduction.html</guid>
+  <pubDate>Thu, 09 Jul 2026 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Propensity Scores When Treatment Isn’t Binary</title>
   <link>https://vyasenov.github.io/blog/generalized-propensity-score.html</link>
@@ -56,7 +250,21 @@
 <h3 class="anchored" data-anchor-id="what-the-gps-balances">What the GPS balances</h3>
 <p>The binary score’s defining property is balance: within strata of equal <img src="https://latex.codecogs.com/png.latex?e(X)">, treatment is independent of <img src="https://latex.codecogs.com/png.latex?X">. The GPS inherits a version of this, but with a twist worth internalizing:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0AX%20%5Cperp%20%5Cmathbf%7B1%7D%5C%7BT%20=%20t%5C%7D%20%5Cmid%20r(t,%20X).%0A"></p>
-<p>Read carefully: balance holds <em>at each dose level <img src="https://latex.codecogs.com/png.latex?t"> separately</em>, conditioning on the score evaluated at that same <img src="https://latex.codecogs.com/png.latex?t">.You use as many propensity scores as there are levels of the treatment, yet you never use more than one at a time. This is the mental model shift. There is no single number that balances covariates across all doses simultaneously; there is a family of scores, one per dose, each balancing locally. Notably, this balancing property is mechanical — it falls out of the definition and does not itself require unconfoundedness. Combine it with weak unconfoundedness and you get the payoff: assignment is unconfounded given the GPS.</p>
+<p>Read carefully: balance holds <em>at each dose level <img src="https://latex.codecogs.com/png.latex?t"> separately</em>, conditioning on the score evaluated at that same <img src="https://latex.codecogs.com/png.latex?t">. You use as many propensity scores as there are levels of the treatment, yet you never use more than one at a time. This is the mental model shift.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There is no single number that balances covariates across all doses simultaneously; there is a family of scores, one per dose, each balancing locally.</p>
+</div>
+</div>
+<p>Notably, this balancing property is mechanical — it falls out of the definition and does not itself require unconfoundedness. Combine it with weak unconfoundedness and you get the payoff: assignment is unconfounded given the GPS.</p>
 <hr>
 </section>
 <section id="recovering-the-curve" class="level3">
@@ -85,9 +293,22 @@
 <section id="multiple-implementations" class="level3">
 <h3 class="anchored" data-anchor-id="multiple-implementations">Multiple implementations</h3>
 <p>The GPS defined above is Hirano and Imbens’ route, and it is the cleanest place to build intuition. But the same core idea (reducing the covariates to a low-dimensional score summarizing treatment assignment) shows up in a few different shapes.</p>
+<section id="propensity-function" class="level4">
+<h4 class="anchored" data-anchor-id="propensity-function">Propensity function</h4>
 <p>Imai and van Dyk arrive at the general case from a different angle. Rather than a density, they work with the <em>propensity function</em>: the entire conditional distribution of <img src="https://latex.codecogs.com/png.latex?T%20%5Cmid%20X">. When that distribution belongs to a parametric family, the propensity function collapses to its parameter (e.g.&nbsp;the mean of a normal), and you subclassify or adjust on that parameter. This unifies the ordinal, categorical, and continuous cases under one theory and connects back to Imbens’ original multi-valued treatment argument.</p>
-<p>Then there is the weighting route. Instead of adjusting for the score in a regression, you can weight each observation by the inverse of its GPS — the continuous analog of inverse-probability weighting, which underpins marginal structural models. This is tempting because it mirrors <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">the weighting logic so central to causal inference</a>, but I would sound a caution: with a continuous treatment the weights are ratios of densities, and they blow up wherever the estimated density is small. Extreme weights are already the <a href="https://vyasenov.github.io/blog/weights-statistics.html">Achilles’ heel of ordinary IPW</a>; with a continuum they can be worse, and stabilized weights become close to mandatory. A third route, stratification on the GPS, has been developed more recently as a way to sidestep the instability of weighting while keeping the nonparametric spirit.</p>
+</section>
+<section id="weighting" class="level4">
+<h4 class="anchored" data-anchor-id="weighting">Weighting</h4>
+<p>Then there is the weighting route. Instead of adjusting for the score in a regression, you can weight each observation by the inverse of its GPS — the continuous analog of inverse-probability weighting, which underpins marginal structural models. This is tempting because it mirrors <a href="https://vyasenov.github.io/blog/two-types-weights-causality.html">the weighting logic so central to causal inference</a>, but I would sound a caution: with a continuous treatment the weights are ratios of densities, and they blow up wherever the estimated density is small. Extreme weights are already the <a href="https://vyasenov.github.io/blog/weights-statistics.html">Achilles’ heel of ordinary IPW</a>; with a continuum they can be worse, and stabilized weights become close to mandatory.</p>
+</section>
+<section id="stratification" class="level4">
+<h4 class="anchored" data-anchor-id="stratification">Stratification</h4>
+<p>A third route, stratification on the GPS, has been developed more recently as a way to sidestep the instability of weighting while keeping the nonparametric spirit.</p>
+</section>
+<section id="the-main-pitfall-overlap" class="level4">
+<h4 class="anchored" data-anchor-id="the-main-pitfall-overlap">The main pitfall: overlap</h4>
 <p>The deeper pitfall cuts across all three implementations: overlap. In the binary world, positivity means every unit has some chance of being treated and untreated. With a dial, you need positive density at <em>every</em> dose for <em>every</em> covariate profile — a far more demanding requirement, and one that is easy to violate without noticing. And because the score rides on a fitted density model, misspecifying <img src="https://latex.codecogs.com/png.latex?T%20%5Cmid%20X"> contaminates everything downstream. Check balance dose-by-dose; do not trust a single global diagnostic.</p>
+</section>
 </section>
 </section>
 <section id="bottom-line" class="level2">
@@ -338,13 +559,18 @@
 <h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
 <section id="why-the-f-10-rule-broke" class="level3">
 <h3 class="anchored" data-anchor-id="why-the-f-10-rule-broke">Why the “F &gt; 10” rule broke</h3>
-<p>The rule of thumb traces to Staiger and Stock (1997), who suggested <img src="https://latex.codecogs.com/png.latex?F%3E10"> as a rough indicator that weak-instrument distortions were tolerable. Stock and Yogo (2005) made it rigorous by defining “weak” through worst-case performance and tabulating critical values under two distinct criteria. The <em>bias</em> criterion asks how large the worst-case 2SLS bias is relative to OLS; its critical values sit near <img src="https://latex.codecogs.com/png.latex?10"> across a range of instrument counts, which is where the folklore comes from. The <em>size</em> criterion asks how badly a nominal 5% <img src="https://latex.codecogs.com/png.latex?t">-test can over-reject; its critical values are a different animal, rising from about <img src="https://latex.codecogs.com/png.latex?9"> with one instrument to nearly <img src="https://latex.codecogs.com/png.latex?45"> with thirty. Already the single number “10” is doing two incompatible jobs.</p>
+<p>The rule of thumb traces to Staiger and Stock (1997), who suggested <img src="https://latex.codecogs.com/png.latex?F%3E10"> as a rough indicator that weak-instrument distortions were tolerable. Stock and Yogo (2005) made it rigorous by defining “weak” through worst-case performance and tabulating critical values under two distinct criteria.</p>
+<ul>
+<li>The <em>bias</em> criterion asks how large the worst-case 2SLS bias is relative to OLS; its critical values sit near <img src="https://latex.codecogs.com/png.latex?10"> across a range of instrument counts, which is where the folklore comes from.</li>
+<li>The <em>size</em> criterion asks how badly a nominal 5% <img src="https://latex.codecogs.com/png.latex?t">-test can over-reject; its critical values are a different animal, rising from about <img src="https://latex.codecogs.com/png.latex?9"> with one instrument to nearly <img src="https://latex.codecogs.com/png.latex?45"> with thirty. Already the single number “10” is doing two incompatible jobs.</li>
+</ul>
 <p>The deeper problem is that the entire Stock–Yogo apparatus was derived under <em>homoskedasticity</em>. The critical values depend on a Kronecker-product structure in the covariance matrix that simply does not hold once errors are heteroskedastic, clustered, or serially correlated — which is to say, in essentially every applied setting.</p>
 <hr>
 </section>
 <section id="the-effective-f-statistic" class="level3">
 <h3 class="anchored" data-anchor-id="the-effective-f-statistic">The effective F-statistic</h3>
-<p>The fix for <em>measuring</em> strength is due to Montiel Olea and Pflueger (2013), who introduced what they call the <em>effective <img src="https://latex.codecogs.com/png.latex?F">-statistic</em>. The conventional first-stage <img src="https://latex.codecogs.com/png.latex?F"> and even the naive robust Wald <img src="https://latex.codecogs.com/png.latex?F"> have, as Andrews, Stock, and Sun (2019) put it, “no theoretical justification” for gauging instrument strength under heteroskedasticity — they target the wrong population object or misstate its variance. The effective <img src="https://latex.codecogs.com/png.latex?F"> replaces the variance term with a heteroskedasticity-robust analogue:</p>
+<p>The fix for <em>measuring</em> strength is due to Montiel Olea and Pflueger (2013), who introduced what they call the <em>effective <img src="https://latex.codecogs.com/png.latex?F">-statistic</em>. The conventional first-stage <img src="https://latex.codecogs.com/png.latex?F"> and even the naive robust Wald <img src="https://latex.codecogs.com/png.latex?F"> have, as Andrews, Stock, and Sun (2019) put it, “no theoretical justification” for gauging instrument strength under heteroskedasticity — they target the wrong population object or misstate its variance.</p>
+<p>The effective <img src="https://latex.codecogs.com/png.latex?F"> replaces the variance term with a heteroskedasticity-robust analogue:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0AF_%7B%5Ctext%7Beff%7D%7D%20=%20%5Cfrac%7B%5Chat%5Cpi'%20%5Chat%7BQ%7D_%7BZZ%7D%20%5Chat%5Cpi%7D%7B%5Coperatorname%7Btr%7D%5C!%5Cbig(%5Chat%5CSigma_%7B%5Cpi%5Cpi%7D%5Chat%7BQ%7D_%7BZZ%7D%5Cbig)%7D,%0A"></p>
 <p>where <img src="https://latex.codecogs.com/png.latex?%5Chat%7BQ%7D_%7BZZ%7D"> is the instrument second-moment matrix and <img src="https://latex.codecogs.com/png.latex?%5Chat%5CSigma_%7B%5Cpi%5Cpi%7D"> the robust variance of <img src="https://latex.codecogs.com/png.latex?%5Chat%5Cpi">. It collapses to the usual <img src="https://latex.codecogs.com/png.latex?F"> under homoskedasticity and, crucially, “measures the right object and gets the standard errors right on average.” In the just-identified case it coincides with the robust first-stage <img src="https://latex.codecogs.com/png.latex?F">.</p>
 <p>The practical instruction is simple: whenever you report a first-stage <img src="https://latex.codecogs.com/png.latex?F"> as a strength diagnostic, it should be the effective one, compared against the appropriate Montiel Olea–Pflueger critical values rather than a remembered “10.”</p>
@@ -6607,1031 +6833,6 @@ font-style: inherit;">print</span>(lower_distance, upper_distance)</span></code>
   <category>statistical inference</category>
   <guid>https://vyasenov.github.io/blog/ols-fixed-random-x.html</guid>
   <pubDate>Sun, 08 Mar 2026 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Logistic Regression in Randomized Trials?</title>
-  <link>https://vyasenov.github.io/blog/logit-randomized-experiments.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">4 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Randomized controlled trials (RCTs) are the gold standard for causal inference. Random assignment guarantees that treatment is independent of potential outcomes. As a result, simple differences in observed outcomes identify causal effects without requiring outcome modeling.</p>
-<p>With binary outcomes, however, data scientists often default to logistic regression. That instinct feels natural: the outcome is binary, the logit model is standard, and regression allows covariate adjustment. But does logistic regression actually respect what randomization gives us?</p>
-<p>Freedman (2008) argues that it does not. Randomization justifies design-based estimators. Logistic regression introduces additional modeling assumptions that randomization does not validate. When those assumptions fail, the regression coefficient on treatment need not estimate the causal quantity of interest—even in large samples.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let there be <img src="https://latex.codecogs.com/png.latex?n"> subjects indexed by <img src="https://latex.codecogs.com/png.latex?i%20=%201,%20%5Cdots,%20n">. Each subject has:</p>
-<ul>
-<li>Treatment assignment <img src="https://latex.codecogs.com/png.latex?X_i%20%5Cin%20%5C%7B0,1%5C%7D"></li>
-<li>Binary outcome <img src="https://latex.codecogs.com/png.latex?Y_i%20%5Cin%20%5C%7B0,1%5C%7D"></li>
-<li>Covariates <img src="https://latex.codecogs.com/png.latex?Z_i"></li>
-</ul>
-<p>Each unit has two potential outcomes: <img src="https://latex.codecogs.com/png.latex?Y_i%5ET"> and <img src="https://latex.codecogs.com/png.latex?Y_i%5EC">. Define the finite-population averages</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Calpha_T%20=%20%5Cfrac%7B1%7D%7Bn%7D%20%5Csum_%7Bi=1%7D%5En%20Y_i%5ET,%0A%5Cquad%0A%5Calpha_C%20=%20%5Cfrac%7B1%7D%7Bn%7D%20%5Csum_%7Bi=1%7D%5En%20Y_i%5EC.%0A"></p>
-<p>The causal contrast of interest is the <em>difference in log-odds</em>:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5CDelta%0A=%20%5Clog%5Cleft(%5Cfrac%7B%5Calpha_T%7D%7B1%20-%20%5Calpha_T%7D%5Cright)%0A-%20%5Clog%5Cleft(%5Cfrac%7B%5Calpha_C%7D%7B1%20-%20%5Calpha_C%7D%5Cright).%0A"></p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="what-randomization-identifies" class="level3">
-<h3 class="anchored" data-anchor-id="what-randomization-identifies">What Randomization Identifies</h3>
-<p>Because treatment is randomized, the sample analogues</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5Calpha%7D_T%20=%20%5Cfrac%7B1%7D%7Bn_T%7D%5Csum_%7Bi%5Cin%20T%7D%20Y_i,%0A%5Cquad%0A%5Chat%7B%5Calpha%7D_C%20=%20%5Cfrac%7B1%7D%7Bn_C%7D%5Csum_%7Bi%5Cin%20C%7D%20Y_i%0A"></p>
-<p>are unbiased for <img src="https://latex.codecogs.com/png.latex?%5Calpha_T"> and <img src="https://latex.codecogs.com/png.latex?%5Calpha_C">. The plug-in estimator</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7B%5CDelta%7D%0A=%0A%5Clog%5Cleft(%5Cfrac%7B%5Chat%7B%5Calpha%7D_T%7D%7B1%20-%20%5Chat%7B%5Calpha%7D_T%7D%5Cright)%0A-%0A%5Clog%5Cleft(%5Cfrac%7B%5Chat%7B%5Calpha%7D_C%7D%7B1%20-%20%5Chat%7B%5Calpha%7D_C%7D%5Cright)%0A"></p>
-<p>is therefore consistent and justified purely by the design.</p>
-<p>No outcome model is required.</p>
-</section>
-<section id="what-logistic-regression-assumes" class="level3">
-<h3 class="anchored" data-anchor-id="what-logistic-regression-assumes">What Logistic Regression Assumes</h3>
-<p>A logistic regression specifies</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AP(Y_i%20=%201%20%5Cmid%20X_i,%20Z_i)%0A=%0A%5Cfrac%7B%5Cexp(%5Cbeta_1%20+%20%5Cbeta_2%20X_i%20+%20%5Cbeta_3%20Z_i)%7D%0A%7B1%20+%20%5Cexp(%5Cbeta_1%20+%20%5Cbeta_2%20X_i%20+%20%5Cbeta_3%20Z_i)%7D.%0A"></p>
-<p>The coefficient <img src="https://latex.codecogs.com/png.latex?%5Cbeta_2"> is typically interpreted as the treatment effect. This interpretation relies on strong assumptions:</p>
-<ul>
-<li>The conditional log-odds is linear in <img src="https://latex.codecogs.com/png.latex?X"> and <img src="https://latex.codecogs.com/png.latex?Z">.</li>
-<li>The functional form is correctly specified.</li>
-<li>The model captures the true dependence of outcomes on covariates.</li>
-</ul>
-<p>Randomization does not validate any of these assumptions. It guarantees independence of treatment assignment—not correctness of the logit specification.</p>
-<p>If the model is misspecified, the maximum likelihood estimator converges to a pseudo-true parameter: the value that best fits the assumed model, not necessarily the causal estimand <img src="https://latex.codecogs.com/png.latex?%5CDelta">.</p>
-</section>
-<section id="the-non-collapsibility-problem" class="level3">
-<h3 class="anchored" data-anchor-id="the-non-collapsibility-problem">The Non-Collapsibility Problem</h3>
-<p>There is a deeper issue. The logistic coefficient <img src="https://latex.codecogs.com/png.latex?%5Cbeta_2"> represents a <em>conditional</em> odds ratio. The estimand <img src="https://latex.codecogs.com/png.latex?%5CDelta"> is a <em>marginal</em> contrast. These quantities are generally not equal.</p>
-<p>Odds ratios are non-collapsible: adding covariates changes the estimated coefficient even when there is no confounding. As a result, adjusting for <img src="https://latex.codecogs.com/png.latex?Z"> in a logit model can change the treatment coefficient even in a perfectly randomized experiment.</p>
-<p>This is not bias from confounding. It is a structural property of the odds ratio. Thus, even with infinite data, <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cbeta%7D_2"> need not converge to <img src="https://latex.codecogs.com/png.latex?%5CDelta">.</p>
-</section>
-<section id="a-safer-use-of-logistic-regression" class="level3">
-<h3 class="anchored" data-anchor-id="a-safer-use-of-logistic-regression">A Safer Use of Logistic Regression</h3>
-<p>If logistic regression is used, the coefficient itself should not be interpreted as the estimand. Instead, compute model-based plug-in predictions:</p>
-<ol type="1">
-<li>Fit the logistic model and obtain <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cbeta%7D">.</li>
-<li>Predict probabilities under treatment and control for every unit: <img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Bp%7D_i%5E%7B(T)%7D,%20%5Cquad%20%5Chat%7Bp%7D_i%5E%7B(C)%7D.%0A"></li>
-<li>Average predicted probabilities: <img src="https://latex.codecogs.com/png.latex?%0A%5Ctilde%7B%5Calpha%7D_T%20=%20%5Cfrac%7B1%7D%7Bn%7D%5Csum%20%5Chat%7Bp%7D_i%5E%7B(T)%7D,%0A%5Cquad%0A%5Ctilde%7B%5Calpha%7D_C%20=%20%5Cfrac%7B1%7D%7Bn%7D%5Csum%20%5Chat%7Bp%7D_i%5E%7B(C)%7D.%0A"></li>
-<li>Form <img src="https://latex.codecogs.com/png.latex?%0A%5Ctilde%7B%5CDelta%7D%0A=%0A%5Clog%5Cleft(%5Cfrac%7B%5Ctilde%7B%5Calpha%7D_T%7D%7B1-%5Ctilde%7B%5Calpha%7D_T%7D%5Cright)%0A-%0A%5Clog%5Cleft(%5Cfrac%7B%5Ctilde%7B%5Calpha%7D_C%7D%7B1-%5Ctilde%7B%5Calpha%7D_C%7D%5Cright).%0A"></li>
-</ol>
-<p>This estimator targets the correct marginal quantity. Even if the logit model is misspecified, it remains consistent under randomization. The coefficient <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cbeta%7D_2"> does not share this guarantee.</p>
-</section>
-</section>
-<section id="an-example" class="level2">
-<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<p>We illustrate with a small randomized experiment. There are <img src="https://latex.codecogs.com/png.latex?n%20=%20200"> units; half are assigned to treatment (<img src="https://latex.codecogs.com/png.latex?X_i%20=%201">) and half to control (<img src="https://latex.codecogs.com/png.latex?X_i%20=%200">) by complete randomization. Each unit has a binary outcome <img src="https://latex.codecogs.com/png.latex?Y_i"> and a single covariate <img src="https://latex.codecogs.com/png.latex?Z_i">. We compute three quantities: the design-based plug-in estimator <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5CDelta%7D">, the logistic regression coefficient <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cbeta%7D_2"> on treatment, and the adjusted estimator <img src="https://latex.codecogs.com/png.latex?%5Ctilde%7B%5CDelta%7D"> that uses the fitted logit model to predict probabilities under treatment and control for every unit, then marginalizes and forms the log-odds contrast.</p>
-<p>The code below generates data (with a true treatment effect on the log-odds scale), fits a logistic regression of <img src="https://latex.codecogs.com/png.latex?Y"> on <img src="https://latex.codecogs.com/png.latex?X"> and <img src="https://latex.codecogs.com/png.latex?Z">, and reports <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5CDelta%7D">, <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cbeta%7D_2">, and <img src="https://latex.codecogs.com/png.latex?%5Ctilde%7B%5CDelta%7D">. In general these three numbers differ; <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5CDelta%7D"> and <img src="https://latex.codecogs.com/png.latex?%5Ctilde%7B%5CDelta%7D"> target the marginal causal contrast, while <img src="https://latex.codecogs.com/png.latex?%5Chat%7B%5Cbeta%7D_2"> is a conditional parameter.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb1-2">n <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">200</span></span>
-<span id="cb1-3">x <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">each =</span> n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># complete randomization</span></span>
-<span id="cb1-4">z <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(n, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb1-5"></span>
-<span id="cb1-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># True P(Y=1) depends on X and Z (logistic); treatment increases log-odds by 0.8</span></span>
-<span id="cb1-7">beta_true <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.8</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>)   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># intercept, treatment, covariate</span></span>
-<span id="cb1-8">eta <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> beta_true[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> beta_true[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>] <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> beta_true[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>] <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> z</span>
-<span id="cb1-9">p <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exp</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>eta))</span>
-<span id="cb1-10">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rbinom</span>(n, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">prob =</span> p)</span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># --- Design-based plug-in: delta ---</span></span>
-<span id="cb1-13">alpha_T_hat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(y[x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>])</span>
-<span id="cb1-14">alpha_C_hat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(y[x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>])</span>
-<span id="cb1-15">delta_hat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">log</span>(alpha_T_hat <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> alpha_T_hat)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">log</span>(alpha_C_hat <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> alpha_C_hat))</span>
-<span id="cb1-16"></span>
-<span id="cb1-17"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># --- Logistic regression: beta_2 (coefficient on treatment) ---</span></span>
-<span id="cb1-18">fit <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">glm</span>(y <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> x <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> z, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">family =</span> binomial)</span>
-<span id="cb1-19">beta_2 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coef</span>(fit)[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"x"</span>]</span>
-<span id="cb1-20"></span>
-<span id="cb1-21"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># --- Adjusted estimator: marginalize fitted probs, then log-odds contrast ---</span></span>
-<span id="cb1-22">p_under_treat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict</span>(fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">newdata =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">z =</span> z), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"response"</span>)</span>
-<span id="cb1-23">p_under_control <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">predict</span>(fit, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">newdata =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">z =</span> z), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"response"</span>)</span>
-<span id="cb1-24">alpha_T_tilde <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(p_under_treat)</span>
-<span id="cb1-25">alpha_C_tilde <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(p_under_control)</span>
-<span id="cb1-26">delta_tilde <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">log</span>(alpha_T_tilde <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> alpha_T_tilde)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">log</span>(alpha_C_tilde <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> alpha_C_tilde))</span>
-<span id="cb1-27"></span>
-<span id="cb1-28"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Design-based delta_hat:  "</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(delta_hat, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb1-29"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Logistic coef (beta_2):  "</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(beta_2, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb1-30"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Adjusted delta_tilde:    "</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">round</span>(delta_tilde, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>), <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">\n</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span></code></pre></div></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb2-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> sklearn.linear_model <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> LogisticRegression</span>
-<span id="cb2-3"></span>
-<span id="cb2-4">np.random.seed(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb2-5">n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">200</span></span>
-<span id="cb2-6">x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.array([<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> (n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">//</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> [<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> (n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">//</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))</span>
-<span id="cb2-7">np.random.shuffle(x)</span>
-<span id="cb2-8">z <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.normal(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, n)</span>
-<span id="cb2-9"></span>
-<span id="cb2-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># True P(Y=1) depends on X and Z (logistic); treatment increases log-odds by 0.8</span></span>
-<span id="cb2-11">beta_true <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.array([<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.8</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.3</span>])   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># intercept, treatment, covariate</span></span>
-<span id="cb2-12">eta <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> beta_true[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> beta_true[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> beta_true[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> z</span>
-<span id="cb2-13">p <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> np.exp(<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>eta))</span>
-<span id="cb2-14">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.binomial(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, p, n)</span>
-<span id="cb2-15"></span>
-<span id="cb2-16"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Design-based plug-in: delta</span></span>
-<span id="cb2-17">alpha_T_hat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> y[x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>].mean()</span>
-<span id="cb2-18">alpha_C_hat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> y[x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].mean()</span>
-<span id="cb2-19">delta_hat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.log(alpha_T_hat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> alpha_T_hat)) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> np.log(alpha_C_hat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> alpha_C_hat))</span>
-<span id="cb2-20"></span>
-<span id="cb2-21"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Logistic regression: beta_2 (coefficient on treatment)</span></span>
-<span id="cb2-22">X_design <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.column_stack([np.ones(n), x, z])</span>
-<span id="cb2-23">fit <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> LogisticRegression(C<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1e10</span>).fit(X_design, y)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># no penalty</span></span>
-<span id="cb2-24">beta_2 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> fit.coef_[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>][<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb2-25"></span>
-<span id="cb2-26"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Adjusted estimator: marginalize fitted probs, then log-odds contrast</span></span>
-<span id="cb2-27">p_under_treat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> fit.predict_proba(np.column_stack([np.ones(n), np.ones(n), z]))[:, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb2-28">p_under_control <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> fit.predict_proba(np.column_stack([np.ones(n), np.zeros(n), z]))[:, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb2-29">alpha_T_tilde <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> p_under_treat.mean()</span>
-<span id="cb2-30">alpha_C_tilde <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> p_under_control.mean()</span>
-<span id="cb2-31">delta_tilde <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.log(alpha_T_tilde <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> alpha_T_tilde)) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> np.log(alpha_C_tilde <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> alpha_C_tilde))</span>
-<span id="cb2-32"></span>
-<span id="cb2-33"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Design-based delta_hat:  "</span>, <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">round</span>(delta_hat, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>))</span>
-<span id="cb2-34"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Logistic coef (beta_2):  "</span>, <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">round</span>(beta_2, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>))</span>
-<span id="cb2-35"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Adjusted delta_tilde:    "</span>, <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">round</span>(delta_tilde, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>))</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>Randomization identifies causal effects without modeling.</li>
-<li>Design-based estimators and plug-in approaches respect the randomized design. The logit coefficient does not.</li>
-<li>Logistic regression introduces functional-form assumptions that randomization does not justify.</li>
-<li>The treatment coefficient estimates a conditional odds ratio, not the marginal causal contrast defined by the experiment.</li>
-<li>The logistic regression coefficient generally differs from the experimental estimand—even in large samples.</li>
-</ul>
-</section>
-<section id="reference" class="level2">
-<h2 class="anchored" data-anchor-id="reference">Reference</h2>
-<p>Freedman, D. A. (2008). <em>Randomization Does Not Justify Logistic Regression</em>. Statistical Science, 23(2), 237–249. https://doi.org/10.1214/08-STS262</p>
-
-
-</section>
-
- ]]></description>
-  <category>causal inference</category>
-  <category>parametric models</category>
-  <guid>https://vyasenov.github.io/blog/logit-randomized-experiments.html</guid>
-  <pubDate>Tue, 17 Feb 2026 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Randomization Inference: A Gentle Introduction</title>
-  <link>https://vyasenov.github.io/blog/randomization-inference.html</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<div class="reading-time">6 min read</div>
-<!-- this is for social media sharing buttons -->
-<div class="sharethis-inline-share-buttons pt-5">
-
-</div>
-<section id="background" class="level2">
-<h2 class="anchored" data-anchor-id="background">Background</h2>
-<p>Randomization inference offers a refreshing alternative to traditional parametric inference, providing exact control over Type I error rates without relying on large-sample approximations or strict distributional assumptions. Born out of Fisher’s famous tea-tasting experiment, the approach leverages the symmetry and structure induced by randomization itself to test hypotheses.</p>
-<p>This blog post unpacks the theory and intuition behind randomization inference, drawing on the excellent review by Ritzwoller, Romano, and Shaikh (2025). I’ll cover the key ideas, notation, and algorithms involved, and also touch on modern applications like two-sample tests, regression, and conformal inference. Throughout, I’ll emphasize the practical considerations — when it works, why it works, and where caution is needed.</p>
-</section>
-<section id="notation" class="level2">
-<h2 class="anchored" data-anchor-id="notation">Notation</h2>
-<p>Let <img src="https://latex.codecogs.com/png.latex?W%20%5Cin%20%5C%7B0,1%5C%7D%5En"> denote the treatment assignment vector and <img src="https://latex.codecogs.com/png.latex?Y"> the observed outcomes. In potential-outcomes notation, each unit has <img src="https://latex.codecogs.com/png.latex?Y_i(1)"> and <img src="https://latex.codecogs.com/png.latex?Y_i(0)">, and we observe</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AY_i%20=%20W_i%20Y_i(1)%20+%20(1%20-%20W_i)%20Y_i(0).%0A"></p>
-<p>The assignment mechanism is known. For example, under complete randomization with <img src="https://latex.codecogs.com/png.latex?n_T"> treated units, <img src="https://latex.codecogs.com/png.latex?W"> is uniformly distributed over all binary vectors with exactly <img src="https://latex.codecogs.com/png.latex?n_T"> ones.</p>
-<p>Let <img src="https://latex.codecogs.com/png.latex?T(X)"> be a test statistic computed from the observed data <img src="https://latex.codecogs.com/png.latex?X%20=%20(Y,%20W)">.</p>
-<p>Let <img src="https://latex.codecogs.com/png.latex?G"> denote the set of transformations consistent with the design (e.g., all treatment permutations preserving the treated count). Under a valid randomization hypothesis,</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AgX%20%5Coverset%7Bd%7D%7B=%7D%20X%20%5Cquad%20%5Ctext%7Bfor%20all%20%7D%20g%20%5Cin%20G.%0A"></p>
-<p>This invariance is the engine of randomization inference.</p>
-</section>
-<section id="a-closer-look" class="level2">
-<h2 class="anchored" data-anchor-id="a-closer-look">A Closer Look</h2>
-<section id="sharp-vs-regular-null-hypotheses" class="level3">
-<h3 class="anchored" data-anchor-id="sharp-vs-regular-null-hypotheses">Sharp vs Regular Null Hypotheses</h3>
-<p>The most important distinction in randomization inference is between <em>sharp</em> null hypotheses (which fully determine the unobserved potential outcomes) and <em>regular/weak</em> null hypotheses (which do not).</p>
-<p>A <em>sharp null</em> specifies the treatment effect for every unit. The canonical example is Fisher’s <em>no-effect</em> null: <img src="https://latex.codecogs.com/png.latex?%0AH_0%5E%7B%5Ctext%7Bsharp%7D%7D:%5C;%20Y_i(1)%20=%20Y_i(0)%5Cquad%20%5Ctext%7Bfor%20all%20%7D%20i.%0A"> Under this null, the missing potential outcomes are <em>imputable</em> from the observed outcomes. That is what makes exact finite-sample randomization tests possible: for each candidate assignment <img src="https://latex.codecogs.com/png.latex?W'">, you can reconstruct the outcomes that would have been observed under <img src="https://latex.codecogs.com/png.latex?W'"> and recompute the test statistic.</p>
-<p>A <em>regular/weak null</em> is something like “the average treatment effect is zero,” <img src="https://latex.codecogs.com/png.latex?%0AH_0%5E%7B%5Ctext%7Bweak%7D%7D:%5C;%20%5Cmathbb%7BE%7D%5BY(1)%20-%20Y(0)%5D%20=%200,%0A"> or a regression-style null about a parameter in a model. This null does <em>not</em> let you impute all missing potential outcomes, so the randomization distribution of a non-studentized statistic typically depends on nuisance features (e.g., heteroskedasticity). In that setting, exactness generally fails, and validity is recovered (when it is) by using statistics that are asymptotically pivotal, often via studentization.</p>
-<p>The two different <img src="https://latex.codecogs.com/png.latex?p">-values are not comparable since they are based on different null hypotheses.</p>
-</section>
-<section id="exact-randomization-tests" class="level3">
-<h3 class="anchored" data-anchor-id="exact-randomization-tests">Exact Randomization Tests</h3>
-<p>If the randomization hypothesis holds, we can compute the distribution of <img src="https://latex.codecogs.com/png.latex?T(X)"> by applying all transformations in <img src="https://latex.codecogs.com/png.latex?G"> to the data. The <img src="https://latex.codecogs.com/png.latex?p">-value is simply the proportion of these transformed test statistics that are as extreme or more extreme than the observed <img src="https://latex.codecogs.com/png.latex?T(X)">:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A%5Chat%7Bp%7D%20=%20%5Cfrac%7B1%7D%7B%7CG%7C%7D%20%5Csum_%7Bg%20%5Cin%20G%7D%20I%5C%7B%20T(gX)%20%5Cgeq%20T(X)%20%5C%7D.%0A"></p>
-<p>Because the null implies invariance under <img src="https://latex.codecogs.com/png.latex?G">, this procedure achieves exact finite-sample control of the Type I error rate.</p>
-<div class="callout callout-style-default callout-note callout-titled" title="Algorithm: Randomization Test">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Algorithm: Randomization Test
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>Choose a test statistic <img src="https://latex.codecogs.com/png.latex?T(X)">.</li>
-<li>Define the group <img src="https://latex.codecogs.com/png.latex?G"> of transformations.</li>
-<li>Compute <img src="https://latex.codecogs.com/png.latex?T(X)"> on the observed data.</li>
-<li>Apply all (or a random sample of) transformations <img src="https://latex.codecogs.com/png.latex?g%20%5Cin%20G"> to the data and recompute <img src="https://latex.codecogs.com/png.latex?T(gX)">.</li>
-<li>Calculate the <img src="https://latex.codecogs.com/png.latex?p">-value as the proportion of transformed statistics as or more extreme than <img src="https://latex.codecogs.com/png.latex?T(X)">.</li>
-</ol>
-</div>
-</div>
-<p>Because the null implies invariance under <img src="https://latex.codecogs.com/png.latex?G">, this test controls Type I error exactly in finite samples.</p>
-<p>In practice, <img src="https://latex.codecogs.com/png.latex?%7CG%7C"> can be large. Monte Carlo sampling of transformations provides an accurate approximation, with a simple +1 adjustment ensuring exactness under random sampling.</p>
-</section>
-<section id="when-exactness-fails" class="level3">
-<h3 class="anchored" data-anchor-id="when-exactness-fails">When Exactness Fails</h3>
-<p>Under weak nulls, permutation tests are no longer automatically valid. The permutation distribution of a statistic may not match its true sampling distribution.</p>
-<p>The difference in means illustrates the issue. If treatment and control variances differ, the raw difference in means can severely over-reject under permutation. The statistic is not pivotal.</p>
-<p>Studentization resolves the problem. Scaling by an estimated standard error produces an asymptotically pivotal statistic whose limiting null distribution does not depend on nuisance parameters. Rank-based procedures (e.g., Wilcoxon–Mann–Whitney) achieve a similar goal.</p>
-<p>The general principle is simple: asymptotic validity requires asymptotic pivotality.</p>
-</section>
-<section id="strengths-and-limitations" class="level3">
-<h3 class="anchored" data-anchor-id="strengths-and-limitations">Strengths and Limitations</h3>
-<p>Randomization inference is particularly powerful when the randomization scheme is known and controlled, as in experiments, when the test statistic is chosen to be pivotal, and when exact finite-sample error control is important.</p>
-<p>However, it becomes less effective when <a href="https://vyasenov.github.io/blog/roles-covariates-rtc.html">covariates</a> are correlated with treatment assignment but not properly accounted for, or when the sample size is too small to approximate the randomization distribution reliably through subsampling.</p>
-</section>
-</section>
-<section id="an-example" class="level2">
-<h2 class="anchored" data-anchor-id="an-example">An Example</h2>
-<p>We illustrate the procedure with a small randomized experiment. There are <img src="https://latex.codecogs.com/png.latex?n%20=%2020"> units; exactly <img src="https://latex.codecogs.com/png.latex?n_%7B%5Ctext%7Btreat%7D%7D%20=%2010"> receive treatment under complete randomization, so <img src="https://latex.codecogs.com/png.latex?W"> is uniformly distributed over all binary vectors with ten ones. Each unit has potential outcomes <img src="https://latex.codecogs.com/png.latex?Y_i(0)"> and <img src="https://latex.codecogs.com/png.latex?Y_i(1)%20=%20Y_i(0)%20+%20%5Ctau"> with a constant effect <img src="https://latex.codecogs.com/png.latex?%5Ctau%20=%201">, and we observe <img src="https://latex.codecogs.com/png.latex?Y_i%20=%20W_i%20Y_i(1)%20+%20(1%20-%20W_i)%20Y_i(0)">. The test statistic is the difference in means, <img src="https://latex.codecogs.com/png.latex?T%20=%20%5Cbar%7BY%7D_1%20-%20%5Cbar%7BY%7D_0">.</p>
-<p>We test Fisher’s sharp null of no effect: <img src="https://latex.codecogs.com/png.latex?Y_i(1)%20=%20Y_i(0)"> for all <img src="https://latex.codecogs.com/png.latex?i">. Under this null, the observed <img src="https://latex.codecogs.com/png.latex?Y"> would be the same under any assignment, so we can build the randomization distribution by repeatedly permuting <img src="https://latex.codecogs.com/png.latex?W"> (keeping the number of treated units fixed), recomputing <img src="https://latex.codecogs.com/png.latex?T"> for each permuted assignment, and then computing the proportion of those values that are as or more extreme than the observed <img src="https://latex.codecogs.com/png.latex?T">. That proportion is the randomization <img src="https://latex.codecogs.com/png.latex?p">-value.</p>
-<p>The code below does exactly that, using <img src="https://latex.codecogs.com/png.latex?B%20=%205000"> random permutations and a standard +1 adjustment for the Monte Carlo <img src="https://latex.codecogs.com/png.latex?p">-value.</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs"><li class="nav-item"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" aria-controls="tabset-1-1" aria-selected="true" href="">R</a></li><li class="nav-item"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" aria-controls="tabset-1-2" aria-selected="false" href="">Python</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="tab-pane active" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb1-2">n <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span></span>
-<span id="cb1-3">n_treat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Potential outcomes (fixed) and assignment (random)</span></span>
-<span id="cb1-6">y0 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rnorm</span>(n, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb1-7">tau <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.0</span></span>
-<span id="cb1-8">w <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, n_treat), <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, n <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> n_treat)))</span>
-<span id="cb1-9">y <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> y0 <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> tau <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> w</span>
-<span id="cb1-10"></span>
-<span id="cb1-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Test statistic: difference in means</span></span>
-<span id="cb1-12">t_obs <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(y[w <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(y[w <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>])</span>
-<span id="cb1-13"></span>
-<span id="cb1-14"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Randomization distribution under Fisher sharp null of no effect:</span></span>
-<span id="cb1-15"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># under H0, y(1)=y(0), so observed outcomes are invariant to assignment.</span></span>
-<span id="cb1-16">b <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5000</span></span>
-<span id="cb1-17">t_perm <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">replicate</span>(b, {</span>
-<span id="cb1-18">  w_perm <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sample</span>(w)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># preserves treated count (complete randomization)</span></span>
-<span id="cb1-19">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(y[w_perm <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mean</span>(y[w_perm <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>])</span>
-<span id="cb1-20">})</span>
-<span id="cb1-21"></span>
-<span id="cb1-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Two-sided $p$-value with a +1 adjustment (Monte Carlo exactness)</span></span>
-<span id="cb1-23">p_value <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(t_perm) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">abs</span>(t_obs))) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (b <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb1-24">p_value</span></code></pre></div></div>
-</div>
-<div id="tabset-1-2" class="tab-pane" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb2-2"></span>
-<span id="cb2-3">np.random.seed(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1988</span>)</span>
-<span id="cb2-4">n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">20</span></span>
-<span id="cb2-5">n_treat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span></span>
-<span id="cb2-6"></span>
-<span id="cb2-7">y0 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.normal(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>, n)</span>
-<span id="cb2-8">tau <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.0</span></span>
-<span id="cb2-9">w <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.array([<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> n_treat <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> [<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> (n <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> n_treat))</span>
-<span id="cb2-10">w <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.permutation(w)</span>
-<span id="cb2-11">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> y0 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> tau <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> w</span>
-<span id="cb2-12"></span>
-<span id="cb2-13"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">def</span> diff_in_means(y, w):</span>
-<span id="cb2-14">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">return</span> y[w <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>].mean() <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> y[w <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].mean()</span>
-<span id="cb2-15"></span>
-<span id="cb2-16">t_obs <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> diff_in_means(y, w)</span>
-<span id="cb2-17"></span>
-<span id="cb2-18">b <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5000</span></span>
-<span id="cb2-19">t_perm <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.empty(b)</span>
-<span id="cb2-20"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> i <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(b):</span>
-<span id="cb2-21">    w_perm <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.random.permutation(w)  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># preserves treated count</span></span>
-<span id="cb2-22">    t_perm[i] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> diff_in_means(y, w_perm)</span>
-<span id="cb2-23"></span>
-<span id="cb2-24">p_value <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> (<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> np.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">sum</span>(np.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">abs</span>(t_perm) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;=</span> np.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">abs</span>(t_obs))) <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> (b <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb2-25"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(p_value)</span></code></pre></div></div>
-</div>
-</div>
-</div>
-</section>
-<section id="bottom-line" class="level2">
-<h2 class="anchored" data-anchor-id="bottom-line">Bottom Line</h2>
-<ul>
-<li>Randomization inference provides exact finite-sample error control when the randomization hypothesis holds.</li>
-<li>Asymptotic validity can often be rescued by choosing asymptotically pivotal (studentized) test statistics.</li>
-<li>Without studentization, permutation tests may fail badly in the presence of unequal variances.</li>
-<li>Randomization tests are flexible and nonparametric, making them attractive for experimental data and beyond.</li>
-</ul>
-</section>
-<section id="where-to-learn-more" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-learn-more">Where to Learn More</h2>
-<p>The best starting point is the recent review by Ritzwoller, Romano, and Shaikh (2025). For foundational treatments on nonparametric inference, the go-to is Lehmann &amp; Romano’s two-volume door-stopper <em>Testing Statistical Hypotheses</em>. The practical guide by Good (2005) on permutation tests is also highly recommended.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<ul>
-<li><p>Ritzwoller, D. M., Romano, J. P., &amp; Shaikh, A. M. (2025). Randomization Inference: Theory and Applications.</p></li>
-<li><p>Lehmann, E. L., &amp; Romano, J. P. (2022). <em>Testing Statistical Hypotheses</em>. Springer.</p></li>
-<li><p>Good, P. (2005). <em>Permutation, Parametric, and Bootstrap Tests of Hypotheses</em>. Springer.</p></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>causal inference</category>
-  <category>statistical inference</category>
-  <guid>https://vyasenov.github.io/blog/randomization-inference.html</guid>
-  <pubDate>Thu, 12 Feb 2026 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

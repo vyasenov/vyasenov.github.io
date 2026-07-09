@@ -146,6 +146,17 @@
     "href": "diff-causal-predictive-models.html"
   },
   {
+    "slug": "double-descent",
+    "title": "Double Descent for Statisticians",
+    "date": "2026-07-09",
+    "categories": [
+      "parametric models",
+      "statistical inference",
+      "machine learning"
+    ],
+    "href": "double-descent.html"
+  },
+  {
     "slug": "filling-missing-data-mcmc",
     "title": "Filling in Missing Data with MCMC",
     "date": "2025-01-31",
@@ -622,6 +633,16 @@
       "causal inference"
     ],
     "href": "stratified-sampling-cont-var.html"
+  },
+  {
+    "slug": "sufficient-dimension-reduction",
+    "title": "A Brief Introduction to Sufficient Dimension Reduction",
+    "date": "2026-07-09",
+    "categories": [
+      "machine learning",
+      "statistical inference"
+    ],
+    "href": "sufficient-dimension-reduction.html"
   },
   {
     "slug": "three-classes-stat-models",
