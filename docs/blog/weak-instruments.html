@@ -400,6 +400,8 @@ window.Quarto = {
   <li><a href="#the-andersonrubin-test" id="toc-the-andersonrubin-test" class="nav-link" data-scroll-target="#the-andersonrubin-test">The Anderson–Rubin test</a></li>
   <li><a href="#fix-1-abandon-the-t-test" id="toc-fix-1-abandon-the-t-test" class="nav-link" data-scroll-target="#fix-1-abandon-the-t-test">Fix 1: abandon the <span class="math inline">\(t\)</span>-test</a></li>
   <li><a href="#fix-2-fix-the-t-test-instead" id="toc-fix-2-fix-the-t-test-instead" class="nav-link" data-scroll-target="#fix-2-fix-the-t-test-instead">Fix 2: fix the <span class="math inline">\(t\)</span>-test instead</a></li>
+  <li><a href="#a-third-option-conditional-wald" id="toc-a-third-option-conditional-wald" class="nav-link" data-scroll-target="#a-third-option-conditional-wald">A third option: Conditional Wald</a></li>
+  <li><a href="#reporting-what-to-keep-what-to-avoid" id="toc-reporting-what-to-keep-what-to-avoid" class="nav-link" data-scroll-target="#reporting-what-to-keep-what-to-avoid">Reporting: what to keep, what to avoid</a></li>
   </ul></li>
   <li><a href="#bottom-line" id="toc-bottom-line" class="nav-link" data-scroll-target="#bottom-line">Bottom Line</a></li>
   <li><a href="#where-to-learn-more" id="toc-where-to-learn-more" class="nav-link" data-scroll-target="#where-to-learn-more">Where to Learn More</a></li>
@@ -441,7 +443,7 @@ window.Quarto = {
 </header>
 
 
-<div class="reading-time">10 min read</div>
+<div class="reading-time">12 min read</div>
 <!-- this is for social media sharing buttons -->
 <div class="sharethis-inline-share-buttons pt-5">
 
@@ -533,6 +535,7 @@ CS_{AR} = \{\beta_0 : AR(\beta_0) \le \chi^2_{1,\,0.95}\} = \{\beta_0 : AR(\beta
 F \approx 104.7.
 \]</span></p>
 <p>Below that, <span class="math inline">\(1.96\)</span> is too small and you must inflate.</p>
+<p>Even the “safe” <span class="math inline">\(F&gt;16.38\)</span> threshold from Stock and Yogo (2005) is not a genuine 95% guarantee: a back-of-the-envelope calculation caps its actual coverage near 85%, and the sharper correction in Lee, McCrary, Moreira, and Porter (2020) puts it at about 90.7% (Lee and Porter, 2026). A whole nominal percentage point of overconfidence is baked into the threshold practitioners treat as safe.</p>
 <p>Operationally the procedure is a lookup: estimate your usual (robust, clustered) 2SLS standard error, read the adjustment factor off their Table 3 at your observed <span class="math inline">\(\hat F\)</span>, and multiply. A few anchor points at the 5% level make the magnitude vivid:</p>
 <table class="caption-top table">
 <thead>
@@ -571,6 +574,17 @@ F \approx 104.7.
 </tbody>
 </table>
 <p>At the celebrated <span class="math inline">\(F=10\)</span>, an honest 95% interval is about <span class="math inline">\(75\%\)</span> wider than the one most papers report, and <span class="math inline">\(tF\)</span> can still be shorter than AR when both intervals are bounded because it reserves its “we cannot learn <span class="math inline">\(\beta\)</span>” verdict for the rare cases where <span class="math inline">\(\hat F &lt; 3.84\)</span>.</p>
+<hr>
+</section>
+<section id="a-third-option-conditional-wald" class="level3">
+<h3 class="anchored" data-anchor-id="a-third-option-conditional-wald">A third option: Conditional Wald</h3>
+<p>Moreira (2003) offers a third route. The <em>Conditional Wald</em> (CW) test uses the ordinary 2SLS <span class="math inline">\(t\)</span>-ratio but compares <span class="math inline">\(t^2\)</span> against a critical value <span class="math inline">\(c_{CW}\)</span> built from the same five statistics AR uses. Numerical evidence in Lee, McCrary, Moreira, Porter, and Yap (2023) suggests CW — and its refinement <span class="math inline">\(VtF\)</span> — can produce narrower intervals than AR, sometimes substantially, especially when <span class="math inline">\(F\)</span> is small. The catch is that <span class="math inline">\(c_{CW}\)</span> has no closed form, so it requires simulation or a lookup grid rather than a formula. None of this overturns AR’s validity; it just means AR may be leaving precision on the table.</p>
+<hr>
+</section>
+<section id="reporting-what-to-keep-what-to-avoid" class="level3">
+<h3 class="anchored" data-anchor-id="reporting-what-to-keep-what-to-avoid">Reporting: what to keep, what to avoid</h3>
+<p>Preserve five statistics from your three regressions — <span class="math inline">\(\hat\beta_{IV}\)</span>, SE(<span class="math inline">\(\hat\beta_{IV}\)</span>), <span class="math inline">\(\hat\pi\)</span>, SE(<span class="math inline">\(\hat\pi\)</span>), and the reduced-form SE — and any robust procedure above can be reconstructed later even from a published table alone (Lee and Porter, 2026).</p>
+<p>Two temptations to resist. First, do not build ad-hoc hybrids: peeking at <span class="math inline">\(\hat F\)</span> to decide between the naive <span class="math inline">\(\pm 1.96\)</span> interval and a robust one gives you “two bites at the apple” and voids the 5% guarantee of both, even though each is fine used on its own. Second, do not data-mine for a large <span class="math inline">\(F\)</span> by screening several candidate instruments and reporting only the one with the biggest first-stage <span class="math inline">\(F\)</span> — that screening step truncates the very sampling distribution the weak-instrument theory assumes, introducing a fresh and understudied source of bias.</p>
 </section>
 </section>
 <section id="bottom-line" class="level2">
@@ -581,6 +595,7 @@ F \approx 104.7.
 <li>For a robust default, report the Anderson–Rubin interval — valid at any instrument strength, and free of cost when instruments are strong.</li>
 <li>To keep the familiar <span class="math inline">\(t\)</span>-ratio, use <span class="math inline">\(tF\)</span>: inflate the SE by the Table 3 factor at your observed <span class="math inline">\(F\)</span>; it even beats AR on interval length.</li>
 <li>Either way, heed Young (2022): under non-iid errors a few high-leverage clusters can drive both <span class="math inline">\(\hat\beta\)</span> and the <span class="math inline">\(F\)</span> — check leverage before trusting any interval.</li>
+<li>Don’t peek at <span class="math inline">\(\hat F\)</span> to switch between naive and robust intervals, and don’t screen instrument candidates for the largest <span class="math inline">\(F\)</span> — both quietly void the guarantees you’re relying on.</li>
 </ul>
 </section>
 <section id="where-to-learn-more" class="level2">
@@ -595,9 +610,12 @@ F \approx 104.7.
 <li><p>Dufour, J.-M. (1997). Some impossibility theorems in econometrics with applications to structural and dynamic models. <em>Econometrica</em>, 65(6), 1365–1387.</p></li>
 <li><p>Gleser, L. J., &amp; Hwang, J. T. (1987). The nonexistence of <span class="math inline">\(100(1-\alpha)\%\)</span> confidence sets of finite expected diameter in errors-in-variables and related models. <em>Annals of Statistics</em>, 15(4), 1351–1362.</p></li>
 <li><p>Keane, M. P., &amp; Neal, T. (2024). A practical guide to weak instruments. <em>Annual Review of Economics</em>, 16, 185–212.</p></li>
+<li><p>Lee, D. S., McCrary, J., Moreira, M. J., &amp; Porter, J. (2020). Valid <span class="math inline">\(t\)</span>-ratio inference for IV. <em>NBER Working Paper No.&nbsp;29124</em>.</p></li>
 <li><p>Lee, D. S., McCrary, J., Moreira, M. J., &amp; Porter, J. (2022). Valid <span class="math inline">\(t\)</span>-ratio inference for IV. <em>American Economic Review</em>, 112(10), 3260–3290.</p></li>
 <li><p>Lee, D. S., McCrary, J., Moreira, M. J., Porter, J., &amp; Yap, L. (2023). What to do when you can’t use ‘1.96’ confidence intervals for IV. <em>NBER Working Paper No.&nbsp;31893</em>.</p></li>
+<li><p>Lee, D. S., &amp; Porter, J. (2026). Correct (and incorrect) inference with a single instrumental variable: Practical takeaways from the weak instruments literature. <em>Journal of Economic Perspectives</em>, 40(3), 193–212.</p></li>
 <li><p>Montiel Olea, J. L., &amp; Pflueger, C. (2013). A robust test for weak instruments. <em>Journal of Business &amp; Economic Statistics</em>, 31(3), 358–369.</p></li>
+<li><p>Moreira, M. J. (2003). A conditional likelihood ratio test for structural models. <em>Econometrica</em>, 71(4), 1027–1048.</p></li>
 <li><p>Moreira, M. J. (2009). Tests with correct size when instruments can be arbitrarily weak. <em>Journal of Econometrics</em>, 152(2), 131–140.</p></li>
 <li><p>Staiger, D., &amp; Stock, J. H. (1997). Instrumental variables regression with weak instruments. <em>Econometrica</em>, 65(3), 557–586.</p></li>
 <li><p>Stock, J. H., &amp; Yogo, M. (2005). Testing for weak instruments in linear IV regression. In D. W. K. Andrews &amp; J. H. Stock (Eds.), <em>Identification and Inference for Econometric Models</em> (pp.&nbsp;80–108). Cambridge University Press.</p></li>

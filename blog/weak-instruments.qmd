@@ -118,7 +118,9 @@ $$
 F \approx 104.7.
 $$
 
-Below that, $1.96$ is too small and you must inflate. 
+Below that, $1.96$ is too small and you must inflate.
+
+Even the "safe" $F>16.38$ threshold from Stock and Yogo (2005) is not a genuine 95% guarantee: a back-of-the-envelope calculation caps its actual coverage near 85%, and the sharper correction in Lee, McCrary, Moreira, and Porter (2020) puts it at about 90.7% (Lee and Porter, 2026). A whole nominal percentage point of overconfidence is baked into the threshold practitioners treat as safe.
 
 Operationally the procedure is a lookup: estimate your usual (robust, clustered) 2SLS standard error, read the adjustment factor off their Table 3 at your observed $\hat F$, and multiply. A few anchor points at the 5% level make the magnitude vivid:
 
@@ -132,6 +134,20 @@ Operationally the procedure is a lookup: estimate your usual (robust, clustered)
 
 At the celebrated $F=10$, an honest 95% interval is about $75\%$ wider than the one most papers report, and $tF$ can still be shorter than AR when both intervals are bounded because it reserves its "we cannot learn $\beta$" verdict for the rare cases where $\hat F < 3.84$.
 
+---
+
+### A third option: Conditional Wald
+
+Moreira (2003) offers a third route. The *Conditional Wald* (CW) test uses the ordinary 2SLS $t$-ratio but compares $t^2$ against a critical value $c_{CW}$ built from the same five statistics AR uses. Numerical evidence in Lee, McCrary, Moreira, Porter, and Yap (2023) suggests CW — and its refinement $VtF$ — can produce narrower intervals than AR, sometimes substantially, especially when $F$ is small. The catch is that $c_{CW}$ has no closed form, so it requires simulation or a lookup grid rather than a formula. None of this overturns AR's validity; it just means AR may be leaving precision on the table.
+
+---
+
+### Reporting: what to keep, what to avoid
+
+Preserve five statistics from your three regressions — $\hat\beta_{IV}$, SE($\hat\beta_{IV}$), $\hat\pi$, SE($\hat\pi$), and the reduced-form SE — and any robust procedure above can be reconstructed later even from a published table alone (Lee and Porter, 2026).
+
+Two temptations to resist. First, do not build ad-hoc hybrids: peeking at $\hat F$ to decide between the naive $\pm 1.96$ interval and a robust one gives you "two bites at the apple" and voids the 5% guarantee of both, even though each is fine used on its own. Second, do not data-mine for a large $F$ by screening several candidate instruments and reporting only the one with the biggest first-stage $F$ — that screening step truncates the very sampling distribution the weak-instrument theory assumes, introducing a fresh and understudied source of bias.
+
 ## Bottom Line
 
 - The "$F > 10$" rule is broken: a genuine 5% $t$-test needs $F \approx 104.7$, not 10.
@@ -139,6 +155,7 @@ At the celebrated $F=10$, an honest 95% interval is about $75\%$ wider than the 
 - For a robust default, report the Anderson–Rubin interval — valid at any instrument strength, and free of cost when instruments are strong.
 - To keep the familiar $t$-ratio, use $tF$: inflate the SE by the Table 3 factor at your observed $F$; it even beats AR on interval length.
 - Either way, heed Young (2022): under non-iid errors a few high-leverage clusters can drive both $\hat\beta$ and the $F$ — check leverage before trusting any interval.
+- Don't peek at $\hat F$ to switch between naive and robust intervals, and don't screen instrument candidates for the largest $F$ — both quietly void the guarantees you're relying on.
 
 ## Where to Learn More
 
@@ -156,11 +173,17 @@ For the canonical survey, Andrews, Stock, and Sun (2019, *Annual Review of Econo
 
 - Keane, M. P., & Neal, T. (2024). A practical guide to weak instruments. *Annual Review of Economics*, 16, 185–212.
 
+- Lee, D. S., McCrary, J., Moreira, M. J., & Porter, J. (2020). Valid $t$-ratio inference for IV. *NBER Working Paper No. 29124*.
+
 - Lee, D. S., McCrary, J., Moreira, M. J., & Porter, J. (2022). Valid $t$-ratio inference for IV. *American Economic Review*, 112(10), 3260–3290.
 
 - Lee, D. S., McCrary, J., Moreira, M. J., Porter, J., & Yap, L. (2023). What to do when you can't use '1.96' confidence intervals for IV. *NBER Working Paper No. 31893*.
 
+- Lee, D. S., & Porter, J. (2026). Correct (and incorrect) inference with a single instrumental variable: Practical takeaways from the weak instruments literature. *Journal of Economic Perspectives*, 40(3), 193–212.
+
 - Montiel Olea, J. L., & Pflueger, C. (2013). A robust test for weak instruments. *Journal of Business & Economic Statistics*, 31(3), 358–369.
+
+- Moreira, M. J. (2003). A conditional likelihood ratio test for structural models. *Econometrica*, 71(4), 1027–1048.
 
 - Moreira, M. J. (2009). Tests with correct size when instruments can be arbitrarily weak. *Journal of Econometrics*, 152(2), 131–140.
 
