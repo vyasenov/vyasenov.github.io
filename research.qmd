@@ -3,7 +3,6 @@ title: "Research"
 format: html
 ---
 
-<!--
 ## Patents
 
 ::: {.research-item}
@@ -11,7 +10,6 @@ format: html
     * [**US Patent Pending**]
     * _Summary_: A framework for quantifying the dollar-value impact of B2B marketing programs on retention and revenue by linking causal effects from user adoption to organizational financial outcomes, without requiring randomized experiments.
 :::
--->
 
 ## Peer-Reviewed Articles
 

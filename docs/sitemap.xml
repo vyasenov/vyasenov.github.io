@@ -117,10 +117,6 @@
     <lastmod>2026-04-27T22:00:36.417Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/double-descent.html</loc>
-    <lastmod>2026-07-09T16:44:34.824Z</lastmod>
-  </url>
-  <url>
     <loc>https://vyasenov.github.io/blog/tmle-estimation-recipe.html</loc>
     <lastmod>2026-06-24T14:33:28.858Z</lastmod>
   </url>
@@ -137,60 +133,60 @@
     <lastmod>2026-06-11T17:27:32.596Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/limits-semiparam-models.html</loc>
-    <lastmod>2026-06-11T17:27:48.905Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/blog/flavors-gradient-boosting.html</loc>
-    <lastmod>2026-04-27T22:00:36.412Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/blog/weights-statistics.html</loc>
-    <lastmod>2026-06-11T17:28:11.126Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/blog/paradox-simpson.html</loc>
-    <lastmod>2026-06-11T17:28:18.162Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/blog/flavors-ml-methods-ci.html</loc>
-    <lastmod>2026-04-27T22:00:36.413Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/childrenbook.html</loc>
-    <lastmod>2026-04-27T22:00:36.445Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/mind-map.html</loc>
-    <lastmod>2026-04-27T22:00:36.761Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/research.html</loc>
-    <lastmod>2026-05-21T02:00:11.428Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/index.html</loc>
-    <lastmod>2026-04-27T22:00:36.757Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/blog/two-types-weights-causality.html</loc>
-    <lastmod>2026-06-11T17:28:06.894Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/blog/unconditional-qreg.html</loc>
-    <lastmod>2026-04-27T22:00:36.443Z</lastmod>
-  </url>
-  <url>
-    <loc>https://vyasenov.github.io/blog/causation-without-correlation.html</loc>
-    <lastmod>2026-06-11T17:29:08.123Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/causality-wo-experiments.html</loc>
+    <lastmod>2026-06-11T17:28:57.371Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/foci.html</loc>
     <lastmod>2026-06-11T17:27:48.416Z</lastmod>
   </url>
   <url>
-    <loc>https://vyasenov.github.io/blog/causality-wo-experiments.html</loc>
-    <lastmod>2026-06-11T17:28:57.371Z</lastmod>
+    <loc>https://vyasenov.github.io/blog/causation-without-correlation.html</loc>
+    <lastmod>2026-06-11T17:29:08.123Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/unconditional-qreg.html</loc>
+    <lastmod>2026-04-27T22:00:36.443Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/two-types-weights-causality.html</loc>
+    <lastmod>2026-06-11T17:28:06.894Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/index.html</loc>
+    <lastmod>2026-04-27T22:00:36.757Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/research.html</loc>
+    <lastmod>2026-09-21T18:44:20.648Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/mind-map.html</loc>
+    <lastmod>2026-04-27T22:00:36.761Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/childrenbook.html</loc>
+    <lastmod>2026-04-27T22:00:36.445Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/flavors-ml-methods-ci.html</loc>
+    <lastmod>2026-04-27T22:00:36.413Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/paradox-simpson.html</loc>
+    <lastmod>2026-06-11T17:28:18.162Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/weights-statistics.html</loc>
+    <lastmod>2026-06-11T17:28:11.126Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/flavors-gradient-boosting.html</loc>
+    <lastmod>2026-04-27T22:00:36.412Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/limits-semiparam-models.html</loc>
+    <lastmod>2026-06-11T17:27:48.905Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/paradox-lord.html</loc>
@@ -234,7 +230,7 @@
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/weak-instruments.html</loc>
-    <lastmod>2026-07-08T22:54:35.817Z</lastmod>
+    <lastmod>2026-08-18T17:13:54.770Z</lastmod>
   </url>
   <url>
     <loc>https://vyasenov.github.io/blog/hypothesis-testing-all-data.html</loc>
@@ -323,5 +319,9 @@
   <url>
     <loc>https://vyasenov.github.io/software.html</loc>
     <lastmod>2026-04-27T22:00:36.763Z</lastmod>
+  </url>
+  <url>
+    <loc>https://vyasenov.github.io/blog/local-projections.html</loc>
+    <lastmod>2026-09-21T18:48:09.993Z</lastmod>
   </url>
 </urlset>

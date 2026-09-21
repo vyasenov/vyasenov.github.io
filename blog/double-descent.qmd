@@ -2,6 +2,7 @@
 title: "Double Descent for Statisticians"
 date: "2026-07-09"
 categories: [parametric models, statistical inference, machine learning]
+draft: true
 ---
 
 ## Background

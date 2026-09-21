@@ -51,9 +51,10 @@ Advanced data scientists and applied statisticians who:
 - Avoid bullet-heavy prose in the body — use paragraphs. Reserve bullets for the Bottom Line section.
 - **Bold sparingly** — aim for roughly one bolded phrase in the whole article, reserved for the single key term or punchline. Do not bold every method name, defined term, or "important" phrase; overusing bold flattens emphasis and reads like marketing copy. Let the prose carry the weight, and use italics for the occasional lighter stress.
 - Direct and grounded tone, not breathless or promotional.
-- **Hooks.** The Background usually opens with something human, not a definition. Recurring patterns in the author's posts: a personal confession ("This is a mistake I've made myself—more times than I'd like to admit"), a stated fascination ("Statistical correlation has long captivated me"), a vivid anecdote or joke (the statistician with her head in the oven and feet in ice, "fine on average"), or a myth/misconception to bust. Pick one; don't force all of them.
+- **Hooks.** The Background usually opens with something human, not a definition. Recurring patterns in the author's posts: a personal confession ("This is a mistake I've made myself, more times than I'd like to admit"), a stated fascination ("Statistical correlation has long captivated me"), a vivid anecdote or joke (the statistician with her head in the oven and feet in ice, "fine on average"), or a myth/misconception to bust. Pick one; don't force all of them.
 - **Occasional direct address.** Opening with a reader-facing "you" and a light rhetorical question is in-voice ("You've likely encountered this scenario… Seems straightforward, doesn't it?"). Use sparingly, mostly in the hook; the body stays in "I"/pedagogical-"we".
-- **Register.** Em-dashes for asides and a dash of dry humor are part of the signature. Warm and personable, never stiff — but the moment the math starts, precision takes over.
+- **Register.** A dash of dry humor is part of the signature. Warm and personable, never stiff, but the moment the math starts, precision takes over.
+- **Punctuation: minimize em dashes.** Do not reach for em dashes (`—`) as the default connector. For asides, prefer commas or parentheses; for a hard break between clauses, prefer a period or a semicolon/colon. An em dash is acceptable only rarely, when no other punctuation carries the same beat, and never more than once in a while across the whole article. When editing or revising drafts, actively replace existing em dashes with commas or parentheses.
 
 ## Code conventions
 

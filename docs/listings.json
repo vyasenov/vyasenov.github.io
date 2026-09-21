@@ -2,7 +2,6 @@
   {
     "listing": "/blog/index.html",
     "items": [
-      "/blog/double-descent.html",
       "/blog/sufficient-dimension-reduction.html",
       "/blog/generalized-propensity-score.html",
       "/blog/probability-calibration.html",

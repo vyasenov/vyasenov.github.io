@@ -1,0 +1,112 @@
+---
+title: "Local Projections for Causal Inference"
+date: "2026-07-01"
+categories: [causal inference, parametric models]
+draft: true
+---
+
+## Background
+
+Suppose you want to know how an outcome evolves in the periods *after* some intervention — e.g., how GDP responds over the two years following a surprise interest-rate hike, or how employment moves in the quarters after a minimum-wage increase. This dynamic response is what macroeconomists call an *impulse response function*. For decades the default way to estimate it was the vector autoregression (VAR): fit a full dynamic system, then iterate it forward to see how a shock propagates.
+
+In 2005, Òscar Jordà proposed something almost embarrassingly simple in comparison. Instead of estimating one model and projecting it forward, why not just run a *separate regression for each horizon*? Regress the outcome $h$ periods ahead on the shock today, do it for $h = 0, 1, 2, \dots$, and collect the coefficients. That sequence of coefficients *is* the impulse response. This is the local projection (LP).
+
+An LP was originally sold as a time-series tool for impulse responses. But strip away the macro vocabulary and an LP is an estimator of *dynamic causal effects*. That reframing, which Jordà and Taylor push in their recent surveys, is what connects local projections to the rest of the causal inference toolkit. Today we will take a closer look.
+
+## Notation
+
+Let $y_t$ be an outcome and $s_t$ an intervention observed over time — a shock, a policy change, a treatment; I will use the terms interchangeably. Let $x_t$ collect controls (typically lags of $y_t$, $s_t$, and other covariates). We are after the *impulse response* $R_{s \to y}(h)$: the effect on $y_{t+h}$ of a perturbation to $s_t$ of size $\delta$ (the *dose*), for each horizon $h = 0, 1, \dots, H$.
+
+In potential-outcomes terms, write $Y_{t+h}(s)$ for the outcome $h$ periods ahead had the intervention taken value $s$. The impulse response is then a difference in potential outcomes propagated through time,
+
+$$
+R_{s \to y}(h) = \mathbb{E}\big[Y_{t+h}(s + \delta) - Y_{t+h}(s)\big],
+$$
+
+which is exactly a dynamic treatment effect. As $\delta \to 0$ this becomes a derivative (i.e., a marginal response) which is how VAR impulse responses are usually read, and it is the same object an LP targets.
+
+## A Closer Look
+
+### The estimator
+
+The local projection of $y_{t+h}$ on $s_t$ is the set of regressions
+
+$$
+y_{t+h} = \alpha_h + \beta_h\, s_t + \gamma_h'\, x_t + v_{t+h}, \qquad h = 0, 1, \dots, H,
+$$
+
+estimated separately at each horizon. The impulse response is read straight off the treatment coefficient: 
+$$\hat R_{s \to y}(h) = \hat\beta_h.$$ 
+
+Plot $\hat\beta_0, \hat\beta_1, \dots, \hat\beta_H$ against $h$, add confidence bands, and you have the impulse response function.
+
+Two things make this more subtle than it looks. First, running a *different* regression at each horizon is what gives the LP its flexibility: rather than committing to one dynamic model and extrapolating, each $\hat\beta_h$ approximates the horizon-$h$ conditional mean on its own terms. It is best thought of as a semiparametric estimate of the response function — one local approximation per horizon — which is precisely why local misspecification at one horizon does not contaminate the others. Second, because overlapping windows share shocks, the error $v_{t+h}$ is serially correlated up to roughly $h$ lags. This does not bias $\hat\beta_h$, but it wrecks naive standard errors: you need HAC (Newey–West) or otherwise autocorrelation-robust inference, with the lag window growing in $h$.
+
+---
+
+### Local projections vs VARs
+
+Since LPs and VARs both estimate impulse responses, the natural question is which to use — and the honest answer is a bias–variance trade-off. A VAR fits a parsimonious one-step-ahead model and iterates it forward; the LP estimates each horizon directly. Iterating is efficient when the model is right, so VARs tend to have *lower variance*, especially at long horizons where the LP is running a regression on a shrinking effective sample. But iterating compounds errors: if the one-step model is even slightly misspecified, that error is raised to the power $h$ as you project forward, so VARs tend to have *higher bias* at long horizons. The LP, estimating each horizon on its own, is far more robust to misspecification but pays for it with noisier long-horizon estimates.
+
+The reassuring result (due to Plagborg-Møller and Wolf (2021)) is that this is a finite-sample choice, not a specification disagreement: *in population, LPs and VARs estimate the same impulse response*. They are two estimators of one object. So the decision is pragmatic: reach for LPs when you worry about misspecification, want flexibility (nonlinearities, state dependence, panels), or care most about short-to-medium horizons; lean on VARs when the model is credible and you need efficiency at long horizons.
+
+---
+
+### The causal reframing
+
+Here is the reframing that ties LPs to everything else. Once you write the target as 
+
+$$\mathbb{E}[Y_{t+h}(s+\delta) - Y_{t+h}(s)],$$ 
+
+the LP is a [regression estimator of a causal effect](https://vyasenov.github.io/blog/interpret-OLS-causal-inference.html) — and the usual identification questions apply. The coefficient $\hat\beta_h$ recovers the dynamic causal effect only if the shock $s_t$ is as-good-as-randomly assigned conditional on the controls $x_t$. Rambachan and Shephard (2019) made this precise, giving potential-outcomes conditions under which the LP coefficients are exactly average causal effects at each horizon.
+
+When the shock is *not* conditionally exogenous — the usual macro predicament, since policy reacts to the economy — you instrument it. LP-IV (Jordà, Schularick, and Taylor 2015) replaces OLS at each horizon with two-stage least squares, using an external instrument $z_t$ (a narrative or high-frequency shock measure) for $s_t$. The logic is exactly the [instrumental-variables logic](https://vyasenov.github.io/blog/iv-randomized-experiments.html) from cross-sectional causal inference, applied horizon by horizon; the instrument must be relevant and satisfy a lead-lag exogeneity condition. This is now the dominant identification strategy in empirical macro.
+
+---
+
+### The bridge to panels and difference-in-differences
+
+The causal reading also reveals that applied microeconomists have been running local projections for years without the name. Consider a dynamic difference-in-differences or event study: you regress the outcome at event-time $h$ on treatment status, one coefficient per lead and lag, and plot them. That *is* an LP — a sequence of horizon-specific treatment-effect regressions, just with the time index measured relative to an event rather than to a shock.
+
+This equivalence has become explicit and productive. The LP-DiD approach (Dube, Girardi, Jordà, and Taylor 2023) recasts the modern staggered-adoption difference-in-differences problem as a local projection, which sidesteps the negative-weighting pathologies that plague the two-way fixed-effects estimator under heterogeneous, dynamic treatment effects. It is a clean example of the two literatures (time-series macro and panel micro) turning out to be the same estimator viewed from different rooms.
+
+---
+
+### Practical cautions
+
+A few things reliably trip people up:
+
+- Standard errors must be autocorrelation-robust with a lag length that grows with the horizon; the default OLS errors are meaningless here. 
+- Confidence *bands* drawn horizon-by-horizon are pointwise. If you want to make a joint statement about the whole response path, you need simultaneous bands. 
+- Long-horizon estimates are genuinely imprecise because the effective sample shrinks, so wide error bands far out are honest, not a bug. 
+- And the linear specification quietly imposes symmetry — a positive and negative shock are assumed to have mirror-image effects. This is often exactly what you want to relax, and one of the settings where the LP's single-equation structure makes nonlinear extensions easy.
+
+## Bottom Line
+
+- A local projection estimates an impulse response by running a separate regression of the outcome at each future horizon on the shock today; the coefficients *are* the response function.
+- Read causally, an LP is a sequence of dynamic treatment-effect regressions, identified when the shock is conditionally as-good-as-random — and by LP-IV when it isn't.
+- Versus VARs it is a bias–variance trade-off: LPs are robust to misspecification but noisier at long horizons; in population both target the same object.
+- Dynamic difference-in-differences and event studies are local projections in disguise, and the LP-DiD framing fixes known two-way fixed-effects pathologies.
+- Use autocorrelation-robust standard errors with a horizon-dependent lag window, and remember that horizon-by-horizon bands are pointwise, not simultaneous.
+
+## Where to Learn More
+
+Jordà (2005) is the original and remains highly readable. For modern, comprehensive treatments, the two surveys by Jordà (2023) in the *Annual Review of Economics* and Jordà and Taylor (2024) are the best entry points — the latter leans explicitly into the causal-inference framing. Plagborg-Møller and Wolf (2021) is the definitive statement of the LP–VAR equivalence, and Ramey (2016) surveys shock identification in macro. For the panel bridge, see Dube, Girardi, Jordà, and Taylor (2023).
+
+## References
+
+Dube, A., Girardi, D., Jordà, Ò., & Taylor, A. M. (2023). A Local Projections Approach to Difference-in-Differences Event Studies. *NBER Working Paper 31184*.
+
+Jordà, Ò. (2005). Estimation and Inference of Impulse Responses by Local Projections. *American Economic Review*, 95(1), 161–182.
+
+Jordà, Ò. (2023). Local Projections for Applied Economics. *Annual Review of Economics*, 15, 607–631.
+
+Jordà, Ò., Schularick, M., & Taylor, A. M. (2015). Betting the House. *Journal of International Economics*, 96(S1), S2–S18.
+
+Jordà, Ò., & Taylor, A. M. (2024). Local Projections. *NBER Working Paper 32822*.
+
+Plagborg-Møller, M., & Wolf, C. K. (2021). Local Projections and VARs Estimate the Same Impulse Responses. *Econometrica*, 89(2), 955–980.
+
+Rambachan, A., & Shephard, N. (2019). Econometric Analysis of Potential Outcomes Time Series: Instruments, Shocks, Linearity and the Causal Response Function. *Working Paper*.
+
+Ramey, V. A. (2016). Macroeconomic Shocks and Their Propagation. In *Handbook of Macroeconomics*, Vol. 2A, 71–162.

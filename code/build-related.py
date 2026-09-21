@@ -36,7 +36,7 @@ def parse_front_matter(text: str) -> dict | None:
                 if line.strip()
             ]
 
-    return {"title": grab("title"), "date": grab("date"), "categories": categories}
+    return {"title": grab("title"), "date": grab("date"), "categories": categories, "draft": grab("draft") == "true"}
 
 
 posts = []
@@ -44,7 +44,7 @@ for qmd in sorted(BLOG_DIR.glob("*.qmd")):
     if qmd.name.startswith("_") or qmd.name == "index.qmd":
         continue
     fm = parse_front_matter(qmd.read_text())
-    if not fm or not fm["title"]:
+    if not fm or not fm["title"] or fm["draft"]:
         continue
     posts.append({
         "slug": qmd.stem,
