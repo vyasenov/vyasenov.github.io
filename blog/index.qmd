@@ -9,6 +9,8 @@ listing:
   feed: true
 ---
 
+Explore the [Methods Map](../mind-map.qmd) for an interactive overview of causal inference methods.
+
 <div id="random-article-sidebar-wrapper" style="display: none; margin-top: 1.25rem;">
   <button type="button" class="btn btn-outline-primary rounded-pill w-100" id="random-article-btn">Show Random Article</button>
 </div>

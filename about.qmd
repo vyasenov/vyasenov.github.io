@@ -17,7 +17,7 @@ My [academic research](https://vyasenov.github.io/research.html){target="_blank"
 
 Throughout my career, I’ve been fortunate to work closely with multiple mentors who were students of Nobel Prize laureates. As a way to give back, I maintain [a blog](https://vyasenov.github.io/blog/){target="_blank"} that makes cutting-edge academic research in data science accessible to a broader audience.
 
-My [children’s book](https://vyasenov.github.io/childrenbook.html){target="_blank"} on causal inference reached $\#2$ on Amazon’s *New Releases in Probability and Statistics* list.
+My [children’s book](#kids-books) on causal inference reached $\#2$ on Amazon’s *New Releases in Probability and Statistics* list.
 
 ******
 
@@ -26,3 +26,30 @@ Outside of work, I’m an avid mushroom forager and mountain biker—but most of
 ******
 
 Oh, and my [Erdős number](https://en.wikipedia.org/wiki/Erd%C5%91s_number){target="_blank"} is $8$.
+
+## Kids Books
+
+```{=html}
+<div class="grid text-center">
+  <div class="g-col-12 g-col-md-6">
+    <a href="files/ml-toddlers-eng-reduced.pdf" target="_blank" rel="noopener noreferrer">
+      <img src="files/childrens-book-cover2.png" alt="Machine Learning for Toddlers: Alya and the Forest Mushrooms Mystery" class="rounded shadow" width="300" style="max-width: 100%; height: auto;">
+    </a>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3" role="group" aria-label="Machine Learning for Toddlers links">
+      <a class="btn btn-outline-primary btn-sm" href="files/ml-toddlers-eng-reduced.pdf" target="_blank" rel="noopener noreferrer">English (PDF)</a>
+      <a class="btn btn-outline-primary btn-sm" href="files/ml-toddlers-bg-reduced.pdf" target="_blank" rel="noopener noreferrer">Български (PDF)</a>
+      <a class="btn btn-outline-primary btn-sm" href="https://www.amazon.com/Machine-Learning-Toddlers-Mushrooms-Mystery/dp/B0G19Z88W9" target="_blank" rel="noopener noreferrer">Amazon (paperback)</a>
+    </div>
+  </div>
+  <div class="g-col-12 g-col-md-6">
+    <a href="files/ci-toddlers-eng-reduced.pdf" target="_blank" rel="noopener noreferrer">
+      <img src="files/childrens-book-cover.jpg" alt="Causal Inference for Toddlers: Luca and the Meatball Recipe" class="rounded shadow" width="300" style="max-width: 100%; height: auto;">
+    </a>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3" role="group" aria-label="Causal Inference for Toddlers links">
+      <a class="btn btn-outline-primary btn-sm" href="files/ci-toddlers-eng-reduced.pdf" target="_blank" rel="noopener noreferrer">English (PDF)</a>
+      <a class="btn btn-outline-primary btn-sm" href="files/ci-toddlers-bg-reduced.pdf" target="_blank" rel="noopener noreferrer">Български (PDF)</a>
+      <a class="btn btn-outline-primary btn-sm" href="https://www.amazon.com/dp/B0BLG6SWZJ?ref_=pe_3052080_397514860" target="_blank" rel="noopener noreferrer">Amazon (paperback)</a>
+    </div>
+  </div>
+</div>
+```

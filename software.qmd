@@ -2,28 +2,7 @@
 title: "Python Packages"
 format: html
 toc: false
+search: false
 ---
 
-#### ML Adjustments to RCTs
-
-[pyregadj](https://github.com/vyasenov/pyregadj) - Regression and machine learning adjustments to treatment effect estimates in randomized experiments as in [List et al. (2024)](https://doi.org/10.1080/07474938.2024.2373446)
-
-#### Lasso for Heterogeneous Treatment Effects
-
-[pyhtelasso](https://github.com/vyasenov/pyhtelasso) - [Debiased lasso](https://dl.acm.org/doi/10.5555/2627435.2697057) for simple detection of treatment effect heterogeneity in randomized experiments 
-
-#### RIF Regressions
-
-[pyrifreg](https://github.com/vyasenov/pyrifreg) - Recentered Influence Function (RIF) regression analysis following [Firpo et al. (2008)](https://doi.org/10.3982/ECTA6822)
-
-#### Changes-in-Changes
-
-[pycinc](https://github.com/vyasenov/pycinc) - Changes-in-Changes (CiC) model introduced by [Athey and Imbens (2006)](https://doi.org/10.1111/j.1468-0262.2006.00668.x)
-
-#### Lee Bounds
-
-[pyleebounds](https://github.com/vyasenov/pyleebounds) - Treatment effect bounds accounting for sample selection developed by [Lee (2009)](https://doi.org/10.1111/j.1467-937X.2009.00536.x)
-
-#### Double Post-Lasso
-
-[pydoublelasso](https://github.com/vyasenov/pydoublelasso) - Double-post lasso treatment effect estimation based on [Belloni et al. (2014)](https://doi.org/10.1093/restud/rdt044)
+My Python packages are now listed in the [Software section of Research](research.qmd#software).

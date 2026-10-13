@@ -12,24 +12,14 @@ website:
   google-analytics: "G-RE2GPQMVXH"
   navbar:
     right:
-      - text: About Me
+      - text: About
         href: about.qmd
-      - text: CV
-        href: cv.qmd        
       - text: Blog
         href: blog/index.qmd        
       - text: Research
         href: research.qmd
-      - text: Software
-        href: software.qmd           
-      - text: Others
-        menu:
-        - text: Methods Map
-          href: mind-map.qmd
-        - text: Kids Books
-          href: childrenbook.qmd
-        - text: TV Series Ratings
-          href: https://huggingface.co/spaces/yasenov/tv-series-viz
+      - text: CV
+        href: cv.qmd
       - icon: rss
         href: blog/index.xml
         aria-label: RSS feed
