@@ -7,11 +7,21 @@ format: html
 
 ::: {.research-item}
 - “Translating User-Level Marketing Effects To Organizational Revenue In B2B Software” (2026) (w/ Nicholas Adams-Cohen)
-    * [**US Patent Pending**]
+    * **US Patent Pending**
     * _Summary_: A framework for quantifying the dollar-value impact of B2B marketing programs on retention and revenue by linking causal effects from user adoption to organizational financial outcomes, without requiring randomized experiments.
 :::
 
 ## Working Papers
+
+::: {.research-item}
+- “Automated Chat Application Surveys Using WhatsApp: Evidence from Panel Surveys and a Mode Experiment” (2022) (w/ J. Fei, J. S. Wolff, M. Hotard, H. Ingham, S. Khanna, D. Lawrence, B. Tesfaye, J. Weinstein, and J. Hainmueller)
+    * [IZA Discussion Paper No. 15263](https://www.iza.org/publications/dp/15263).
+:::
+
+::: {.research-item}
+- “Association between Parents' Nativity Status and Influenza Vaccination Rates among Children” (2021) (w/ M. Hotard, D. Lawrence, and J. Hainmueller)
+    * [IZA Discussion Paper No. 14746](https://www.iza.org/publications/dp/14746).
+:::
 
 ::: {.research-item}
 - “Who Can Work from Home?” (2020)
